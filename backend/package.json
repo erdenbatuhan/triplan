@@ -1,0 +1,19 @@
+{
+  "name": "triplan-backend",
+  "version": "0.1.0",
+  "description": "Triplan backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Batuhan Erden, Anil Kul, Halil Eralp Kocas, Cansu Yildirim",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "mongoose": "^6.3.6"
+  }
+}
