@@ -16,8 +16,10 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react"
-  ],
+    "import",
+    "jsx-a11y",
+    "react",
+    "prettier"],
   "rules": {
     "react/react-in-jsx-scope": "off"
   }
