@@ -1,3 +1,4 @@
+import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import logo from './logo.svg';
 import './App.css';
 
@@ -17,6 +18,13 @@ function App() {
           Learn React
         </a>
       </header>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" />
+          <Route path="/login" />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
