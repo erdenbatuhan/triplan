@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import PlaceImg from './assets/place.png';
 import RestaurantImg from './assets/restaurant.png';
 
-export default function BasicCard(props) {
+export default function TripPlanningCard(props) {
   let imgPath = '';
   if (props.type === 'restaurant') {
     imgPath = RestaurantImg;
@@ -34,9 +34,9 @@ export default function BasicCard(props) {
                 <Typography gutterBottom variant="h5" component="div">
                   {props.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                {/* <Typography variant="body2" color="text.secondary">
                   {props.content}
-                </Typography>
+                </Typography> */}
               </CardContent>
             </ListItem>
           </Grid>
@@ -46,8 +46,8 @@ export default function BasicCard(props) {
   );
 }
 
-BasicCard.propTypes = {
+TripPlanningCard.propTypes = {
   title: PropTypes.string.isRequired,
-  content: PropTypes.string.isRequired,
+  // content: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired
 };
