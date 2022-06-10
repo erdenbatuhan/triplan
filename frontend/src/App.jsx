@@ -1,30 +1,18 @@
-import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
-import logo from './logo.svg';
+import * as React from 'react';
+// import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import './App.css';
+import BasicCard from './components/card-item';
 
 function App() {
+  // const c = <BasicCard />;
+
+  // const p = React.cloneElement(c, {
+  //   content: 'Good place to chill in summer.',
+  //   title: 'English Garden'
+  // });
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" />
-          <Route path="/login" />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </BrowserRouter>
+      <BasicCard content="Good place to chill in summer." title="English Garden" type="place" />
     </div>
   );
 }
