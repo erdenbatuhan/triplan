@@ -1,8 +1,9 @@
 import * as React from 'react';
 // import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import './App.css';
+import TripPlanningLayout from './components/trip-planning-pagelayout';
 // import TripPlanningCard from './components/card-item';
-import TripPlanningList from './components/list';
+// import TripPlanningList from './components/list';
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
         title="English Garden"
         type="place"
       /> */}
-      <TripPlanningList />
+      <TripPlanningLayout />
     </div>
   );
 }

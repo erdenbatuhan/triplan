@@ -34,10 +34,10 @@ function renderRow(props) {
 
 export default function TripPlanningList() {
   return (
-    <Box sx={{ width: '100%', height: 400, maxWidth: 500, bgcolor: 'background.paper' }}>
+    <Box sx={{ width: '100%', height: 400, maxWidth: '%100', bgcolor: 'background.paper' }}>
       <FixedSizeList
         height={600}
-        width={500}
+        width="%100"
         itemSize={150}
         itemCount={destinationList.length}
         overscanCount={5}>

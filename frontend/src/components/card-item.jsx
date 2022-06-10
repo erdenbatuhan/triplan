@@ -20,7 +20,7 @@ export default function TripPlanningCard(props) {
     imgPath = PlaceImg;
   }
   return (
-    <Card sx={{ maxWidth: 500 }}>
+    <Card sx={{ maxWidth: '%100' }}>
       <CardActionArea>
         <Grid container spacing={2}>
           <Grid item xs={4}>
