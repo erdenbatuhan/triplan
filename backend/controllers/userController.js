@@ -15,4 +15,16 @@ const findAll = (req, res) => {
     });
 };
 
-module.exports = { findAll };
+const createUser = (req, res) => {
+  const newUser = new User(req.body);
+  newUser
+    .save()
+    .then((result) => {
+      res.status(201).send(result);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+};
+
+module.exports = { findAll, createUser };

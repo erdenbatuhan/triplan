@@ -28,4 +28,4 @@ app.use("/hello-world", helloWorldRoutes);
 
 // User Routes
 const userRoutes = require("./routes/userRoutes.js");
-app.use("/get-users", userRoutes);
+app.use("/users", userRoutes);
