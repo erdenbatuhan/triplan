@@ -1,5 +1,6 @@
 import React from 'react';
 import TripCard from '../components/TripCard';
+import ProfileInfoCard from '../components/ProfileInfoCard';
 
 const mockTripCardData = [
   {
@@ -16,10 +17,29 @@ const mockTripCardData = [
   }
 ];
 
+const mockProfileInfoCardData = [
+  {
+    id: '0',
+    title: 'Trips',
+    value: '3',
+    href: '/'
+  },
+  {
+    id: '1',
+    title: 'Followers',
+    value: '10',
+    href: '/'
+  },
+  {
+    id: '2',
+    title: 'Following',
+    value: '17',
+    href: '/'
+  }
+];
+
 function UserProfilePage() {
   // const [userData, setUserData] = useState([]);
-  console.log('mockTripCardData: ', mockTripCardData);
-  console.log('mockTripCardData[0]: ', mockTripCardData[0]);
 
   return (
     <div>
@@ -32,9 +52,16 @@ function UserProfilePage() {
       </div>
       <div>
         <div>
-          <div>Trips</div>
-          <div>Followers</div>
-          <div>Following</div>
+          {mockProfileInfoCardData.map((infoData) => {
+            return (
+              <ProfileInfoCard
+                key={infoData.id}
+                title={infoData.title}
+                value={infoData.value}
+                href={infoData.href}
+              />
+            );
+          })}
         </div>
         <div>
           {mockTripCardData.map((tripData) => {
