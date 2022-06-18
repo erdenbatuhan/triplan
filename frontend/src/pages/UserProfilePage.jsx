@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grid, Stack } from '@mui/material';
 import TripCard from '../components/TripCard';
 import ProfileInfoCard from '../components/ProfileInfoCard';
 
@@ -42,41 +43,47 @@ function UserProfilePage() {
   // const [userData, setUserData] = useState([]);
 
   return (
-    <div>
-      <div>
+    <Grid container spacing={2}>
+      <Grid item xs={3}>
         <div>img</div>
         <div>
           <div>Jane Doe</div>
           <div>Berlin</div>
         </div>
-      </div>
-      <div>
-        <div>
-          {mockProfileInfoCardData.map((infoData) => {
-            return (
-              <ProfileInfoCard
-                key={infoData.id}
-                title={infoData.title}
-                value={infoData.value}
-                href={infoData.href}
-              />
-            );
-          })}
-        </div>
-        <div>
-          {mockTripCardData.map((tripData) => {
-            return (
-              <TripCard
-                key={tripData.id}
-                tripName={tripData.tripName}
-                isRated={tripData.isRated}
-                href={tripData.href}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </div>
+      </Grid>
+      <Grid item xs={9}>
+        <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
+          <Grid item xs={3}>
+            <Stack direction="row" spacing={12}>
+              {mockProfileInfoCardData.map((infoData) => (
+                <Grid item key={infoData.id}>
+                  <ProfileInfoCard
+                    key={infoData.id}
+                    title={infoData.title}
+                    value={infoData.value}
+                    href={infoData.href}
+                  />
+                </Grid>
+              ))}
+            </Stack>
+          </Grid>
+          <Grid item xs={9}>
+            <Stack spacing={2}>
+              {mockTripCardData.map((tripData) => {
+                return (
+                  <TripCard
+                    key={tripData.id}
+                    tripName={tripData.tripName}
+                    isRated={tripData.isRated}
+                    href={tripData.href}
+                  />
+                );
+              })}
+            </Stack>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 }
 
