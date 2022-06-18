@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Card } from '@mui/material';
+import { Card, Grid, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -12,11 +12,15 @@ function ProfileInfoCard(props) {
   };
 
   return (
-    <Card onClick={cardClickHandler}>
-      <div>
-        <div>{title}</div>
-        <div>{value}</div>
-      </div>
+    <Card onClick={cardClickHandler} sx={{ minWidth: 150 }} variant="outlined">
+      <Grid container direction="column" justifyContent="center" alignItems="center">
+        <Grid item xs={9}>
+          <Typography align="center">{title}</Typography>
+        </Grid>
+        <Grid item xs={3}>
+          <Typography align="center">{value}</Typography>
+        </Grid>
+      </Grid>
     </Card>
   );
 }

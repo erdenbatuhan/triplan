@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Stack } from '@mui/material';
+import { Grid, Stack, Typography } from '@mui/material';
 import TripCard from '../components/TripCard';
 import ProfileInfoCard from '../components/ProfileInfoCard';
 
@@ -39,17 +39,32 @@ const mockProfileInfoCardData = [
   }
 ];
 
+const mockImgData = {
+  img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
+  title: 'Sea star'
+};
 function UserProfilePage() {
   // const [userData, setUserData] = useState([]);
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={3}>
-        <div>img</div>
-        <div>
-          <div>Jane Doe</div>
-          <div>Berlin</div>
-        </div>
+        <Grid container direction="column" justifyContent="center" alignItems="center">
+          <Grid item xs={6}>
+            <img
+              src={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format`}
+              srcSet={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+              alt={mockImgData.title}
+              loading="lazy"
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <Typography align="center">Jane Doe</Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Typography align="center">Berlin</Typography>
+          </Grid>
+        </Grid>
       </Grid>
       <Grid item xs={9}>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
