@@ -1,6 +1,6 @@
 const { PlaceData } = require("./../models/placeData.js");
 
-const findAll = (req, res) => {
+const getAllPlaces = (req, res) => {
   const filters = req.query;
   const filteredPlaceData = PlaceData.filter(data => {
     let isValid = true;
@@ -34,4 +34,4 @@ const createPlaceData = (req, res) => {
     });
 };
 
-module.exports = { findAll, createPlaceData };
+module.exports = { getAllPlaces, createPlaceData };
