@@ -29,3 +29,7 @@ app.use("/hello-world", helloWorldRoutes);
 // User Routes
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/users", userRoutes);
+
+// placeData Routes
+const placeDataRoutes = require("./routes/placeDataRoutes.js");
+app.use("/placeData", placeDataRoutes);
