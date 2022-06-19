@@ -17,9 +17,6 @@ const PlaceData = mongoose.model(
       google_map_url: { type: String, required: true },
       google_icon_url: { type: String, required: true },
       place_description: { type: String, required: true },
-    },
-    {
-      timestamps: true,
     }
   )
 );
