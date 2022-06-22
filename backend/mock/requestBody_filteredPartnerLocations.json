@@ -1,0 +1,12 @@
+{
+    "filterData": {
+        "restaurantFilter": {
+            "cuisines": ["Japanese", "Chinese", "Turkish"],
+            "priceLevel": 2,
+            "foodTypes": ["Vegan", "Vegeterian"]
+        },
+        "touristAttractionFilter": {
+            "types": ["museum", "point_of_interest"]
+        }
+    }
+}

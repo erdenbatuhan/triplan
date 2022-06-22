@@ -13,6 +13,6 @@ npm i
 3) Run the app and then test the HelloWorld endpoint by going to [this](http://localhost:8008/hello-world) URL.
 
 ```bash
-node index.js
+npm start
 ```
 
