@@ -4,6 +4,7 @@ import SearchBar from './components/SearchBar';
 import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
+import TripPlanningPage from './pages/TripPlanningPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" />
         <Route path="/user" element={<UserProfilePage />} />
+        <Route path="/trip-planning" element={<TripPlanningPage />} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/search" element={<SearchBar />} />
         <Route path="/date" element={<DatePicker />} />
