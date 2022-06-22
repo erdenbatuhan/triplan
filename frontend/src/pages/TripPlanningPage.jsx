@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Grid from '@mui/material/Grid';
-import BasicList from '../components/list';
+import PlacesList from '../components/PlacesList';
 
 function TripPlanningPage() {
   return (
@@ -9,10 +9,10 @@ function TripPlanningPage() {
         Filter Container
       </Grid>
       <Grid item xs={3}>
-        <BasicList />
+        <PlacesList />
       </Grid>
       <Grid item xs={3}>
-        <BasicList />
+        <PlacesList />
       </Grid>
       <Grid item xs={3}>
         Added places list Container

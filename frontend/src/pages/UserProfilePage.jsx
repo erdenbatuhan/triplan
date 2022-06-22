@@ -2,6 +2,21 @@ import React from 'react';
 import { Grid, Stack, Typography } from '@mui/material';
 import TripCard from '../components/TripCard';
 import ProfileInfoCard from '../components/ProfileInfoCard';
+// import { createNewUser } from '../queries/user-queries';
+
+// const qBody = {
+//   username: 'example1',
+//   password: 'password1',
+//   firstName: 'First Example',
+//   lastName: 'Last Example',
+//   phoneNumber: '+123456789',
+//   email: 'ex123@example.com',
+//   gender: '-',
+//   dateOfBirth: '2022-06-17T21: 38:00.720+00:00',
+//   nationality: '-',
+//   profilePicture: 'picURL'
+// };
+// createNewUser(qBody);
 
 const mockTripCardData = [
   {
