@@ -8,4 +8,6 @@ const router = express.Router();
  */
 router.get("/filtered-results", partnerLocationController.findAllFiltered);
 
+router.get("/cities", partnerLocationController.findDistinctCities);
+
 module.exports = router;
