@@ -20,7 +20,9 @@ function MainPage() {
           <DatePicker />
         </Grid>
         <Box>
-          <Button variant="outlined">Continue</Button>
+          <Button variant="outlined" href="/trip-planning">
+            Continue
+          </Button>
         </Box>
       </CustomGrid>
     </CustomGrid>
