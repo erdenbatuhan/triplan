@@ -13,7 +13,6 @@ function DatePicker() {
         inputFormat="dd/MM/yyyy"
         value={value}
         onChange={setValue}
-        // eslint-disable-next-line react/jsx-props-no-spreading
         renderInput={(params) => <TextField {...params} />}
       />
     </LocalizationProvider>

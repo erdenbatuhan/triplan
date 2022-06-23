@@ -1,27 +1,29 @@
 import React from 'react';
-import { Button, Grid } from '@mui/material';
+import { Button, Box, Grid } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import DatePicker from '../components/DatePicker';
 import SearchBar from '../components/SearchBar';
 
+const CustomGrid = styled(Grid)(() => ({
+  justifyContent: 'center',
+  alignItems: 'center'
+}));
+
 function MainPage() {
   return (
-    <Grid
-      container
-      spacing={2}
-      justifyContent="center"
-      direction="row"
-      alignItems="center"
-      marginTop="unset">
-      <Grid item xs={8}>
-        <SearchBar />
-      </Grid>
-      <Grid item xs={4}>
-        <DatePicker />
-      </Grid>
-      <Grid>
-        <Button>Continue</Button>
-      </Grid>
-    </Grid>
+    <CustomGrid container height="100vh" display="inline-grid">
+      <CustomGrid container spacing={2} direction="row">
+        <Grid item md={8}>
+          <SearchBar />
+        </Grid>
+        <Grid item md={4}>
+          <DatePicker />
+        </Grid>
+        <Box>
+          <Button variant="outlined">Continue</Button>
+        </Box>
+      </CustomGrid>
+    </CustomGrid>
   );
 }
 
