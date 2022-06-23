@@ -2,7 +2,7 @@ const userController = require("./userController.js");
 
 const { FollowingRelationship } = require("./../models/followingRelationship.js");
 
-const addFollower = ({ followerId, followedId }) => {
+const createFollowingRelationship = ({ followerId, followedId }) => {
   const followerPromise = userController.findOne(followerId);
   const followedPromise = userController.findOne(followedId);
 
@@ -27,4 +27,30 @@ const addFollower = ({ followerId, followedId }) => {
   });
 };
 
-module.exports = { addFollower };
+const deleteFollowingRelationship = ({ followerId, followedId }) => {
+  return FollowingRelationship.findOneAndDelete({ "follower": followerId, "followed": followedId });
+};
+
+const getFollowed = async (userId) => { // Records where the given user is the "follower"
+  if (!(await (userController.exists(userId)))) {
+    return null;
+  }
+
+  const followingRelationships = await FollowingRelationship.find({ "follower": userId }).select("followed");
+  const users = await userController.findSome(followingRelationships.map(rel => rel["followed"]));
+
+  return users;
+}
+
+const getFollowers = async (userId) => { // Records where the given user is the "followed"
+  if (!(await (userController.exists(userId)))) {
+    return null;
+  }
+
+  const followingRelationships = await FollowingRelationship.find({ "followed": userId }).select("follower");
+  const users = await userController.findSome(followingRelationships.map(rel => rel["follower"]));
+
+  return users;
+}
+
+module.exports = { createFollowingRelationship, deleteFollowingRelationship, getFollowed, getFollowers };
