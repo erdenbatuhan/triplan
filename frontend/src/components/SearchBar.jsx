@@ -1,7 +1,7 @@
 import { Button, Box, InputBase, Card, Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import { getCities } from '../queries/place-data-queries';
+import { getCities } from '../queries/partner-location-queries';
 
 function SearchBar() {
   const [cities, setCities] = useState([]);
