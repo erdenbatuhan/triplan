@@ -1,5 +1,5 @@
 export async function getPlaceData() {
-  const url = `http://localhost:8008/placeData`;
+  const url = `http://localhost:8008/place-data`;
 
   const allPlaceData = await fetch(url, {
     method: `GET`,
