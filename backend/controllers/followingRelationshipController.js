@@ -2,7 +2,7 @@ const userController = require("./userController.js");
 
 const { FollowingRelationship } = require("./../models/followingRelationship.js");
 
-const addFollower = ({ followerId, followedId }) => {
+const createFollowingRelationship = ({ followerId, followedId }) => {
   const followerPromise = userController.findOne(followerId);
   const followedPromise = userController.findOne(followedId);
 
@@ -27,4 +27,8 @@ const addFollower = ({ followerId, followedId }) => {
   });
 };
 
-module.exports = { addFollower };
+const deleteFollowingRelationship = ({ followerId, followedId }) => {
+  return FollowingRelationship.findOneAndDelete({ "follower": followerId, "followedId": followedId })
+};
+
+module.exports = { createFollowingRelationship, deleteFollowingRelationship };
