@@ -1,14 +1,12 @@
+import { HOST, HEADERS } from './constants';
+
 export async function getPlaceData() {
-  const url = `http://localhost:8008/place-data`;
+  const url = `${HOST}/place-data`;
 
   const allPlaceData = await fetch(url, {
     method: `GET`,
     mode: `cors`,
-    headers: {
-      'Access-Control-Allow-Origin': `http://localhost:3000`,
-      'Access-Control-Allow-Credentials': `true`,
-      'Content-Type': `application/json; charset=UTF-8`
-    }
+    headers: HEADERS
   })
     .then(async (response) => response.json())
     .then((json) => json);
@@ -16,16 +14,12 @@ export async function getPlaceData() {
 }
 
 export async function createNewPlaceData(placeData) {
-  const url = `http://localhost:8008/placeData`;
+  const url = `${HOST}/place-data`;
 
   const createData = await fetch(url, {
     method: `POST`,
     mode: `cors`,
-    headers: {
-      'Access-Control-Allow-Origin': `http://localhost:3000`,
-      'Access-Control-Allow-Credentials': `true`,
-      'Content-Type': `application/json; charset=UTF-8`
-    },
+    headers: HEADERS,
     body: JSON.stringify(placeData)
   })
     .then(async (response) => response.json())
