@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import logo from '../logo.svg';
 import '../App.css';
 
@@ -16,6 +17,9 @@ function HomePage() {
           rel="noopener noreferrer">
           Learn React
         </a>
+        <br />
+        <Button href="/login">Login</Button>
+        <Button href="/signup">Sign Up</Button>
       </header>
     </div>
   );
