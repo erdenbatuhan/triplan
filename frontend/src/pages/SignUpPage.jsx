@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
+import { createNewUser } from '../queries/user-queries';
 
 function SignUpPage() {
   const [firstName, setFirstName] = useState('');
@@ -14,39 +15,64 @@ function SignUpPage() {
   const [profilePicture, setProfilePicture] = useState('');
 
   const onFirstNameChanged = (e) => {
-    setFirstName(e.target.value);
+    setFirstName(JSON.stringify(e.target.value));
   };
   const onLastNameChanged = (e) => {
-    setLastName(e.target.value);
+    setLastName(JSON.stringify(e.target.value));
   };
   const onEmailChanged = (e) => {
-    setEmail(e.target.value);
+    setEmail(JSON.stringify(e.target.value));
   };
   const onUsernameChanged = (e) => {
-    setUsername(e.target.value);
+    setUsername(JSON.stringify(e.target.value));
   };
   const onPasswordChanged = (e) => {
-    setPassword(e.target.value);
+    setPassword(JSON.stringify(e.target.value));
   };
   const onPhoneNumberChanged = (e) => {
-    setPhoneNumber(e.target.value);
+    setPhoneNumber(JSON.stringify(e.target.value));
   };
   const onGenderChanged = (e) => {
-    setGender(e.target.value);
+    setGender(JSON.stringify(e.target.value));
   };
   const onDateOfBirthChanged = (e) => {
-    setDateOfBirth(e.target.value);
+    setDateOfBirth(JSON.stringify(e.target.value));
   };
   const onNationalityChanged = (e) => {
-    setNationality(e.target.value);
+    setNationality(JSON.stringify(e.target.value));
   };
   const onProfilePictureChanged = (e) => {
-    setProfilePicture(e.target.value);
+    setProfilePicture(JSON.stringify(e.target.value));
   };
+
+  const onSubmitClicked = async () => {
+    try {
+      const userData = {
+        username,
+        password,
+        firstName,
+        lastName,
+        phoneNumber,
+        email,
+        gender,
+        dateOfBirth,
+        nationality,
+        profilePicture
+      };
+      console.log('userData: ', userData);
+      // const createdUser = await createNewUser(JSON.stringify(userData));
+      await createNewUser(userData);
+
+      // console.log('createdUser: ', createdUser);
+      console.log('form is submitted');
+    } catch (e) {
+      console.error(`failed to create user ${e}`);
+    }
+  };
+
   return (
     <Box
       component="form"
-      noValidate
       sx={{
         mt: 4,
         marginLeft: 5,
@@ -55,110 +81,112 @@ function SignUpPage() {
         minWidth: 400
       }}>
       <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2}>
-        <Grid item xs={4}>
+        <Grid item>
           <Typography align="center">Welcome to the Triplanner!</Typography>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
-            <Grid item xs={4}>
+            <Grid item>
               <TextField
                 required
                 id="outlined-required"
                 label="First Name"
                 defaultValue={firstName}
-                onChange={onFirstNameChanged}
+                onChange={(e) => onFirstNameChanged(e)}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item>
               <TextField
                 required
                 id="outlined-required"
                 label="Last Name"
                 defaultValue={lastName}
-                onChange={onLastNameChanged}
+                onChange={(e) => onLastNameChanged(e)}
               />
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             fullWidth
             id="outlined-required"
             label="E-mail"
             defaultValue={email}
-            onChange={onEmailChanged}
+            onChange={(e) => onEmailChanged(e)}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
-            <Grid item xs={4}>
+            <Grid item>
               <TextField
                 required
                 id="outlined-required"
                 label="Username"
                 defaultValue={username}
-                onChange={onUsernameChanged}
+                onChange={(e) => onUsernameChanged(e)}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item>
               <TextField
                 required
                 id="outlined-required"
                 label="Password"
                 defaultValue={password}
-                onChange={onPasswordChanged}
+                onChange={(e) => onPasswordChanged(e)}
               />
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
             label="Phone Number"
             defaultValue={phoneNumber}
-            onChange={onPhoneNumberChanged}
+            onChange={(e) => onPhoneNumberChanged(e)}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
             label="Gender"
             defaultValue={gender}
-            onChange={onGenderChanged}
+            onChange={(e) => onGenderChanged(e)}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
             label="Date of Birth"
             defaultValue={dateOfBirth}
-            onChange={onDateOfBirthChanged}
+            onChange={(e) => onDateOfBirthChanged(e)}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
             label="Nationality"
             defaultValue={nationality}
-            onChange={onNationalityChanged}
+            onChange={(e) => onNationalityChanged(e)}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
             label="Profile Picture"
             defaultValue={profilePicture}
-            onChange={onProfilePictureChanged}
+            onChange={(e) => onProfilePictureChanged(e)}
           />
         </Grid>
-        <Grid item xs={4}>
-          <Button href="/">Sign In</Button>
+        <Grid item>
+          <Button href="/" onClick={onSubmitClicked}>
+            Sign In
+          </Button>
         </Grid>
       </Grid>
     </Box>

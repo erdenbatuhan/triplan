@@ -25,10 +25,10 @@ function LoginPage() {
         minWidth: 400
       }}>
       <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2}>
-        <Grid item xs={4}>
+        <Grid item>
           <Typography align="center">Welcome to the Triplanner!</Typography>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
@@ -37,7 +37,7 @@ function LoginPage() {
             onChange={onUsernameChanged}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
@@ -46,7 +46,7 @@ function LoginPage() {
             onChange={onPasswordChanged}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item>
           <Button href="/">Login</Button>
         </Grid>
       </Grid>

@@ -1,7 +1,7 @@
 import { HOST, HEADERS } from './constants';
 
 export async function getUserData() {
-  const url = `${HOST}/users`;
+  const url = `${HOST}/user`;
 
   const allUserData = await fetch(url, {
     method: `GET`,
@@ -14,7 +14,7 @@ export async function getUserData() {
 }
 
 export async function createNewUser(userData) {
-  const url = `${HOST}/users`;
+  const url = `${HOST}/user`;
 
   const createData = await fetch(url, {
     method: `POST`,
