@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 
 function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const onUsernameChanged = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const onPasswordChanged = (e) => {
+    setPassword(e.target.value);
+  };
+
   return (
     <Box
       component="form"
@@ -18,10 +29,22 @@ function LoginPage() {
           <Typography align="center">Welcome to the Triplanner!</Typography>
         </Grid>
         <Grid item xs={4}>
-          <TextField required id="outlined-required" label="Username" defaultValue="" />
+          <TextField
+            required
+            id="outlined-required"
+            label="Username"
+            defaultValue={username}
+            onChange={onUsernameChanged}
+          />
         </Grid>
         <Grid item xs={4}>
-          <TextField required id="outlined-required" label="Password" defaultValue="" />
+          <TextField
+            required
+            id="outlined-required"
+            label="Password"
+            defaultValue={password}
+            onChange={onPasswordChanged}
+          />
         </Grid>
         <Grid item xs={4}>
           <Button href="/">Login</Button>
