@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
+import RestaurantProfilePage from './pages/RestaurantProfilePage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/trip-planning" element={<TripPlanningPage />} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/main-page" element={<MainPage />} />
+        <Route path="/restaurant-profile" element={<RestaurantProfilePage />} />
       </Routes>
     </BrowserRouter>
   );
