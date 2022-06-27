@@ -1,26 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { List } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-// import Container from '@mui/material/Container';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
+// import { createNewRestaurant } from '../queries/restaurant-queries';
+import { getRestaurant } from '../queries/restaurant-queries';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
   title: ''
 };
 
-const mockRestaurantData = {
-  name: 'Drunken Cow',
-  address: 'Gabelsbergerstraße 58, 80333 München',
-  phone: '089 54356230',
-  price_level: '€€',
-  cusines: ['Fast Food', 'Mexican']
-};
+// const fakedata = {
+//   name: 'Drunken Cow',
+//   address: 'Gabelsbergerstraße 58, 80333 München',
+//   phone: '089 54356230',
+//   price_level: '€€',
+//   cusines: ['Fast Food', 'Mexican']
+// };
 
-const cusineList = mockRestaurantData.cusines;
+// const fakeData = {
+//   _id: '62b9b99ebdc6cf4735babce2',
+//   name: 'anil',
+//   password: '',
+//   city: 'Munich',
+//   country: 'Germany',
+//   address: 'Gabelsbergerstraße 58, 80333 München',
+//   phoneNumber: '089 54356230',
+//   googleLocationLink: '',
+//   certificate: '',
+//   locationPicture:
+//     'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
+//   priceLevel: '€€',
+//   cuisine: ['Fast Food', 'Mexican'],
+//   foodType: ''
+// };
+
+const cusineList = ['Fast Food', 'Mexican'];
 
 const mockMenuData = [
   {
@@ -51,7 +69,15 @@ const mockMenuData = [
   }
 ];
 
-function RestaurantProfilePage() {
+const restaurantReqBody = { id: '62b9b99ebdc6cf4735babce2' };
+
+export default function RestaurantProfilePage() {
+  const [restaurant, setRestaurant] = useState([]);
+  // const [cusineList, setCusines] = useState([]);
+  useEffect(() => {
+    getRestaurant(restaurantReqBody).then((data) => setRestaurant(data));
+    // setCusines(restaurant.cuisine);
+  }, []);
   return (
     <Grid container direction="row">
       <Grid item xs={3} container direction="column" alignItems="center">
@@ -72,7 +98,7 @@ function RestaurantProfilePage() {
         </Grid>
         <Grid>
           <Typography variant="body1" color="text.secondary">
-            {mockRestaurantData.address}
+            {restaurant.address}
           </Typography>
         </Grid>
         <Grid>
@@ -82,7 +108,7 @@ function RestaurantProfilePage() {
         </Grid>
         <Grid>
           <Typography variant="body1" color="text.secondary">
-            {mockRestaurantData.phone}
+            {restaurant.phone}
           </Typography>
         </Grid>
         <Button variant="contained">Edit Profile</Button>
@@ -91,7 +117,7 @@ function RestaurantProfilePage() {
         <Grid container direction="row" justifyContent="center" alignItems="center">
           <Grid item xs={9}>
             <Typography gutterBottom variant="h1" component="div" align="center">
-              {mockRestaurantData.name}
+              {restaurant.name}
             </Typography>
           </Grid>
           <Grid item xs={3}>
@@ -130,5 +156,3 @@ function RestaurantProfilePage() {
     </Grid>
   );
 }
-
-export default RestaurantProfilePage;

@@ -5,7 +5,7 @@ const findAll = () => {
 };
 
 const save = (placeData) => {
-  return User.findOneAndUpdate(
+  return PlaceData.findOneAndUpdate(
     placeData._id ? { "_id": placeData._id } : null,
     placeData,
     { upsert: true, new: true }

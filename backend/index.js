@@ -34,6 +34,10 @@ app.use("/following-relationship", followingRelationshipRoutes);
 const placeDataRoutes = require("./routes/placeDataRoutes.js");
 app.use("/place-data", placeDataRoutes);
 
+// Restaurant Data Routes
+const restaurantRoutes = require("./routes/restaurantRoutes.js");
+app.use("/restaurant", restaurantRoutes);
+
 // Partner Location Routes
 const partnerLocationRoutes = require("./routes/partnerLocationRoutes.js");
 app.use("/partner-location", partnerLocationRoutes);
