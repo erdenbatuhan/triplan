@@ -10,7 +10,7 @@ import PlaceCard from './PlaceCard';
 export default function PlacesList({ placeData, selectedPlaces, onSelectedPlacesChange }) {
   const [placeDataDictionary, setPlaceDataDictionary] = useState({});
 
-  // Listening to the changes in the props
+  // Listening to the changes in props.placeData
   useEffect(() => {
     // The dictionary is used for O(1) access
     setPlaceDataDictionary(
