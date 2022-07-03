@@ -1,17 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Stack } from '@mui/material';
 import PlaceCard from './PlaceCard';
 
 export default function SelectedPlacesList({ selectedPlaces }) {
-  // Listening to the changes in the props
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log(selectedPlaces);
-  }, [selectedPlaces]);
-
   return (
     <Stack spacing={2}>
       {selectedPlaces
