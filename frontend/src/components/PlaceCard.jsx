@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-unused-prop-types */
 import React, { useState } from 'react';
@@ -12,8 +14,19 @@ import PropTypes from 'prop-types';
 
 export default function PlaceCard(props) {
   const [isClicked, setIsClicked] = useState(false);
+
   const handleClick = () => {
-    setIsClicked((current) => !current);
+    setIsClicked((oldVal) => {
+      const newVal = !oldVal;
+
+      if (newVal) {
+        props.onCardSelect(props.id);
+      } else {
+        props.onCardDeselect(props.id);
+      }
+
+      return newVal;
+    });
   };
 
   return (
