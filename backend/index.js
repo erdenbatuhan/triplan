@@ -26,6 +26,10 @@ app.listen(appProps["port"], () =>
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/user", userRoutes);
 
+// Following Relationship Routes
+const followingRelationshipRoutes = require("./routes/followingRelationshipRoutes.js");
+app.use("/following-relationship", followingRelationshipRoutes);
+
 // Place Data Routes
 const placeDataRoutes = require("./routes/placeDataRoutes.js");
 app.use("/place-data", placeDataRoutes);
