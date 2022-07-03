@@ -1,6 +1,8 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-unused-prop-types */
-import * as React from 'react';
+import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 // import CardMedia from '@mui/material/CardMedia';
@@ -11,9 +13,25 @@ import { CardActionArea } from '@mui/material';
 import PropTypes from 'prop-types';
 
 export default function PlaceCard(props) {
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = () => {
+    setIsClicked((oldVal) => {
+      const newVal = !oldVal;
+
+      if (newVal) {
+        props.onPlaceCardSelect(props.id);
+      } else {
+        props.onPlaceCardDeselect(props.id);
+      }
+
+      return newVal;
+    });
+  };
+
   return (
-    <Card sx={{ maxWidth: '%100' }}>
-      <CardActionArea>
+    <Card sx={{ maxWidth: '%100' }} style={{ backgroundColor: isClicked ? '#c5e1a5' : '' }}>
+      <CardActionArea onClick={handleClick}>
         <Grid container spacing={2}>
           <Grid item xs={4}>
             <img
