@@ -19,8 +19,8 @@ function TripPlanningPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSelectedPlacesChange = (selectedPlacedChanged) => {
-    setSelectedPlaces([...selectedPlacedChanged]); // Create a copy of the new list to force re-rendering
+  const handleSelectedPlacesChange = (selectedPlacesChanged) => {
+    setSelectedPlaces([...selectedPlacesChanged]); // Create a copy of the new list to force re-rendering
   };
 
   if (loading) {
