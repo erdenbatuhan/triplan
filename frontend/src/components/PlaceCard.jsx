@@ -20,9 +20,9 @@ export default function PlaceCard(props) {
       const newVal = !oldVal;
 
       if (newVal) {
-        props.onCardSelect(props.id);
+        props.onPlaceCardSelect(props.id);
       } else {
-        props.onCardDeselect(props.id);
+        props.onPlaceCardDeselect(props.id);
       }
 
       return newVal;
