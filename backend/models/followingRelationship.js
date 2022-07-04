@@ -9,7 +9,7 @@ const FollowingRelationship = mongoose.model(
       followed: { type: Schema.Types.ObjectId, ref: "User"}
     },
     {
-      timestamps: true,
+      timestamps: true
     }
   )
 );
