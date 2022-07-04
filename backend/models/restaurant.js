@@ -17,20 +17,20 @@ const Restaurant = mongoose.model(
       certificate: { type: String, required: true },
       locationPicture: { type: String, required: true },
       priceLevel: { type: Number, required: true },
-      cuisine: {
-        type: String,
+      cuisines: {
+        type: [String],
         enum : CUISINES,
         required: false
       },
-      foodType: {
-        type: String,
+      foodTypes: {
+        type: [String],
         enum: FOOD_TYPES,
-        default: FOOD_TYPES[0],
+        default: [FOOD_TYPES[0]],
         required: true
       }
     },
     {
-      timestamps: true,
+      timestamps: true
     }
   )
 );

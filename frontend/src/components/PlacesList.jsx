@@ -1,40 +1,53 @@
+/* eslint-disable react/no-array-index-key */ // TODO: REMOVE WHEN WE HAVE BOTH RESTAURANTS AND TOURIST ATTRACTIONS
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-alert */
+/* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
 import PlaceCard from './PlaceCard';
-import { getPlaceData } from '../queries/place-data-queries';
 
-export default function PlacesList() {
-  const [placeData, setPlaceData] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function PlacesList({ placeData, selectedPlaces, onSelectedPlacesChange }) {
+  const [placeDataDictionary, setPlaceDataDictionary] = useState({});
 
+  // Listening to the changes in props.placeData
   useEffect(() => {
-    setLoading(true);
-    getPlaceData().then((data) => setPlaceData(data));
-    setLoading(false);
-  }, []);
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex' }}>
-        <CircularProgress />
-      </Box>
+    // The dictionary is used for O(1) access
+    setPlaceDataDictionary(
+      Object.assign(
+        {},
+        ...placeData.map((place) => {
+          return { [place._id]: place };
+        })
+      )
     );
-  }
+  }, [placeData]);
+
+  const placeCardSelected = (selectedPlaceId) => {
+    selectedPlaces.push(placeDataDictionary[selectedPlaceId]);
+    onSelectedPlacesChange(selectedPlaces);
+  };
+
+  const placeCardDeselected = (deselectedPlaceId) => {
+    selectedPlaces.splice(selectedPlaces.indexOf(placeDataDictionary[deselectedPlaceId]), 1);
+    onSelectedPlacesChange(selectedPlaces);
+  };
+
   return (
     <Stack spacing={2}>
-      {placeData.map((place) => {
-        return (
-          <PlaceCard
-            key={place.google_place_id}
-            title={place.name}
-            content={place.place_description}
-            img_url={place.google_icon_url}
-          />
-        );
-      })}
+      {placeData
+        ? placeData.map((place, idx) => (
+            <PlaceCard
+              key={`${idx}-${place._id}`} // TODO: Just use _id when we have both restaurants and tourist attractions
+              id={place._id}
+              title={place.name}
+              content={place.place_description}
+              img_url={place.google_icon_url}
+              onPlaceCardSelect={placeCardSelected}
+              onPlaceCardDeselect={placeCardDeselected}
+            />
+          ))
+        : []}
     </Stack>
   );
 }

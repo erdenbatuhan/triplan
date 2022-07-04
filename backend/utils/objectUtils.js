@@ -1,3 +1,3 @@
 module.exports.isEmpty = (obj) => {
-    return !obj || obj.length == 0
+  return !obj || obj.length == 0
 }

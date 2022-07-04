@@ -22,19 +22,19 @@ app.listen(appProps["port"], () =>
   console.log(`Server Running on port: http://localhost:${appProps["port"]}`)
 );
 
-// User Routes
+// Route: User
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/user", userRoutes);
 
-// Following Relationship Routes
+// Route: Following Relationship
 const followingRelationshipRoutes = require("./routes/followingRelationshipRoutes.js");
 app.use("/following-relationship", followingRelationshipRoutes);
 
-// Place Data Routes
-const placeDataRoutes = require("./routes/placeDataRoutes.js");
-app.use("/place-data", placeDataRoutes);
+// Route: Google Location Info
+const googleLocationInfoRoutes = require("./routes/googleLocationInfoRoutes.js");
+app.use("/google-location-info", googleLocationInfoRoutes);
 
-// Partner Location Routes
+// Route: Partner Location
 const partnerLocationRoutes = require("./routes/partnerLocationRoutes.js");
 app.use("/partner-location", partnerLocationRoutes);
 
