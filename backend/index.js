@@ -38,3 +38,7 @@ app.use("/google-location-info", googleLocationInfoRoutes);
 const partnerLocationRoutes = require("./routes/partnerLocationRoutes.js");
 app.use("/partner-location", partnerLocationRoutes);
 
+// Route: Wallet
+const walletRoutes = require("./routes/walletRoutes.js");
+app.use("/wallet", walletRoutes);
+

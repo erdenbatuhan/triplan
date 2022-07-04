@@ -24,4 +24,12 @@ const save = (user) => {
   );
 };
 
-module.exports = { findAll, findSome, findOne, exists, save };
+const updateFields = (id, fields) => {
+  if (!exists(id)) {
+    return new Promise(resolve => resolve(null)); // User does not exist!
+  }
+
+  return User.updateOne({ "_id": id }, fields, { new: true });
+}
+
+module.exports = { findAll, findSome, findOne, exists, save, updateFields };
