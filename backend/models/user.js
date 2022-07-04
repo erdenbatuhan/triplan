@@ -17,7 +17,7 @@ const User = mongoose.model(
       profilePicture: { type: String, required: true },
     },
     {
-      timestamps: true,
+      timestamps: true
     }
   )
 );
