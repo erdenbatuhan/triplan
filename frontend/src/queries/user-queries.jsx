@@ -1,6 +1,6 @@
 import { HOST, HEADERS } from './constants';
 
-export async function getUserData() {
+export async function getAllUsersData() {
   const url = `${HOST}/user`;
 
   const allUserData = await fetch(url, {
@@ -25,4 +25,18 @@ export async function createNewUser(userData) {
     .then(async (response) => response.json())
     .then((json) => json);
   return createData;
+}
+
+export async function findUserByUsername(userData) {
+  const url = `${HOST}/user`;
+
+  const getUserData = await fetch(url, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS,
+    body: JSON.stringify(userData)
+  })
+    .then(async (response) => response.json())
+    .then((json) => json);
+  return getUserData;
 }

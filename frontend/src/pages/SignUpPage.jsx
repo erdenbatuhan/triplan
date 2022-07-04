@@ -59,12 +59,7 @@ function SignUpPage() {
         nationality,
         profilePicture
       };
-      console.log('userData: ', userData);
-      // const createdUser = await createNewUser(JSON.stringify(userData));
       await createNewUser(userData);
-
-      // console.log('createdUser: ', createdUser);
-      console.log('form is submitted');
     } catch (e) {
       console.error(`failed to create user ${e}`);
     }
@@ -82,7 +77,7 @@ function SignUpPage() {
       }}>
       <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2}>
         <Grid item>
-          <Typography align="center">Welcome to the Triplanner!</Typography>
+          <Typography align="center">Welcome to the Triplan!</Typography>
         </Grid>
         <Grid item>
           <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>

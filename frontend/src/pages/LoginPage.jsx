@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
+// import { findUserByUsername } from '../queries/user-queries';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -11,6 +12,19 @@ function LoginPage() {
 
   const onPasswordChanged = (e) => {
     setPassword(e.target.value);
+  };
+
+  const onSubmitClicked = async () => {
+    try {
+      const userData = {
+        username,
+        password
+      };
+      // await findUserByUsername(userData);
+      console.log('userData: ', userData);
+    } catch (e) {
+      console.error(`failed to find user ${username}`);
+    }
   };
 
   return (
@@ -26,7 +40,7 @@ function LoginPage() {
       }}>
       <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2}>
         <Grid item>
-          <Typography align="center">Welcome to the Triplanner!</Typography>
+          <Typography align="center">Welcome to the Triplan!</Typography>
         </Grid>
         <Grid item>
           <TextField
@@ -47,7 +61,9 @@ function LoginPage() {
           />
         </Grid>
         <Grid item>
-          <Button href="/">Login</Button>
+          <Button href="/" onClick={onSubmitClicked}>
+            Login
+          </Button>
         </Grid>
       </Grid>
     </Box>
