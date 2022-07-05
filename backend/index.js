@@ -42,3 +42,7 @@ app.use("/partner-location", partnerLocationRoutes);
 const walletRoutes = require("./routes/walletRoutes.js");
 app.use("/wallet", walletRoutes);
 
+// Route: Transaction
+const transactionRoutes = require("./routes/transactionRoutes.js");
+app.use("/transaction", transactionRoutes);
+

@@ -20,5 +20,5 @@ module.exports.TRANSACTION_TYPE = [
 ]
 
 module.exports.TRANSACTION_STATUS = [
-  "Successful", "Rejected"
+  "Pending", "Successful", "Rejected"
 ]

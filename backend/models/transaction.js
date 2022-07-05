@@ -6,15 +6,19 @@ const Transaction = mongoose.model(
   "Transaction",
   new Schema(
     {
-      date: { type: Date },
-      amount: { type: Number },
-      type: { type: String, enum : TRANSACTION_TYPE },
-      status: { type: String, enum : TRANSACTION_STATUS },
-      incoming: { type: Schema.Types.ObjectId, ref: "Wallet" },
-      outgoing: { type: Schema.Types.ObjectId, ref: "Wallet" }
+      amount: { type: Number, required: true },
+      type: { type: String, enum : TRANSACTION_TYPE, required: true },
+      status: {
+        type: String,
+        enum: TRANSACTION_STATUS,
+        default: TRANSACTION_STATUS[0],
+        required: true
+      },
+      incoming: { type: Schema.Types.ObjectId, ref: "Wallet", required: true }, // Many-to-One Relation using Reference
+      outgoing: { type: Schema.Types.ObjectId, ref: "Wallet", required: true }  // Many-to-One Relation using Reference
     },
     {
-      timestamps: true,
+      timestamps: true
     }
   )
 );

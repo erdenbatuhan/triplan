@@ -15,6 +15,17 @@ const createWallet = ({ ownerType, userId }) => {
   });
 };
 
+const findOne = (id) => {
+  return Wallet.findById(id);
+};
+
+const findOneByUserId = (userId) => {
+  const userPromise =  userController.findOne(userId);
+
+  userPromise.then((user) => {
+    return Wallet.findById(user.wallet._id)});
+};
+
 const updateWallet = ({ userId, amount }) => {
   const userPromise =  userController.findOne(userId);
 
@@ -27,5 +38,4 @@ const updateWallet = ({ userId, amount }) => {
   })
 };
 
-
-module.exports = { createWallet, updateWallet };
+module.exports = { createWallet, updateWallet, findOne, findOneByUserId };

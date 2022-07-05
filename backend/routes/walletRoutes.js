@@ -19,9 +19,11 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * Updates the wallet with a given amount 
+ * Updates the wallet with a given amount
+ * 
+ * @see ReqBody in "./../mock/requestBody_updateWallet.json"
  */
- router.post("/update", async (req, res) => {
+ router.put("/", async (req, res) => {
   try {
     const walletUpdated = await walletController.updateWallet(req.body);
 

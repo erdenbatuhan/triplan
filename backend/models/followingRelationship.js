@@ -5,8 +5,8 @@ const FollowingRelationship = mongoose.model(
   "FollowingRelationship",
   new Schema(
     {
-      follower: { type: Schema.Types.ObjectId, ref: "User"},
-      followed: { type: Schema.Types.ObjectId, ref: "User"}
+      follower: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Many-to-One Relation using Reference
+      followed: { type: Schema.Types.ObjectId, ref: "User", required: true }  // Many-to-One Relation using Reference
     },
     {
       timestamps: true
