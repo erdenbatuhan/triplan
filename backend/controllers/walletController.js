@@ -2,6 +2,10 @@ const { Wallet } = require("./../models/wallet.js");
 
 const userController = require("./userController.js");
 
+const findOne = (id) => {
+  return Wallet.findById(id);
+};
+
 const createWallet = ({ ownerType, userId }) => {
   return new Promise((resolve, reject) => {
     userController.findOne(userId).then(async (user) => {
@@ -15,27 +19,12 @@ const createWallet = ({ ownerType, userId }) => {
   });
 };
 
-const findOne = (id) => {
-  return Wallet.findById(id);
+const updateWalletBalance= (wallet, amount) => {
+  return Wallet.findOneAndUpdate(
+    { "_id": wallet._id },
+    { $inc: { balance: amount } },   // Increase the balance with a given amount (for withdraw, amount will have a negative value)
+    { new: true }
+  );
 };
 
-const findOneByUserId = (userId) => {
-  const userPromise =  userController.findOne(userId);
-
-  userPromise.then((user) => {
-    return Wallet.findById(user.wallet._id)});
-};
-
-const updateWallet = ({ userId, amount }) => {
-  const userPromise =  userController.findOne(userId);
-
-  userPromise.then((user) => {
-    return Wallet.findOneAndUpdate(
-      { "_id": user.wallet._id },
-      { $inc: { balance: amount } },   // Increase the balance with a given amount (for withdraw, amount will have a negative value)
-      { new: true }
-    );
-  })
-};
-
-module.exports = { createWallet, updateWallet, findOne, findOneByUserId };
+module.exports = { findOne, createWallet, updateWalletBalance };
