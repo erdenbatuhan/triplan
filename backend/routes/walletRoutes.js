@@ -19,17 +19,15 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * Updates the wallet with a given amount
- * 
- * @see ReqBody in "./../mock/requestBody_updateWallet.json"
+ * Gets the wallet of the user
  */
- router.put("/", async (req, res) => {
+ router.get("/", async (req, res) => {
   try {
-    const walletUpdated = await walletController.updateWallet(req.body);
-
-    res.status(200).send(walletUpdated);
+    const userWallet = await walletController.findByUserId(req.body);
+  
+    res.status(200).send(userWallet);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while updating the wallet with the given amount for a user! Error => ${message}`);
+    res.status(400).send(`An error occurred while getting the wallet for a user! Error => ${message}`);
   }
 });
 

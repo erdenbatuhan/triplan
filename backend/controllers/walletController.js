@@ -6,6 +6,19 @@ const findOne = (id) => {
   return Wallet.findById(id);
 };
 
+const findByUserId = ({userId}) => {
+  return new Promise((resolve, reject) => {
+    userController.findOne(userId).then(async (user) => {
+      if (!user.wallet) {
+        resolve(null);
+      }
+
+      const walletFound = await Wallet.find({ "_id": user.wallet._id });
+      resolve(walletFound);
+    }).catch(err => reject(err));
+  });
+};
+
 const createWallet = ({ ownerType, userId }) => {
   return new Promise((resolve, reject) => {
     userController.findOne(userId).then(async (user) => {
@@ -27,4 +40,4 @@ const updateWalletBalance= (wallet, amount) => {
   );
 };
 
-module.exports = { findOne, createWallet, updateWalletBalance };
+module.exports = { findOne, findByUserId, createWallet, updateWalletBalance };
