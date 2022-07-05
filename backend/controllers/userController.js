@@ -1,4 +1,5 @@
 const { User } = require("./../models/user.js");
+const { Wallet } = require("./../models/wallet.js");
 
 const findAll = () => {
   return User.find().sort({ createdAt: "desc" }) // In descending order/newly created first
@@ -32,4 +33,17 @@ const updateFields = (id, fields) => {
   return User.updateOne({ "_id": id }, fields, { new: true });
 }
 
-module.exports = { findAll, findSome, findOne, exists, save, updateFields };
+const findWallet = (id) => {
+  return new Promise((resolve, reject) => {
+    findOne(id).then(async (user) => {
+      if (!user.wallet) {
+        resolve(null);
+      }
+
+      const walletFound = await Wallet.find({ "_id": user.wallet._id });
+      resolve(walletFound);
+    }).catch(err => reject(err));
+  });
+};
+
+module.exports = { findAll, findSome, findOne, exists, save, updateFields, findWallet };

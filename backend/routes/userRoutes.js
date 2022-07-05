@@ -43,4 +43,18 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * Gets the wallet of the user
+ */
+ router.get("/:id/wallet", async (req, res) => {
+  try {
+    const userId = req.params.id
+    const userWallet = await userController.findWallet(userId);
+  
+    res.status(200).send(userWallet);
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while getting the wallet for a user! Error => ${message}`);
+  }
+});
+
 module.exports = router;
