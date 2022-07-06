@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
-// import { findUserByUsername } from '../queries/user-queries';
+import { loginUser } from '../queries/user-queries';
+import { AuthUserContext } from '../authentication/AuthUserContext';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const authContext = useContext(AuthUserContext);
+
+  const navigate = useNavigate();
 
   const onUsernameChanged = (e) => {
     setUsername(e.target.value);
@@ -20,8 +25,12 @@ function LoginPage() {
         username,
         password
       };
-      // await findUserByUsername(userData);
-      console.log('userData: ', userData);
+      const message = await loginUser(userData);
+      const { token } = message;
+      authContext.loginUser(token);
+      if (token) {
+        navigate('/');
+      }
     } catch (e) {
       console.error(`failed to find user ${username}`);
     }
@@ -61,9 +70,7 @@ function LoginPage() {
           />
         </Grid>
         <Grid item>
-          <Button href="/" onClick={onSubmitClicked}>
-            Login
-          </Button>
+          <Button onClick={onSubmitClicked}>Login</Button>
         </Grid>
       </Grid>
     </Box>

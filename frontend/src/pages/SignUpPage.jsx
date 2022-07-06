@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { createNewUser } from '../queries/user-queries';
 
@@ -8,41 +9,43 @@ function SignUpPage() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [gender, setGender] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [nationality, setNationality] = useState('');
+  // const [phoneNumber, setPhoneNumber] = useState('');
+  // const [gender, setGender] = useState('');
+  // const [dateOfBirth, setDateOfBirth] = useState('');
+  // const [nationality, setNationality] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
 
+  const navigate = useNavigate();
+
   const onFirstNameChanged = (e) => {
-    setFirstName(JSON.stringify(e.target.value));
+    setFirstName(e.target.value);
   };
   const onLastNameChanged = (e) => {
-    setLastName(JSON.stringify(e.target.value));
+    setLastName(e.target.value);
   };
   const onEmailChanged = (e) => {
-    setEmail(JSON.stringify(e.target.value));
+    setEmail(e.target.value);
   };
   const onUsernameChanged = (e) => {
-    setUsername(JSON.stringify(e.target.value));
+    setUsername(e.target.value);
   };
   const onPasswordChanged = (e) => {
-    setPassword(JSON.stringify(e.target.value));
+    setPassword(e.target.value);
   };
-  const onPhoneNumberChanged = (e) => {
-    setPhoneNumber(JSON.stringify(e.target.value));
-  };
-  const onGenderChanged = (e) => {
-    setGender(JSON.stringify(e.target.value));
-  };
-  const onDateOfBirthChanged = (e) => {
-    setDateOfBirth(JSON.stringify(e.target.value));
-  };
-  const onNationalityChanged = (e) => {
-    setNationality(JSON.stringify(e.target.value));
-  };
+  // const onPhoneNumberChanged = (e) => {
+  //   setPhoneNumber(e.target.value);
+  // };
+  // const onGenderChanged = (e) => {
+  //   setGender(e.target.value);
+  // };
+  // const onDateOfBirthChanged = (e) => {
+  //   setDateOfBirth(e.target.value);
+  // };
+  // const onNationalityChanged = (e) => {
+  //   setNationality(e.target.value);
+  // };
   const onProfilePictureChanged = (e) => {
-    setProfilePicture(JSON.stringify(e.target.value));
+    setProfilePicture(e.target.value);
   };
 
   const onSubmitClicked = async () => {
@@ -52,14 +55,17 @@ function SignUpPage() {
         password,
         firstName,
         lastName,
-        phoneNumber,
-        email,
-        gender,
-        dateOfBirth,
-        nationality,
-        profilePicture
+        // phoneNumber,
+        email
+        // gender,
+        // dateOfBirth,
+        // nationality,
+        // profilePicture
       };
-      await createNewUser(userData);
+      const newUser = await createNewUser(userData);
+      if (newUser) {
+        navigate('/');
+      }
     } catch (e) {
       console.error(`failed to create user ${e}`);
     }
@@ -133,7 +139,7 @@ function SignUpPage() {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>
+        {/* <Grid item>
           <TextField
             required
             id="outlined-required"
@@ -141,8 +147,8 @@ function SignUpPage() {
             defaultValue={phoneNumber}
             onChange={(e) => onPhoneNumberChanged(e)}
           />
-        </Grid>
-        <Grid item>
+        </Grid> */}
+        {/* <Grid item>
           <TextField
             required
             id="outlined-required"
@@ -168,7 +174,7 @@ function SignUpPage() {
             defaultValue={nationality}
             onChange={(e) => onNationalityChanged(e)}
           />
-        </Grid>
+        </Grid> */}
         <Grid item>
           <TextField
             required
@@ -179,9 +185,7 @@ function SignUpPage() {
           />
         </Grid>
         <Grid item>
-          <Button href="/" onClick={onSubmitClicked}>
-            Sign In
-          </Button>
+          <Button onClick={onSubmitClicked}>Sign In</Button>
         </Grid>
       </Grid>
     </Box>
