@@ -1,7 +1,7 @@
 const express = require("express");
-const followingRelationshipController = require("./../controllers/followingRelationshipController.js");
-
 const router = express.Router();
+
+const followingRelationshipController = require("./../controllers/followingRelationshipController.js");
 
 /**
  * Creates a following relationship between two users

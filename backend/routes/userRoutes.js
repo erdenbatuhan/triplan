@@ -1,11 +1,13 @@
 const express = require("express");
-const userController = require("../controllers/userController.js");
+const router = express.Router();
+
 // const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcryptjs");
-const AuthService = require("../middleware/AuthService");
 
+const AuthService = require("../middleware/AuthService");
 require("dotenv").config();
-const router = express.Router();
+
+const userController = require("../controllers/userController.js");
 
 /**
  * Creates a user or updates an existing one

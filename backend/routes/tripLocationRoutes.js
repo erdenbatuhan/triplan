@@ -1,7 +1,7 @@
 const express = require("express");
-const tripLocationController = require("./../controllers/tripLocationController.js");
-
 const router = express.Router();
+
+const tripLocationController = require("./../controllers/tripLocationController.js");
 
 // TODO: Add the trip location routes (e.g. save, update, ...)
 

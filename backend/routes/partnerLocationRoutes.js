@@ -1,7 +1,7 @@
 const express = require("express");
-const partnerLocationController = require("./../controllers/partnerLocationController.js");
-
 const router = express.Router();
+
+const partnerLocationController = require("./../controllers/partnerLocationController.js");
 
 /**
  * Returns the partner locations according to the filter given

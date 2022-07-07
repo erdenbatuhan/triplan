@@ -1,7 +1,7 @@
 const express = require("express");
-const googleLocationInfoController = require("../controllers/googleLocationInfoController.js");
-
 const router = express.Router();
+
+const googleLocationInfoController = require("../controllers/googleLocationInfoController.js");
 
 /**
  * Gets all the records fetched from Google APIs
