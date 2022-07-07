@@ -38,7 +38,7 @@ const mockImgData = {
 //   foodType: ''
 // };
 
-const cusineList = ['Fast Food', 'Mexican'];
+// const cusineList = ['Fast Food', 'Mexican'];
 
 const mockMenuData = [
   {
@@ -73,11 +73,13 @@ const restaurantReqBody = { id: '62b9b99ebdc6cf4735babce2' };
 
 export default function RestaurantProfilePage() {
   const [restaurant, setRestaurant] = useState([]);
-  // const [cusineList, setCusines] = useState([]);
+  const [cl, setCusines] = useState([]);
+
   useEffect(() => {
     getRestaurant(restaurantReqBody).then((data) => setRestaurant(data));
-    // setCusines(restaurant.cuisine);
+    setCusines(restaurant.cuisine);
   }, []);
+  console.log(cl);
   return (
     <Grid container direction="row">
       <Grid item xs={3} container direction="column" alignItems="center">
@@ -125,7 +127,7 @@ export default function RestaurantProfilePage() {
               Cousines
             </Typography>
             <List spacing={2} maxHeight="%100" overflow="auto">
-              {cusineList.map((c) => {
+              {cl.map((c) => {
                 return (
                   <Typography key={c} variant="body2" color="text.secondary">
                     {c}
