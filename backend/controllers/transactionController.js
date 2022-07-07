@@ -21,28 +21,28 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId })
     const outgoingWalletPromise = walletController.findOne(outgoingWalletId);
 
     Promise.all([incomingWalletPromise, outgoingWalletPromise]).then(async ([incoming, outgoing]) => {
-      if (!incoming || !outgoing) {
+      if ((!incoming && !outgoing) || 
+       (type == enums.TRANSACTION_TYPE[0] && !incoming) || // Deposit
+       (type == enums.TRANSACTION_TYPE[1] && !outgoing) || // Withdraw
+       (type == enums.TRANSACTION_TYPE[2] && incomingWalletId=== outgoingWalletId)) { // Purchase
         return resolve(null);
       }
 
       const transaction = await Transaction.create({amount, type, incoming, outgoing});
-      console.log(transaction);
-
-      // In case of "Purchase", check the incoming and outgoing wallets are different
-      if (transaction.type == enums.TRANSACTION_TYPE[2] && incomingWalletId == outgoingWalletId) {
-        const transactionUpdated = await updateFields(transaction._id, { "status": enums.TRANSACTION_STATUS[2] });
-        return resolve(transactionUpdated);
-      }
 
       // Check if outgoing wallet has enough balance
-      if (transaction.outgoing.balance < amount) {
+      if (transaction.outgoing && transaction.outgoing.balance < amount) {
         const transactionUpdated = await updateFields(transaction._id, { "status": enums.TRANSACTION_STATUS[2] });
         return resolve(transactionUpdated);
       }
 
-      // Perform the purchase operation by updating the wallet balances
-      const incomingUpdated = await walletController.updateWalletBalance(incoming, transaction.amount);
-      const outgoingUpdated = await walletController.updateWalletBalance(outgoing, -transaction.amount);
+      // Perform the operation by updating the wallet balances
+      if (type == enums.TRANSACTION_TYPE[0] || type == enums.TRANSACTION_TYPE[2]) {
+        const incomingUpdated = await walletController.updateWalletBalance(incoming, transaction.amount);
+      }
+      if (type == enums.TRANSACTION_TYPE[1] || type == enums.TRANSACTION_TYPE[2]) {
+        const outgoingUpdated = await walletController.updateWalletBalance(outgoing, -transaction.amount);
+      }
 
       const transactionUpdated = await updateFields(transaction._id, { "status": enums.TRANSACTION_STATUS[1] });
       return resolve(transactionUpdated);

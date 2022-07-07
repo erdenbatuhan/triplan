@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
     const transactionCreated = await transactionController.createTransaction(req.body);
 
     if (!transactionCreated) {
-      return res.status(404).send(`One of the wallets in the request body not found!`);
+      return res.status(404).send(`A problem occurred while creating the transaction! Check the transaction type and its required fields!`);
     }
   
     res.status(200).send(transactionCreated);
