@@ -1,12 +1,14 @@
 const express = require("express");
-const userController = require("../controllers/userController.js");
-const walletController = require("./../controllers/walletController.js");
+const router = express.Router();
+
 // const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcryptjs");
-const AuthService = require("../middleware/AuthService");
 
+const AuthService = require("../middleware/AuthService");
 require("dotenv").config();
-const router = express.Router();
+
+const userController = require("../controllers/userController.js");
+const walletController = require("./../controllers/walletController.js");
 
 /**
  * Creates a user or updates an existing one
@@ -43,7 +45,7 @@ router.post("/login", async (req, res) => {
  */
 router.get("/", AuthService, async (req, res) => {
   try {
-    res.status(200).send(await userController.findAll());
+    res.status(200).send(await userController.find());
   } catch ({ message }) {
     res
       .status(400)
@@ -59,7 +61,7 @@ router.get("/", AuthService, async (req, res) => {
 router.get("/:id", AuthService, async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await userController.findOne(userId);
+    const user = await userController.findById(userId);
 
     if (user) {
       res.status(200).send(user);
@@ -87,7 +89,7 @@ router.get("/:id", AuthService, async (req, res) => {
 // });
 
 /**
- * Gets the wallet of the user
+ * Gets the wallet of a user
  */
 router.get("/:userId/wallet", async (req, res) => {
   try {

@@ -1,14 +1,14 @@
 const express = require("express");
-const googleLocationInfoController = require("../controllers/googleLocationInfoController.js");
-
 const router = express.Router();
+
+const googleLocationInfoController = require("../controllers/googleLocationInfoController.js");
 
 /**
  * Gets all the records fetched from Google APIs
  */
 router.get("/", async (req, res) => {
   try {
-    res.status(200).send(await (googleLocationInfoController.findAll()));
+    res.status(200).send(await (googleLocationInfoController.find()));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting all the records fetched from Google APIs! Error => ${message}`);
   }

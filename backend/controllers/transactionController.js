@@ -5,7 +5,7 @@ const { Transaction } = require("./../models/transaction.js");
 
 const exists = (id) => {
   return Transaction.exists({ _id: id });
-}
+};
 
 const updateFields = (id, fields) => {
   if (!exists(id)) {
@@ -13,7 +13,7 @@ const updateFields = (id, fields) => {
   }
 
   return Transaction.updateOne({ "_id": id }, fields, { new: true });
-}
+};
 
 const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId }) => {
   return new Promise((resolve, reject) => {

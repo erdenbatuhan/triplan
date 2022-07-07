@@ -1,7 +1,7 @@
-const { Wallet } = require("./../models/wallet.js");
-const { User } = require("../models/user.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+
+const { User } = require("../models/user.js");
 
 /**
  * Creates a user or updates an existing one
@@ -99,15 +99,15 @@ const login = async (req, res) => {
   }
 };
 
-const findAll = () => {
+const find = () => {
   return User.find().sort({ createdAt: "desc" }); // In descending order/newly created first
+}
+
+const findByIds = (ids) => {
+  return User.find({ _id: { $in: ids } }).sort({ createdAt: "desc" }); // In descending order/newly created first
 };
 
-const findSome = (ids) => {
-  return User.find({ _id: { $in: ids } });
-};
-
-const findOne = (id) => {
+const findById = (id) => {
   return User.findById(id);
 };
 
@@ -133,17 +133,17 @@ const updateFields = (id, fields) => {
   }
 
   return User.updateOne({ "_id": id }, fields, { new: true });
-}
+};
 
-module.exports = { findAll, findSome, findOne, exists, save, updateFields };
 module.exports = {
   signUp,
   login,
-  findAll,
-  findSome,
-  findOne,
-  exists,
-  save,
+  find,
+  findByIds,
+  findById,
   findByUsername,
   findByEmail,
+  exists,
+  save,
+  updateFields
 };
