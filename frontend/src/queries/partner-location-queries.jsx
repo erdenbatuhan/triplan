@@ -1,14 +1,9 @@
-import { HOST, HEADERS } from './constants';
+import { HOST_PARTNER_LOCATION, HEADERS } from './constants';
 
 export async function getCities() {
-  const url = `${HOST}/partner-location/cities`;
-
-  const citiesData = await fetch(url, {
+  return await fetch(`${HOST_PARTNER_LOCATION}/cities`, {
     method: `GET`,
     mode: `cors`,
     headers: HEADERS
-  })
-    .then(async (response) => response.json())
-    .then((json) => json);
-  return citiesData;
+  }).then((response) => response.json());
 }

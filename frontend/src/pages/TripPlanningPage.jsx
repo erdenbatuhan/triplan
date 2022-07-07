@@ -6,7 +6,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
-import { getPlaceData } from '../queries/place-data-queries';
 
 function TripPlanningPage() {
   const [loading, setLoading] = useState(true);
@@ -14,9 +13,8 @@ function TripPlanningPage() {
   const [selectedPlaces, setSelectedPlaces] = useState([]);
 
   useEffect(() => {
-    getPlaceData()
-      .then((data) => setPlaceData(data))
-      .finally(() => setLoading(false));
+    setLoading(false);
+    setPlaceData([]);
   }, []);
 
   const handleSelectedPlacesChange = (selectedPlacesChanged) => {
