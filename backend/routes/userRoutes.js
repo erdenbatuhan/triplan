@@ -8,6 +8,7 @@ const AuthService = require("../middleware/AuthService");
 require("dotenv").config();
 
 const userController = require("../controllers/userController.js");
+const walletController = require("./../controllers/walletController.js");
 
 /**
  * Creates a user or updates an existing one
@@ -86,5 +87,23 @@ router.get("/:id", AuthService, async (req, res) => {
 //       .send(`An error occurred while creating the user! Error => ${message}`);
 //   }
 // });
+
+/**
+ * Gets the wallet of a user
+ */
+router.get("/:userId/wallet", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const userWallet = await walletController.findByUserId(userId);
+
+    if (!userWallet) {
+      res.status(404).send(`No wallet found for the user with ID=${userId}`);
+    }
+
+    res.status(200).send(userWallet);
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while getting the wallet for a user! Error => ${message}`);
+  }
+});
 
 module.exports = router;

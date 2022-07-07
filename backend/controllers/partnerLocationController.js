@@ -20,7 +20,7 @@ const findFiltered = (filterData) => {
       resolve({ restaurants, touristAttractions });
     }).catch(err => reject(err));
   });
-}
+};
 
 const findDistinctCities = () => {
   return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ const findDistinctCities = () => {
       resolve(distinctCities);
     }).catch(err => reject(err));
   });
-}
+};
 
 const findByTripLocations = (tripLocationIds) => {
   return new Promise((resolve, reject) => {
@@ -57,6 +57,6 @@ const findByTripLocations = (tripLocationIds) => {
       resolve({ restaurants, touristAttractions });
     }).catch(err => reject(err));
   });
-}
+};
 
 module.exports = { findFiltered, findDistinctCities, findByTripLocations };

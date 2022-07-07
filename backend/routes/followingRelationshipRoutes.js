@@ -40,7 +40,7 @@ router.delete("/", async (req, res) => {
 /**
  * Gets the users followed by the given user
  */
-router.get("/:id/followed", async (req, res) => {
+router.get("/user/:id/followed", async (req, res) => {
   try {
     const userId = req.params.id;
     const followed = await followingRelationshipController.getFollowed(userId);
@@ -58,7 +58,7 @@ router.get("/:id/followed", async (req, res) => {
 /**
  * Gets the users following the given user
  */
-router.get("/:id/followers", async (req, res) => {
+router.get("/user/:id/followers", async (req, res) => {
   try {
     const userId = req.params.id;
     const followers = await followingRelationshipController.getFollowers(userId);

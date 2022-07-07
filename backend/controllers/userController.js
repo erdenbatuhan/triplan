@@ -1,7 +1,7 @@
-const { User } = require("../models/user.js");
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+
+const { User } = require("../models/user.js");
 
 /**
  * Creates a user or updates an existing one
@@ -127,14 +127,23 @@ const save = (user) => {
   return User.insertMany([user]);
 };
 
+const updateFields = (id, fields) => {
+  if (!exists(id)) {
+    return new Promise(resolve => resolve(null)); // User does not exist!
+  }
+
+  return User.updateOne({ "_id": id }, fields, { new: true });
+};
+
 module.exports = {
   signUp,
   login,
   find,
   findByIds,
   findById,
-  exists,
-  save,
   findByUsername,
   findByEmail,
+  exists,
+  save,
+  updateFields
 };

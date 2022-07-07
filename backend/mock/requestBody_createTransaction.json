@@ -1,0 +1,6 @@
+{
+    "amount": 20, 
+    "type":"Purchase",
+    "incomingWalletId": "62c35bcb952a350356dc20b9", 
+    "outgoingWalletId": "62c36c4902c5fdeedeb9b1a5"
+}

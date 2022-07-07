@@ -14,3 +14,11 @@ module.exports.TOURIST_ATTRACTION_TYPES = [
 module.exports.CUISINES = [
   "Japanese", "Chinese", "Indian", "Lebanese", "Turkish", "Greek", "Italian", "German", "Spanish", "American", "Mexican"
 ]
+
+module.exports.TRANSACTION_TYPE = [
+  "Deposit", "Withdraw", "Purchase"
+]
+
+module.exports.TRANSACTION_STATUS = [
+  "Pending", "Successful", "Rejected"
+]
