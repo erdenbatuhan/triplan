@@ -28,7 +28,7 @@ const createFollowingRelationship = ({ followerId, followedId }) => {
 };
 
 const deleteFollowingRelationship = ({ followerId, followedId }) => {
-  return FollowingRelationship.findByIdAndDelete({ "follower": followerId, "followed": followedId });
+  return FollowingRelationship.findOneAndDelete({ "follower": followerId, "followed": followedId });
 };
 
 const getFollowed = async (userId) => { // Records where the given user is the "follower"
