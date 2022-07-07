@@ -38,11 +38,11 @@ app.use("/google-location-info", googleLocationInfoRoutes);
 const partnerLocationRoutes = require("./routes/partnerLocationRoutes.js");
 app.use("/partner-location", partnerLocationRoutes);
 
-// Route: Wallet
+// Routes: Wallet
 const walletRoutes = require("./routes/walletRoutes.js");
 app.use("/wallet", walletRoutes);
 
-// Route: Transaction
+// Routes: Transaction
 const transactionRoutes = require("./routes/transactionRoutes.js");
 app.use("/transaction", transactionRoutes);
 

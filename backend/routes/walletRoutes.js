@@ -1,7 +1,7 @@
 const express = require("express");
-const walletController = require("./../controllers/walletController.js");
-
 const router = express.Router();
+
+const walletController = require("./../controllers/walletController.js");
 
 /**
  * Creates a wallet under a user
