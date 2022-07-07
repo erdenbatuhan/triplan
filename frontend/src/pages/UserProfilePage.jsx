@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import TripCard from '../components/TripCard';
 import ProfileInfoCard from '../components/ProfileInfoCard';
 // import { createNewUser } from '../queries/user-queries';
@@ -62,58 +62,74 @@ function UserProfilePage() {
   // const [userData, setUserData] = useState([]);
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={3}>
-        <Grid container direction="column" justifyContent="center" alignItems="center">
-          <Grid item xs={6}>
-            <img
-              src={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              alt={mockImgData.title}
-              loading="lazy"
-            />
+    <Box
+      component="form"
+      noValidate
+      sx={{
+        mt: 4,
+        marginLeft: 5,
+        marginRight: 5,
+        marginBottom: 5,
+        minWidth: 400
+      }}>
+      <Grid container spacing={2}>
+        <Grid item xs={3}>
+          <Grid container direction="column" justifyContent="center" alignItems="center">
+            <Grid item xs={6}>
+              <img
+                src={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format`}
+                srcSet={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                alt={mockImgData.title}
+                loading="lazy"
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Typography align="center">Jane Doe</Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography align="center">Berlin</Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={3}>
-            <Typography align="center">Jane Doe</Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <Typography align="center">Berlin</Typography>
+        </Grid>
+        <Grid item xs={9}>
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            spacing={4}>
+            <Grid item xs={3}>
+              <Stack direction="row" spacing={12}>
+                {mockProfileInfoCardData.map((infoData) => (
+                  <Grid item key={infoData.id}>
+                    <ProfileInfoCard
+                      key={infoData.id}
+                      title={infoData.title}
+                      value={infoData.value}
+                      href={infoData.href}
+                    />
+                  </Grid>
+                ))}
+              </Stack>
+            </Grid>
+            <Grid item xs={9}>
+              <Stack spacing={2}>
+                {mockTripCardData.map((tripData) => {
+                  return (
+                    <TripCard
+                      key={tripData.id}
+                      tripName={tripData.tripName}
+                      isRated={tripData.isRated}
+                      href={tripData.href}
+                    />
+                  );
+                })}
+              </Stack>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={9}>
-        <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
-          <Grid item xs={3}>
-            <Stack direction="row" spacing={12}>
-              {mockProfileInfoCardData.map((infoData) => (
-                <Grid item key={infoData.id}>
-                  <ProfileInfoCard
-                    key={infoData.id}
-                    title={infoData.title}
-                    value={infoData.value}
-                    href={infoData.href}
-                  />
-                </Grid>
-              ))}
-            </Stack>
-          </Grid>
-          <Grid item xs={9}>
-            <Stack spacing={2}>
-              {mockTripCardData.map((tripData) => {
-                return (
-                  <TripCard
-                    key={tripData.id}
-                    tripName={tripData.tripName}
-                    isRated={tripData.isRated}
-                    href={tripData.href}
-                  />
-                );
-              })}
-            </Stack>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+    </Box>
   );
 }
 
