@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const { GoogleLocationInfo } = require("./googleLocationInfo.js")
+const { GoogleLocationInfo } = require("./googleLocationInfo.js");
+const { TripLocation } = require("./tripLocation.js");
 
 const { extendSchema } = require("./../utils/schemaUtils.js");
 const enums = require("./../utils/enums.js");
@@ -16,7 +17,12 @@ const PartnerLocationSchema = new Schema({
   googleLocationLink: { type: String, required: true },
   certificate: { type: String, required: false },
   locationPicture: { type: String, required: true },
-  googleLocationInfo: { type: GoogleLocationInfo.schema, required: false } // One-to-One Relation using Embedded Documents
+  googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents,
+  associatedTripLocations: [{ 
+    type: Schema.Types.ObjectId,
+    ref: TripLocation.name,
+    required: false
+  }] // One-to-Many Relation using Reference
 });
 
 const Restaurant = mongoose.model(

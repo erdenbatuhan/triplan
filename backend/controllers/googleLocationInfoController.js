@@ -1,6 +1,6 @@
 const { GoogleLocationInfo } = require("../models/googleLocationInfo.js");
 
-const findAll = () => {
+const find = () => {
   return GoogleLocationInfo.find().sort({ rating: "desc" }); // In descing order, the highest rated first
 };
 
@@ -12,4 +12,4 @@ const save = (googleLocationInfo) => {
   );
 };
 
-module.exports = { findAll, save };
+module.exports = { find, save };
