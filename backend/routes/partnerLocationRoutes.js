@@ -8,7 +8,7 @@ const partnerLocationController = require("./../controllers/partnerLocationContr
  * 
  * @see ReqBody in "./../mock/requestBody_filteredPartnerLocations.json"
  */
-router.get("/filtered-results", async (req, res) => {
+router.post("/filtered", async (req, res) => {
   try {
     res.status(200).send(await (partnerLocationController.findFiltered(req.body["filterData"])));
   } catch ({ message }) {
