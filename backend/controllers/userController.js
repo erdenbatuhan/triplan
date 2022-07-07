@@ -33,17 +33,4 @@ const updateFields = (id, fields) => {
   return User.updateOne({ "_id": id }, fields, { new: true });
 }
 
-const findWallet = (id) => {
-  return new Promise((resolve, reject) => {
-    findOne(id).then(async (user) => {
-      if (!user.wallet) {
-        resolve(null);
-      }
-
-      const walletFound = await Wallet.find({ "_id": user.wallet._id });
-      resolve(walletFound);
-    }).catch(err => reject(err));
-  });
-};
-
-module.exports = { findAll, findSome, findOne, exists, save, updateFields, findWallet };
+module.exports = { findAll, findSome, findOne, exists, save, updateFields };

@@ -21,9 +21,10 @@ router.post("/", async (req, res) => {
 /**
  * Gets the wallet of the user
  */
- router.get("/", async (req, res) => {
+ router.get("/user/:id", async (req, res) => {
   try {
-    const userWallet = await walletController.findByUserId(req.body);
+    const userId = req.params.id
+    const userWallet = await  walletController.findByUserId(userId);
   
     res.status(200).send(userWallet);
   } catch ({ message }) {

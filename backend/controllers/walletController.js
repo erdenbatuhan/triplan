@@ -6,7 +6,7 @@ const findOne = (id) => {
   return Wallet.findById(id);
 };
 
-const findByUserId = ({userId}) => {
+const findByUserId = (userId) => {
   return new Promise((resolve, reject) => {
     userController.findOne(userId).then(async (user) => {
       if (!user.wallet) {
