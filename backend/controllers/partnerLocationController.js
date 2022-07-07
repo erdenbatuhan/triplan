@@ -26,7 +26,7 @@ const findDistinctCities = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
       Restaurant.distinct("city"), 
-      PlaceData.distinct("city")
+      TouristAttraction.distinct("city")
     ]).then(([
       restaurantCities, 
       touristAttractionCities

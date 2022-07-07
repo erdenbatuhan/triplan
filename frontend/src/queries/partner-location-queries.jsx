@@ -1,14 +1,20 @@
-import { HOST, HEADERS } from './constants';
+import { HOST_PARTNER_LOCATION, HEADERS } from './constants';
+
+import * as partnerLocationDefaultFilter from './data/partner-location-default-filter.json';
 
 export async function getCities() {
-  const url = `${HOST}/partner-location/cities`;
-
-  const citiesData = await fetch(url, {
+  return await fetch(`${HOST_PARTNER_LOCATION}/cities`, {
     method: `GET`,
     mode: `cors`,
     headers: HEADERS
-  })
-    .then(async (response) => response.json())
-    .then((json) => json);
-  return citiesData;
+  }).then((response) => response.json());
+}
+
+export async function getFilteredPartnerLocations(filter = partnerLocationDefaultFilter) {
+  return await fetch(`${HOST_PARTNER_LOCATION}/filtered`, {
+    method: `POST`,
+    mode: `cors`,
+    headers: HEADERS,
+    body: JSON.stringify(filter)
+  }).then((response) => response.json());
 }

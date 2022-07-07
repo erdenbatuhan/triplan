@@ -1,11 +1,10 @@
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-unused-prop-types */
 import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-// import CardMedia from '@mui/material/CardMedia';
+import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import ListItem from '@mui/material/ListItem';
@@ -34,11 +33,11 @@ export default function PlaceCard(props) {
       <CardActionArea onClick={handleClick}>
         <Grid container spacing={2}>
           <Grid item xs={4}>
-            <img
-              src={`${props.img_url}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${props.img_url}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              alt=""
-              loading="lazy"
+            <CardMedia
+              component="img"
+              sx={{ width: 164, height: 164 }}
+              image={props.img_url}
+              alt={props.img_url}
             />
             {/* <ListItem>
               <CardMedia component="img" image={imgPath} />
