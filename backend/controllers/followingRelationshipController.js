@@ -1,10 +1,10 @@
-const userController = require("./userController.js");
-
 const { FollowingRelationship } = require("./../models/followingRelationship.js");
 
+const userController = require("./userController.js");
+
 const createFollowingRelationship = ({ followerId, followedId }) => {
-  const followerPromise = userController.findOne(followerId);
-  const followedPromise = userController.findOne(followedId);
+  const followerPromise = userController.findById(followerId);
+  const followedPromise = userController.findById(followedId);
 
   return new Promise((resolve, reject) => {
     Promise.all([followerPromise, followedPromise]).then(([follower, followed]) => {
@@ -28,7 +28,7 @@ const createFollowingRelationship = ({ followerId, followedId }) => {
 };
 
 const deleteFollowingRelationship = ({ followerId, followedId }) => {
-  return FollowingRelationship.findOneAndDelete({ "follower": followerId, "followed": followedId });
+  return FollowingRelationship.findByIdAndDelete({ "follower": followerId, "followed": followedId });
 };
 
 const getFollowed = async (userId) => { // Records where the given user is the "follower"
@@ -37,7 +37,7 @@ const getFollowed = async (userId) => { // Records where the given user is the "
   }
 
   const followingRelationships = await FollowingRelationship.find({ "follower": userId }).select("followed");
-  const users = await userController.findSome(followingRelationships.map(rel => rel["followed"]));
+  const users = await userController.findByIds(followingRelationships.map(rel => rel["followed"]));
 
   return users;
 }
@@ -48,7 +48,7 @@ const getFollowers = async (userId) => { // Records where the given user is the 
   }
 
   const followingRelationships = await FollowingRelationship.find({ "followed": userId }).select("follower");
-  const users = await userController.findSome(followingRelationships.map(rel => rel["follower"]));
+  const users = await userController.findByIds(followingRelationships.map(rel => rel["follower"]));
 
   return users;
 }

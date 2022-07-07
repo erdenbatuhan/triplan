@@ -98,15 +98,15 @@ const login = async (req, res) => {
   }
 };
 
-const findAll = () => {
+const find = () => {
   return User.find().sort({ createdAt: "desc" }); // In descending order/newly created first
+}
+
+const findByIds = (ids) => {
+  return User.find({ _id: { $in: ids } }).sort({ createdAt: "desc" }); // In descending order/newly created first
 };
 
-const findSome = (ids) => {
-  return User.find({ _id: { $in: ids } });
-};
-
-const findOne = (id) => {
+const findById = (id) => {
   return User.findById(id);
 };
 
@@ -129,9 +129,9 @@ const save = (user) => {
 module.exports = {
   signUp,
   login,
-  findAll,
-  findSome,
-  findOne,
+  find,
+  findByIds,
+  findById,
   exists,
   save,
   findByUsername,

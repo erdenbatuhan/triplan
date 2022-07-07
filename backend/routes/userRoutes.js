@@ -42,7 +42,7 @@ router.post("/login", async (req, res) => {
  */
 router.get("/", AuthService, async (req, res) => {
   try {
-    res.status(200).send(await userController.findAll());
+    res.status(200).send(await userController.find());
   } catch ({ message }) {
     res
       .status(400)
@@ -58,7 +58,7 @@ router.get("/", AuthService, async (req, res) => {
 router.get("/:id", AuthService, async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await userController.findOne(userId);
+    const user = await userController.findById(userId);
 
     if (user) {
       res.status(200).send(user);

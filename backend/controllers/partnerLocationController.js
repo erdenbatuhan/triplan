@@ -1,6 +1,6 @@
 const { Restaurant, TouristAttraction } = require("./../models/partnerLocation.js");
 
-const findAllFiltered = (filterData) => {
+const findFiltered = (filterData) => {
   return new Promise((resolve, reject) => {
     Promise.all([
       // Fetch all restaurants matching the specified filter in ascending order, cheapest first
@@ -39,4 +39,24 @@ const findDistinctCities = () => {
   });
 }
 
-module.exports = { findAllFiltered, findDistinctCities };
+const findByTripLocations = (tripLocationIds) => {
+  return new Promise((resolve, reject) => {
+    Promise.all([
+      // Fetch all restaurants associated with the given trip locations
+      Restaurant.find({
+        associatedTripLocations: { "$in" : tripLocationIds }
+      }),
+      // Fetch all restaurants associated with the given trip locations
+      TouristAttraction.find({
+        associatedTripLocations: { "$in" : tripLocationIds }
+      })
+    ]).then(([
+      restaurants,
+      touristAttractions
+    ]) => {
+      resolve({ restaurants, touristAttractions });
+    }).catch(err => reject(err));
+  });
+}
+
+module.exports = { findFiltered, findDistinctCities, findByTripLocations };
