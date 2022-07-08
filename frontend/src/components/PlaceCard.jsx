@@ -1,6 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/no-unused-prop-types */
 import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -9,9 +6,15 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import ListItem from '@mui/material/ListItem';
 import { CardActionArea } from '@mui/material';
-import PropTypes from 'prop-types';
 
-export default function PlaceCard(props) {
+export default function PlaceCard({
+  id,
+  title,
+  content,
+  locationPicture,
+  onPlaceCardSelect,
+  onPlaceCardDeselect
+}) {
   const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = () => {
@@ -19,9 +22,9 @@ export default function PlaceCard(props) {
       const newVal = !oldVal;
 
       if (newVal) {
-        props.onPlaceCardSelect(props.id);
+        onPlaceCardSelect(id);
       } else {
-        props.onPlaceCardDeselect(props.id);
+        onPlaceCardDeselect(id);
       }
 
       return newVal;
@@ -36,21 +39,18 @@ export default function PlaceCard(props) {
             <CardMedia
               component="img"
               sx={{ width: 164, height: 164 }}
-              image={props.img_url}
-              alt={props.img_url}
+              image={locationPicture}
+              alt={locationPicture}
             />
-            {/* <ListItem>
-              <CardMedia component="img" image={imgPath} />
-            </ListItem> */}
           </Grid>
           <Grid item xs={8}>
             <ListItem>
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  {props.title}
+                  {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {props.content}
+                  {content}
                 </Typography>
               </CardContent>
             </ListItem>
@@ -60,9 +60,3 @@ export default function PlaceCard(props) {
     </Card>
   );
 }
-
-PlaceCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  content: PropTypes.string.isRequired,
-  img_url: PropTypes.string.isRequired
-};

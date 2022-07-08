@@ -1,6 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-alert */
-/* eslint-disable react/destructuring-assignment */
 import React, { useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 import PlaceCard from './PlaceCard';
@@ -8,11 +5,10 @@ import PlaceCard from './PlaceCard';
 export default function PlacesList({ places, selectedPlaces, onSelectedPlacesChange }) {
   const [placesDictionary, setPlacesDictionary] = useState({});
 
-  // Listening to the changes in props.places
   useEffect(() => {
     // The dictionary is used for O(1) access
     setPlacesDictionary(Object.assign({}, ...places.map((place) => ({ [place._id]: place }))));
-  }, [places]);
+  }, []);
 
   const placeCardSelected = (selectedPlaceId) => {
     selectedPlaces.push(placesDictionary[selectedPlaceId]);
@@ -33,7 +29,7 @@ export default function PlacesList({ places, selectedPlaces, onSelectedPlacesCha
               id={place._id}
               title={place.name}
               content={place.place_description || ''}
-              img_url={place.locationPicture}
+              locationPicture={place.locationPicture}
               onPlaceCardSelect={placeCardSelected}
               onPlaceCardDeselect={placeCardDeselected}
             />
