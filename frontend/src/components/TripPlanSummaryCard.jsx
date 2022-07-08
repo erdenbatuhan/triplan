@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import StarRatings from 'react-star-ratings';
 import Spinner from './Spinner';
+import { updateRatingAndCommentOfTripLocation } from '../queries/trip-location-queries';
 
 export default function TripLocationSummaryCard({
   index,
@@ -36,19 +37,9 @@ export default function TripLocationSummaryCard({
   }, [rating, comment]);
 
   const saveChanges = () => {
-    // TODO: Remove the following mockSaveFunction when we have the backend function for save/update
-    const mockSaveFunction = (tripLocationToSave) => {
-      // eslint-disable-next-line no-async-promise-executor
-      return new Promise(async (resolve) => {
-        // eslint-disable-next-line no-promise-executor-return
-        await new Promise((r) => setTimeout(r, 2000));
-        resolve({ ...tripLocationToSave, ...{ updatedAt: String(new Date()) } });
-      });
-    };
-
     setLoading(true);
 
-    mockSaveFunction({ ...tripLocation, ...{ rating, comment } })
+    updateRatingAndCommentOfTripLocation(tripLocation._id, rating, comment)
       .then((savedTripLocation) => {
         onChangesSaved({ index, savedTripLocation });
       })
