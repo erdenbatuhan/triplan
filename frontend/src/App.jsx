@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
+import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import Wallet from './pages/Wallet';
@@ -43,6 +44,10 @@ function App() {
           <Route
             path="/trip-planning"
             element={isLoggedIn ? <TripPlanningPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/trip-plan/:tripPlanId/summary"
+            element={isLoggedIn ? <TripPlanSummaryPage /> : <Navigate to="/" />}
           />
           <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
           <Route path="/wallet" element={isLoggedIn ? <Wallet /> : <Navigate to="/" />} />
