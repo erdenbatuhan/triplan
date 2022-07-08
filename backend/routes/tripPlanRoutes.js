@@ -6,7 +6,7 @@ const tripPlanController = require("./../controllers/tripPlanController.js");
 /**
  * Gets the trip plan given id
  */
- router.get("/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const tripPlanId = req.params.id;
     res.status(200).send(await (tripPlanController.findById(tripPlanId)));
