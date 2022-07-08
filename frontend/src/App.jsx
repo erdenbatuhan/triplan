@@ -6,16 +6,17 @@ import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import Wallet from './pages/Wallet';
 import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
-  const [userUsername, setUserUsername] = useState(UserAuthHelper.getUserUsername());
+  const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
 
   const syncAuthUser = () => {
     setIsLoggedIn(UserAuthHelper.isLoggedIn());
-    setUserUsername(UserAuthHelper.getUserUsername());
+    setAuthenticatedUser(UserAuthHelper.getStoredUser().user);
   };
 
   const loginUser = (token) => {
@@ -31,8 +32,8 @@ function App() {
   return (
     <AuthUserContext.Provider
       value={useMemo(() => {
-        return { userUsername, loginUser, logoutUser };
-      }, [userUsername, loginUser, logoutUser])}>
+        return { authenticatedUser, loginUser, logoutUser };
+      }, [authenticatedUser, loginUser, logoutUser])}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -44,6 +45,7 @@ function App() {
             element={isLoggedIn ? <TripPlanningPage /> : <Navigate to="/" />}
           />
           <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
+          <Route path="/wallet" element={isLoggedIn ? <Wallet /> : <Navigate to="/" />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
