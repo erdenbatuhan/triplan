@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { Stack } from '@mui/material';
 import PlaceCard from './PlaceCard';
@@ -14,7 +12,7 @@ export default function SelectedPlacesList({ selectedPlaces }) {
               id={selectedPlace._id}
               title={selectedPlace.name}
               content={selectedPlace.place_description || ''}
-              img_url={selectedPlace.locationPicture}
+              locationPicture={selectedPlace.locationPicture}
             />
           ))
         : []}

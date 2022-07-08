@@ -4,12 +4,12 @@ const router = express.Router();
 const tripPlanController = require("./../controllers/tripPlanController.js");
 
 /**
- * Gets the trip plans of a user
+ * Gets the trip plan given id
  */
-router.get("/user/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const userId = req.params.id;
-    res.status(200).send(await (tripPlanController.findByUser(userId)));
+    const tripPlanId = req.params.id;
+    res.status(200).send(await (tripPlanController.findById(tripPlanId)));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
   }
@@ -28,6 +28,18 @@ router.get("/:id/trip-location", async (req, res) => {
     }
   
     res.status(200).send(tripLocations);
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
+  }
+});
+
+/**
+ * Gets the trip plans of a user
+ */
+router.get("/user/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    res.status(200).send(await (tripPlanController.findByUser(userId)));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
   }
