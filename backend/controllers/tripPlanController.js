@@ -3,10 +3,6 @@ const { TripPlan } = require("./../models/tripPlan.js");
 const tripLocationController = require("./tripLocationController.js");
 const partnerLocationController = require("./partnerLocationController.js");
 
-const findByUser = (userId) => {
-  return TripPlan.find({ user: userId });
-};
-
 const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
   return findById(tripPlanId).then(async (tripPlan) => {
     if (!tripPlan) {
@@ -48,4 +44,8 @@ const findById = (id) => {
   return TripPlan.findById(id);
 };
 
-module.exports = { findByUser, findWithPartnerLocationsByTripPlan };
+const findByUser = (userId) => {
+  return TripPlan.find({ user: userId });
+};
+
+module.exports = { findWithPartnerLocationsByTripPlan, findById, findByUser };

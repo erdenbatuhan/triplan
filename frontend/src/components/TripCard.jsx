@@ -27,7 +27,4 @@ TripCard.propTypes = {
   href: PropTypes.string.isRequired
 };
 
-// TripCard.defaultProps = {
-// };
-
 export default TripCard;

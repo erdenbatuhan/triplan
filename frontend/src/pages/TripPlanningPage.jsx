@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-alert */
 import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Spinner from '../components/Spinner';
@@ -27,7 +25,7 @@ export default function TripPlanningPage({ filter }) {
   };
 
   if (loading) {
-    return <Spinner />;
+    return <Spinner marginTop="5em" />;
   }
 
   const getHeader = (title) => {
