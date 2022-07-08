@@ -5,10 +5,11 @@ import PlaceCard from './PlaceCard';
 export default function PlacesList({ places, selectedPlaces, onSelectedPlacesChange }) {
   const [placesDictionary, setPlacesDictionary] = useState({});
 
+  // Listening to the changes in places
   useEffect(() => {
     // The dictionary is used for O(1) access
     setPlacesDictionary(Object.assign({}, ...places.map((place) => ({ [place._id]: place }))));
-  }, []);
+  }, [places]);
 
   const placeCardSelected = (selectedPlaceId) => {
     selectedPlaces.push(placesDictionary[selectedPlaceId]);
