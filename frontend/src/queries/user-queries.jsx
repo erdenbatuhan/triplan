@@ -34,3 +34,11 @@ export async function loginUser(userData) {
     body: JSON.stringify(userData)
   }).then((response) => response.json());
 }
+
+export async function findUserWallet(userId) {
+  return await fetch(`${HOST_USER}/${userId}/wallet`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}

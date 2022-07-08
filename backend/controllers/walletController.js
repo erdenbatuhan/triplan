@@ -8,12 +8,12 @@ const findOne = (id) => {
 
 const findByUserId = (userId) => {
   return new Promise((resolve, reject) => {
-    userController.findOne(userId).then(async (user) => {
+    userController.findById(userId).then(async (user) => {
       if (!user.wallet) {
         resolve(null);
       }
 
-      const walletFound = await Wallet.find({ "_id": user.wallet._id });
+      const walletFound = await Wallet.findOne({ "_id": user.wallet._id });
       resolve(walletFound);
     }).catch(err => reject(err));
   });
@@ -21,7 +21,7 @@ const findByUserId = (userId) => {
 
 const createWallet = ({ ownerType, userId }) => {
   return new Promise((resolve, reject) => {
-    userController.findOne(userId).then(async (user) => {
+    userController.findById(userId).then(async (user) => {
       // Create a new empty wallet
       const walletCreated = await Wallet.create(new Wallet());
 
