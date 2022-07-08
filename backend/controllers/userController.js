@@ -101,7 +101,7 @@ const login = async (req, res) => {
 
 const find = () => {
   return User.find().sort({ createdAt: "desc" }); // In descending order/newly created first
-}
+};
 
 const findByIds = (ids) => {
   return User.find({ _id: { $in: ids } }).sort({ createdAt: "desc" }); // In descending order/newly created first
@@ -112,11 +112,11 @@ const findById = (id) => {
 };
 
 const findByUsername = (username) => {
-  return User.findOne({ username: { $eq: username } });
+  return User.find({ username: { $eq: username } });
 };
 
 const findByEmail = (email) => {
-  return User.findOne({ email: { $eq: email } });
+  return User.find({ email: { $eq: email } });
 };
 
 const exists = (id) => {
@@ -129,10 +129,10 @@ const save = (user) => {
 
 const updateFields = (id, fields) => {
   if (!exists(id)) {
-    return new Promise(resolve => resolve(null)); // User does not exist!
+    return new Promise((resolve) => resolve(null)); // User does not exist!
   }
 
-  return User.updateOne({ "_id": id }, fields, { new: true });
+  return User.updateOne({ _id: id }, fields, { new: true });
 };
 
 module.exports = {
@@ -145,5 +145,5 @@ module.exports = {
   findByEmail,
   exists,
   save,
-  updateFields
+  updateFields,
 };
