@@ -102,7 +102,11 @@ router.get("/:userId/wallet", async (req, res) => {
 
     res.status(200).send(userWallet);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the wallet for a user! Error => ${message}`);
+    res
+      .status(400)
+      .send(
+        `An error occurred while getting the wallet for a user! Error => ${message}`
+      );
   }
 });
 
