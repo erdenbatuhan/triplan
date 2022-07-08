@@ -112,11 +112,11 @@ const findById = (id) => {
 };
 
 const findByUsername = (username) => {
-  return User.find({ username: { $eq: username } });
+  return User.findOne({ username: { $eq: username } });
 };
 
 const findByEmail = (email) => {
-  return User.find({ email: { $eq: email } });
+  return User.findOne({ email: { $eq: email } });
 };
 
 const exists = (id) => {
