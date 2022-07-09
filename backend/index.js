@@ -22,23 +22,39 @@ app.listen(appProps["port"], () =>
   console.log(`Server Running on port: http://localhost:${appProps["port"]}`)
 );
 
-// User Routes
+// Routes: User
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/user", userRoutes);
 
-// Following Relationship Routes
+// Routes: Following Relationship
 const followingRelationshipRoutes = require("./routes/followingRelationshipRoutes.js");
 app.use("/following-relationship", followingRelationshipRoutes);
 
-// Place Data Routes
-const placeDataRoutes = require("./routes/placeDataRoutes.js");
-app.use("/place-data", placeDataRoutes);
+// Routes: Google Location Info
+const googleLocationInfoRoutes = require("./routes/googleLocationInfoRoutes.js");
+app.use("/google-location-info", googleLocationInfoRoutes);
 
 // Restaurant Data Routes
 const restaurantRoutes = require("./routes/restaurantRoutes.js");
 app.use("/restaurant", restaurantRoutes);
 
 // Partner Location Routes
+// Routes: Partner Location
 const partnerLocationRoutes = require("./routes/partnerLocationRoutes.js");
 app.use("/partner-location", partnerLocationRoutes);
 
+// Routes: Trip Plan
+const tripPlanRoutes = require("./routes/tripPlanRoutes.js");
+app.use("/trip-plan", tripPlanRoutes);
+
+// Routes: Trip Location
+const tripLocationRoutes = require("./routes/tripLocationRoutes.js");
+app.use("/trip-location", tripLocationRoutes);
+
+// Routes: Wallet
+const walletRoutes = require("./routes/walletRoutes.js");
+app.use("/wallet", walletRoutes);
+
+// Routes: Transaction
+const transactionRoutes = require("./routes/transactionRoutes.js");
+app.use("/transaction", transactionRoutes);

@@ -1,7 +1,14 @@
+import React, { useContext } from 'react';
+import { Button } from '@mui/material';
 import logo from '../logo.svg';
+import { AuthUserContext } from '../authentication/AuthUserContext';
 import '../App.css';
 
 function HomePage() {
+  const authContext = useContext(AuthUserContext);
+  const handleLogOut = () => {
+    authContext.logoutUser();
+  };
   return (
     <div className="App">
       <header className="App-header">
@@ -16,6 +23,12 @@ function HomePage() {
           rel="noopener noreferrer">
           Learn React
         </a>
+        <br />
+        <Button href="/login">Login</Button>
+        <Button href="/signup">Sign Up</Button>
+        <Button href="/" onClick={handleLogOut}>
+          Log Out
+        </Button>
       </header>
     </div>
   );

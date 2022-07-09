@@ -1,16 +1,16 @@
 const express = require("express");
-const partnerLocationController = require("./../controllers/partnerLocationController.js");
-
 const router = express.Router();
+
+const partnerLocationController = require("./../controllers/partnerLocationController.js");
 
 /**
  * Returns the partner locations according to the filter given
  * 
  * @see ReqBody in "./../mock/requestBody_filteredPartnerLocations.json"
  */
-router.get("/filtered-results", async (req, res) => {
+router.post("/filtered", async (req, res) => {
   try {
-    res.status(200).send(await (partnerLocationController.findAllFiltered(req.body["filterData"])))
+    res.status(200).send(await (partnerLocationController.findFiltered(req.body["filterData"])));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting the filtered partner locations! Error => ${message}`);
   }
