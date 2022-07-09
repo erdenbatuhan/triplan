@@ -1,7 +1,6 @@
-const { Restaurant } = require("./../models/restaurant.js");
+const { Restaurant } = require("./../models/partnerLocation.js");
 
 const findOne = (id) => {
-  console.log(id);
   return Restaurant.findById(id);
 };
 

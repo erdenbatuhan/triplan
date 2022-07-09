@@ -8,6 +8,7 @@ export const HOST_TRIP_PLAN = `${HOST}/trip-plan`;
 export const HOST_TRIP_LOCATION = `${HOST}/trip-location`;
 export const HOST_WALLET = `${HOST}/wallet`;
 export const HOST_TRANSACTION = `${HOST}/transaction`;
+export const HOST_RESTAURANT = `${HOST}/restaurant`;
 
 export const HEADERS = {
   'Access-Control-Allow-Origin': `http://localhost:3000`,

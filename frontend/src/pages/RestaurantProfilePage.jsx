@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { useParams } from 'react-router-dom';
 import { List } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
-// import { createNewRestaurant } from '../queries/restaurant-queries';
-import { getRestaurant } from '../queries/restaurant-queries';
+import { getRestaurant, getRestaurantCuisine } from '../queries/restaurant-queries';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
@@ -38,8 +38,6 @@ const mockImgData = {
 //   foodType: ''
 // };
 
-// const cusineList = ['Fast Food', 'Mexican'];
-
 const mockMenuData = [
   {
     name: 'Big Burger Menu',
@@ -69,17 +67,19 @@ const mockMenuData = [
   }
 ];
 
-const restaurantReqBody = { id: '62b9b99ebdc6cf4735babce2' };
+// const restaurantReqBody = { id: '62c254155fa859f48d8ad7e3' };
 
 export default function RestaurantProfilePage() {
-  const [restaurant, setRestaurant] = useState([]);
+  const [restaurant, setRestaurant] = useState({});
   const [cl, setCusines] = useState([]);
 
+  const { restaurantId } = useParams();
+  console.log(restaurantId);
   useEffect(() => {
-    getRestaurant(restaurantReqBody).then((data) => setRestaurant(data));
-    setCusines(restaurant.cuisine);
-  }, []);
-  console.log(cl);
+    getRestaurant(restaurantId).then((data) => setRestaurant(data));
+    getRestaurantCuisine(restaurantId).then((data) => setCusines(data));
+  }, [restaurantId]);
+  console.log(restaurant);
   return (
     <Grid container direction="row">
       <Grid item xs={3} container direction="column" alignItems="center">
@@ -124,9 +124,16 @@ export default function RestaurantProfilePage() {
           </Grid>
           <Grid item xs={3}>
             <Typography variant="h6" color="text.primary">
-              Cousines
+              Cuisines
             </Typography>
-            <List spacing={2} maxHeight="%100" overflow="auto">
+
+            {cl.map((c) => (
+              <Typography key={c} variant="body2" color="text.secondary">
+                {c}
+              </Typography>
+            ))}
+
+            {/* <List spacing={2} maxHeight="%100" overflow="auto">
               {cl.map((c) => {
                 return (
                   <Typography key={c} variant="body2" color="text.secondary">
@@ -134,7 +141,7 @@ export default function RestaurantProfilePage() {
                   </Typography>
                 );
               })}
-            </List>
+            </List> */}
           </Grid>
         </Grid>
         <Grid>

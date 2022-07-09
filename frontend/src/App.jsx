@@ -53,7 +53,7 @@ function App() {
           <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
           <Route path="/wallet" element={isLoggedIn ? <Wallet /> : <Navigate to="/" />} />
           <Route
-            path="/restaurant-profile"
+            path="/restaurant-profile/:restaurantId"
             element={isLoggedIn ? <RestaurantProfilePage /> : <Navigate to="/" />}
           />
           <Route path="*" element={<Navigate to="/" />} />

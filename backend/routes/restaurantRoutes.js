@@ -6,9 +6,10 @@ const router = express.Router();
 /**
  * Get the all restaurants
  */
- router.get("/", async (req, res) => {
+ router.get("/:id", async (req, res) => {
   try {
-    res.status(200).send(await (restaurantController.findOne(req.params.id)));
+    const restaurantId = req.params.id;
+    res.status(200).send(await (restaurantController.findOne(restaurantId)));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting all the users! Error => ${message}`);
   }
