@@ -32,21 +32,31 @@ export default function PlaceCard({
   };
 
   return (
-    <Card sx={{ maxWidth: '%100' }} style={{ backgroundColor: isClicked ? '#c5e1a5' : '' }}>
+    <Card
+      sx={{ maxWidth: '%100', height: '20vh' }}
+      style={{ backgroundColor: isClicked ? '#c5e1a5' : '' }}>
       <CardActionArea onClick={handleClick}>
         <Grid container spacing={2}>
           <Grid item xs={4}>
-            <CardMedia
-              component="img"
-              sx={{ width: 164, height: 164 }}
-              image={locationPicture}
-              alt={locationPicture}
-            />
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '20vh'
+              }}>
+              <CardMedia
+                component="img"
+                sx={{ width: '15vh', height: '15vh' }}
+                image={locationPicture}
+                alt={locationPicture}
+              />
+            </div>
           </Grid>
           <Grid item xs={8}>
             <ListItem>
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
+                <Typography gutterBottom variant="h6" component="text.primary">
                   {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">

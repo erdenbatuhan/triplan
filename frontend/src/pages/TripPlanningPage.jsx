@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Fab from '@mui/material/Fab';
+import NavigationIcon from '@mui/icons-material/Navigation';
+import { green } from '@mui/material/colors';
 import Spinner from '../components/Spinner';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
+
+const fabStyle = {
+  bgcolor: green[500],
+  '&:hover': {
+    bgcolor: green[600]
+  },
+  margin: 0,
+  top: 'auto',
+  right: 20,
+  bottom: 20,
+  left: 'auto',
+  position: 'fixed'
+};
 
 export default function TripPlanningPage({ filter }) {
   const [loading, setLoading] = useState(true);
@@ -12,6 +29,25 @@ export default function TripPlanningPage({ filter }) {
     touristAttractions: []
   });
   const [selectedPartnerLocations, setSelectedPartnerLocations] = useState([]);
+  const [windowDimenion, detectHW] = useState({
+    winWidth: window.innerWidth,
+    winHeight: window.innerHeight
+  });
+
+  const detectSize = () => {
+    detectHW({
+      winWidth: window.innerWidth,
+      winHeight: window.innerHeight
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', detectSize);
+
+    return () => {
+      window.removeEventListener('resize', detectSize);
+    };
+  }, [windowDimenion]);
 
   // Triggered each time the filter prop is changed
   useEffect(() => {
@@ -43,23 +79,33 @@ export default function TripPlanningPage({ filter }) {
       </Grid>
       <Grid item xs={3}>
         {getHeader('Restaurants')}
-        <PlacesList
-          places={partnerLocations.restaurants}
-          selectedPlaces={selectedPartnerLocations}
-          onSelectedPlacesChange={handleSelectedPartnerLocationsChange}
-        />
+        <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+          <PlacesList
+            places={partnerLocations.restaurants}
+            selectedPlaces={selectedPartnerLocations}
+            onSelectedPlacesChange={handleSelectedPartnerLocationsChange}
+          />
+        </Paper>
       </Grid>
       <Grid item xs={3}>
         {getHeader('Tourist Attractions')}
-        <PlacesList
-          places={partnerLocations.touristAttractions}
-          selectedPlaces={selectedPartnerLocations}
-          onSelectedPlacesChange={handleSelectedPartnerLocationsChange}
-        />
+        <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+          <PlacesList
+            places={partnerLocations.touristAttractions}
+            selectedPlaces={selectedPartnerLocations}
+            onSelectedPlacesChange={handleSelectedPartnerLocationsChange}
+          />
+        </Paper>
       </Grid>
       <Grid item xs={3}>
         {getHeader('Selected Places')}
-        <SelectedPlacesList selectedPlaces={selectedPartnerLocations} />
+        <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+          <SelectedPlacesList selectedPlaces={selectedPartnerLocations} />
+        </Paper>
+        <Fab variant="extended" style={fabStyle}>
+          <NavigationIcon sx={{ mr: 1 }} />
+          Continue
+        </Fab>
       </Grid>
     </Grid>
   );
