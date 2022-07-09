@@ -39,6 +39,19 @@ export async function getRestaurantCuisine(restaurantId) {
   return restaurant.cuisines;
 }
 
+export async function getRestaurantMenuList(restaurantId) {
+  const url = `${HOST_RESTAURANT}/${restaurantId}`;
+  const restaurant = await fetch(url, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+    // body: JSON.stringify(req)
+  })
+    .then(async (response) => response.json())
+    .then((json) => json);
+  return restaurant.menuList;
+}
+
 export async function createNewRestaurant(userData) {
   const url = `${HOST}/restaurant`;
 

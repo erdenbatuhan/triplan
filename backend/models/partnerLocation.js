@@ -33,6 +33,10 @@ const Restaurant = mongoose.model(
       enum : enums.CUISINES,
       required: false
     },
+    menuList: {
+      type: Array,
+      required: false
+    },
     foodTypes: {
       type: [String],
       enum: enums.FOOD_TYPES,

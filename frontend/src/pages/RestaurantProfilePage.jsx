@@ -6,80 +6,30 @@ import { List } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
-import { getRestaurant, getRestaurantCuisine } from '../queries/restaurant-queries';
+import {
+  getRestaurant,
+  getRestaurantCuisine,
+  getRestaurantMenuList
+} from '../queries/restaurant-queries';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
   title: ''
 };
 
-// const fakedata = {
-//   name: 'Drunken Cow',
-//   address: 'Gabelsbergerstraße 58, 80333 München',
-//   phone: '089 54356230',
-//   price_level: '€€',
-//   cusines: ['Fast Food', 'Mexican']
-// };
-
-// const fakeData = {
-//   _id: '62b9b99ebdc6cf4735babce2',
-//   name: 'anil',
-//   password: '',
-//   city: 'Munich',
-//   country: 'Germany',
-//   address: 'Gabelsbergerstraße 58, 80333 München',
-//   phoneNumber: '089 54356230',
-//   googleLocationLink: '',
-//   certificate: '',
-//   locationPicture:
-//     'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
-//   priceLevel: '€€',
-//   cuisine: ['Fast Food', 'Mexican'],
-//   foodType: ''
-// };
-
-const mockMenuData = [
-  {
-    name: 'Big Burger Menu',
-    content: 'Double Burger 300g, Soft Drink, Fries',
-    price: '22 €',
-    img_url:
-      'https://bigburger.ch/zuerich-langstrasse/wp-content/uploads/sites/16/2017/05/classic-big-burger-1-300x200.jpg'
-  },
-  {
-    name: 'Small Burger Menu',
-    content: 'Mini Burger 150g, Soft Drink, Fries',
-    price: '15 €',
-    img_url: 'https://i1.wp.com/www.mettsalat.de/wp-content/uploads/2008/11/mini-burger-1.jpg?ssl=1'
-  },
-  {
-    name: 'Big Burger Menu',
-    content: 'Double Burger 300g, Soft Drink, Fries',
-    price: '22 €',
-    img_url:
-      'https://bigburger.ch/zuerich-langstrasse/wp-content/uploads/sites/16/2017/05/classic-big-burger-1-300x200.jpg'
-  },
-  {
-    name: 'Small Burger Menu',
-    content: 'Mini Burger 150g, Soft Drink, Fries',
-    price: '15 €',
-    img_url: 'https://i1.wp.com/www.mettsalat.de/wp-content/uploads/2008/11/mini-burger-1.jpg?ssl=1'
-  }
-];
-
-// const restaurantReqBody = { id: '62c254155fa859f48d8ad7e3' };
-
 export default function RestaurantProfilePage() {
   const [restaurant, setRestaurant] = useState({});
-  const [cl, setCusines] = useState([]);
+  const [cuisineList, setCusines] = useState([]);
+  const [menuList, setMenuList] = useState([]);
 
   const { restaurantId } = useParams();
-  console.log(restaurantId);
+
   useEffect(() => {
     getRestaurant(restaurantId).then((data) => setRestaurant(data));
     getRestaurantCuisine(restaurantId).then((data) => setCusines(data));
+    getRestaurantMenuList(restaurantId).then((data) => setMenuList(data));
   }, [restaurantId]);
-  console.log(restaurant);
+
   return (
     <Grid container direction="row">
       <Grid item xs={3} container direction="column" alignItems="center">
@@ -127,7 +77,7 @@ export default function RestaurantProfilePage() {
               Cuisines
             </Typography>
 
-            {cl.map((c) => (
+            {cuisineList.map((c) => (
               <Typography key={c} variant="body2" color="text.secondary">
                 {c}
               </Typography>
@@ -147,7 +97,7 @@ export default function RestaurantProfilePage() {
         <Grid>
           <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
             <List spacing={2} maxHeight="%100" overflow="auto">
-              {mockMenuData.map((menu) => {
+              {menuList.map((menu) => {
                 return (
                   <MenuCard
                     key={menu.name}
