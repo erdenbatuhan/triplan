@@ -8,6 +8,7 @@ import Spinner from '../components/Spinner';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
+import PlaceFilter from '../components/PlaceFilter';
 
 const fabStyle = {
   bgcolor: green[500],
@@ -76,6 +77,7 @@ export default function TripPlanningPage({ filter }) {
     <Grid container spacing={1}>
       <Grid item xs={3}>
         {getHeader('Filter Container')}
+        <PlaceFilter />
       </Grid>
       <Grid item xs={3}>
         {getHeader('Restaurants')}
