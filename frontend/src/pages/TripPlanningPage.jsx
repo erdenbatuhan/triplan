@@ -76,7 +76,7 @@ export default function TripPlanningPage({ filter }) {
   return (
     <Grid container spacing={1}>
       <Grid item xs={3}>
-        {getHeader('Filter Container')}
+        {getHeader('Filters')}
         <PlaceFilter />
       </Grid>
       <Grid item xs={3}>
