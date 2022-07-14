@@ -24,6 +24,7 @@ const fabStyle = {
 };
 
 export default function TripPlanningPage({ filter }) {
+  const [filterState, setFilterState] = useState(filter);
   const [loading, setLoading] = useState(true);
   const [partnerLocations, setPartnerLocations] = useState({
     restaurants: [],
@@ -61,6 +62,10 @@ export default function TripPlanningPage({ filter }) {
     setSelectedPartnerLocations([...selectedPartnerLocationsChanged]); // Create a copy of the new list to force re-rendering
   };
 
+  const handleFilterChange = (newFilterState) => {
+    setFilterState(newFilterState);
+  };
+
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
@@ -77,7 +82,7 @@ export default function TripPlanningPage({ filter }) {
     <Grid container spacing={1}>
       <Grid item xs={3}>
         {getHeader('Filters')}
-        <PlaceFilter />
+        <PlaceFilter filterState={filterState} handleFilterChange={handleFilterChange} />
       </Grid>
       <Grid item xs={3}>
         {getHeader('Restaurants')}

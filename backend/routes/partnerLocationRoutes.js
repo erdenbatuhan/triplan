@@ -5,14 +5,22 @@ const partnerLocationController = require("./../controllers/partnerLocationContr
 
 /**
  * Returns the partner locations according to the filter given
- * 
+ *
  * @see ReqBody in "./../mock/requestBody_filteredPartnerLocations.json"
  */
 router.post("/filtered", async (req, res) => {
   try {
-    res.status(200).send(await (partnerLocationController.findFiltered(req.body["filterData"])));
+    res
+      .status(200)
+      .send(
+        await partnerLocationController.findFiltered(req.body["filterData"])
+      );
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the filtered partner locations! Error => ${message}`);
+    res
+      .status(400)
+      .send(
+        `An error occurred while getting the filtered partner locations! Error => ${message}`
+      );
   }
 });
 
@@ -21,9 +29,11 @@ router.post("/filtered", async (req, res) => {
  */
 router.get("/cities", async (req, res) => {
   try {
-    res.status(200).send(await (partnerLocationController.findDistinctCities()));
+    res.status(200).send(await partnerLocationController.findDistinctCities());
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the cities! Error => ${message}`);
+    res
+      .status(400)
+      .send(`An error occurred while getting the cities! Error => ${message}`);
   }
 });
 
