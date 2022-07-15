@@ -49,6 +49,7 @@ function SelectCuisines(props) {
             <SelectedMenuItem
               // eslint-disable-next-line react/no-array-index-key
               key={idx}
+              idx={idx}
               value={cuisine}
               handleRemove={handleRemove}
               itemType="Cuisines"

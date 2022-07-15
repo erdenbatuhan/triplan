@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 import React, { useState } from 'react';
 import { Box, Button, Stack } from '@mui/material';
 import SelectCuisines from './SelectCuisines';
@@ -7,7 +8,7 @@ import SelectFoodType from './SelectFoodType';
 // import PropTypes from 'prop-types';
 
 function PlaceFilter(props) {
-  const { handleFilterChange, calledFrom } = props; // filterState,
+  const { handleContinueClick, handleFilterChange, calledFrom } = props; // filterState,
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
@@ -86,48 +87,60 @@ function PlaceFilter(props) {
         }
       }
     };
-    handleFilterChange(filterData);
+    if (calledFrom !== 'MainPage') {
+      handleFilterChange(filterData);
+    } else {
+      handleContinueClick(filterData);
+    }
   };
 
   return (
-    <Stack
-      direction={calledFrom === 'MainPage' ? 'row' : 'column'}
-      sx={{
-        mt: 2,
-        marginLeft: 1,
-        marginRight: 5,
-        marginBottom: 5,
-        minWidth: 250
-      }}>
-      <SelectPlaceType
-        selectedPlaces={selectedPlaces}
-        handlePlaceTypeChange={handlePlaceTypeChange}
-      />
-      <SelectCuisines
-        selectedItems={selectedCuisine}
-        handleChange={handleCuisineChange}
-        handleRemove={handleCuisineSelectionRemove}
-        allOptionIsSelected={allCuisinesSelected}
-      />
-      <SelectPriceLevels
-        selectedItems={selectedPriceLevel}
-        handleChange={handlePriceLevelChange}
-        handleRemove={handlePriceLevelRemove}
-        allOptionIsSelected={allPriceLevelsSelected}
-      />
-      <SelectFoodType
-        selectedFoodTypes={selectedFoodTypes}
-        handleFoodTypeChange={handleFoodTypeChange}
-      />
-      {calledFrom !== 'MainPage' ? (
-        <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
-          <Button onClick={handleButtonClick}>Filter!</Button>
-        </Box>
+    <Box>
+      <Stack
+        direction={calledFrom === 'MainPage' ? 'row' : 'column'}
+        sx={{
+          mt: 2,
+          marginLeft: 1,
+          marginRight: 5,
+          marginBottom: 5,
+          minWidth: 250
+        }}>
+        <SelectPlaceType
+          selectedPlaces={selectedPlaces}
+          handlePlaceTypeChange={handlePlaceTypeChange}
+        />
+        <SelectCuisines
+          selectedItems={selectedCuisine}
+          handleChange={handleCuisineChange}
+          handleRemove={handleCuisineSelectionRemove}
+          allOptionIsSelected={allCuisinesSelected}
+        />
+        <SelectPriceLevels
+          selectedItems={selectedPriceLevel}
+          handleChange={handlePriceLevelChange}
+          handleRemove={handlePriceLevelRemove}
+          allOptionIsSelected={allPriceLevelsSelected}
+        />
+        <SelectFoodType
+          selectedFoodTypes={selectedFoodTypes}
+          handleFoodTypeChange={handleFoodTypeChange}
+        />
+        {calledFrom === 'TripPlanningPage' ? (
+          <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
+            <Button onClick={handleButtonClick}>Filter!</Button>
+          </Box>
+        ) : (
+          <></>
+        )}
+      </Stack>
+      {calledFrom === 'MainPage' ? (
+        <Button variant="outlined" onClick={handleButtonClick}>
+          Continue
+        </Button>
       ) : (
-        // eslint-disable-next-line react/jsx-no-useless-fragment
         <></>
       )}
-    </Stack>
+    </Box>
   );
 }
 

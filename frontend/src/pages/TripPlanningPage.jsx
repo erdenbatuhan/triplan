@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Fab from '@mui/material/Fab';
@@ -23,8 +24,11 @@ const fabStyle = {
   position: 'fixed'
 };
 
-export default function TripPlanningPage({ filter }) {
-  const [filterState, setFilterState] = useState(filter);
+export default function TripPlanningPage() {
+  const { state } = useLocation();
+  const { filterData } = state;
+
+  const [filterState, setFilterState] = useState(filterData);
   const [loading, setLoading] = useState(true);
   const [partnerLocations, setPartnerLocations] = useState({
     restaurants: [],

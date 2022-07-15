@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
-import { Button, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import DatePicker from '../components/DatePicker';
 import SearchBar from '../components/SearchBar';
@@ -11,6 +13,11 @@ const CustomGrid = styled(Grid)(() => ({
 }));
 
 function MainPage() {
+  const navigate = useNavigate();
+  const handleButtonClick = (filterData) => {
+    navigate('/trip-planning', { state: filterData });
+  };
+
   return (
     <CustomGrid container height="100vh" display="inline-grid">
       <CustomGrid container spacing={2} direction="row">
@@ -21,10 +28,7 @@ function MainPage() {
           <DatePicker />
         </Grid>
         <CustomGrid marginTop={2} container spacing={2} direction="column">
-          <PlaceFilter calledFrom="MainPage" />
-          <Button variant="outlined" href="/trip-planning">
-            Continue
-          </Button>
+          <PlaceFilter calledFrom="MainPage" handleContinueClick={handleButtonClick} />
         </CustomGrid>
       </CustomGrid>
     </CustomGrid>
