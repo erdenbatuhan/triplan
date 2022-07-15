@@ -82,7 +82,11 @@ export default function TripPlanningPage({ filter }) {
     <Grid container spacing={1}>
       <Grid item xs={3}>
         {getHeader('Filters')}
-        <PlaceFilter filterState={filterState} handleFilterChange={handleFilterChange} />
+        <PlaceFilter
+          filterState={filterState}
+          handleFilterChange={handleFilterChange}
+          calledFrom="TripPlanningPage"
+        />
       </Grid>
       <Grid item xs={3}>
         {getHeader('Restaurants')}

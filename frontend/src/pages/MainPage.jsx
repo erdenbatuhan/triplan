@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button, Box, Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import DatePicker from '../components/DatePicker';
 import SearchBar from '../components/SearchBar';
+import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 
 const CustomGrid = styled(Grid)(() => ({
   justifyContent: 'center',
@@ -19,11 +20,12 @@ function MainPage() {
         <Grid item md={4}>
           <DatePicker />
         </Grid>
-        <Box>
+        <CustomGrid marginTop={2} container spacing={2} direction="column">
+          <PlaceFilter calledFrom="MainPage" />
           <Button variant="outlined" href="/trip-planning">
             Continue
           </Button>
-        </Box>
+        </CustomGrid>
       </CustomGrid>
     </CustomGrid>
   );

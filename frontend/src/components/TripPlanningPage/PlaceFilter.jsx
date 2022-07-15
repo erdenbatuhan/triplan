@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import SelectCuisines from './SelectCuisines';
 import SelectPriceLevels from './SelectPriceLevels';
 import SelectPlaceType from './SelectPlaceType';
@@ -7,7 +7,7 @@ import SelectFoodType from './SelectFoodType';
 // import PropTypes from 'prop-types';
 
 function PlaceFilter(props) {
-  const { handleFilterChange } = props; // filterState,
+  const { handleFilterChange, calledFrom } = props; // filterState,
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
@@ -90,7 +90,8 @@ function PlaceFilter(props) {
   };
 
   return (
-    <Box
+    <Stack
+      direction={calledFrom === 'MainPage' ? 'row' : 'column'}
       sx={{
         mt: 2,
         marginLeft: 1,
@@ -118,10 +119,15 @@ function PlaceFilter(props) {
         selectedFoodTypes={selectedFoodTypes}
         handleFoodTypeChange={handleFoodTypeChange}
       />
-      <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
-        <Button onClick={handleButtonClick}>Filter!</Button>
-      </Box>
-    </Box>
+      {calledFrom !== 'MainPage' ? (
+        <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
+          <Button onClick={handleButtonClick}>Filter!</Button>
+        </Box>
+      ) : (
+        // eslint-disable-next-line react/jsx-no-useless-fragment
+        <></>
+      )}
+    </Stack>
   );
 }
 

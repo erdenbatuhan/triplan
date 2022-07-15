@@ -6,7 +6,7 @@ import * as constants from '../../shared/constants';
 function SelectPriceLevels(props) {
   const { selectedItems, handleChange, handleRemove, allOptionIsSelected } = props;
   return (
-    <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
+    <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
       <Typography align="left">Price Level(s)</Typography>
       <FormControl align="left" sx={{ minWidth: 120 }} size="small" fullWidth>
         <InputLabel sx={{ marginTop: 2 }} id="demo-simple-select-label">

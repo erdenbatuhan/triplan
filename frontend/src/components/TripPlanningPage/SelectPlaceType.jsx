@@ -6,7 +6,7 @@ import * as constants from '../../shared/constants';
 function SelectPlaceType(props) {
   const { selectedPlaces, handlePlaceTypeChange } = props;
   return (
-    <Box sx={{ p: 2, borderColor: 'black', border: 2 }}>
+    <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
       <Typography align="left">Type of Place(s)</Typography>
       <FormGroup>
         {constants.places.map((place, idx) => {

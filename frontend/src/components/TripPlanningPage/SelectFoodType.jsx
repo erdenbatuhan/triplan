@@ -7,7 +7,7 @@ function SelectFoodType(props) {
   const { selectedFoodTypes, handleFoodTypeChange } = props;
 
   return (
-    <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
+    <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
       <FormGroup>
         {constants.foodTypes.map((foodType, idx) => {
           const checked = selectedFoodTypes.includes(foodType);
