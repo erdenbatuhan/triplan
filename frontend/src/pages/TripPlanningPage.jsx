@@ -53,10 +53,10 @@ export default function TripPlanningPage({ filter }) {
 
   // Triggered each time the filter prop is changed
   useEffect(() => {
-    getFilteredPartnerLocations(filter)
+    getFilteredPartnerLocations(filterState)
       .then((data) => setPartnerLocations(data))
       .finally(() => setLoading(false));
-  }, [filter]);
+  }, [filterState]);
 
   const handleSelectedPartnerLocationsChange = (selectedPartnerLocationsChanged) => {
     setSelectedPartnerLocations([...selectedPartnerLocationsChanged]); // Create a copy of the new list to force re-rendering

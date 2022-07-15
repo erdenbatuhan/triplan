@@ -6,8 +6,8 @@ import SelectPlaceType from './SelectPlaceType';
 import SelectFoodType from './SelectFoodType';
 // import PropTypes from 'prop-types';
 
-function PlaceFilter() {
-  // const { filterState, handleFilterChange } = props;
+function PlaceFilter(props) {
+  const { handleFilterChange } = props; // filterState,
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
@@ -74,7 +74,19 @@ function PlaceFilter() {
   };
 
   const handleButtonClick = () => {
-    console.log('lol');
+    const filterData = {
+      filterData: {
+        restaurantFilter: {
+          cuisines: selectedCuisine,
+          priceLevel: selectedPriceLevel,
+          foodTypes: selectedFoodTypes
+        },
+        touristAttractionFilter: {
+          types: selectedPlaces
+        }
+      }
+    };
+    handleFilterChange(filterData);
   };
 
   return (
