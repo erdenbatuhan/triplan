@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Fab from '@mui/material/Fab';
@@ -8,6 +9,7 @@ import Spinner from '../components/Spinner';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
+import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 
 const fabStyle = {
   bgcolor: green[500],
@@ -22,7 +24,11 @@ const fabStyle = {
   position: 'fixed'
 };
 
-export default function TripPlanningPage({ filter }) {
+export default function TripPlanningPage() {
+  const { state } = useLocation();
+  const { filterData } = state;
+
+  const [filterState, setFilterState] = useState(filterData);
   const [loading, setLoading] = useState(true);
   const [partnerLocations, setPartnerLocations] = useState({
     restaurants: [],
@@ -51,13 +57,17 @@ export default function TripPlanningPage({ filter }) {
 
   // Triggered each time the filter prop is changed
   useEffect(() => {
-    getFilteredPartnerLocations(filter)
+    getFilteredPartnerLocations(filterState)
       .then((data) => setPartnerLocations(data))
       .finally(() => setLoading(false));
-  }, [filter]);
+  }, [filterState]);
 
   const handleSelectedPartnerLocationsChange = (selectedPartnerLocationsChanged) => {
     setSelectedPartnerLocations([...selectedPartnerLocationsChanged]); // Create a copy of the new list to force re-rendering
+  };
+
+  const handleFilterChange = (newFilterState) => {
+    setFilterState(newFilterState);
   };
 
   if (loading) {
@@ -75,7 +85,12 @@ export default function TripPlanningPage({ filter }) {
   return (
     <Grid container spacing={1}>
       <Grid item xs={3}>
-        {getHeader('Filter Container')}
+        {getHeader('Filters')}
+        <PlaceFilter
+          filterState={filterState}
+          handleFilterChange={handleFilterChange}
+          calledFrom="TripPlanningPage"
+        />
       </Grid>
       <Grid item xs={3}>
         {getHeader('Restaurants')}

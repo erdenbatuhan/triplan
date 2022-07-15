@@ -31,13 +31,7 @@ function SearchBar() {
             value={item}
             onChange={setSelectedItem}
           />
-          <Button
-            justifyContent="flex-end"
-            alignItems="flex-end"
-            onClick={() => searchSelectedItem(item)}>
-            {' '}
-            Search{' '}
-          </Button>
+          <Button onClick={() => searchSelectedItem(item)}> Search </Button>
         </Card>
         <Card display="inline-grid">
           {cities
