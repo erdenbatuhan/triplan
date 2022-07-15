@@ -2,7 +2,11 @@ import React from 'react';
 import { Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import * as constants from '../../shared/constants';
 
-function SelectFoodType() {
+function SelectFoodType(props) {
+  const { selectedFoodTypes, handleFoodTypeChange } = props;
+  console.log('selectedFoodTypes: ', selectedFoodTypes);
+  console.log('handleFoodTypeChange: ', handleFoodTypeChange);
+
   return (
     <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
       <FormGroup>
