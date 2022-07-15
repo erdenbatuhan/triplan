@@ -2,16 +2,16 @@ import React from 'react';
 import { Typography, Button, Stack } from '@mui/material';
 
 function SelectedMenuItem(props) {
-  const { key, value, handleCuisineSelectionRemove } = props;
+  const { key, value, handleRemove, itemType } = props;
 
   const handleRemoveItem = () => {
-    handleCuisineSelectionRemove(value);
+    handleRemove(value);
   };
 
   return (
     <Stack direction="row" spacing={2}>
       <Typography key={key} value={value}>
-        {value}
+        {value !== 'None' ? value : `All ${itemType}`}
       </Typography>
       <Button onClick={handleRemoveItem}>X</Button>
     </Stack>

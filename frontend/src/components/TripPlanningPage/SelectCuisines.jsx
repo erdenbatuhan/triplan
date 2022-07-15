@@ -4,20 +4,27 @@ import SelectedMenuItem from './SelectedMenuItem';
 import * as constants from '../../shared/constants';
 
 function SelectCuisines(props) {
-  const { selectedCuisine, handleCuisineChange, handleCuisineSelectionRemove } = props;
+  const {
+    selectedCuisine,
+    handleCuisineChange,
+    handleCuisineSelectionRemove,
+    allCuisinesSelected
+  } = props;
   return (
     <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
       <Typography align="left">Cuisine(s)</Typography>
       <FormControl align="left" sx={{ minWidth: 120 }} size="small">
         <Select
+          sx={{ marginTop: 2 }}
           labelId="demo-select-small"
           id="demo-select-small"
           value={selectedCuisine[-1]}
-          // label=""
+          label="Select Cuisine(s)"
           defaultValue=""
+          disabled={allCuisinesSelected}
           onChange={handleCuisineChange}>
-          <MenuItem value="Select Cuisine(s)">
-            <em>Select Cuisine(s)</em>
+          <MenuItem value="None">
+            <em>All Cuisines</em>
           </MenuItem>
           {constants.cuisines.map((cuisine, idx) => {
             return (
@@ -45,7 +52,8 @@ function SelectCuisines(props) {
               // eslint-disable-next-line react/no-array-index-key
               key={idx}
               value={cuisine}
-              handleCuisineSelectionRemove={handleCuisineSelectionRemove}
+              handleRemove={handleCuisineSelectionRemove}
+              itemType="Cuisines"
             />
           );
         })}

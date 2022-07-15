@@ -12,6 +12,8 @@ function PlaceFilter() {
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
   const [selectedFoodTypes, setSelectedFoodTypes] = useState([]);
+  const [allCuisinesSelected, setAllCuisinesSelected] = useState(false);
+  const [allPriceLevelsSelected, setAllPriceLevelsSelected] = useState(false);
 
   const handlePlaceTypeChange = (event) => {
     const { value, checked } = event.target;
@@ -25,20 +27,32 @@ function PlaceFilter() {
   };
 
   const handleCuisineChange = (event) => {
+    if (event.target.value === 'None') {
+      setAllCuisinesSelected(true);
+    }
     setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
   };
 
   const handleCuisineSelectionRemove = (removedCuisine) => {
+    if (removedCuisine === 'None') {
+      setAllCuisinesSelected(false);
+    }
     setSelectedCuisine((cuisines) => {
       return cuisines.filter((cuisine) => cuisine !== removedCuisine);
     });
   };
 
   const handlePriceLevelChange = (event) => {
+    if (event.target.value === 'None') {
+      setAllPriceLevelsSelected(true);
+    }
     setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
   };
 
   const handlePriceLevelRemove = (removedPriceLevel) => {
+    if (removedPriceLevel === 'None') {
+      setAllPriceLevelsSelected(false);
+    }
     setSelectedPriceLevel((priceLevels) => {
       return priceLevels.filter((priceLevel) => priceLevel !== removedPriceLevel);
     });
@@ -76,11 +90,13 @@ function PlaceFilter() {
         selectedCuisine={selectedCuisine}
         handleCuisineChange={handleCuisineChange}
         handleCuisineSelectionRemove={handleCuisineSelectionRemove}
+        allCuisinesSelected={allCuisinesSelected}
       />
       <SelectPriceLevels
         selectedPriceLevel={selectedPriceLevel}
         handlePriceLevelChange={handlePriceLevelChange}
         handlePriceLevelRemove={handlePriceLevelRemove}
+        allPriceLevelsSelected={allPriceLevelsSelected}
       />
       <SelectFoodType
         selectedFoodTypes={selectedFoodTypes}
