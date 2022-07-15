@@ -1,28 +1,26 @@
 import React from 'react';
-import { Box, FormControl, Select, MenuItem, Typography } from '@mui/material';
+import { Box, FormControl, Select, MenuItem, Typography, InputLabel } from '@mui/material';
 import SelectedMenuItem from './SelectedMenuItem';
 import * as constants from '../../shared/constants';
 
 function SelectCuisines(props) {
-  const {
-    selectedCuisine,
-    handleCuisineChange,
-    handleCuisineSelectionRemove,
-    allCuisinesSelected
-  } = props;
+  const { selectedItems, handleChange, handleRemove, allOptionIsSelected } = props;
   return (
     <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
       <Typography align="left">Cuisine(s)</Typography>
-      <FormControl align="left" sx={{ minWidth: 120 }} size="small">
+      <FormControl align="left" sx={{ minWidth: 120 }} size="small" fullWidth>
+        <InputLabel sx={{ marginTop: 2 }} id="demo-simple-select-label">
+          Select Cuisine(s)
+        </InputLabel>
         <Select
           sx={{ marginTop: 2 }}
           labelId="demo-select-small"
           id="demo-select-small"
-          value={selectedCuisine[-1]}
+          value={selectedItems[-1]}
           label="Select Cuisine(s)"
           defaultValue=""
-          disabled={allCuisinesSelected}
-          onChange={handleCuisineChange}>
+          disabled={allOptionIsSelected}
+          onChange={handleChange}>
           <MenuItem value="None">
             <em>All Cuisines</em>
           </MenuItem>
@@ -46,13 +44,13 @@ function SelectCuisines(props) {
         }}>
         <Typography align="left">Selected Cuisine(s)</Typography>
         <br />
-        {selectedCuisine.map((cuisine, idx) => {
+        {selectedItems.map((cuisine, idx) => {
           return (
             <SelectedMenuItem
               // eslint-disable-next-line react/no-array-index-key
               key={idx}
               value={cuisine}
-              handleRemove={handleCuisineSelectionRemove}
+              handleRemove={handleRemove}
               itemType="Cuisines"
             />
           );

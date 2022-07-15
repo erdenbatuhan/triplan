@@ -29,8 +29,10 @@ function PlaceFilter() {
   const handleCuisineChange = (event) => {
     if (event.target.value === 'None') {
       setAllCuisinesSelected(true);
+      setSelectedCuisine([event.target.value]);
+    } else {
+      setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
     }
-    setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
   };
 
   const handleCuisineSelectionRemove = (removedCuisine) => {
@@ -45,8 +47,10 @@ function PlaceFilter() {
   const handlePriceLevelChange = (event) => {
     if (event.target.value === 'None') {
       setAllPriceLevelsSelected(true);
+      setSelectedPriceLevel([event.target.value]);
+    } else {
+      setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
     }
-    setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
   };
 
   const handlePriceLevelRemove = (removedPriceLevel) => {
@@ -87,16 +91,16 @@ function PlaceFilter() {
         handlePlaceTypeChange={handlePlaceTypeChange}
       />
       <SelectCuisines
-        selectedCuisine={selectedCuisine}
-        handleCuisineChange={handleCuisineChange}
-        handleCuisineSelectionRemove={handleCuisineSelectionRemove}
-        allCuisinesSelected={allCuisinesSelected}
+        selectedItems={selectedCuisine}
+        handleChange={handleCuisineChange}
+        handleRemove={handleCuisineSelectionRemove}
+        allOptionIsSelected={allCuisinesSelected}
       />
       <SelectPriceLevels
-        selectedPriceLevel={selectedPriceLevel}
-        handlePriceLevelChange={handlePriceLevelChange}
-        handlePriceLevelRemove={handlePriceLevelRemove}
-        allPriceLevelsSelected={allPriceLevelsSelected}
+        selectedItems={selectedPriceLevel}
+        handleChange={handlePriceLevelChange}
+        handleRemove={handlePriceLevelRemove}
+        allOptionIsSelected={allPriceLevelsSelected}
       />
       <SelectFoodType
         selectedFoodTypes={selectedFoodTypes}
