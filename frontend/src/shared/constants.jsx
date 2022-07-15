@@ -1,3 +1,4 @@
+export const places = ['Museum', 'Natural Park', 'Art Gallery', 'Landmarks'];
 export const cuisines = [
   'Japanese',
   'Chinese',

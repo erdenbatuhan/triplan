@@ -8,7 +8,7 @@ import Spinner from '../components/Spinner';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
-import PlaceFilter from '../components/PlaceFilter';
+import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 
 const fabStyle = {
   bgcolor: green[500],
