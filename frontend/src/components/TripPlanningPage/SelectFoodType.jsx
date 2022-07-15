@@ -1,18 +1,25 @@
+/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import { Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import * as constants from '../../shared/constants';
 
 function SelectFoodType(props) {
   const { selectedFoodTypes, handleFoodTypeChange } = props;
-  console.log('selectedFoodTypes: ', selectedFoodTypes);
-  console.log('handleFoodTypeChange: ', handleFoodTypeChange);
 
   return (
     <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
       <FormGroup>
         {constants.foodTypes.map((foodType, idx) => {
-          // eslint-disable-next-line react/no-array-index-key
-          return <FormControlLabel key={idx} control={<Checkbox />} label={foodType} />;
+          const checked = selectedFoodTypes.includes(foodType);
+          return (
+            <FormControlLabel
+              key={idx}
+              control={<Checkbox checked={checked} />}
+              value={foodType}
+              label={foodType}
+              onChange={handleFoodTypeChange}
+            />
+          );
         })}
       </FormGroup>
     </Box>

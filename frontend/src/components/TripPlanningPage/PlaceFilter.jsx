@@ -18,24 +18,29 @@ function PlaceFilter() {
     if (checked) {
       setSelectedPlaces((places) => [...places, value]);
     } else {
-      setSelectedPlaces((places) => [...places, value]);
+      setSelectedPlaces((places) => {
+        return places.filter((place) => place !== value);
+      });
     }
-    // setSelectedCuisine(event.target.value);
   };
 
   const handleCuisineChange = (event) => {
     setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
-    // setSelectedCuisine(event.target.value);
   };
 
   const handlePriceLevelChange = (event) => {
     setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
-    // setSelectedPriceLevel(event.target.value);
   };
 
   const handleFoodTypeChange = (event) => {
-    setSelectedFoodTypes((foodTypes) => [...foodTypes, event.target.value]);
-    // setSelectedPriceLevel(event.target.value);
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedFoodTypes((foodTypes) => [...foodTypes, value]);
+    } else {
+      setSelectedFoodTypes((foodTypes) => {
+        return foodTypes.filter((foodType) => foodType !== value);
+      });
+    }
   };
 
   return (
