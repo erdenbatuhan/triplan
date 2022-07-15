@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import SelectCuisines from './SelectCuisines';
 import SelectPriceLevels from './SelectPriceLevels';
 import SelectPlaceType from './SelectPlaceType';
@@ -28,8 +28,20 @@ function PlaceFilter() {
     setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
   };
 
+  const handleCuisineSelectionRemove = (removedCuisine) => {
+    setSelectedCuisine((cuisines) => {
+      return cuisines.filter((cuisine) => cuisine !== removedCuisine);
+    });
+  };
+
   const handlePriceLevelChange = (event) => {
     setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
+  };
+
+  const handlePriceLevelRemove = (removedPriceLevel) => {
+    setSelectedPriceLevel((priceLevels) => {
+      return priceLevels.filter((priceLevel) => priceLevel !== removedPriceLevel);
+    });
   };
 
   const handleFoodTypeChange = (event) => {
@@ -41,6 +53,10 @@ function PlaceFilter() {
         return foodTypes.filter((foodType) => foodType !== value);
       });
     }
+  };
+
+  const handleButtonClick = () => {
+    console.log('lol');
   };
 
   return (
@@ -56,15 +72,23 @@ function PlaceFilter() {
         selectedPlaces={selectedPlaces}
         handlePlaceTypeChange={handlePlaceTypeChange}
       />
-      <SelectCuisines selectedCuisine={selectedCuisine} handleCuisineChange={handleCuisineChange} />
+      <SelectCuisines
+        selectedCuisine={selectedCuisine}
+        handleCuisineChange={handleCuisineChange}
+        handleCuisineSelectionRemove={handleCuisineSelectionRemove}
+      />
       <SelectPriceLevels
         selectedPriceLevel={selectedPriceLevel}
         handlePriceLevelChange={handlePriceLevelChange}
+        handlePriceLevelRemove={handlePriceLevelRemove}
       />
       <SelectFoodType
         selectedFoodTypes={selectedFoodTypes}
         handleFoodTypeChange={handleFoodTypeChange}
       />
+      <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
+        <Button onClick={handleButtonClick}>Filter!</Button>
+      </Box>
     </Box>
   );
 }

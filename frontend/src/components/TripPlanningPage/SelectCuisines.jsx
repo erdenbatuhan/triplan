@@ -1,9 +1,10 @@
 import React from 'react';
 import { Box, FormControl, Select, MenuItem, Typography } from '@mui/material';
+import SelectedMenuItem from './SelectedMenuItem';
 import * as constants from '../../shared/constants';
 
 function SelectCuisines(props) {
-  const { selectedCuisine, handleCuisineChange } = props;
+  const { selectedCuisine, handleCuisineChange, handleCuisineSelectionRemove } = props;
   return (
     <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
       <Typography align="left">Cuisine(s)</Typography>
@@ -40,10 +41,12 @@ function SelectCuisines(props) {
         <br />
         {selectedCuisine.map((cuisine, idx) => {
           return (
-            // eslint-disable-next-line react/no-array-index-key
-            <Typography key={idx} value={cuisine}>
-              {cuisine}
-            </Typography>
+            <SelectedMenuItem
+              // eslint-disable-next-line react/no-array-index-key
+              key={idx}
+              value={cuisine}
+              handleCuisineSelectionRemove={handleCuisineSelectionRemove}
+            />
           );
         })}
       </Box>

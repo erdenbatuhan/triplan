@@ -1,9 +1,10 @@
 import React from 'react';
 import { Box, FormControl, Select, MenuItem, Typography } from '@mui/material';
+import SelectedMenuItem from './SelectedMenuItem';
 import * as constants from '../../shared/constants';
 
 function SelectPriceLevels(props) {
-  const { selectedPriceLevel, handlePriceLevelChange } = props;
+  const { selectedPriceLevel, handlePriceLevelChange, handlePriceLevelRemove } = props;
   return (
     <Box sx={{ p: 2, borderColor: 'black', border: 2, borderTop: 0 }}>
       <Typography align="left">Price Level(s)</Typography>
@@ -40,10 +41,12 @@ function SelectPriceLevels(props) {
         <br />
         {selectedPriceLevel.map((priceLevel, idx) => {
           return (
-            // eslint-disable-next-line react/no-array-index-key
-            <Typography key={idx} value={priceLevel}>
-              {priceLevel}
-            </Typography>
+            <SelectedMenuItem
+              // eslint-disable-next-line react/no-array-index-key
+              key={idx}
+              value={priceLevel}
+              handleCuisineSelectionRemove={handlePriceLevelRemove}
+            />
           );
         })}
       </Box>
