@@ -5,6 +5,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
 import RestaurantProfilePage from './pages/RestaurantProfilePage';
+import EditRestaurantProfilePage from './pages/EditRestaurantProfilePage';
 import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -55,6 +56,10 @@ function App() {
           <Route
             path="/restaurant-profile/:restaurantId"
             element={isLoggedIn ? <RestaurantProfilePage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/edit-restaurant-profile/:restaurantId"
+            element={isLoggedIn ? <EditRestaurantProfilePage /> : <Navigate to="/" />}
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

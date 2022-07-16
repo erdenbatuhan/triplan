@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useParams } from 'react-router-dom';
 import { List } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -20,6 +20,12 @@ export default function RestaurantProfilePage() {
 
   // Fetch the restaurant for every change in restaurant ID
   const { restaurantId } = useParams();
+  const navigate = useNavigate();
+
+  const handleEditClick = () => {
+    navigate(`/edit-restaurant-profile/${restaurantId}`, { state: restaurantId });
+  };
+
   useEffect(() => {
     getRestaurant(restaurantId).then((data) => {
       setRestaurant(data);
@@ -61,7 +67,9 @@ export default function RestaurantProfilePage() {
             {restaurant.phone}
           </Typography>
         </Grid>
-        <Button variant="contained">Edit Profile</Button>
+        <Button variant="contained" onClick={handleEditClick}>
+          Edit Profile
+        </Button>
       </Grid>
       <Grid item xs={9} container direction="column" justifyContent="center" alignItems="center">
         <Grid container direction="row" justifyContent="center" alignItems="center">
