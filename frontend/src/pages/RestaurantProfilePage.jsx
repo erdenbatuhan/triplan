@@ -23,7 +23,7 @@ export default function RestaurantProfilePage() {
   const navigate = useNavigate();
 
   const handleEditClick = () => {
-    navigate(`/edit-restaurant-profile/${restaurantId}`, { state: restaurantId });
+    navigate(`/edit-restaurant-profile/${restaurantId}`, { state: { restaurantId } });
   };
 
   useEffect(() => {
@@ -103,10 +103,11 @@ export default function RestaurantProfilePage() {
         <Grid>
           <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
             <List spacing={2} maxHeight="%100" overflow="auto">
-              {menuList.map((menu) => {
+              {menuList.map((menu, idx) => {
                 return (
                   <MenuCard
-                    key={menu.name}
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={idx}
                     name={menu.name}
                     content={menu.content}
                     price={menu.price}
