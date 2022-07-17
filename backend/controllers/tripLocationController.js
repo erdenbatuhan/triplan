@@ -5,11 +5,7 @@ const findByIds = (ids) => {
 };
 
 const create = (fields) => {
-  return new Promise((resolve, reject) => {
-    const tripLocation = TripLocation.create(fields);
-
-    resolve(tripLocation);
-    }).catch(err => reject(err));
+  return TripLocation.create(fields);
 };
 
 const update = (id, fields) => {

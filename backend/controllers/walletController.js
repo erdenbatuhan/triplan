@@ -10,7 +10,7 @@ const findByUserId = (userId) => {
   return new Promise((resolve, reject) => {
     userController.findById(userId).then(async (user) => {
       if (!user.wallet) {
-        resolve(null);
+        return resolve(null);
       }
 
       const walletFound = await Wallet.findOne({ "_id": user.wallet._id });
@@ -32,7 +32,7 @@ const createWallet = ({ ownerType, userId }) => {
   });
 };
 
-const updateWalletBalance= (wallet, amount) => {
+const updateWalletBalance = (wallet, amount) => {
   return Wallet.findOneAndUpdate(
     { "_id": wallet._id },
     { $inc: { balance: amount } },   // Increase the balance with a given amount (for withdraw, amount will have a negative value)

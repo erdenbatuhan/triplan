@@ -19,10 +19,10 @@ const findFiltered = (filterData) => {
         },
       }).sort({ createdAt: "desc" }),
     ])
-      .then(([restaurants, touristAttractions]) => {
-        resolve({ restaurants, touristAttractions });
-      })
-      .catch((err) => reject(err));
+    .then(([restaurants, touristAttractions]) => {
+      resolve({ restaurants, touristAttractions });
+    })
+    .catch((err) => reject(err));
   });
 };
 
@@ -32,13 +32,13 @@ const findDistinctCities = () => {
       Restaurant.distinct("city"),
       TouristAttraction.distinct("city"),
     ])
-      .then(([restaurantCities, touristAttractionCities]) => {
-        const allCities = [...restaurantCities, ...touristAttractionCities];
-        const distinctCities = [...new Set(allCities)];
+    .then(([restaurantCities, touristAttractionCities]) => {
+      const allCities = [...restaurantCities, ...touristAttractionCities];
+      const distinctCities = [...new Set(allCities)];
 
-        resolve(distinctCities);
-      })
-      .catch((err) => reject(err));
+      resolve(distinctCities);
+    })
+    .catch((err) => reject(err));
   });
 };
 
@@ -54,11 +54,19 @@ const findByTripLocations = (tripLocationIds) => {
         associatedTripLocations: { $in: tripLocationIds },
       }),
     ])
-      .then(([restaurants, touristAttractions]) => {
-        resolve({ restaurants, touristAttractions });
-      })
-      .catch((err) => reject(err));
+    .then(([restaurants, touristAttractions]) => {
+      resolve({ restaurants, touristAttractions });
+    })
+    .catch((err) => reject(err));
   });
 };
 
-module.exports = { findFiltered, findDistinctCities, findByTripLocations };
+const findRestaurantById = (restaurantId) => {
+  return Restaurant.findById(restaurantId);
+};
+
+const findTouristAttractionById = (touristAttractionId) => {
+  return TouristAttraction.findById(touristAttractionId);
+};
+
+module.exports = { findFiltered, findDistinctCities, findByTripLocations, findRestaurantById, findTouristAttractionById };
