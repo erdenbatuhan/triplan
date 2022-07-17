@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button, Paper, List } from '@mui/material';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
-import {
-  getRestaurant,
-  getRestaurantCuisine,
-  getRestaurantMenuList
-} from '../queries/restaurant-queries';
+import { getRestaurant } from '../queries/partner-location-queries';
 
 function EditRestaurantProfilePage() {
   const [restaurant, setRestaurant] = useState({});
@@ -17,13 +13,14 @@ function EditRestaurantProfilePage() {
   const [restaurantCuisines, setRestaurantCuisines] = useState([]);
   const [restaurantMenuList, setRestaurantMenuList] = useState([]);
 
-  const { state } = useLocation();
-  // const { restaurantId } = useParams();
-  const restaurantId = state ? state.restaurantId : '';
+  const { restaurantId } = useParams();
+
   useEffect(() => {
-    getRestaurant(restaurantId).then((data) => setRestaurant(data));
-    getRestaurantCuisine(restaurantId).then((data) => setRestaurantCuisines(data));
-    getRestaurantMenuList(restaurantId).then((data) => setRestaurantMenuList(data));
+    getRestaurant(restaurantId).then((data) => {
+      setRestaurant(data);
+      setRestaurantCuisines(data.cuisines);
+      setRestaurantMenuList(data.menuList);
+    });
   }, [restaurantId]);
 
   useEffect(() => {
@@ -53,12 +50,19 @@ function EditRestaurantProfilePage() {
   // };
   const onSubmitClicked = async () => {
     try {
+      console.log('restaurant: ', restaurant);
+      console.log('restaurantName: ', restaurantName);
+      console.log('restaurantAddress: ', restaurantAddress);
+      console.log('restaurantPhoneNumber: ', restaurantPhoneNumber);
+      console.log('restaurantLocationPicture: ', restaurantLocationPicture);
+      console.log('restaurantCuisines: ', restaurantCuisines);
+      console.log('restaurantMenuList: ', restaurantMenuList);
+
       console.log('hey!');
     } catch (e) {
       console.error(`failed to create user ${e}`);
     }
   };
-
   return (
     <Box
       component="form"

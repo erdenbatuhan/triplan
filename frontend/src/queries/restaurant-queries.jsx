@@ -1,7 +1,7 @@
-import { HOST, HOST_RESTAURANT, HEADERS } from './constants';
+import { HOST, HOST_PARTNER_LOCATION, HOST_RESTAURANT, HEADERS } from './constants';
 
 export async function getAllRestaurant() {
-  const url = `${HOST}/restaurant`;
+  const url = `${HOST_PARTNER_LOCATION}/restaurant`;
 
   const restaurant = await fetch(url, {
     method: `GET`,
@@ -14,7 +14,7 @@ export async function getAllRestaurant() {
 }
 
 export async function getRestaurant(restaurantId) {
-  const url = `${HOST_RESTAURANT}/${restaurantId}`;
+  const url = `${HOST_PARTNER_LOCATION}/restaurant/${restaurantId}`;
   const restaurant = await fetch(url, {
     method: `GET`,
     mode: `cors`,
