@@ -34,11 +34,6 @@ app.use("/following-relationship", followingRelationshipRoutes);
 const googleLocationInfoRoutes = require("./routes/googleLocationInfoRoutes.js");
 app.use("/google-location-info", googleLocationInfoRoutes);
 
-// Restaurant Data Routes
-const restaurantRoutes = require("./routes/restaurantRoutes.js");
-app.use("/restaurant", restaurantRoutes);
-
-// Partner Location Routes
 // Routes: Partner Location
 const partnerLocationRoutes = require("./routes/partnerLocationRoutes.js");
 app.use("/partner-location", partnerLocationRoutes);
