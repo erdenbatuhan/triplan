@@ -11,7 +11,6 @@ const tripLocationController = require("./../controllers/tripLocationController.
 router.post("/", async (req, res) => {
   try {
     const query = req.query;
-
     const tripLocationCreated = await tripLocationController.create(query);
   
     res.status(200).send(tripLocationCreated);

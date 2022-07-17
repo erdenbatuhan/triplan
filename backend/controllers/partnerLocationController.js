@@ -3,6 +3,22 @@ const {
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
 
+const findDistinctCities = () => {
+  return new Promise((resolve, reject) => {
+    Promise.all([
+      Restaurant.distinct("city"),
+      TouristAttraction.distinct("city"),
+    ])
+      .then(([restaurantCities, touristAttractionCities]) => {
+        const allCities = [...restaurantCities, ...touristAttractionCities];
+        const distinctCities = [...new Set(allCities)];
+
+        resolve(distinctCities);
+      })
+      .catch((err) => reject(err));
+  });
+};
+
 const findFiltered = (filterData) => {
   return new Promise((resolve, reject) => {
     Promise.all([
@@ -21,22 +37,6 @@ const findFiltered = (filterData) => {
     ])
       .then(([restaurants, touristAttractions]) => {
         resolve({ restaurants, touristAttractions });
-      })
-      .catch((err) => reject(err));
-  });
-};
-
-const findDistinctCities = () => {
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      Restaurant.distinct("city"),
-      TouristAttraction.distinct("city"),
-    ])
-      .then(([restaurantCities, touristAttractionCities]) => {
-        const allCities = [...restaurantCities, ...touristAttractionCities];
-        const distinctCities = [...new Set(allCities)];
-
-        resolve(distinctCities);
       })
       .catch((err) => reject(err));
   });
@@ -61,4 +61,32 @@ const findByTripLocations = (tripLocationIds) => {
   });
 };
 
-module.exports = { findFiltered, findDistinctCities, findByTripLocations };
+const findRestaurantById = (restaurantId) => {
+  return Restaurant.findById(restaurantId);
+};
+
+const saveRestaurant = (restaurant) => {
+  return Restaurant.findOneAndUpdate(
+    restaurant._id ? { "_id": restaurant._id } : null,
+    restaurant,
+    { upsert: true, new: true }
+  );
+};
+
+const findTouristAttractionById = (touristAttractionId) => {
+  return TouristAttraction.findById(touristAttractionId);
+};
+
+const saveTouristAttraction = (touristAttraction) => {
+  return TouristAttraction.findOneAndUpdate(
+    touristAttraction._id ? { "_id": touristAttraction._id } : null,
+    touristAttraction,
+    { upsert: true, new: true }
+  );
+};
+
+module.exports = {
+  findDistinctCities, findFiltered, findByTripLocations,
+  findRestaurantById, saveRestaurant,
+  findTouristAttractionById, saveTouristAttraction
+};
