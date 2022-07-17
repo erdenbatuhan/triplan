@@ -10,6 +10,7 @@ import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
+import * as partnerLocationDefaultFilter from '../queries/data/partner-location-default-filter.json';
 
 const fabStyle = {
   bgcolor: green[500],
@@ -26,8 +27,7 @@ const fabStyle = {
 
 export default function TripPlanningPage() {
   const { state } = useLocation();
-  const { filterData } = state;
-
+  const filterData = state ? state.filterData : partnerLocationDefaultFilter;
   const [filterState, setFilterState] = useState(filterData);
   const [loading, setLoading] = useState(true);
   const [partnerLocations, setPartnerLocations] = useState({
