@@ -8,15 +8,18 @@ const { extendSchema } = require("./../utils/schemaUtils.js");
 const enums = require("./../utils/enums.js");
 
 const PartnerLocationSchema = new Schema({
-  name: { type: String, required: true },
-  password: { type: String, default: "", required: false },
-  city: { type: String, required: true },
-  country: { type: String, required: true },
-  address: { type: String, required: true }, 
-  phoneNumber: { type: String, required: false },
-  googleLocationLink: { type: String, required: true },
-  certificate: { type: String, required: false },
-  locationPicture: { type: String, required: true },
+  name: { type: String, default: '', required: false },
+  username: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  city: { type: String, default: '', required: false },
+  country: { type: String, default: '', required: false },
+  address: { type: String, default: '', required: false }, 
+  phoneNumber: { type: String, default: '', required: false },
+  googleLocationLink: { type: String, default: '', required: false },
+  certificate: { type: String, default: '', required: false },
+  locationPicture: { type: String, default: '', required: false },
+  partnerType: { type: String, required: true },
   googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents,
   associatedTripLocations: [{ 
     type: Schema.Types.ObjectId,
