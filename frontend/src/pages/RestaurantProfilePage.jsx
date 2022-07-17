@@ -6,11 +6,7 @@ import { List } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
-import {
-  getRestaurant,
-  getRestaurantCuisine,
-  getRestaurantMenuList
-} from '../queries/restaurant-queries';
+import { getRestaurant } from '../queries/partner-location-queries';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
@@ -19,15 +15,17 @@ const mockImgData = {
 
 export default function RestaurantProfilePage() {
   const [restaurant, setRestaurant] = useState({});
-  const [cuisineList, setCusines] = useState([]);
+  const [cuisineList, setCuisineList] = useState([]);
   const [menuList, setMenuList] = useState([]);
 
+  // Fetch the restaurant for every change in restaurant ID
   const { restaurantId } = useParams();
-
   useEffect(() => {
-    getRestaurant(restaurantId).then((data) => setRestaurant(data));
-    getRestaurantCuisine(restaurantId).then((data) => setCusines(data));
-    getRestaurantMenuList(restaurantId).then((data) => setMenuList(data));
+    getRestaurant(restaurantId).then((data) => {
+      setRestaurant(data);
+      setCuisineList(data.cuisines);
+      setMenuList(data.menuList);
+    });
   }, [restaurantId]);
 
   return (

@@ -63,15 +63,13 @@ router.get("/:id", AuthService, async (req, res) => {
     const userId = req.params.id;
     const user = await userController.findById(userId);
 
-    if (user) {
-      res.status(200).send(user);
-    } else {
-      res.status(404).send(`No user found with ID=${userId}`);
+    if (!user) {
+      return res.status(404).send(`No user found with ID=${userId}!`);
     }
+
+    return res.status(200).send(user);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while getting the user! Error => ${message}`);
+    res.status(400).send(`An error occurred while getting the user! Error => ${message}`);
   }
 });
 
@@ -97,7 +95,7 @@ router.get("/:userId/wallet", async (req, res) => {
     const userWallet = await walletController.findByUserId(userId);
 
     if (!userWallet) {
-      res.status(404).send(`No wallet found for the user with ID=${userId}`);
+      res.status(404).send(`No wallet found for the user with ID=${userId}!`);
     }
 
     res.status(200).send(userWallet);

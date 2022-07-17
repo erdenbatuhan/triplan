@@ -8,8 +8,8 @@ import { green } from '@mui/material/colors';
 import Spinner from '../components/Spinner';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
-import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
+import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 
 const fabStyle = {
   bgcolor: green[500],
