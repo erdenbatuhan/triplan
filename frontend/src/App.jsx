@@ -13,7 +13,7 @@ import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
 
   const syncAuthUser = () => {
