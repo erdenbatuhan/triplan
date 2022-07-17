@@ -53,3 +53,7 @@ app.use("/wallet", walletRoutes);
 // Routes: Transaction
 const transactionRoutes = require("./routes/transactionRoutes.js");
 app.use("/transaction", transactionRoutes);
+
+// Routes: Buyable Item
+const buyableItemRoutes = require("./routes/buyableItemRoutes.js");
+app.use("/buyable-item", buyableItemRoutes);
