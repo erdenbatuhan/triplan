@@ -4,7 +4,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { createNewUser } from '../queries/user-queries';
-// import { createNewPartnerLocation } from '../queries/partner-location-queries';
+import { createNewPartnerLocation } from '../queries/partner-location-queries';
 
 function SignUpPage() {
   // const [firstName, setFirstName] = useState('');
@@ -60,23 +60,23 @@ function SignUpPage() {
       console.error(`failed to create user ${e}`);
     }
   };
-  // const onSubmitClickedPartner = async () => {
-  //   try {
-  //     const partnerLocationData = {
-  //       username,
-  //       password,
-  //       email,
-  //       partnerType
-  //     };
-  //     const newPartnerLocation = await createNewPartnerLocation(partnerLocationData);
-  //     if (newPartnerLocation) {
-  //       // console.log(newPartnerLocation);
-  //       navigate('/');
-  //     }
-  //   } catch (e) {
-  //     console.error(`failed to create partner location ${e}`);
-  //   }
-  // };
+  const onSubmitClickedPartner = async () => {
+    try {
+      const partnerLocationData = {
+        username,
+        password,
+        email,
+        partnerType
+      };
+      const newPartnerLocation = await createNewPartnerLocation(partnerLocationData);
+      if (newPartnerLocation) {
+        // console.log(newPartnerLocation);
+        navigate('/');
+      }
+    } catch (e) {
+      console.error(`failed to create partner location ${e}`);
+    }
+  };
 
   return (
     <div
@@ -197,7 +197,7 @@ function SignUpPage() {
             />
           </Grid> */}
           <Grid item>
-            <Button onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedUser}>
+            <Button onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedPartner}>
               Sign Up
             </Button>
           </Grid>

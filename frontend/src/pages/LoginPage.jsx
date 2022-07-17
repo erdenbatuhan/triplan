@@ -5,7 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { loginUser } from '../queries/user-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-// import { loginPartnerLocation } from '../queries/partner-location-queries';
+import { loginPartnerLocation } from '../queries/partner-location-queries';
+
+function getDataFromToken(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace('-', '+').replace('_', '/');
+  const payload = atob(base64);
+  const partnerData = JSON.parse(payload);
+  return partnerData;
+}
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -44,24 +52,24 @@ function LoginPage() {
     }
   };
 
-  // const onSubmitClickedPartner = async () => {
-  //   try {
-  //     const partnerLocationData = {
-  //       username,
-  //       password,
-  //       partnerType
-  //     };
-  //     const message = await loginPartnerLocation(partnerLocationData);
-  //     const { token } = message;
-  //     authContext.loginUser(token);
-  //     if (token) {
-  //       const partnerData = getDataFromToken(token);
-  //       navigate(`/restaurant-profile/${partnerData.partnerLocation.id}`);
-  //     }
-  //   } catch (e) {
-  //     console.error(`failed to create partner location ${e}`);
-  //   }
-  // };
+  const onSubmitClickedPartner = async () => {
+    try {
+      const partnerLocationData = {
+        username,
+        password,
+        partnerType
+      };
+      const message = await loginPartnerLocation(partnerLocationData);
+      const { token } = message;
+      authContext.loginUser(token);
+      if (token) {
+        const partnerData = getDataFromToken(token);
+        navigate(`/restaurant-profile/${partnerData.partnerLocation.id}`);
+      }
+    } catch (e) {
+      console.error(`failed to create partner location ${e}`);
+    }
+  };
 
   return (
     <div
@@ -119,7 +127,7 @@ function LoginPage() {
             />
           </Grid>
           <Grid item>
-            <Button onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedUser}>
+            <Button onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedPartner}>
               Login
             </Button>
           </Grid>
