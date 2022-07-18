@@ -102,7 +102,7 @@ export default function RestaurantProfilePage() {
         </Grid>
         <Grid>
           <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
-            <List spacing={2} maxHeight="%100" overflow="auto">
+            <List spacing={2} overflow="auto">
               {menuList.map((menu, idx) => {
                 return (
                   <MenuCard
@@ -111,7 +111,7 @@ export default function RestaurantProfilePage() {
                     name={menu.name}
                     content={menu.content}
                     price={menu.price}
-                    img_url={menu.img_url}
+                    imgUrl={menu.img_url}
                   />
                 );
               })}

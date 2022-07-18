@@ -50,14 +50,6 @@ function EditRestaurantProfilePage() {
   // };
   const onSubmitClicked = async () => {
     try {
-      console.log('restaurant: ', restaurant);
-      console.log('restaurantName: ', restaurantName);
-      console.log('restaurantAddress: ', restaurantAddress);
-      console.log('restaurantPhoneNumber: ', restaurantPhoneNumber);
-      console.log('restaurantLocationPicture: ', restaurantLocationPicture);
-      console.log('restaurantCuisines: ', restaurantCuisines);
-      console.log('restaurantMenuList: ', restaurantMenuList);
-
       console.log('hey!');
     } catch (e) {
       console.error(`failed to create user ${e}`);
@@ -140,7 +132,7 @@ function EditRestaurantProfilePage() {
                     name={menu.name}
                     content={menu.content}
                     price={menu.price}
-                    img_url={menu.img_url}
+                    imgUrl={menu.img_url}
                   />
                 );
               })}

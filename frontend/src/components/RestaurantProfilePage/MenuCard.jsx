@@ -1,5 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/no-unused-prop-types */
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -9,14 +7,15 @@ import ListItem from '@mui/material/ListItem';
 import PropTypes from 'prop-types';
 
 export default function PlaceCard(props) {
+  const { name, content, price, imgUrl } = props;
   return (
     <Card sx={{ maxWidth: '%100' }}>
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={3}>
             <img
-              src={`${props.img_url}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${props.img_url}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+              src={`${imgUrl}?w=164&h=164&fit=crop&auto=format`}
+              srcSet={`${imgUrl}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
               alt=""
               loading="lazy"
               width={150}
@@ -27,10 +26,10 @@ export default function PlaceCard(props) {
             <ListItem>
               <CardContent>
                 <Typography gutterBottom variant="h3" component="div">
-                  {props.title}
+                  {name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {props.content}
+                  {content}
                 </Typography>
               </CardContent>
             </ListItem>
@@ -38,7 +37,7 @@ export default function PlaceCard(props) {
           <Grid item xs={3}>
             <CardContent>
               <Typography variant="h5" color="text.secondary">
-                {props.price}
+                {price}
               </Typography>
             </CardContent>
           </Grid>
@@ -49,8 +48,8 @@ export default function PlaceCard(props) {
 }
 
 PlaceCard.propTypes = {
-  title: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
-  img_url: PropTypes.string.isRequired
+  imgUrl: PropTypes.string.isRequired
 };
