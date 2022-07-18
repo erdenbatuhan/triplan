@@ -6,7 +6,7 @@ const tripLocationController = require("./../controllers/tripLocationController.
 /**
  * Creates a trip location
  * 
- * Query parameters (rating and comment) are optional for for creation.
+ * Query parameters (rating and comment) are optional for creation
  */
 router.post("/", async (req, res) => {
   try {
@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
 /**
  * Updates an existing trip location
  * 
- * Query parameters are rating and comment.
+ * Query parameters are rating and comment
  */
 router.put("/:id", async (req, res) => {
   try {
