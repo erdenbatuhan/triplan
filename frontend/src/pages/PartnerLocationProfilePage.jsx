@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 // import { Paper, List } from '@mui/material';
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -46,53 +47,50 @@ export default function PartnerLocationProfilePage() {
   }, [partnerId]);
 
   return (
-    <Grid container direction="row">
-      <Grid item xs={3} container direction="column" alignItems="center">
-        <Grid>
-          <img
-            src={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format`}
-            srcSet={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-            alt={mockImgData.title}
-            loading="lazy"
-            width={250}
-            height={250}
-          />
+    <Box
+      component="form"
+      noValidate
+      sx={{
+        mt: 4,
+        marginLeft: 5,
+        marginRight: 5,
+        marginBottom: 5,
+        minWidth: 400
+      }}>
+      <Grid container direction="row" spacing={8}>
+        <Grid item xs={3}>
+          <Stack spacing={4}>
+            <img
+              src={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format`}
+              srcSet={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+              alt={mockImgData.title}
+              loading="lazy"
+              width={250}
+              height={250}
+            />
+            <InfoCard title="Address" value={partner.address} />
+            <InfoCard title="Phone Number" value={partner.phone} />
+            <Button variant="contained" onClick={handleEditClick}>
+              Edit Profile
+            </Button>
+          </Stack>
         </Grid>
-        <Grid>
-          <InfoCard title="Address" value={partner.address} />
-        </Grid>
-        <Grid>
-          <InfoCard title="Phone Number" value={partner.phone} />
-        </Grid>
-        <Button variant="contained" onClick={handleEditClick}>
-          Edit Profile
-        </Button>
-      </Grid>
-      <Grid item xs={9} container direction="column" justifyContent="center" alignItems="center">
-        <Grid container direction="row" justifyContent="center" alignItems="center">
-          <Grid item xs={9}>
+        <Grid item xs={9}>
+          <Stack>
             <Typography gutterBottom variant="h1" component="div" align="center">
               {partner.name}
             </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <RestaurantCuisineDisplay cuisineList={cuisineList} />
-          </Grid>
-        </Grid>
-        {partnerLocationType === 'restaurant' ? (
-          <Stack>
-            <Grid item>
-              <RestaurantMenuItems restaurantMenuList={menuList} inEdit={false} />
-            </Grid>
-          </Stack>
-        ) : (
-          <Stack>
-            <Grid item>
+            {partnerLocationType === 'restaurant' ? (
+              <Stack>
+                <RestaurantCuisineDisplay cuisineList={cuisineList} />
+                <RestaurantMenuItems restaurantMenuList={menuList} inEdit={false} />
+              </Stack>
+            ) : (
               <div>Tickets Available</div>
-            </Grid>
+            )}
           </Stack>
-        )}
+        </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 }

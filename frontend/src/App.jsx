@@ -6,8 +6,6 @@ import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
 import CheckoutPage from './pages/CheckoutPage';
-import RestaurantProfilePage from './pages/RestaurantProfilePage';
-import EditRestaurantProfilePage from './pages/EditRestaurantProfilePage';
 import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -68,19 +66,6 @@ export default function App() {
           <Route
             path="/edit-partner-profile/:partnerId"
             element={isLoggedIn ? <EditPartnerLocationProfilePage /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/restaurant-profile/:restaurantId"
-            element={isLoggedIn ? <RestaurantProfilePage /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/edit-restaurant-profile/:restaurantId"
-            element={isLoggedIn ? <EditRestaurantProfilePage /> : <Navigate to="/" />}
-          />
-          <Route
-            // TODO: will update to EditMenuItemPage after adding MenuItem to restaurant profiles with ID
-            path="/edit-restaurant-profile/:restaurantId/:menuId"
-            element={isLoggedIn ? <EditRestaurantProfilePage /> : <Navigate to="/" />}
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

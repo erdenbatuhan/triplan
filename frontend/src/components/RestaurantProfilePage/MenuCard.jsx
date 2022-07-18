@@ -15,7 +15,7 @@ export default function MenuCard(props) {
   const { restaurantId } = useParams();
 
   const handleEditClick = () => {
-    navigate(`/edit-restaurant-profile/${restaurantId}/${menuId}`);
+    navigate(`/edit-partner-profile/${restaurantId}/${menuId}`);
   };
 
   return (
