@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Grid, Typography, TextField, Button, Paper, List } from '@mui/material';
-import MenuCard from '../components/RestaurantProfilePage/MenuCard';
+import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { getRestaurant } from '../queries/partner-location-queries';
+import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
+import EditRestaurantMenuItems from '../components/EditRestaurantMenuItems';
 
 function EditRestaurantProfilePage() {
   const [restaurant, setRestaurant] = useState({});
@@ -42,22 +43,29 @@ function EditRestaurantProfilePage() {
   const onRestaurantLocationPictureChanged = (e) => {
     setRestaurantLocationPicture(e.target.value);
   };
-  const onRestaurantCuisinesChanged = (e) => {
-    setRestaurantCuisines(e.target.value);
+  const handleCuisineChange = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setRestaurantCuisines((cuisines) => [...cuisines, value]);
+    } else {
+      setRestaurantCuisines((cuisines) => {
+        return cuisines.filter((cuisine) => cuisine !== value);
+      });
+    }
   };
-  // const onRestaurantMenuListChanged = (e) => {
-  //   setRestaurantMenuList(e.target.value);
-  // };
+
   const onSubmitClicked = async () => {
     try {
-      console.log('restaurant: ', restaurant);
-      console.log('restaurantName: ', restaurantName);
-      console.log('restaurantAddress: ', restaurantAddress);
-      console.log('restaurantPhoneNumber: ', restaurantPhoneNumber);
-      console.log('restaurantLocationPicture: ', restaurantLocationPicture);
-      console.log('restaurantCuisines: ', restaurantCuisines);
-      console.log('restaurantMenuList: ', restaurantMenuList);
-
+      const updatedRestaurant = {
+        _id: restaurantId,
+        name: restaurantName,
+        address: restaurantAddress,
+        phoneNumber: restaurantPhoneNumber,
+        locationPicture: restaurantLocationPicture,
+        cuisines: restaurantCuisines,
+        menuList: restaurantMenuList
+      };
+      console.log('updatedRestaurant: ', updatedRestaurant);
       console.log('hey!');
     } catch (e) {
       console.error(`failed to create user ${e}`);
@@ -122,30 +130,16 @@ function EditRestaurantProfilePage() {
           </Grid>
         </Grid>
         <Grid item>
-          <TextField
-            required
-            id="outlined-required"
-            label="Restaurant Cuisine Categories"
-            value={restaurantCuisines}
-            onChange={(e) => onRestaurantCuisinesChanged(e)}
+          <EditRestaurantCuisineBox
+            selectedItems={restaurantCuisines}
+            handleChange={handleCuisineChange}
           />
         </Grid>
         <Grid item>
-          <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
-            <List spacing={2} maxHeight="%100" overflow="auto">
-              {restaurantMenuList.map((menu) => {
-                return (
-                  <MenuCard
-                    key={menu.name}
-                    name={menu.name}
-                    content={menu.content}
-                    price={menu.price}
-                    img_url={menu.img_url}
-                  />
-                );
-              })}
-            </List>
-          </Paper>
+          <EditRestaurantMenuItems
+            restaurantMenuList={restaurantMenuList}
+            updateMenuList={setRestaurantMenuList}
+          />
         </Grid>
         <Grid item>
           <Button onClick={onSubmitClicked}>Update Profile</Button>
