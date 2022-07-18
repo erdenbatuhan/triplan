@@ -29,7 +29,7 @@ export default function TripPlanningPage() {
   const { state } = useLocation();
   const filterData = state ? state.filterData : partnerLocationDefaultFilter;
   const [filterState, setFilterState] = useState(filterData);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [partnerLocations, setPartnerLocations] = useState({
     restaurants: [],
     touristAttractions: []
@@ -57,6 +57,7 @@ export default function TripPlanningPage() {
 
   // Triggered each time the filter prop is changed
   useEffect(() => {
+    setLoading(true);
     getFilteredPartnerLocations(filterState)
       .then((data) => setPartnerLocations(data))
       .finally(() => setLoading(false));
