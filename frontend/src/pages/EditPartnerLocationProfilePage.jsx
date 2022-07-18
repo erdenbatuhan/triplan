@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button, Stack } from '@mui/material';
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
+import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
 import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 
@@ -13,6 +14,7 @@ function EditPartnerLocationProfilePage() {
   const [partnerLocationPicture, setRestaurantLocationPicture] = useState('');
   const [restaurantCuisines, setRestaurantCuisines] = useState([]);
   const [restaurantMenuList, setRestaurantMenuList] = useState([]);
+  const [ticketList, setTicketList] = useState([]);
 
   const { partnerId } = useParams();
   const location = useLocation();
@@ -31,18 +33,18 @@ function EditPartnerLocationProfilePage() {
       getRestaurant(partnerId).then((data) => {
         setPartner(data);
         setRestaurantCuisines(data.cuisines);
-        setRestaurantMenuList(data.menuList);
+      });
+      getMenuItems(partnerId).then((data) => {
+        setRestaurantMenuList(data);
       });
     } else if (partnerLocationType === 'tourist-attraction') {
       getTouristAttraction(partnerId).then((data) => {
         setPartner(data);
       });
+      getTickets(partnerId).then((data) => {
+        setTicketList(data);
+      });
     }
-    // getRestaurant(partnerId).then((data) => {
-    //   setRestaurant(data);
-    //   setRestaurantCuisines(data.cuisines);
-    //   setRestaurantMenuList(data.menuList);
-    // });
   }, [partnerId]);
 
   useEffect(() => {
@@ -163,7 +165,7 @@ function EditPartnerLocationProfilePage() {
             </Grid>
           </Stack>
         ) : (
-          <div>Naber</div>
+          <div>{ticketList}</div>
         )}
 
         <Grid item>

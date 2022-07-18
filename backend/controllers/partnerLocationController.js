@@ -289,7 +289,6 @@ const loginTouristAttraction = async (req, res) => {
 };
 
 const findRestaurantByUsername = (username) => {
-  console.log("username:", username);
   return Restaurant.find({ username: { $eq: username } });
 };
 

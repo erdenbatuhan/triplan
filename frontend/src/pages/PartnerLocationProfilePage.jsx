@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 import RestaurantCuisineDisplay from '../components/RestaurantProfilePage/RestaurantCuisineDisplay';
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
+import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import InfoCard from '../components/InfoCard';
 
 const mockImgData = {
@@ -20,6 +21,8 @@ export default function PartnerLocationProfilePage() {
   const [partner, setPartner] = useState({});
   const [cuisineList, setCuisineList] = useState([]);
   const [menuList, setMenuList] = useState([]);
+  const [ticketList, setTicketList] = useState([]);
+
   const location = useLocation();
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
@@ -35,13 +38,16 @@ export default function PartnerLocationProfilePage() {
       getRestaurant(partnerId).then((data) => {
         setPartner(data);
         setCuisineList(data.cuisines);
-        setMenuList(data.menuList);
+      });
+      getMenuItems(partnerId).then((data) => {
+        setMenuList(data);
       });
     } else if (partnerLocationType === 'tourist-attraction') {
       getTouristAttraction(partnerId).then((data) => {
         setPartner(data);
-        // setCuisineList(data.cuisines);
-        // setMenuList(data.menuList);
+      });
+      getTickets(partnerId).then((data) => {
+        setTicketList(data);
       });
     }
   }, [partnerId]);
@@ -86,7 +92,7 @@ export default function PartnerLocationProfilePage() {
                 <RestaurantMenuItems restaurantMenuList={menuList} inEdit={false} />
               </Stack>
             ) : (
-              <div>Tickets Available</div>
+              <div>{ticketList}</div>
             )}
           </Stack>
         </Grid>

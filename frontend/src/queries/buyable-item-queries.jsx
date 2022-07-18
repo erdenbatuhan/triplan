@@ -8,3 +8,19 @@ export async function getBuyableItems(partnerLocationIdData) {
     body: JSON.stringify(partnerLocationIdData)
   }).then((response) => response.json());
 }
+
+export async function getMenuItems(partnerLocationIdData) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/menu-item?id=${partnerLocationIdData}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
+
+export async function getTickets(partnerLocationIdData) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/ticket?id=${partnerLocationIdData}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
