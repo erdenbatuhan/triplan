@@ -12,13 +12,13 @@ const findDistinctCities = () => {
       Restaurant.distinct("city"),
       TouristAttraction.distinct("city"),
     ])
-    .then(([restaurantCities, touristAttractionCities]) => {
-      const allCities = [...restaurantCities, ...touristAttractionCities];
-      const distinctCities = [...new Set(allCities)];
+      .then(([restaurantCities, touristAttractionCities]) => {
+        const allCities = [...restaurantCities, ...touristAttractionCities];
+        const distinctCities = [...new Set(allCities)];
 
-      resolve(distinctCities);
-    })
-    .catch((err) => reject(err));
+        resolve(distinctCities);
+      })
+      .catch((err) => reject(err));
   });
 };
 
@@ -38,10 +38,10 @@ const findFiltered = (filterData) => {
         },
       }).sort({ createdAt: "desc" }),
     ])
-    .then(([restaurants, touristAttractions]) => {
-      resolve({ restaurants, touristAttractions });
-    })
-    .catch((err) => reject(err));
+      .then(([restaurants, touristAttractions]) => {
+        resolve({ restaurants, touristAttractions });
+      })
+      .catch((err) => reject(err));
   });
 };
 
@@ -57,10 +57,10 @@ const findByTripLocations = (tripLocationIds) => {
         associatedTripLocations: { $in: tripLocationIds },
       }),
     ])
-    .then(([restaurants, touristAttractions]) => {
-      resolve({ restaurants, touristAttractions });
-    })
-    .catch((err) => reject(err));
+      .then(([restaurants, touristAttractions]) => {
+        resolve({ restaurants, touristAttractions });
+      })
+      .catch((err) => reject(err));
   });
 };
 
@@ -70,7 +70,7 @@ const findRestaurantById = (restaurantId) => {
 
 const saveRestaurant = (restaurant) => {
   return Restaurant.findOneAndUpdate(
-    restaurant._id ? { "_id": restaurant._id } : null,
+    restaurant._id ? { _id: restaurant._id } : null,
     restaurant,
     { upsert: true, new: true }
   );
@@ -82,7 +82,7 @@ const findTouristAttractionById = (touristAttractionId) => {
 
 const saveTouristAttraction = (touristAttraction) => {
   return TouristAttraction.findOneAndUpdate(
-    touristAttraction._id ? { "_id": touristAttraction._id } : null,
+    touristAttraction._id ? { _id: touristAttraction._id } : null,
     touristAttraction,
     { upsert: true, new: true }
   );
@@ -92,7 +92,7 @@ const saveTouristAttraction = (touristAttraction) => {
  * Creates a partner location or updates an existing one
  */
 
- const signUpRestaurant = async (req, res) => {
+const signUpRestaurant = async (req, res) => {
   const { username, email, password, partnerLocationType } = req.body;
   try {
     // check if the partner location already exists
@@ -137,11 +137,16 @@ const signUpTouristAttraction = async (req, res) => {
   const { username, email, password, partnerLocationType } = req.body;
   try {
     // check if the partner location already exists
-    
-    TouristAttractionByUsername = await findTouristAttractionByUsername(username);
+
+    TouristAttractionByUsername = await findTouristAttractionByUsername(
+      username
+    );
     TouristAttractionByEmail = await findTouristAttractionByEmail(email);
 
-    if (TouristAttractionByUsername.length !== 0 || TouristAttractionByEmail.length !== 0) {
+    if (
+      TouristAttractionByUsername.length !== 0 ||
+      TouristAttractionByEmail.length !== 0
+    ) {
       return res.status(400).json({ msg: "Partner Location already exists" });
     }
     // hash partner location password
@@ -239,7 +244,10 @@ const loginTouristAttraction = async (req, res) => {
     }
 
     // check is the encrypted password matches
-    const isMatch = await bcrypt.compare(password, touristAttraction[0].password);
+    const isMatch = await bcrypt.compare(
+      password,
+      touristAttraction[0].password
+    );
 
     if (!isMatch) {
       return res.status(400).json({ msg: "Username or password incorrect" });
@@ -276,9 +284,8 @@ const loginTouristAttraction = async (req, res) => {
   }
 };
 
-
 const findRestaurantByUsername = (username) => {
-  console.log('username:', username);
+  console.log("username:", username);
   return Restaurant.find({ username: { $eq: username } });
 };
 
@@ -303,9 +310,15 @@ const insertTouristAttraction = (touristAttraction) => {
 };
 
 module.exports = {
-  findDistinctCities, findFiltered, findByTripLocations,
-  findRestaurantById, saveRestaurant,
-  findTouristAttractionById, saveTouristAttraction,
-  signUpRestaurant, signUpTouristAttraction, loginRestaurant,
-  loginTouristAttraction
+  findDistinctCities,
+  findFiltered,
+  findByTripLocations,
+  findRestaurantById,
+  saveRestaurant,
+  findTouristAttractionById,
+  saveTouristAttraction,
+  signUpRestaurant,
+  signUpTouristAttraction,
+  loginRestaurant,
+  loginTouristAttraction,
 };

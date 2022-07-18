@@ -61,6 +61,11 @@ function App() {
             path="/edit-restaurant-profile/:restaurantId"
             element={isLoggedIn ? <EditRestaurantProfilePage /> : <Navigate to="/" />}
           />
+          <Route
+            // TODO: will update to EditMenuItemPage after adding MenuItem to restaurant profiles with ID
+            path="/edit-restaurant-profile/:restaurantId/:menuId"
+            element={isLoggedIn ? <EditRestaurantProfilePage /> : <Navigate to="/" />}
+          />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
