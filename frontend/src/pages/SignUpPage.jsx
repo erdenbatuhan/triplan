@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { createNewUser } from '../queries/user-queries';
 import { createNewPartnerLocation } from '../queries/partner-location-queries';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { AuthUserContext } from '../authentication/AuthUserContext';
 
 function SignUpPage() {
   // const [firstName, setFirstName] = useState('');
@@ -13,6 +15,7 @@ function SignUpPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [partnerType, setPartnerType] = useState('user');
+  const authContext = useContext(AuthUserContext);
 
   const handleChange = (event, newLoginType) => {
     setPartnerType(newLoginType);
@@ -69,9 +72,11 @@ function SignUpPage() {
         partnerType
       };
       const newPartnerLocation = await createNewPartnerLocation(partnerLocationData);
-      if (newPartnerLocation) {
-        // console.log(newPartnerLocation);
-        navigate('/');
+      const { token } = newPartnerLocation;
+      authContext.loginUser(token);
+      if (token) {
+        const partnerData = UserAuthHelper.getDataFromToken(token);
+        navigate(`/edit-partner-profile/${partnerData.partnerLocation.id}`);
       }
     } catch (e) {
       console.error(`failed to create partner location ${e}`);

@@ -113,8 +113,8 @@ const signUpRestaurant = async (req, res) => {
     // return jwt
     const payload = {
       partnerLocation: {
-        id: newPartnerLocation._id,
-        username: newPartnerLocation.username,
+        id: newPartnerLocation[0]._id,
+        username: newPartnerLocation[0].username,
       },
     };
 

@@ -14,6 +14,8 @@ import SignUpPage from './pages/SignUpPage';
 import WalletPage from './pages/WalletPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
+import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
+import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 
 export default function App() {
   // const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
@@ -59,6 +61,14 @@ export default function App() {
           />
           <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
           <Route path="/wallet" element={isLoggedIn ? <WalletPage /> : <Navigate to="/" />} />
+          <Route
+            path="/partner-profile/:partnerId"
+            element={isLoggedIn ? <PartnerLocationProfilePage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/edit-partner-profile/:partnerId"
+            element={isLoggedIn ? <EditPartnerLocationProfilePage /> : <Navigate to="/" />}
+          />
           <Route
             path="/restaurant-profile/:restaurantId"
             element={isLoggedIn ? <RestaurantProfilePage /> : <Navigate to="/" />}
