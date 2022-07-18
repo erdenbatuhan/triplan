@@ -24,7 +24,7 @@ export default function PartnerLocationProfilePage() {
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
   const navigate = useNavigate();
-  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // tourist-attraction
+  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // tourist-attraction // restaurant
 
   const handleEditClick = () => {
     navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
@@ -69,7 +69,7 @@ export default function PartnerLocationProfilePage() {
               height={250}
             />
             <InfoCard title="Address" value={partner.address} />
-            <InfoCard title="Phone Number" value={partner.phone} />
+            <InfoCard title="Phone Number" value={partner.phoneNumber} />
             <Button variant="contained" onClick={handleEditClick}>
               Edit Profile
             </Button>

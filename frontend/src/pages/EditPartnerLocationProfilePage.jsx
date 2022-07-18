@@ -3,7 +3,6 @@ import { useParams, useLocation } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button, Stack } from '@mui/material';
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
 import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
-// import EditRestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 
 function EditPartnerLocationProfilePage() {
@@ -19,6 +18,13 @@ function EditPartnerLocationProfilePage() {
   const location = useLocation();
   // const partnerLocationType = location.state.partnerType;
   const partnerLocationType = location.state ? location.state.partnerType : 'restaurant';
+  const nameLabel = partnerLocationType === 'restaurant' ? 'Restaurant Name' : 'Museum Name';
+  const phoneLabel =
+    partnerLocationType === 'restaurant' ? 'Restaurant Phone Number' : 'Museum Phone Number';
+  const addressLabel =
+    partnerLocationType === 'restaurant' ? 'Restaurant Address' : 'Museum Address';
+  const pictureLabel =
+    partnerLocationType === 'restaurant' ? 'Restaurant Picture' : 'Museum Picture';
 
   useEffect(() => {
     if (partnerLocationType === 'restaurant') {
@@ -98,7 +104,7 @@ function EditPartnerLocationProfilePage() {
       }}>
       <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2}>
         <Grid item>
-          <Typography align="center">Update your restaurant profile page!</Typography>
+          <Typography align="center">Update your profile page!</Typography>
         </Grid>
         <Grid item>
           <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
@@ -106,7 +112,7 @@ function EditPartnerLocationProfilePage() {
               <TextField
                 required
                 id="outlined-required"
-                label="Restaurant Name"
+                label={nameLabel}
                 value={partnerName}
                 onChange={(e) => onRestaurantNameChanged(e)}
               />
@@ -115,7 +121,7 @@ function EditPartnerLocationProfilePage() {
               <TextField
                 required
                 id="outlined-required"
-                label="Restaurant Phone Number"
+                label={phoneLabel}
                 value={partnerPhoneNumber}
                 onChange={(e) => onRestaurantPhoneNumberChanged(e)}
               />
@@ -128,7 +134,7 @@ function EditPartnerLocationProfilePage() {
               <TextField
                 required
                 id="outlined-required"
-                label="Restaurant Address"
+                label={addressLabel}
                 value={partnerAddress}
                 onChange={(e) => onRestaurantAddressChanged(e)}
               />
@@ -137,7 +143,7 @@ function EditPartnerLocationProfilePage() {
               <TextField
                 required
                 id="outlined-required"
-                label="Restaurant Picture"
+                label={pictureLabel}
                 value={partnerLocationPicture}
                 onChange={(e) => onRestaurantLocationPictureChanged(e)}
               />
