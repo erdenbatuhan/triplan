@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Background from '../images/main-page-background.png';
+import Background from '../assets/main-page-background.png';
 import DatePicker from '../components/DatePicker';
 import SearchBar from '../components/SearchBar';
 import NavigationBar from '../components/NavigationBar';

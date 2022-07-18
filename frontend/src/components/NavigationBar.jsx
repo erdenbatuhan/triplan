@@ -30,15 +30,15 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
-  const navigateProfile = () => {
+  const navigateToProfile = () => {
     navigate('/user');
   };
 
-  const navigateWallet = () => {
+  const navigateToWallet = () => {
     navigate('/wallet');
   };
 
-  const navigateMainPage = () => {
+  const navigateToMainPage = () => {
     navigate('/main-page');
   };
 
@@ -50,7 +50,7 @@ export default function MenuAppBar() {
             <MenuIcon />
           </IconButton>
 
-          <IconButton size="large" color="inherit" onClick={navigateMainPage}>
+          <IconButton size="large" color="inherit" onClick={navigateToMainPage}>
             <HomeIcon />
           </IconButton>
 
@@ -80,8 +80,8 @@ export default function MenuAppBar() {
                 }}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}>
-                <MenuItem onClick={navigateProfile}>Profile</MenuItem>
-                <MenuItem onClick={navigateWallet}>Wallet</MenuItem>
+                <MenuItem onClick={navigateToProfile}>Profile</MenuItem>
+                <MenuItem onClick={navigateToWallet}>Wallet</MenuItem>
                 <MenuItem onClick={handleLogout}>Log out</MenuItem>
               </Menu>
             </div>
