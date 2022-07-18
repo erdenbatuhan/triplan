@@ -115,6 +115,7 @@ const signUpRestaurant = async (req, res) => {
       partnerLocation: {
         id: newPartnerLocation[0]._id,
         username: newPartnerLocation[0].username,
+        partnerType: newPartnerLocation[0].partnerType,
       },
     };
 
@@ -160,8 +161,9 @@ const signUpTouristAttraction = async (req, res) => {
     // return jwt
     const payload = {
       partnerLocation: {
-        id: newPartnerLocation._id,
-        username: newPartnerLocation.username,
+        id: newPartnerLocation[0]._id,
+        username: newPartnerLocation[0].username,
+        partnerType: newPartnerLocation[0].partnerType,
       },
     };
 
@@ -204,6 +206,7 @@ const loginRestaurant = async (req, res) => {
       partnerLocation: {
         id: restaurant[0]._id,
         username,
+        partnerType: restaurant[0].partnerType,
       },
     };
     jwt.sign(
@@ -257,6 +260,7 @@ const loginTouristAttraction = async (req, res) => {
       partnerLocation: {
         id: touristAttraction[0]._id,
         username,
+        partnerType: touristAttraction[0].partnerType,
       },
     };
     jwt.sign(

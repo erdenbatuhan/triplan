@@ -1,35 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, Grid, Typography, TextField, Button } from '@mui/material';
-import { getRestaurant } from '../queries/partner-location-queries';
+import { useParams, useLocation } from 'react-router-dom';
+import { Box, Grid, Typography, TextField, Button, Stack } from '@mui/material';
+import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
 import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
-import EditRestaurantMenuItems from '../components/EditRestaurantMenuItems';
+// import EditRestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
+import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 
 function EditPartnerLocationProfilePage() {
-  const [restaurant, setRestaurant] = useState({});
-  const [restaurantName, setRestaurantName] = useState('');
-  const [restaurantAddress, setRestaurantAddress] = useState('');
-  const [restaurantPhoneNumber, setRestaurantPhoneNumber] = useState('');
-  const [restaurantLocationPicture, setRestaurantLocationPicture] = useState('');
+  const [partner, setPartner] = useState({});
+  const [partnerName, setRestaurantName] = useState('');
+  const [partnerAddress, setRestaurantAddress] = useState('');
+  const [partnerPhoneNumber, setRestaurantPhoneNumber] = useState('');
+  const [partnerLocationPicture, setRestaurantLocationPicture] = useState('');
   const [restaurantCuisines, setRestaurantCuisines] = useState([]);
   const [restaurantMenuList, setRestaurantMenuList] = useState([]);
 
-  const { restaurantId } = useParams();
+  const { partnerId } = useParams();
+  const location = useLocation();
+  // const partnerLocationType = location.state.partnerType;
+  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant';
 
   useEffect(() => {
-    getRestaurant(restaurantId).then((data) => {
-      setRestaurant(data);
-      setRestaurantCuisines(data.cuisines);
-      setRestaurantMenuList(data.menuList);
-    });
-  }, [restaurantId]);
+    if (partnerLocationType === 'restaurant') {
+      getRestaurant(partnerId).then((data) => {
+        setPartner(data);
+        setRestaurantCuisines(data.cuisines);
+        setRestaurantMenuList(data.menuList);
+      });
+    } else if (partnerLocationType === 'tourist-attraction') {
+      getTouristAttraction(partnerId).then((data) => {
+        setPartner(data);
+      });
+    }
+    // getRestaurant(partnerId).then((data) => {
+    //   setRestaurant(data);
+    //   setRestaurantCuisines(data.cuisines);
+    //   setRestaurantMenuList(data.menuList);
+    // });
+  }, [partnerId]);
 
   useEffect(() => {
-    setRestaurantName(restaurant.name);
-    setRestaurantAddress(restaurant.address);
-    setRestaurantPhoneNumber(restaurant.phoneNumber);
-    setRestaurantLocationPicture(restaurant.locationPicture);
-  }, [restaurant]);
+    setRestaurantName(partner.name);
+    setRestaurantAddress(partner.address);
+    setRestaurantPhoneNumber(partner.phoneNumber);
+    setRestaurantLocationPicture(partner.locationPicture);
+  }, [partner]);
 
   const onRestaurantNameChanged = (e) => {
     setRestaurantName(e.target.value);
@@ -57,13 +72,13 @@ function EditPartnerLocationProfilePage() {
   const onSubmitClicked = async () => {
     try {
       const updatedRestaurant = {
-        _id: restaurantId,
-        name: restaurantName,
-        address: restaurantAddress,
-        phoneNumber: restaurantPhoneNumber,
-        locationPicture: restaurantLocationPicture,
-        cuisines: restaurantCuisines,
-        menuList: restaurantMenuList
+        _id: partnerId,
+        name: partnerName,
+        address: partnerAddress,
+        phoneNumber: partnerPhoneNumber,
+        locationPicture: partnerLocationPicture
+        // cuisines: restaurantCuisines,
+        // menuList: restaurantMenuList
       };
       console.log('updatedRestaurant: ', updatedRestaurant);
       console.log('hey!');
@@ -92,7 +107,7 @@ function EditPartnerLocationProfilePage() {
                 required
                 id="outlined-required"
                 label="Restaurant Name"
-                value={restaurantName}
+                value={partnerName}
                 onChange={(e) => onRestaurantNameChanged(e)}
               />
             </Grid>
@@ -101,7 +116,7 @@ function EditPartnerLocationProfilePage() {
                 required
                 id="outlined-required"
                 label="Restaurant Phone Number"
-                value={restaurantPhoneNumber}
+                value={partnerPhoneNumber}
                 onChange={(e) => onRestaurantPhoneNumberChanged(e)}
               />
             </Grid>
@@ -114,7 +129,7 @@ function EditPartnerLocationProfilePage() {
                 required
                 id="outlined-required"
                 label="Restaurant Address"
-                value={restaurantAddress}
+                value={partnerAddress}
                 onChange={(e) => onRestaurantAddressChanged(e)}
               />
             </Grid>
@@ -123,24 +138,28 @@ function EditPartnerLocationProfilePage() {
                 required
                 id="outlined-required"
                 label="Restaurant Picture"
-                value={restaurantLocationPicture}
+                value={partnerLocationPicture}
                 onChange={(e) => onRestaurantLocationPictureChanged(e)}
               />
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>
-          <EditRestaurantCuisineBox
-            selectedItems={restaurantCuisines}
-            handleChange={handleCuisineChange}
-          />
-        </Grid>
-        <Grid item>
-          <EditRestaurantMenuItems
-            restaurantMenuList={restaurantMenuList}
-            updateMenuList={setRestaurantMenuList}
-          />
-        </Grid>
+        {partnerLocationType === 'restaurant' ? (
+          <Stack>
+            <Grid item>
+              <EditRestaurantCuisineBox
+                selectedItems={restaurantCuisines}
+                handleChange={handleCuisineChange}
+              />
+            </Grid>
+            <Grid item>
+              <RestaurantMenuItems restaurantMenuList={restaurantMenuList} inEdit />
+            </Grid>
+          </Stack>
+        ) : (
+          <div>Naber</div>
+        )}
+
         <Grid item>
           <Button onClick={onSubmitClicked}>Update Profile</Button>
         </Grid>

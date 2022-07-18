@@ -8,14 +8,6 @@ import { AuthUserContext } from '../authentication/AuthUserContext';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { loginPartnerLocation } from '../queries/partner-location-queries';
 
-// function getDataFromToken(token) {
-//   const base64Url = token.split('.')[1];
-//   const base64 = base64Url.replace('-', '+').replace('_', '/');
-//   const payload = atob(base64);
-//   const partnerData = JSON.parse(payload);
-//   return partnerData;
-// }
-
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -65,7 +57,9 @@ function LoginPage() {
       authContext.loginUser(token);
       if (token) {
         const partnerData = UserAuthHelper.getDataFromToken(token);
-        navigate(`/partner-profile/${partnerData.partnerLocation.id}`);
+        navigate(`/partner-profile/${partnerData.partnerLocation.id}`, {
+          state: { partnerType: partnerData.partnerLocation.partnerType }
+        });
       }
     } catch (e) {
       console.error(`failed to create partner location ${e}`);

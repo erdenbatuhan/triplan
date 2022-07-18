@@ -1,9 +1,9 @@
 import React from 'react';
 import { Paper, List } from '@mui/material';
-import MenuCard from './RestaurantProfilePage/MenuCard';
+import MenuCard from './MenuCard';
 
-function EditRestaurantMenuItems(props) {
-  const { restaurantMenuList, updateMenuList } = props;
+function RestaurantMenuItems(props) {
+  const { restaurantMenuList, updateMenuList, inEdit } = props;
   return (
     <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
       <List spacing={2} overflow="auto">
@@ -17,7 +17,7 @@ function EditRestaurantMenuItems(props) {
               price={menu.price}
               imgUrl={menu.img_url}
               updateMenuList={updateMenuList}
-              inEdit
+              inEdit={inEdit}
             />
           );
         })}
@@ -26,4 +26,4 @@ function EditRestaurantMenuItems(props) {
   );
 }
 
-export default EditRestaurantMenuItems;
+export default RestaurantMenuItems;

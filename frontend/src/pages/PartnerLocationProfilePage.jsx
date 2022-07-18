@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+// import { Paper, List } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { List } from '@mui/material';
-import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import MenuCard from '../components/RestaurantProfilePage/MenuCard';
-import { getRestaurant } from '../queries/partner-location-queries';
+import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
+import RestaurantCuisineDisplay from '../components/RestaurantProfilePage/RestaurantCuisineDisplay';
+import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
+import InfoCard from '../components/InfoCard';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
@@ -14,24 +16,33 @@ const mockImgData = {
 };
 
 export default function PartnerLocationProfilePage() {
-  const [restaurant, setRestaurant] = useState({});
+  const [partner, setPartner] = useState({});
   const [cuisineList, setCuisineList] = useState([]);
   const [menuList, setMenuList] = useState([]);
-
+  const location = useLocation();
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
   const navigate = useNavigate();
+  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // tourist-attraction
 
   const handleEditClick = () => {
-    navigate(`/edit-restaurant-profile/${partnerId}`);
+    navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
   };
 
   useEffect(() => {
-    getRestaurant(partnerId).then((data) => {
-      setRestaurant(data);
-      setCuisineList(data.cuisines);
-      setMenuList(data.menuList);
-    });
+    if (partnerLocationType === 'restaurant') {
+      getRestaurant(partnerId).then((data) => {
+        setPartner(data);
+        setCuisineList(data.cuisines);
+        setMenuList(data.menuList);
+      });
+    } else if (partnerLocationType === 'tourist-attraction') {
+      getTouristAttraction(partnerId).then((data) => {
+        setPartner(data);
+        // setCuisineList(data.cuisines);
+        // setMenuList(data.menuList);
+      });
+    }
   }, [partnerId]);
 
   return (
@@ -39,8 +50,8 @@ export default function PartnerLocationProfilePage() {
       <Grid item xs={3} container direction="column" alignItems="center">
         <Grid>
           <img
-            src={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format`}
-            srcSet={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+            src={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format`}
+            srcSet={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
             alt={mockImgData.title}
             loading="lazy"
             width={250}
@@ -48,24 +59,10 @@ export default function PartnerLocationProfilePage() {
           />
         </Grid>
         <Grid>
-          <Typography variant="h6" color="text.primary">
-            Address
-          </Typography>
+          <InfoCard title="Address" value={partner.address} />
         </Grid>
         <Grid>
-          <Typography variant="body1" color="text.secondary">
-            {restaurant.address}
-          </Typography>
-        </Grid>
-        <Grid>
-          <Typography variant="h6" color="text.primary">
-            Phone Number
-          </Typography>
-        </Grid>
-        <Grid>
-          <Typography variant="body1" color="text.secondary">
-            {restaurant.phone}
-          </Typography>
+          <InfoCard title="Phone Number" value={partner.phone} />
         </Grid>
         <Button variant="contained" onClick={handleEditClick}>
           Edit Profile
@@ -75,50 +72,26 @@ export default function PartnerLocationProfilePage() {
         <Grid container direction="row" justifyContent="center" alignItems="center">
           <Grid item xs={9}>
             <Typography gutterBottom variant="h1" component="div" align="center">
-              {restaurant.name}
+              {partner.name}
             </Typography>
           </Grid>
           <Grid item xs={3}>
-            <Typography variant="h6" color="text.primary">
-              Cuisines
-            </Typography>
-
-            {cuisineList.map((c) => (
-              <Typography key={c} variant="body2" color="text.secondary">
-                {c}
-              </Typography>
-            ))}
-
-            {/* <List spacing={2} maxHeight="%100" overflow="auto">
-              {cl.map((c) => {
-                return (
-                  <Typography key={c} variant="body2" color="text.secondary">
-                    {c}
-                  </Typography>
-                );
-              })}
-            </List> */}
+            <RestaurantCuisineDisplay cuisineList={cuisineList} />
           </Grid>
         </Grid>
-        <Grid>
-          <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
-            <List spacing={2} overflow="auto">
-              {menuList.map((menu) => {
-                return (
-                  <MenuCard
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={menu.id}
-                    menuId={menu.id}
-                    name={menu.name}
-                    content={menu.content}
-                    price={menu.price}
-                    imgUrl={menu.img_url}
-                  />
-                );
-              })}
-            </List>
-          </Paper>
-        </Grid>
+        {partnerLocationType === 'restaurant' ? (
+          <Stack>
+            <Grid item>
+              <RestaurantMenuItems restaurantMenuList={menuList} inEdit={false} />
+            </Grid>
+          </Stack>
+        ) : (
+          <Stack>
+            <Grid item>
+              <div>Tickets Available</div>
+            </Grid>
+          </Stack>
+        )}
       </Grid>
     </Grid>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import TripCard from '../components/TripCard';
-import ProfileInfoCard from '../components/ProfileInfoCard';
+import InfoCard from '../components/InfoCard';
 
 const mockTripCardData = [
   {
@@ -87,7 +87,7 @@ function UserProfilePage() {
               <Stack direction="row" spacing={12}>
                 {mockProfileInfoCardData.map((infoData) => (
                   <Grid item key={infoData.id}>
-                    <ProfileInfoCard
+                    <InfoCard
                       key={infoData.id}
                       title={infoData.title}
                       value={infoData.value}

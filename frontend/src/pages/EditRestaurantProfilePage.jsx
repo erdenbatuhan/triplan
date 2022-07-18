@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { getRestaurant } from '../queries/partner-location-queries';
 import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
-import EditRestaurantMenuItems from '../components/EditRestaurantMenuItems';
+// import EditRestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
+import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 
 function EditRestaurantProfilePage() {
   const [restaurant, setRestaurant] = useState({});
@@ -136,10 +137,11 @@ function EditRestaurantProfilePage() {
           />
         </Grid>
         <Grid item>
-          <EditRestaurantMenuItems
+          {/* <EditRestaurantMenuItems
             restaurantMenuList={restaurantMenuList}
             updateMenuList={setRestaurantMenuList}
-          />
+          /> */}
+          <RestaurantMenuItems restaurantMenuList={restaurantMenuList} inEdit />
         </Grid>
         <Grid item>
           <Button onClick={onSubmitClicked}>Update Profile</Button>

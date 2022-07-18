@@ -3,7 +3,7 @@ import { Card, Grid, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-function ProfileInfoCard(props) {
+function InfoCard(props) {
   const { title, value, href } = props;
   const navigate = useNavigate();
 
@@ -11,11 +11,17 @@ function ProfileInfoCard(props) {
     navigate(href);
   };
 
+  const emptyFunction = () => {};
   return (
-    <Card onClick={cardClickHandler} sx={{ minWidth: 150 }} variant="outlined">
+    <Card
+      onClick={href !== 'None' ? cardClickHandler : emptyFunction}
+      sx={{ minWidth: 150 }}
+      variant="outlined">
       <Grid container direction="column" justifyContent="center" alignItems="center">
         <Grid item xs={9}>
-          <Typography align="center">{title}</Typography>
+          <Typography variant="h6" color="text.primary" align="center">
+            {title}:
+          </Typography>
         </Grid>
         <Grid item xs={3}>
           <Typography align="center">{value}</Typography>
@@ -25,13 +31,14 @@ function ProfileInfoCard(props) {
   );
 }
 
-ProfileInfoCard.propTypes = {
+InfoCard.propTypes = {
   title: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  href: PropTypes.string.isRequired
+  href: PropTypes.string
 };
 
-// ProfileInfoCard.defaultProps = {
-// };
+InfoCard.defaultProps = {
+  href: 'None'
+};
 
-export default ProfileInfoCard;
+export default InfoCard;
