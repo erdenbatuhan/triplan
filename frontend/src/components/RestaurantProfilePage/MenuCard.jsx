@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { Button, Stack } from '@mui/material';
 
 export default function MenuCard(props) {
-  const { menuId, name, content, price, imgUrl, inEdit } = props;
+  const { menuId, name, content, price, image, inEdit } = props;
   const navigate = useNavigate();
   const { partnerId } = useParams();
 
@@ -25,8 +25,8 @@ export default function MenuCard(props) {
           <Grid container spacing={2}>
             <Grid item xs={3}>
               <img
-                src={`${imgUrl}?w=164&h=164&fit=crop&auto=format`}
-                srcSet={`${imgUrl}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                src={`${image}?w=164&h=164&fit=crop&auto=format`}
+                srcSet={`${image}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                 alt=""
                 loading="lazy"
                 width={150}
@@ -65,7 +65,7 @@ MenuCard.propTypes = {
   name: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
-  imgUrl: PropTypes.string.isRequired,
+  image: PropTypes.string.isRequired,
   inEdit: PropTypes.bool
 };
 

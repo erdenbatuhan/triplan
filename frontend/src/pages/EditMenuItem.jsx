@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-function EditMenuItemPage() {
+function EditMenuItem() {
   // const navigate = useNavigate();
   const { partnerId, menuId } = useParams();
 
@@ -16,4 +16,4 @@ function EditMenuItemPage() {
   );
 }
 
-export default EditMenuItemPage;
+export default EditMenuItem;

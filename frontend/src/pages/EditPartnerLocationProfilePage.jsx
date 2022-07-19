@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
-import { Box, Grid, Typography, TextField, Button, Stack } from '@mui/material';
+import { Box, Grid, Typography, TextField, Button, Stack, Paper, List } from '@mui/material';
 import {
   getRestaurant,
   getTouristAttraction,
@@ -9,7 +9,8 @@ import {
 } from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
-import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
+// import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
+import MenuCard from '../components/RestaurantProfilePage/MenuCard';
 
 function EditPartnerLocationProfilePage() {
   const [partner, setPartner] = useState({});
@@ -81,6 +82,11 @@ function EditPartnerLocationProfilePage() {
       });
     }
   };
+
+  // const handleUpdateMenuList = () => {
+  //   console.log('hey');
+  // };
+
   const handleAddMenuItem = async () => {
     console.log('hey');
   };
@@ -173,7 +179,29 @@ function EditPartnerLocationProfilePage() {
               />
             </Grid>
             <Grid item>
-              <RestaurantMenuItems restaurantMenuList={restaurantMenuList} inEdit />
+              {/* <RestaurantMenuItems
+                restaurantMenuList={restaurantMenuList}
+                handleUpdateMenuList={handleUpdateMenuList}
+                inEdit
+              /> */}
+              <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
+                <List spacing={2} overflow="auto">
+                  {restaurantMenuList.map((menu) => {
+                    return (
+                      <MenuCard
+                        key={menu._id}
+                        menuId={menu._id}
+                        name={menu.name}
+                        content={menu.description}
+                        price={menu.price.toString()}
+                        image={menu.image}
+                        // updateMenuList={updateMenuList}
+                        inEdit
+                      />
+                    );
+                  })}
+                </List>
+              </Paper>
             </Grid>
           </Stack>
         ) : (
