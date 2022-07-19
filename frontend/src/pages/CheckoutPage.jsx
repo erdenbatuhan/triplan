@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import CircleIcon from '@mui/icons-material/Circle';
 import Header from '../components/Header';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
@@ -103,9 +111,10 @@ export default function CheckoutPage() {
               height: '50em',
               '& ul': { padding: 0 }
             }}>
-            {partnerLocations.map(({ partnerLocation, partnerLocationType }, idx) => (
-              <li key={`CheckoutPage-CheckoutItemCard-${partnerLocation._id}`}>
-                {partnerLocation ? (
+            {partnerLocations
+              .filter(({ partnerLocation }) => partnerLocation)
+              .map(({ partnerLocation, partnerLocationType }, idx) => (
+                <li key={`CheckoutPage-CheckoutItemCard-${partnerLocation._id}`}>
                   <ul>
                     <CheckoutItemCard
                       loading={loading}
@@ -118,16 +127,90 @@ export default function CheckoutPage() {
                       onItemSelectionChange={handleItemSelectionCountChange}
                     />
                   </ul>
-                ) : (
-                  []
-                )}
-              </li>
-            ))}
+                </li>
+              ))}
           </List>
         </Grid>
 
         <Grid item xs={4}>
           <Header title="Paid Services" />
+
+          <List
+            sx={{
+              width: '100%',
+              bgcolor: 'background.paper',
+              position: 'relative',
+              overflow: 'auto',
+              height: '50em',
+              '& ul': { padding: 0 }
+            }}>
+            <li>
+              <ul>
+                <Card sx={{ display: 'flex', margin: '10px' }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+                    <CardContent sx={{ flex: '1 0 auto' }}>
+                      <List
+                        sx={{
+                          width: '100%',
+                          bgcolor: 'background.paper',
+                          position: 'relative',
+                          overflow: 'auto',
+                          height: '30em',
+                          '& ul': { padding: 0 }
+                        }}
+                        subheader={<li />}>
+                        {partnerLocations
+                          .filter(({ partnerLocation }) => {
+                            return (
+                              partnerLocation && // Partner location exists
+                              buyableItemSelections[partnerLocation._id] && // Buyable item selection object for that location exists
+                              Object.values(buyableItemSelections[partnerLocation._id]).some(
+                                (count) => Boolean(count)
+                              ) // At least one of the items of the location is selected
+                            );
+                          })
+                          .map(({ partnerLocation }) => (
+                            <li
+                              key={`CheckoutPage-SelectedPaidServices-Parent-${partnerLocation._id}`}>
+                              <ul>
+                                <ListSubheader sx={{ fontWeight: 500 }}>
+                                  {partnerLocation.name}
+                                </ListSubheader>
+
+                                {buyableItemData[partnerLocation._id].map((item) => {
+                                  const itemSelectionCount =
+                                    buyableItemSelections[partnerLocation._id][item._id];
+
+                                  // If the item has not been selected
+                                  if (!itemSelectionCount) {
+                                    return [];
+                                  }
+
+                                  const finalPrice = item.price * itemSelectionCount;
+
+                                  return (
+                                    <ListItem
+                                      key={`CheckoutPage-SelectedPaidServices-Child-${[item._id]}`}>
+                                      <ListItemIcon sx={{ minWidth: '2em' }}>
+                                        <CircleIcon sx={{ fontSize: '1em' }} />
+                                      </ListItemIcon>
+
+                                      <ListItemText
+                                        primary={`${item.name} (${item.price} €) x ${itemSelectionCount} = ${finalPrice} €`}
+                                      />
+                                    </ListItem>
+                                  );
+                                })}
+                              </ul>
+                            </li>
+                          ))}
+                      </List>
+                    </CardContent>
+                  </Box>
+                </Card>
+              </ul>
+            </li>
+          </List>
         </Grid>
 
         <Grid item xs={1} />

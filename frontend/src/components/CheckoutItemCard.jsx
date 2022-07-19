@@ -76,36 +76,38 @@ export default function CheckoutItemCard({
                 marginTop: '10px',
                 '& ul': { padding: 0 }
               }}>
-              {items.map((item) => (
-                <li key={`CheckoutItemCard-ListItem-${item._id}`}>
-                  <ul>
-                    <ListItem>
-                      <ListItemAvatar>
-                        {item.image ? (
-                          <Avatar src={item.image} />
-                        ) : (
-                          <Avatar>
-                            {partnerLocationType === PARTNER_LOCATION_TYPE_RESTAURANT ? (
-                              <FastfoodIcon />
-                            ) : (
-                              <ConfirmationNumberIcon />
-                            )}
-                          </Avatar>
-                        )}
-                      </ListItemAvatar>
+              {items
+                .filter((item) => {
+                  return updatedItemSelections[item._id] || updatedItemSelections[item._id] === 0;
+                })
+                .map((item) => (
+                  <li key={`CheckoutItemCard-ListItem-${item._id}`}>
+                    <ul>
+                      <ListItem>
+                        <ListItemAvatar>
+                          {item.image ? (
+                            <Avatar src={item.image} />
+                          ) : (
+                            <Avatar>
+                              {partnerLocationType === PARTNER_LOCATION_TYPE_RESTAURANT ? (
+                                <FastfoodIcon />
+                              ) : (
+                                <ConfirmationNumberIcon />
+                              )}
+                            </Avatar>
+                          )}
+                        </ListItemAvatar>
 
-                      <Grid container spacing={0}>
-                        <Grid sx={{ width: '300px' }} item xs={5}>
-                          <ListItemText
-                            primary={`${item.name} (${item.price} €)`}
-                            secondary={item.description}
-                          />
-                        </Grid>
+                        <Grid container spacing={0}>
+                          <Grid sx={{ width: '300px' }} item xs={5}>
+                            <ListItemText
+                              primary={`${item.name} (${item.price} €)`}
+                              secondary={item.description}
+                            />
+                          </Grid>
 
-                        <Grid item xs={3}>
-                          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                            {updatedItemSelections[item._id] ||
-                            updatedItemSelections[item._id] === 0 ? (
+                          <Grid item xs={3}>
+                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                               <Select
                                 sx={{ margin: '0px 2em' }}
                                 value={updatedItemSelections[item._id]}
@@ -127,29 +129,26 @@ export default function CheckoutItemCard({
                                   }
                                 )}
                               </Select>
+                            </FormControl>
+                          </Grid>
+
+                          <Grid item xs={2}>
+                            {updatedItemSelections[item._id] ? (
+                              <ListItemText
+                                primary="Price:"
+                                secondary={`${item.price * updatedItemSelections[item._id]} €`}
+                              />
                             ) : (
                               []
                             )}
-                          </FormControl>
-                        </Grid>
+                          </Grid>
 
-                        <Grid item xs={2}>
-                          {updatedItemSelections[item._id] ? (
-                            <ListItemText
-                              primary="Price:"
-                              secondary={`${item.price * updatedItemSelections[item._id]} €`}
-                            />
-                          ) : (
-                            []
-                          )}
+                          <Grid item xs={2} />
                         </Grid>
-
-                        <Grid item xs={2} />
-                      </Grid>
-                    </ListItem>
-                  </ul>
-                </li>
-              ))}
+                      </ListItem>
+                    </ul>
+                  </li>
+                ))}
             </List>
           )}
         </CardContent>
