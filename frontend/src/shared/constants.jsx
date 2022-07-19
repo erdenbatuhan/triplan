@@ -62,8 +62,8 @@ export const touristAttractions = [
   'meal_takeaway'
 ];
 
-export const PARTNER_LOCATION_TYPE_RESTAURANT = 'RESTAURANT';
-export const PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION = 'TOURIST_ATTRACTION';
+export const PARTNER_LOCATION_TYPE_RESTAURANT = 'Restaurant';
+export const PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION = 'TouristAttraction';
 
 export const TRANSACTION_TYPE_DEPOSIT = 'Deposit';
 export const TRANSACTION_TYPE_WITHDRAW = 'Withdraw';

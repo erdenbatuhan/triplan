@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItem from '@mui/material/ListItem';
@@ -11,6 +13,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import CircleIcon from '@mui/icons-material/Circle';
 import Header from '../components/Header';
 import CheckoutItemCard from '../components/CheckoutItemCard';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { findUserWallet } from '../queries/user-queries';
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
 import {
@@ -20,11 +24,14 @@ import {
 
 export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [wallet, setWallet] = useState(null);
   const [partnerLocations, setPartnerLocations] = useState([]); // Received from the previous route
   const [buyableItemData, setBuyableItemData] = useState({});
   const [buyableItemSelections, setBuyableItemSelections] = useState({});
-  const [latestSelectionUpdate, setLatestSelectionUpdate] = useState(new Date()); // Used for easier force-rendering
-  const [servicesToBeBought, setServicesToBeBought] = useState([]); // Used for easier force-rendering
+  const [latestSelectionUpdateDate, setLatestSelectionUpdateDate] = useState(new Date()); // Used for easier force-rendering
+  const [servicesToBeBought, setServicesToBeBought] = useState([]);
+  const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
 
   /**
    * TODO (REMOVE): The following (useEffect) is for mock data, remove when we start receiving partnerLocations from router
@@ -48,6 +55,15 @@ export default function CheckoutPage() {
       .then((data) => setPartnerLocations(data))
       .finally(() => setLoading(false));
   }, []);
+
+  // Listen to the changes in authenticated user
+  useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+
+    findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
+  }, [authenticatedUser]);
 
   // Listen to the changes in partnerLocationData
   useEffect(() => {
@@ -74,13 +90,13 @@ export default function CheckoutPage() {
         partnerLocations.forEach(({ partnerLocation }) => {
           emptyBuyableItemSelections[partnerLocation._id] = Object.assign(
             {},
-            ...fetchedBuyableItemData[partnerLocation._id].map((item) => ({ [item._id]: 0 }))
+            ...fetchedBuyableItemData[partnerLocation._id].map((item) => ({ [item._id]: 1 }))
           );
         });
 
         setBuyableItemData(fetchedBuyableItemData);
         setBuyableItemSelections(emptyBuyableItemSelections);
-        setLatestSelectionUpdate(new Date()); // Forces re-rendering
+        setLatestSelectionUpdateDate(new Date()); // Forces re-rendering
       })
       .finally(() => {
         setLoading(false);
@@ -126,6 +142,18 @@ export default function CheckoutPage() {
     });
 
     setServicesToBeBought(updatedServicesToBeBought);
+
+    // Calculate the total paid service price using the services to be bought
+    const totalPrice = updatedServicesToBeBought.reduce(
+      (accumTotalPrice, { itemsToBeBought }) =>
+        accumTotalPrice +
+        itemsToBeBought.reduce(
+          (accumLocationPrice, item) => accumLocationPrice + item.finalPrice,
+          0 // Initial value
+        ),
+      0 // Initial value
+    );
+    setTotalPaidServicePrice(totalPrice);
   }, [buyableItemSelections]);
 
   const handleItemSelectionCountChange = ({ partnerLocationId, updatedItemSelections }) => {
@@ -133,7 +161,7 @@ export default function CheckoutPage() {
       ...buyableItemSelections,
       [partnerLocationId]: updatedItemSelections // Add the updated selections to the object
     });
-    setLatestSelectionUpdate(new Date()); // Forces re-rendering
+    setLatestSelectionUpdateDate(new Date()); // Forces re-rendering
   };
 
   return (
@@ -165,8 +193,8 @@ export default function CheckoutPage() {
                       partnerLocationType={partnerLocationType}
                       items={buyableItemData[partnerLocation._id] || []}
                       itemSelections={buyableItemSelections[partnerLocation._id] || []}
-                      latestSelectionUpdate={latestSelectionUpdate}
                       onItemSelectionChange={handleItemSelectionCountChange}
+                      latestSelectionUpdateDate={latestSelectionUpdateDate}
                     />
                   </ul>
                 </li>
@@ -227,6 +255,46 @@ export default function CheckoutPage() {
                           </li>
                         ))}
                       </List>
+
+                      <Box
+                        sx={{
+                          bgcolor: 'background.paper',
+                          boxShadow: 1,
+                          borderRadius: 2,
+                          p: 2,
+                          minWidth: 300
+                        }}>
+                        <Box sx={{ color: 'text.secondary' }}> Total </Box>
+
+                        <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
+                          {totalPaidServicePrice} €
+                        </Box>
+
+                        {wallet && wallet.balance ? (
+                          <div>
+                            <Box
+                              sx={{
+                                color: `${
+                                  totalPaidServicePrice <= wallet.balance ? 'success' : 'error'
+                                }.dark`,
+                                display: 'inline',
+                                fontWeight: 'bold',
+                                mx: 0.5,
+                                fontSize: 14
+                              }}>
+                              {Number(
+                                ((totalPaidServicePrice / wallet.balance) * 100).toPrecision(4)
+                              )}
+                              %
+                            </Box>
+                            <Box sx={{ color: 'text.secondary', display: 'inline', fontSize: 14 }}>
+                              of your wallet balance
+                            </Box>
+                          </div>
+                        ) : (
+                          []
+                        )}
+                      </Box>
                     </CardContent>
                   </Box>
                 </Card>
