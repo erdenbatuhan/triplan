@@ -18,7 +18,7 @@ export default function CheckoutPage() {
   const [latestSelectionUpdate, setLatestSelectionUpdate] = useState(new Date()); // Used for easier force-rendering
 
   /**
-   * TODO: The following is the mock data, remove when everything is connected to the backend
+   * TODO: The following (useEffect) is for mock data, remove when we start receiving partnerLocations from router
    */
   useEffect(() => {
     setLoading(true);
@@ -71,7 +71,7 @@ export default function CheckoutPage() {
 
         setBuyableItemData(fetchedBuyableItemData);
         setBuyableItemSelections(emptyBuyableItemSelections);
-        setLatestSelectionUpdate(new Date());
+        setLatestSelectionUpdate(new Date()); // Forces re-rendering
       })
       .finally(() => {
         setLoading(false);
@@ -79,10 +79,11 @@ export default function CheckoutPage() {
   }, [partnerLocations]);
 
   const handleItemSelectionCountChange = ({ partnerLocationId, updatedItemSelections }) => {
-    buyableItemSelections[partnerLocationId] = updatedItemSelections;
-
-    setBuyableItemSelections(buyableItemSelections);
-    setLatestSelectionUpdate(new Date());
+    setBuyableItemSelections({
+      ...buyableItemSelections,
+      [partnerLocationId]: updatedItemSelections // Add the updated selections to the object
+    });
+    setLatestSelectionUpdate(new Date()); // Forces re-rendering
   };
 
   return (
