@@ -48,7 +48,7 @@ export default function MenuCard(props) {
             <Grid item xs={3}>
               <CardContent>
                 <Typography variant="h5" color="text.secondary">
-                  {price}
+                  {price} €
                 </Typography>
               </CardContent>
             </Grid>
