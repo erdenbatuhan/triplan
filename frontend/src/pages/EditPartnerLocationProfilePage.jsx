@@ -7,7 +7,12 @@ import {
   saveRestaurant,
   saveTouristAttraction
 } from '../queries/partner-location-queries';
-import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
+import {
+  getMenuItems,
+  getTickets,
+  updateMenuItem,
+  updateTicket
+} from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/RestaurantProfilePage/EditRestaurantCuisineBox';
 // import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
@@ -168,16 +173,20 @@ function EditPartnerLocationProfilePage() {
         locationPicture: partnerLocationPicture
       };
       if (partnerLocationType === 'restaurant') {
-        await saveRestaurant({
-          ...updatedLocation,
-          phoneNumber: partnerPhoneNumber,
-          cuisines: restaurantCuisines
-        });
+        Promise.all([
+          saveRestaurant({
+            ...updatedLocation,
+            phoneNumber: partnerPhoneNumber,
+            cuisines: restaurantCuisines
+          }),
+          restaurantMenuList.map((menu) => updateMenuItem(menu))
+        ]).then(() => console.log('update is completed!'));
       } else if (partnerLocationType === 'tourist-attraction') {
-        await saveTouristAttraction(updatedLocation);
+        Promise.all([
+          saveTouristAttraction(updatedLocation),
+          ticketList.map((ticket) => updateTicket(ticket))
+        ]).then(() => console.log('update is completed!'));
       }
-      // restaurantMenuList
-      // ticketList
       navigate(`/partner-profile/${partnerId}`);
     } catch (e) {
       console.error(`failed to update partner location ${e}`);

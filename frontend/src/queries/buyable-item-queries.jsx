@@ -24,3 +24,25 @@ export async function getTickets(partnerLocationIdData) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function updateMenuItem(menu) {
+  const { _id, name, description, price, type, image } = menu;
+  const queryParams = `name=${name}&description=${description}&price=${price}&type=${type}&image=${image}`;
+
+  return await fetch(`${HOST_BUYABLE_ITEM}/menu-item/${_id}?${queryParams}`, {
+    method: `PUT`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
+
+export async function updateTicket(menu) {
+  const { _id, name, description, price } = menu; // reservationDate
+  const queryParams = `name=${name}&description=${description}&price=${price}`;
+
+  return await fetch(`${HOST_BUYABLE_ITEM}/ticket/${_id}?${queryParams}`, {
+    method: `PUT`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
