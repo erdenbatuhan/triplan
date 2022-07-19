@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button, Stack, Paper, List } from '@mui/material';
 import {
   getRestaurant,
   getTouristAttraction,
-  saveRestaurant
-  // saveTouristAttraction
+  saveRestaurant,
+  saveTouristAttraction
 } from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/RestaurantProfilePage/EditRestaurantCuisineBox';
@@ -19,15 +19,20 @@ function EditPartnerLocationProfilePage() {
   const [partnerAddress, setRestaurantAddress] = useState('');
   const [partnerPhoneNumber, setRestaurantPhoneNumber] = useState('');
   const [partnerLocationPicture, setRestaurantLocationPicture] = useState('');
+
+  // TODO: add food types for restaurants
   const [restaurantCuisines, setRestaurantCuisines] = useState([]);
   const [restaurantMenuList, setRestaurantMenuList] = useState([]);
   const [menuItemsInEdit, setMenuItemsInEdit] = useState([]);
+
   const [ticketList, setTicketList] = useState([]);
   const [ticketsInEdit, setTicketsInEdit] = useState([]);
 
   const [itemsInEdit, setItemsInEdit] = useState(false);
 
+  // TODO: will get partnerLocationType from auth token once the update on authentication occurs.
   const { partnerId } = useParams();
+  const navigate = useNavigate();
   const location = useLocation();
   // const partnerLocationType = location.state.partnerType;
   const partnerLocationType = location.state ? location.state.partnerType : 'restaurant';
@@ -88,16 +93,66 @@ function EditPartnerLocationProfilePage() {
     }
   };
 
+  const handleItemEditMode = () => {
+    if (partnerLocationType === 'restaurant') {
+      setItemsInEdit(() => {
+        return menuItemsInEdit.length > 1;
+      });
+    } else if (partnerLocationType === 'tourist-attraction') {
+      setItemsInEdit(() => {
+        return ticketsInEdit.length > 1;
+      });
+    }
+  };
+
   const handleEditClick = (e) => {
     const editItemId = e.target.value;
     if (partnerLocationType === 'restaurant') {
       const editItem = restaurantMenuList.filter((menu) => menu._id === editItemId)[0];
       setMenuItemsInEdit((menuItems) => [...menuItems, editItem]);
     } else if (partnerLocationType === 'tourist-attraction') {
-      const editItem = ticketList.filter((ticket) => ticket._id === editItemId);
+      const editItem = ticketList.filter((ticket) => ticket._id === editItemId)[0];
       setTicketsInEdit((tickets) => [...tickets, editItem]);
     }
     setItemsInEdit(true);
+  };
+
+  const handleUpdateCompletionClick = (e, updateParams) => {
+    const { _id, itemName, itemDescription, itemPrice } = updateParams;
+    if (partnerLocationType === 'restaurant') {
+      const { itemType, itemPicture } = updateParams;
+      setRestaurantMenuList((menuItems) => {
+        const items = [...menuItems];
+        const idxItem = items.findIndex((item) => item._id === _id);
+        const menuItemsEdited = { ...items[idxItem] };
+        menuItemsEdited.name = itemName;
+        menuItemsEdited.description = itemDescription;
+        menuItemsEdited.price = itemPrice;
+        menuItemsEdited.type = itemType;
+        menuItemsEdited.image = itemPicture;
+        items[idxItem] = menuItemsEdited;
+        return items;
+      });
+      setMenuItemsInEdit((menuItems) => {
+        return menuItems.filter((menuItem) => menuItem._id !== _id);
+      });
+    } else if (partnerLocationType === 'tourist-attraction') {
+      // const { ticketReservationDate } = updateParams;
+      setTicketList((ticketItems) => {
+        const items = [...ticketItems];
+        const idxItem = items.findIndex((item) => item._id === _id);
+        const ticketItemsEdited = { ...items[idxItem] };
+        ticketItemsEdited.name = itemName;
+        ticketItemsEdited.description = itemDescription;
+        ticketItemsEdited.price = itemPrice;
+        items[idxItem] = ticketItemsEdited;
+        return items;
+      });
+      setTicketsInEdit((tickets) => {
+        return tickets.filter((ticket) => ticket._id !== _id);
+      });
+    }
+    handleItemEditMode();
   };
 
   const handleAddMenuItem = async () => {
@@ -106,23 +161,26 @@ function EditPartnerLocationProfilePage() {
 
   const onSubmitClicked = async () => {
     try {
+      const updatedLocation = {
+        _id: partnerId,
+        name: partnerName,
+        address: partnerAddress,
+        locationPicture: partnerLocationPicture
+      };
       if (partnerLocationType === 'restaurant') {
-        const updatedRestaurant = {
-          _id: partnerId,
-          name: partnerName,
-          address: partnerAddress,
+        await saveRestaurant({
+          ...updatedLocation,
           phoneNumber: partnerPhoneNumber,
-          locationPicture: partnerLocationPicture,
           cuisines: restaurantCuisines
-          // menuList: restaurantMenuList
-        };
-        await saveRestaurant(updatedRestaurant);
+        });
       } else if (partnerLocationType === 'tourist-attraction') {
-        console.log('hey');
-        // await saveTouristAttraction(updatedTouristAttraction);
+        await saveTouristAttraction(updatedLocation);
       }
+      // restaurantMenuList
+      // ticketList
+      navigate(`/partner-profile/${partnerId}`);
     } catch (e) {
-      console.error(`failed to create user ${e}`);
+      console.error(`failed to update partner location ${e}`);
     }
   };
   return (
@@ -218,7 +276,14 @@ function EditPartnerLocationProfilePage() {
               </Paper>
               {itemsInEdit ? (
                 menuItemsInEdit.map((menu) => {
-                  return <EditMenuItem key={menu._id} menuId={menu._id} />;
+                  return (
+                    <EditMenuItem
+                      key={menu._id}
+                      item={menu}
+                      locationType={partnerLocationType}
+                      handleUpdateCompletionClick={handleUpdateCompletionClick}
+                    />
+                  );
                 })
               ) : (
                 // eslint-disable-next-line react/jsx-no-useless-fragment
@@ -231,7 +296,14 @@ function EditPartnerLocationProfilePage() {
             {ticketList}
             {itemsInEdit ? (
               ticketsInEdit.map((ticket) => {
-                return <EditMenuItem key={ticket._id} menuId={ticket._id} />;
+                return (
+                  <EditMenuItem
+                    key={ticket._id}
+                    item={ticket}
+                    locationType={partnerLocationType}
+                    handleUpdateCompletionClick={handleUpdateCompletionClick}
+                  />
+                );
               })
             ) : (
               // eslint-disable-next-line react/jsx-no-useless-fragment
@@ -240,7 +312,7 @@ function EditPartnerLocationProfilePage() {
           </div>
         )}
         <Grid item>
-          <Button onClick={handleAddMenuItem}>Add Menu</Button>
+          <Button onClick={handleAddMenuItem}>Add New Menu</Button>
         </Grid>
         <Grid item>
           <Button onClick={onSubmitClicked}>Update Profile</Button>
