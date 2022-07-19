@@ -61,3 +61,21 @@ export const touristAttractions = [
   'university',
   'meal_takeaway'
 ];
+
+export const PARTNER_LOCATION_TYPE_RESTAURANT = 'RESTAURANT';
+export const PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION = 'TOURIST_ATTRACTION';
+
+export const CURRENCIES = [
+  {
+    value: 'USD',
+    label: '$'
+  },
+  {
+    value: 'EUR',
+    label: '€'
+  }
+];
+
+export const TRANSACTION_TYPE_DEPOSIT = 'Deposit';
+export const TRANSACTION_TYPE_WITHDRAW = 'Withdraw';
+export const TRANSACTION_TYPE_PURCHASE = 'Purchase';

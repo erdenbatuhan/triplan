@@ -9,11 +9,11 @@ import EditRestaurantProfilePage from './pages/EditRestaurantProfilePage';
 import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import Wallet from './pages/Wallet';
+import WalletPage from './pages/WalletPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
 
-function App() {
+export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
 
@@ -52,7 +52,7 @@ function App() {
             element={isLoggedIn ? <TripPlanSummaryPage /> : <Navigate to="/" />}
           />
           <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
-          <Route path="/wallet" element={isLoggedIn ? <Wallet /> : <Navigate to="/" />} />
+          <Route path="/wallet" element={isLoggedIn ? <WalletPage /> : <Navigate to="/" />} />
           <Route
             path="/restaurant-profile/:restaurantId"
             element={isLoggedIn ? <RestaurantProfilePage /> : <Navigate to="/" />}
@@ -72,5 +72,3 @@ function App() {
     </AuthUserContext.Provider>
   );
 }
-
-export default App;

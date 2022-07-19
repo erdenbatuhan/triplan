@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
@@ -7,6 +8,11 @@ import { Button, Box, Modal, TextField, MenuItem } from '@mui/material';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
+import {
+  CURRENCIES,
+  TRANSACTION_TYPE_DEPOSIT,
+  TRANSACTION_TYPE_WITHDRAW
+} from '../shared/constants';
 
 const style = {
   position: 'absolute',
@@ -20,69 +26,39 @@ const style = {
   p: 4
 };
 
-const currencies = [
-  {
-    value: 'USD',
-    label: '$'
-  },
-  {
-    value: 'EUR',
-    label: '€'
-  }
-];
-
-function Wallet() {
+export default function WalletPage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [userWalletId, setUserWalletId] = useState(null);
+  const [wallet, setWallet] = useState(null);
   const [transactionAmount, setTransactionAmount] = useState(0);
   const [currency, setCurrency] = useState('EUR');
-  const [type, setType] = useState('');
-  const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
+  const [transactionType, setTransactionType] = useState('');
+  const [transactionDialogShown, setTransactionDialogShown] = useState(false);
 
   // Listen to the changes in authenticated user
   useEffect(() => {
-    if (authenticatedUser) {
-      findUserWallet(authenticatedUser.user.id).then((wallet) => {
-        setWalletBalance(wallet.balance);
-        setUserWalletId(wallet._id);
-      });
-    }
-  }, [authenticatedUser, walletBalance]);
-
-  const handleTransactionAmount = (event) => {
-    setTransactionAmount(event.target.value);
-  };
-
-  const handleCurrencyChange = (event) => {
-    setCurrency(event.target.value);
-  };
-
-  const handleOpenTransactionDialog = (transactionType) => {
-    setOpenTransactionDialog(true);
-    setType(transactionType);
-  };
-
-  const handleCloseTransactionDialog = () => setOpenTransactionDialog(false);
-
-  const handleTransaction = async () => {
-    let incomingWalletId = null;
-    let outgoingWalletId = null;
-
-    if (type === 'Deposit') {
-      incomingWalletId = userWalletId;
-    } else {
-      outgoingWalletId = userWalletId;
+    if (!authenticatedUser) {
+      return;
     }
 
-    const amount = parseInt(transactionAmount, 10);
+    findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
+  }, [authenticatedUser]);
 
-    await createTransaction({
-      amount,
-      type,
-      incomingWalletId,
-      outgoingWalletId
-    });
+  const handleTransaction = () => {
+    if (transactionType === TRANSACTION_TYPE_DEPOSIT) {
+      createTransaction({
+        amount: Number(transactionAmount),
+        type: transactionType,
+        incomingWalletId: wallet._id,
+        outgoingWalletId: null
+      }).then(({ incoming }) => setWallet(incoming));
+    } else if (transactionType === TRANSACTION_TYPE_WITHDRAW) {
+      createTransaction({
+        amount: Number(transactionAmount),
+        type: transactionType,
+        incomingWalletId: null,
+        outgoingWalletId: wallet._id
+      }).then(({ outgoing }) => setWallet(outgoing));
+    }
   };
 
   return (
@@ -95,45 +71,53 @@ function Wallet() {
           <Typography variant="h3"> My Wallet</Typography>
         </Grid>
         <Grid>
-          <Typography variant="h6"> Current Balance: {walletBalance} </Typography>
+          <Typography variant="h6"> Current Balance: {wallet ? wallet.balance : 0} </Typography>
         </Grid>
         <Grid>
-          <Button variant="outlined" onClick={() => handleOpenTransactionDialog('Deposit')}>
-            {' '}
-            Deposit{' '}
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setTransactionType(TRANSACTION_TYPE_DEPOSIT);
+              setTransactionDialogShown(true);
+            }}>
+            Deposit
           </Button>
         </Grid>
         <Grid>
-          <Button variant="outlined" onClick={() => handleOpenTransactionDialog('Withdraw')}>
-            {' '}
-            Withdraw{' '}
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setTransactionType(TRANSACTION_TYPE_WITHDRAW);
+              setTransactionDialogShown(true);
+            }}>
+            Withdraw
           </Button>
         </Grid>
       </Grid>
       <div>
         <Modal
-          open={openTransactionDialog}
-          onClose={handleCloseTransactionDialog}
+          open={transactionDialogShown}
+          onClose={() => setTransactionDialogShown(false)}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description">
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              How much money would you like to {type} ?
+              How much money would you like to {transactionType} ?
             </Typography>
             <TextField
               id="standard-basic"
               label="Amount"
               variant="standard"
               value={transactionAmount}
-              onChange={handleTransactionAmount}
+              onChange={(event) => setTransactionAmount(event.target.value)}
             />
             <TextField
               id="outlined-select-currency"
               select
               label="currency"
               value={currency}
-              onChange={handleCurrencyChange}>
-              {currencies.map((option) => (
+              onChange={(event) => setCurrency(event.target.value)}>
+              {CURRENCIES.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -146,5 +130,3 @@ function Wallet() {
     </Grid>
   );
 }
-
-export default Wallet;
