@@ -16,7 +16,7 @@ const User = mongoose.model(
       // gender: { type: String, required: true },
       // dateOfBirth: { type: Date, required: true },
       // nationality: { type: String, required: true },
-      profilePicture: { type: String, required: true },
+      profilePicture: { type: String, required: false },
       wallet: { type: Schema.Types.ObjectId, ref: Wallet.name } // One-to-One Relation using Reference
     },
     {

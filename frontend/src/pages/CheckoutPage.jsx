@@ -10,8 +10,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import CircleIcon from '@mui/icons-material/Circle';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Header from '../components/Header';
 import CheckoutItemCard from '../components/CheckoutItemCard';
+import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet } from '../queries/user-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
@@ -178,7 +180,6 @@ export default function CheckoutPage() {
               ))}
           </List>
         </Grid>
-
         <Grid item xs={4}>
           <Header title="Paid Services" />
 
@@ -278,6 +279,15 @@ export default function CheckoutPage() {
               </ul>
             </li>
           </List>
+          <PayPalScriptProvider
+            options={{
+              'client-id':
+                'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
+              components: 'buttons',
+              currency: 'EUR'
+            }}>
+            <PaypalCheckoutButtons currency="EUR" amount={totalPaidServicePrice} showSpinner />
+          </PayPalScriptProvider>
         </Grid>
 
         <Grid item xs={1} />
