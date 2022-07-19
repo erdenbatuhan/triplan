@@ -27,15 +27,15 @@ export default function CheckoutItemCard({
   partnerLocationType,
   items,
   itemSelections,
-  latestSelectionUpdate,
-  onItemSelectionChange
+  onItemSelectionChange,
+  latestSelectionUpdateDate
 }) {
   const [updatedItemSelections, setUpdatedItemSelections] = useState([]);
 
   // Listen to the changes in latestSelectionUpdate
   useEffect(() => {
     setUpdatedItemSelections(itemSelections);
-  }, [latestSelectionUpdate]);
+  }, [latestSelectionUpdateDate]);
 
   const handleItemSelectionCountChange = ({ itemId, val }) => {
     // Let the parent know about the recent changes, which will also lead to an update in the updatedItemSelections in this component

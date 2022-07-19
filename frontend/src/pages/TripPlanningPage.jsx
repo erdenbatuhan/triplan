@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Fab from '@mui/material/Fab';
@@ -12,6 +12,10 @@ import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import * as partnerLocationDefaultFilter from '../queries/data/partner-location-default-filter.json';
+import {
+  PARTNER_LOCATION_TYPE_RESTAURANT,
+  PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
+} from '../shared/constants';
 
 const fabStyle = {
   bgcolor: green[500],
@@ -28,6 +32,9 @@ const fabStyle = {
 
 export default function TripPlanningPage() {
   const { state } = useLocation();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
   const filterData = state ? state.filterData : partnerLocationDefaultFilter;
   const [filterState, setFilterState] = useState(filterData);
   const [loading, setLoading] = useState(false);
@@ -56,13 +63,39 @@ export default function TripPlanningPage() {
     };
   }, [windowDimenion]);
 
-  // Triggered each time the filter prop is changed
+  // Listenining to the changes in filterState
   useEffect(() => {
     setLoading(true);
     getFilteredPartnerLocations(filterState)
       .then((data) => setPartnerLocations(data))
       .finally(() => setLoading(false));
   }, [filterState]);
+
+  // Listening to the changes in query and partnerLocations
+  useEffect(() => {
+    const preselectedRestaurantIds = searchParams.get('preselectedRestaurantIds');
+    const preselectedTouristAttractionIds = searchParams.get('preselectedTouristAttractionIds');
+
+    // Preselect partner locations if there are any
+    if ((preselectedRestaurantIds || preselectedTouristAttractionIds) && partnerLocations) {
+      setSelectedPartnerLocations([
+        // Preselected restaurants
+        ...partnerLocations.restaurants
+          .filter(({ _id }) => preselectedRestaurantIds.includes(_id))
+          .map((partnerLocation) => ({
+            partnerLocation,
+            partnerLocationType: PARTNER_LOCATION_TYPE_RESTAURANT
+          })),
+        // Preselected tourist attractions
+        ...partnerLocations.touristAttractions
+          .filter(({ _id }) => preselectedTouristAttractionIds.includes(_id))
+          .map((partnerLocation) => ({
+            partnerLocation,
+            partnerLocationType: PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
+          }))
+      ]);
+    }
+  }, [searchParams, partnerLocations]);
 
   const handleSelectedPartnerLocationsChange = (selectedPartnerLocationsChanged) => {
     setSelectedPartnerLocations([...selectedPartnerLocationsChanged]); // Create a copy of the new list to force re-rendering
@@ -93,9 +126,10 @@ export default function TripPlanningPage() {
 
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <PlacesList
-            places={partnerLocations.restaurants}
-            selectedPlaces={selectedPartnerLocations}
-            onSelectedPlacesChange={handleSelectedPartnerLocationsChange}
+            partnerLocations={partnerLocations.restaurants}
+            selectedPartnerLocations={selectedPartnerLocations}
+            partnerLocationType={PARTNER_LOCATION_TYPE_RESTAURANT}
+            onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
           />
         </Paper>
       </Grid>
@@ -105,9 +139,10 @@ export default function TripPlanningPage() {
 
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <PlacesList
-            places={partnerLocations.touristAttractions}
-            selectedPlaces={selectedPartnerLocations}
-            onSelectedPlacesChange={handleSelectedPartnerLocationsChange}
+            partnerLocations={partnerLocations.touristAttractions}
+            selectedPartnerLocations={selectedPartnerLocations}
+            partnerLocationType={PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION}
+            onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
           />
         </Paper>
       </Grid>
@@ -116,10 +151,16 @@ export default function TripPlanningPage() {
         <Header title="Selected Places" />
 
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
-          <SelectedPlacesList selectedPlaces={selectedPartnerLocations} />
+          <SelectedPlacesList selectedPartnerLocations={selectedPartnerLocations} />
         </Paper>
+
         <Fab variant="extended" style={fabStyle}>
-          <NavigationIcon sx={{ mr: 1 }} />
+          <NavigationIcon
+            sx={{ mr: 1 }}
+            onClick={() =>
+              navigate('/checkout', { state: { partnerLocations: selectedPartnerLocations } })
+            }
+          />
           Continue
         </Fab>
       </Grid>
