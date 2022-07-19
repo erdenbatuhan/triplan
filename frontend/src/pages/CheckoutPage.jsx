@@ -24,9 +24,10 @@ export default function CheckoutPage() {
   const [buyableItemData, setBuyableItemData] = useState({});
   const [buyableItemSelections, setBuyableItemSelections] = useState({});
   const [latestSelectionUpdate, setLatestSelectionUpdate] = useState(new Date()); // Used for easier force-rendering
+  const [servicesToBeBought, setServicesToBeBought] = useState([]); // Used for easier force-rendering
 
   /**
-   * TODO: The following (useEffect) is for mock data, remove when we start receiving partnerLocations from router
+   * TODO (REMOVE): The following (useEffect) is for mock data, remove when we start receiving partnerLocations from router
    */
   useEffect(() => {
     setLoading(true);
@@ -85,6 +86,47 @@ export default function CheckoutPage() {
         setLoading(false);
       });
   }, [partnerLocations]);
+
+  // Listen to the changes in buyableItemSelections
+  useEffect(() => {
+    // After each selection, calculate the services ready to be bought
+    const updatedServicesToBeBought = [];
+
+    partnerLocations.forEach(({ partnerLocation }) => {
+      const buyableItems = buyableItemData[partnerLocation._id];
+      const itemsToBeBought = [];
+
+      // The case where the buyable items are not fetched yet
+      if (!buyableItems) {
+        return;
+      }
+
+      buyableItems.forEach((item) => {
+        const itemSelectionCount = buyableItemSelections[partnerLocation._id][item._id];
+
+        // If the item has not been selected
+        if (!itemSelectionCount) {
+          return;
+        }
+
+        // Add item to the items to be bought of the current partner location
+        itemsToBeBought.push({
+          ...item,
+          ...{
+            count: itemSelectionCount,
+            finalPrice: item.price * itemSelectionCount
+          } // Add some additional fields to be shown to the user
+        });
+      });
+
+      // Add the items for the current partner location if "at least one" item is selected
+      if (itemsToBeBought.length > 0) {
+        updatedServicesToBeBought.push({ partnerLocation, itemsToBeBought });
+      }
+    });
+
+    setServicesToBeBought(updatedServicesToBeBought);
+  }, [buyableItemSelections]);
 
   const handleItemSelectionCountChange = ({ partnerLocationId, updatedItemSelections }) => {
     setBuyableItemSelections({
@@ -159,51 +201,31 @@ export default function CheckoutPage() {
                           '& ul': { padding: 0 }
                         }}
                         subheader={<li />}>
-                        {partnerLocations
-                          .filter(({ partnerLocation }) => {
-                            return (
-                              partnerLocation && // Partner location exists
-                              buyableItemSelections[partnerLocation._id] && // Buyable item selection object for that location exists
-                              Object.values(buyableItemSelections[partnerLocation._id]).some(
-                                (count) => Boolean(count)
-                              ) // At least one of the items of the location is selected
-                            );
-                          })
-                          .map(({ partnerLocation }) => (
-                            <li
-                              key={`CheckoutPage-SelectedPaidServices-Parent-${partnerLocation._id}`}>
-                              <ul>
-                                <ListSubheader sx={{ fontWeight: 500 }}>
-                                  {partnerLocation.name}
-                                </ListSubheader>
+                        {servicesToBeBought.map(({ partnerLocation, itemsToBeBought }) => (
+                          <li
+                            key={`CheckoutPage-SelectedPaidServices-Parent-${partnerLocation._id}`}>
+                            <ul>
+                              <ListSubheader sx={{ fontWeight: 500 }}>
+                                {partnerLocation.name}
+                              </ListSubheader>
 
-                                {buyableItemData[partnerLocation._id].map((item) => {
-                                  const itemSelectionCount =
-                                    buyableItemSelections[partnerLocation._id][item._id];
+                              {itemsToBeBought.map((itemToBeBought) => {
+                                return (
+                                  <ListItem
+                                    key={`CheckoutPage-SelectedPaidServices-Child-${itemToBeBought._id}`}>
+                                    <ListItemIcon sx={{ minWidth: '2em' }}>
+                                      <CircleIcon sx={{ fontSize: '1em' }} />
+                                    </ListItemIcon>
 
-                                  // If the item has not been selected
-                                  if (!itemSelectionCount) {
-                                    return [];
-                                  }
-
-                                  const finalPrice = item.price * itemSelectionCount;
-
-                                  return (
-                                    <ListItem
-                                      key={`CheckoutPage-SelectedPaidServices-Child-${[item._id]}`}>
-                                      <ListItemIcon sx={{ minWidth: '2em' }}>
-                                        <CircleIcon sx={{ fontSize: '1em' }} />
-                                      </ListItemIcon>
-
-                                      <ListItemText
-                                        primary={`${item.name} (${item.price} €) x ${itemSelectionCount} = ${finalPrice} €`}
-                                      />
-                                    </ListItem>
-                                  );
-                                })}
-                              </ul>
-                            </li>
-                          ))}
+                                    <ListItemText
+                                      primary={`${itemToBeBought.name} (${itemToBeBought.price} €) x ${itemToBeBought.count} = ${itemToBeBought.finalPrice} €`}
+                                    />
+                                  </ListItem>
+                                );
+                              })}
+                            </ul>
+                          </li>
+                        ))}
                       </List>
                     </CardContent>
                   </Box>
