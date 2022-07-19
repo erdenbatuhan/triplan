@@ -16,7 +16,8 @@ import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
+  // const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
 
   const syncAuthUser = () => {

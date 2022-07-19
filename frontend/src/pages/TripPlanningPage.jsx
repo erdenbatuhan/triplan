@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import Fab from '@mui/material/Fab';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import { green } from '@mui/material/colors';
+import { Button } from '@mui/material';
 import Spinner from '../components/Spinner';
 import Header from '../components/Header';
 import PlacesList from '../components/PlacesList';
@@ -153,12 +154,20 @@ export default function TripPlanningPage() {
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <SelectedPlacesList selectedPartnerLocations={selectedPartnerLocations} />
         </Paper>
+        <Button
+          onClick={() =>
+            navigate('/checkout', { state: { partnerLocations: selectedPartnerLocations } })
+          }>
+          {' '}
+          Continue{' '}
+        </Button>
 
         <Fab variant="extended" style={fabStyle}>
           <NavigationIcon
             sx={{ mr: 1 }}
             onClick={() =>
-              navigate('/checkout', { state: { partnerLocations: selectedPartnerLocations } })
+              // navigate('/checkout', { state: { partnerLocations: selectedPartnerLocations } })
+              navigate('/')
             }
           />
           Continue
