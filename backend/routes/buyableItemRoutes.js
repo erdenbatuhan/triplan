@@ -12,7 +12,6 @@ router.get("/menu-item", async (req, res) => {
     const menuItems = await buyableItemController.getMenuItemsByPartnerLocation(
       restaurantId
     );
-    console.log("menuItems: ", menuItems);
     res.status(200).send(menuItems);
   } catch ({ message }) {
     res

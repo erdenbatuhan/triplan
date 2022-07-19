@@ -15,7 +15,7 @@ function RestaurantMenuItems(props) {
               name={menu.name}
               content={menu.description}
               price={menu.price.toString()}
-              imgUrl={menu.menuImage}
+              imgUrl={menu.image}
               updateMenuList={updateMenuList}
               inEdit={inEdit}
             />

@@ -12,10 +12,10 @@ import { Button, Stack } from '@mui/material';
 export default function MenuCard(props) {
   const { menuId, name, content, price, imgUrl, inEdit } = props;
   const navigate = useNavigate();
-  const { restaurantId } = useParams();
+  const { partnerId } = useParams();
 
   const handleEditClick = () => {
-    navigate(`/edit-partner-profile/${restaurantId}/${menuId}`);
+    navigate(`/edit-partner-profile/${partnerId}/${menuId}`);
   };
 
   return (

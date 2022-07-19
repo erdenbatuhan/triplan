@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button, Stack } from '@mui/material';
-import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
+import {
+  getRestaurant,
+  getTouristAttraction,
+  saveRestaurant
+  // saveTouristAttraction
+} from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
 import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
@@ -76,20 +81,27 @@ function EditPartnerLocationProfilePage() {
       });
     }
   };
+  const handleAddMenuItem = async () => {
+    console.log('hey');
+  };
 
   const onSubmitClicked = async () => {
     try {
-      const updatedRestaurant = {
-        _id: partnerId,
-        name: partnerName,
-        address: partnerAddress,
-        phoneNumber: partnerPhoneNumber,
-        locationPicture: partnerLocationPicture
-        // cuisines: restaurantCuisines,
-        // menuList: restaurantMenuList
-      };
-      console.log('updatedRestaurant: ', updatedRestaurant);
-      console.log('hey!');
+      if (partnerLocationType === 'restaurant') {
+        const updatedRestaurant = {
+          _id: partnerId,
+          name: partnerName,
+          address: partnerAddress,
+          phoneNumber: partnerPhoneNumber,
+          locationPicture: partnerLocationPicture,
+          cuisines: restaurantCuisines
+          // menuList: restaurantMenuList
+        };
+        await saveRestaurant(updatedRestaurant);
+      } else if (partnerLocationType === 'tourist-attraction') {
+        console.log('hey');
+        // await saveTouristAttraction(updatedTouristAttraction);
+      }
     } catch (e) {
       console.error(`failed to create user ${e}`);
     }
@@ -167,7 +179,9 @@ function EditPartnerLocationProfilePage() {
         ) : (
           <div>{ticketList}</div>
         )}
-
+        <Grid item>
+          <Button onClick={handleAddMenuItem}>Add Menu</Button>
+        </Grid>
         <Grid item>
           <Button onClick={onSubmitClicked}>Update Profile</Button>
         </Grid>
