@@ -6,7 +6,6 @@ import { styled } from '@mui/material/styles';
 import Background from '../assets/main-page-background.png';
 import DatePicker from '../components/DatePicker';
 import SearchBar from '../components/SearchBar';
-import NavigationBar from '../components/NavigationBar';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 
 const CustomGrid = styled(Grid)(() => ({
@@ -28,9 +27,6 @@ function MainPage() {
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat'
       }}>
-      <div>
-        <NavigationBar />
-      </div>
       <CustomGrid container height="100vh" display="inline-grid">
         <CustomGrid container spacing={2} direction="row" display="flex">
           <CustomGrid container spacing={2} direction="row" display="flex">

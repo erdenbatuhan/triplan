@@ -17,38 +17,69 @@ const updateFields = (id, fields) => {
 
 const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId }) => {
   return new Promise((resolve, reject) => {
-    const incomingWalletPromise = walletController.findOne(incomingWalletId);
-    const outgoingWalletPromise = walletController.findOne(outgoingWalletId);
+    const incomingWalletPromise = incomingWalletId ? walletController.findOne(incomingWalletId) : new Promise((resolve) => resolve(null));
+    const outgoingWalletPromise = outgoingWalletId ? walletController.findOne(outgoingWalletId) : new Promise((resolve) => resolve(null));
 
-    Promise.all([incomingWalletPromise, outgoingWalletPromise]).then(async ([incoming, outgoing]) => {
-      if ((!incoming && !outgoing) || 
-       (type == enums.TRANSACTION_TYPE[0] && !incoming) || // Deposit
-       (type == enums.TRANSACTION_TYPE[1] && !outgoing) || // Withdraw
-       (type == enums.TRANSACTION_TYPE[2] && incomingWalletId=== outgoingWalletId)) { // Purchase
+    Promise.all([incomingWalletPromise, outgoingWalletPromise]).then(async ([incomingWallet, outgoingWallet]) => {
+      if ((!incomingWallet && !outgoingWallet) || (incomingWalletId === outgoingWalletId)) {
         return resolve(null);
       }
 
-      const transaction = await Transaction.create({amount, type, incoming, outgoing});
-
-      // Check if outgoing wallet has enough balance
-      if (transaction.outgoing && transaction.outgoing.balance < amount) {
-        const transactionUpdated = await updateFields(transaction._id, { "status": enums.TRANSACTION_STATUS[2] });
-        return resolve(transactionUpdated);
+      if (type == enums.TRANSACTION_TYPE[2] && !(incomingWallet && outgoingWallet)) {
+        throw new Error("There must be an incoming and an outgoing wallet for the purchase transaction!");
       }
 
-      // Perform the operation by updating the wallet balances
-      if (type == enums.TRANSACTION_TYPE[0] || type == enums.TRANSACTION_TYPE[2]) {
-        const incomingUpdated = await walletController.updateWalletBalance(incoming, transaction.amount);
-      }
-      if (type == enums.TRANSACTION_TYPE[1] || type == enums.TRANSACTION_TYPE[2]) {
-        const outgoingUpdated = await walletController.updateWalletBalance(outgoing, -transaction.amount);
+      // Check if the "outgoing" wallet has enough balance
+      if (outgoingWallet && outgoingWallet.balance < amount) {
+        const transactionRejected = await Transaction.create({
+          amount, type,
+          "incoming": incomingWallet, "outgoing": outgoingWallet,
+          "status": enums.TRANSACTION_STATUS[1] // Rejected Transaction
+        });
+
+        return resolve({ "transaction": transactionRejected });
       }
 
-      const transactionUpdated = await updateFields(transaction._id, { "status": enums.TRANSACTION_STATUS[1] });
-      return resolve(transactionUpdated);
-      
+      let updatedIncomingWalletPromise = new Promise((resolve) => resolve(null));
+      let updatedOutgoingWalletPromise = new Promise((resolve) => resolve(null));
+
+      // In case of Deposit or Purchase, update the balance of "incoming" wallet
+      if ((type == enums.TRANSACTION_TYPE[0] || type == enums.TRANSACTION_TYPE[2]) && incomingWallet) {
+        updatedIncomingWalletPromise = walletController.updateWalletBalance(incomingWallet, incomingWallet.balance + amount);
+      }
+
+      // In case of Withdraw or Purchase, update the balance of "outgoing" wallet
+      if ((type == enums.TRANSACTION_TYPE[1] || type == enums.TRANSACTION_TYPE[2]) && outgoingWallet) {
+        updatedOutgoingWalletPromise = walletController.updateWalletBalance(outgoingWallet, outgoingWallet.balance - amount);
+      }
+
+      // Update the transaction when the wallets are updated "successfully"
+      Promise.all([
+        updatedIncomingWalletPromise, updatedOutgoingWalletPromise
+      ]).then(async ([
+        updatedIncomingWallet, updatedOutgoingWallet
+      ]) => {
+        if (!updatedIncomingWallet && !updatedOutgoingWallet) {
+          return resolve(null);
+        }
+
+        const transactionCreated = await Transaction.create({
+          amount, type,
+          "incoming": updatedIncomingWallet, "outgoing": updatedOutgoingWallet,
+          "status": enums.TRANSACTION_STATUS[0] // Successfull Transaction
+        });
+        
+        /**
+         * Add also the actual "updated" wallet objects with "new" balances
+         * since "Transaction.create" function returns the IDs of "incoming" and "outgoing" wallets
+         */
+        resolve({
+          "transaction": transactionCreated,
+          ...{ "incomingWalletObject": updatedIncomingWallet, "outgoingWalletObject": updatedOutgoingWallet }
+        });
+      })
     }).catch(err => reject(err));
-  });
+  })
 };
 
 module.exports = { exists, updateFields, createTransaction };
