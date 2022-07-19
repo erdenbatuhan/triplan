@@ -37,7 +37,7 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId })
           "status": enums.TRANSACTION_STATUS[1] // Rejected Transaction
         });
 
-        return resolve(transactionRejected);
+        return resolve({ "transaction": transactionRejected });
       }
 
       let updatedIncomingWalletPromise = new Promise((resolve) => resolve(null));
@@ -68,8 +68,15 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId })
           "incoming": updatedIncomingWallet, "outgoing": updatedOutgoingWallet,
           "status": enums.TRANSACTION_STATUS[0] // Successfull Transaction
         });
-
-        resolve(transactionCreated);
+        
+        /**
+         * Add also the actual "updated" wallet objects with "new" balances
+         * since "Transaction.create" function returns the IDs of "incoming" and "outgoing" wallets
+         */
+        resolve({
+          "transaction": transactionCreated,
+          ...{ "incomingWalletObject": updatedIncomingWallet, "outgoingWalletObject": updatedOutgoingWallet }
+        });
       })
     }).catch(err => reject(err));
   })

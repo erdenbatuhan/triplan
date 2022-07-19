@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
+import NavigationBar from './components/NavigationBar';
 import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
@@ -38,6 +39,8 @@ export default function App() {
         return { authenticatedUser, loginUser, logoutUser };
       }, [authenticatedUser, loginUser, logoutUser])}>
       <BrowserRouter>
+        <NavigationBar />
+
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={isLoggedIn ? <HomePage /> : <LoginPage />} />

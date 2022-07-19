@@ -69,6 +69,9 @@ export const TRANSACTION_TYPE_DEPOSIT = 'Deposit';
 export const TRANSACTION_TYPE_WITHDRAW = 'Withdraw';
 export const TRANSACTION_TYPE_PURCHASE = 'Purchase';
 
+export const TRANSACTION_STATUS_SUCCESSFUL = 'Successful';
+export const TRANSACTION_STATUS_REJECTED = 'Rejected';
+
 export const CURRENCIES = [
   {
     value: 'USD',
