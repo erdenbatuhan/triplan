@@ -1,6 +1,18 @@
-// eslint-disable-* the-error
 import { useEffect } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import emailjs from '@emailjs/browser';
+
+const emailContent = {
+  to_name: 'Seba',
+  message: 'Have a nice vocation!',
+  to_email: 'anil.kults@gmail.com'
+};
+
+const emailjsCredentials = {
+  userId: 'service_f4fr2wo',
+  templeteId: 'template_hbnc70i',
+  publicKey: 'qS3HjNxeTPXvwDkQV'
+};
 
 // Custom component to wrap the PayPalButtons and handle currency changes
 export default function PaypalCheckoutButtons({ currency, amount, showSpinner }) {
@@ -9,6 +21,26 @@ export default function PaypalCheckoutButtons({ currency, amount, showSpinner })
   const [{ options, isPending }, dispatch] = usePayPalScriptReducer();
   // This values are the props in the UI
   const style = { layout: 'vertical' };
+
+  const handleEmail = () => {
+    emailjs.init(emailjsCredentials.publicKey);
+    // e.preventDefault(); // Prevents default refresh by the browser
+    emailjs
+      .send(
+        emailjsCredentials.userId,
+        emailjsCredentials.templeteId,
+        emailContent
+        // emailjs.publicKey
+      )
+      .then(
+        (result) => {
+          console.log('Message Sent, We will get back to you shortly', result.text);
+        },
+        (error) => {
+          console.log('An error occurred, Please try again', error.text);
+        }
+      );
+  };
 
   useEffect(() => {
     dispatch({
@@ -46,10 +78,7 @@ export default function PaypalCheckoutButtons({ currency, amount, showSpinner })
             });
         }}
         onApprove={(data, actions) => {
-          return actions.order.capture().then(function () {
-            // Your code here after capture the order
-            console.log(data);
-          });
+          return actions.order.capture().then(handleEmail());
         }}
       />
     </>
