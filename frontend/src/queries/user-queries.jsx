@@ -42,3 +42,11 @@ export async function findUserWallet(userId) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function getUser(id) {
+  return await fetch(`${HOST_USER}/${id}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
