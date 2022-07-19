@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -23,38 +24,17 @@ import {
 } from '../shared/constants';
 
 export default function CheckoutPage() {
+  const { state } = useLocation(); // Received from the previous route
+
   const [loading, setLoading] = useState(false);
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [wallet, setWallet] = useState(null);
-  const [partnerLocations, setPartnerLocations] = useState([]); // Received from the previous route
+  const [partnerLocations] = useState(state ? state.partnerLocations : []);
   const [buyableItemData, setBuyableItemData] = useState({});
   const [buyableItemSelections, setBuyableItemSelections] = useState({});
   const [latestSelectionUpdateDate, setLatestSelectionUpdateDate] = useState(new Date()); // Used for easier force-rendering
   const [servicesToBeBought, setServicesToBeBought] = useState([]);
   const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
-
-  /**
-   * TODO (REMOVE): The following (useEffect) is for mock data, remove when we start receiving partnerLocations from router
-   */
-  useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      ...['62d198b7fda6931f82955a91'].map((restaurantId) =>
-        getRestaurant(restaurantId).then((restaurant) => ({
-          partnerLocation: restaurant,
-          partnerLocationType: PARTNER_LOCATION_TYPE_RESTAURANT
-        }))
-      ),
-      ...['62c24fb87531ca1793429c7b', '62c24fb87531ca1793429c7f'].map((touristAttractionId) =>
-        getTouristAttraction(touristAttractionId).then((touristAttraction) => ({
-          partnerLocation: touristAttraction,
-          partnerLocationType: PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
-        }))
-      )
-    ])
-      .then((data) => setPartnerLocations(data))
-      .finally(() => setLoading(false));
-  }, []);
 
   // Listen to the changes in authenticated user
   useEffect(() => {
@@ -90,7 +70,7 @@ export default function CheckoutPage() {
         partnerLocations.forEach(({ partnerLocation }) => {
           emptyBuyableItemSelections[partnerLocation._id] = Object.assign(
             {},
-            ...fetchedBuyableItemData[partnerLocation._id].map((item) => ({ [item._id]: 1 }))
+            ...fetchedBuyableItemData[partnerLocation._id].map((item) => ({ [item._id]: 0 }))
           );
         });
 

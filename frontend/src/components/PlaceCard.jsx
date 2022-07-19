@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -12,30 +12,25 @@ export default function PlaceCard({
   title,
   content,
   locationPicture,
+  cardSelected,
   onPlaceCardSelect,
   onPlaceCardDeselect
 }) {
-  const [isClicked, setIsClicked] = useState(false);
-
-  const handleClick = () => {
-    setIsClicked((oldVal) => {
-      const newVal = !oldVal;
-
-      if (newVal) {
-        onPlaceCardSelect(id);
-      } else {
-        onPlaceCardDeselect(id);
-      }
-
-      return newVal;
-    });
+  const handleCardSelection = () => {
+    if (cardSelected) {
+      // Was selected, now de-selecting
+      onPlaceCardDeselect(id);
+    } else {
+      // Was "not" selected, now selecting
+      onPlaceCardSelect(id);
+    }
   };
 
   return (
     <Card
       sx={{ maxWidth: '%100', height: '20vh' }}
-      style={{ backgroundColor: isClicked ? '#c5e1a5' : '' }}>
-      <CardActionArea onClick={handleClick}>
+      style={{ backgroundColor: cardSelected ? '#c5e1a5' : '' }}>
+      <CardActionArea onClick={handleCardSelection}>
         <Grid container spacing={2}>
           <Grid item xs={4}>
             <div
@@ -56,7 +51,7 @@ export default function PlaceCard({
           <Grid item xs={8}>
             <ListItem>
               <CardContent>
-                <Typography gutterBottom variant="h6" component="text.primary">
+                <Typography gutterBottom variant="h6" color="text.primary">
                   {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">

@@ -2,37 +2,64 @@ import React, { useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 import PlaceCard from './PlaceCard';
 
-export default function PlacesList({ places, selectedPlaces, onSelectedPlacesChange }) {
-  const [placesDictionary, setPlacesDictionary] = useState({});
+export default function PlacesList({
+  partnerLocations,
+  selectedPartnerLocations,
+  partnerLocationType,
+  onSelectedPartnerLocationsChange
+}) {
+  const [partnerLocationDictionary, setPartnerLocationDictionary] = useState({});
 
-  // Listening to the changes in places
+  // Listening to the changes in partnerLocations
   useEffect(() => {
     // The dictionary is used for O(1) access
-    setPlacesDictionary(Object.assign({}, ...places.map((place) => ({ [place._id]: place }))));
-  }, [places]);
+    setPartnerLocationDictionary(
+      Object.assign(
+        {},
+        ...partnerLocations.map((partnerLocation) => ({ [partnerLocation._id]: partnerLocation }))
+      )
+    );
+  }, [partnerLocations]);
 
-  const placeCardSelected = (selectedPlaceId) => {
-    selectedPlaces.push(placesDictionary[selectedPlaceId]);
-    onSelectedPlacesChange(selectedPlaces);
+  const selectPartnerLocation = (selectedPartnerLocationId) => {
+    selectedPartnerLocations.push({
+      partnerLocation: partnerLocationDictionary[selectedPartnerLocationId],
+      partnerLocationType
+    });
+    onSelectedPartnerLocationsChange(selectedPartnerLocations);
   };
 
-  const placeCardDeselected = (deselectedPlaceId) => {
-    selectedPlaces.splice(selectedPlaces.indexOf(placesDictionary[deselectedPlaceId]), 1);
-    onSelectedPlacesChange(selectedPlaces);
+  const deselectPartnerLocation = (deselectedPartnerLocationId) => {
+    const selectedPartnerLocationIds = selectedPartnerLocations.map(
+      ({ partnerLocation }) => partnerLocation._id
+    );
+
+    selectedPartnerLocations.splice(
+      selectedPartnerLocationIds.indexOf(deselectedPartnerLocationId),
+      1
+    );
+    onSelectedPartnerLocationsChange(selectedPartnerLocations);
+  };
+
+  const isSelected = (partnerLocationToCheck) => {
+    return selectedPartnerLocations.some(({ partnerLocation }) => {
+      return partnerLocationToCheck === partnerLocation;
+    });
   };
 
   return (
     <Stack spacing={2}>
-      {places
-        ? places.map((place) => (
+      {partnerLocations
+        ? partnerLocations.map((partnerLocation) => (
             <PlaceCard
-              key={place._id}
-              id={place._id}
-              title={place.name}
-              content={place.place_description || ''}
-              locationPicture={place.locationPicture}
-              onPlaceCardSelect={placeCardSelected}
-              onPlaceCardDeselect={placeCardDeselected}
+              key={partnerLocation._id}
+              id={partnerLocation._id}
+              title={partnerLocation.name}
+              content={partnerLocation.place_description || ''}
+              locationPicture={partnerLocation.locationPicture}
+              cardSelected={isSelected(partnerLocation)}
+              onPlaceCardSelect={selectPartnerLocation}
+              onPlaceCardDeselect={deselectPartnerLocation}
             />
           ))
         : []}

@@ -2,17 +2,17 @@ import React from 'react';
 import { Stack } from '@mui/material';
 import PlaceCard from './PlaceCard';
 
-export default function SelectedPlacesList({ selectedPlaces }) {
+export default function SelectedPlacesList({ selectedPartnerLocations }) {
   return (
     <Stack spacing={2}>
-      {selectedPlaces
-        ? selectedPlaces.map((selectedPlace) => (
+      {selectedPartnerLocations
+        ? selectedPartnerLocations.map(({ partnerLocation }) => (
             <PlaceCard
-              key={selectedPlace._id}
-              id={selectedPlace._id}
-              title={selectedPlace.name}
-              content={selectedPlace.place_description || ''}
-              locationPicture={selectedPlace.locationPicture}
+              key={partnerLocation._id}
+              id={partnerLocation._id}
+              title={partnerLocation.name}
+              content={partnerLocation.place_description || ''}
+              locationPicture={partnerLocation.locationPicture}
             />
           ))
         : []}
