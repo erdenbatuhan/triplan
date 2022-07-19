@@ -32,10 +32,10 @@ const createWallet = ({ ownerType, userId }) => {
   });
 };
 
-const updateWalletBalance = (wallet, amount) => {
+const updateWalletBalance = (wallet, balance) => {
   return Wallet.findOneAndUpdate(
     { "_id": wallet._id },
-    { $inc: { balance: amount } },   // Increase the balance with a given amount (for withdraw, amount will have a negative value)
+    { balance },
     { new: true }
   );
 };
