@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItem from '@mui/material/ListItem';
@@ -16,7 +14,6 @@ import Header from '../components/Header';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet } from '../queries/user-queries';
-import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
 import {
   PARTNER_LOCATION_TYPE_RESTAURANT,
