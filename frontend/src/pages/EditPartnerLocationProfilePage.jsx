@@ -8,9 +8,10 @@ import {
   // saveTouristAttraction
 } from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
-import EditRestaurantCuisineBox from '../components/EditRestaurantCuisineBox';
+import EditRestaurantCuisineBox from '../components/RestaurantProfilePage/EditRestaurantCuisineBox';
 // import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
+import EditMenuItem from '../components/RestaurantProfilePage/EditMenuItem';
 
 function EditPartnerLocationProfilePage() {
   const [partner, setPartner] = useState({});
@@ -20,7 +21,11 @@ function EditPartnerLocationProfilePage() {
   const [partnerLocationPicture, setRestaurantLocationPicture] = useState('');
   const [restaurantCuisines, setRestaurantCuisines] = useState([]);
   const [restaurantMenuList, setRestaurantMenuList] = useState([]);
+  const [menuItemsInEdit, setMenuItemsInEdit] = useState([]);
   const [ticketList, setTicketList] = useState([]);
+  const [ticketsInEdit, setTicketsInEdit] = useState([]);
+
+  const [itemsInEdit, setItemsInEdit] = useState(false);
 
   const { partnerId } = useParams();
   const location = useLocation();
@@ -83,9 +88,17 @@ function EditPartnerLocationProfilePage() {
     }
   };
 
-  // const handleUpdateMenuList = () => {
-  //   console.log('hey');
-  // };
+  const handleEditClick = (e) => {
+    const editItemId = e.target.value;
+    if (partnerLocationType === 'restaurant') {
+      const editItem = restaurantMenuList.filter((menu) => menu._id === editItemId)[0];
+      setMenuItemsInEdit((menuItems) => [...menuItems, editItem]);
+    } else if (partnerLocationType === 'tourist-attraction') {
+      const editItem = ticketList.filter((ticket) => ticket._id === editItemId);
+      setTicketsInEdit((tickets) => [...tickets, editItem]);
+    }
+    setItemsInEdit(true);
+  };
 
   const handleAddMenuItem = async () => {
     console.log('hey');
@@ -195,6 +208,7 @@ function EditPartnerLocationProfilePage() {
                         content={menu.description}
                         price={menu.price.toString()}
                         image={menu.image}
+                        handleEditClick={handleEditClick}
                         // updateMenuList={updateMenuList}
                         inEdit
                       />
@@ -202,10 +216,28 @@ function EditPartnerLocationProfilePage() {
                   })}
                 </List>
               </Paper>
+              {itemsInEdit ? (
+                menuItemsInEdit.map((menu) => {
+                  return <EditMenuItem key={menu._id} menuId={menu._id} />;
+                })
+              ) : (
+                // eslint-disable-next-line react/jsx-no-useless-fragment
+                <></>
+              )}
             </Grid>
           </Stack>
         ) : (
-          <div>{ticketList}</div>
+          <div>
+            {ticketList}
+            {itemsInEdit ? (
+              ticketsInEdit.map((ticket) => {
+                return <EditMenuItem key={ticket._id} menuId={ticket._id} />;
+              })
+            ) : (
+              // eslint-disable-next-line react/jsx-no-useless-fragment
+              <></>
+            )}
+          </div>
         )}
         <Grid item>
           <Button onClick={handleAddMenuItem}>Add Menu</Button>

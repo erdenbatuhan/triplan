@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import * as React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+// import { useNavigate, useParams } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -10,13 +10,9 @@ import PropTypes from 'prop-types';
 import { Button, Stack } from '@mui/material';
 
 export default function MenuCard(props) {
-  const { menuId, name, content, price, image, inEdit } = props;
-  const navigate = useNavigate();
-  const { partnerId } = useParams();
-
-  const handleEditClick = () => {
-    navigate(`/edit-partner-profile/${partnerId}/${menuId}`);
-  };
+  const { menuId, name, content, price, image, handleEditClick, inEdit } = props;
+  // const navigate = useNavigate();
+  // const { partnerId } = useParams();
 
   return (
     <Card sx={{ maxWidth: '%100' }}>
@@ -53,7 +49,13 @@ export default function MenuCard(props) {
               </CardContent>
             </Grid>
           </Grid>
-          {inEdit ? <Button onClick={handleEditClick}>Edit</Button> : <></>}
+          {inEdit ? (
+            <Button value={menuId} onClick={handleEditClick}>
+              Edit
+            </Button>
+          ) : (
+            <></>
+          )}
         </Stack>
       </CardContent>
     </Card>
