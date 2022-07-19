@@ -61,3 +61,6 @@ export const touristAttractions = [
   'university',
   'meal_takeaway'
 ];
+
+export const PARTNER_LOCATION_TYPE_RESTAURANT = 'Restaurant';
+export const PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION = 'TouristAttraction';

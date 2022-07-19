@@ -59,8 +59,8 @@ const deleteMenuItem = (menuItemId) => {
 const findTicketsAndMenuItems = ({ restaurantIds, touristAttractionIds }) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      MenuItem.find({ restaurant: { $in: restaurantIds } }),
-      Ticket.find({ touristAttraction: { $in: touristAttractionIds } })
+      MenuItem.find({ restaurant: { $in: restaurantIds } }).sort({ price: "asc" }),
+      Ticket.find({ touristAttraction: { $in: touristAttractionIds } }).sort({ price: "asc" })
     ])
     .then(([menuItems, tickets]) => {
       menuItemData = Object.assign({}, ...restaurantIds.map(id => ({ [id]: [] })));

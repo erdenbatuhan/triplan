@@ -10,7 +10,8 @@ const BuyableItemSchema = new Schema({
   name: { type: String, required: true },
   description: { type: String, default: "", required: true },
   price: { type: Number, required: true },
-  appliedDiscountRate: { type: Number, required: true }
+  appliedDiscountRate: { type: Number, required: true },
+  image: { type: String, required: true }
 });
 
 const Ticket = mongoose.model(
@@ -26,7 +27,6 @@ const MenuItem = mongoose.model(
   "MenuItem",
   extendSchema(BuyableItemSchema, {
     type: { type: String, enum: enums.FOOD_TYPES, required: true },
-    menuImage: { type: String, required: true },
     restaurant: { type: Schema.Types.ObjectId, ref: Restaurant.name, required: true }, // Many-To-One Relation using Reference
   })
 );

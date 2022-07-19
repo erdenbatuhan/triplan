@@ -6,6 +6,7 @@ import Fab from '@mui/material/Fab';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import { green } from '@mui/material/colors';
 import Spinner from '../components/Spinner';
+import Header from '../components/Header';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
@@ -75,26 +76,21 @@ export default function TripPlanningPage() {
     return <Spinner marginTop="5em" />;
   }
 
-  const getHeader = (title) => {
-    return (
-      <div>
-        <br /> {title} <hr /> <br />
-      </div>
-    );
-  };
-
   return (
     <Grid container spacing={1}>
       <Grid item xs={3}>
-        {getHeader('Filters')}
+        <Header title="Filters" />
+
         <PlaceFilter
           filterState={filterState}
           handleFilterChange={handleFilterChange}
           calledFrom="TripPlanningPage"
         />
       </Grid>
+
       <Grid item xs={3}>
-        {getHeader('Restaurants')}
+        <Header title="Restaurants" />
+
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <PlacesList
             places={partnerLocations.restaurants}
@@ -103,8 +99,10 @@ export default function TripPlanningPage() {
           />
         </Paper>
       </Grid>
+
       <Grid item xs={3}>
-        {getHeader('Tourist Attractions')}
+        <Header title="Tourist Attractions" />
+
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <PlacesList
             places={partnerLocations.touristAttractions}
@@ -113,8 +111,10 @@ export default function TripPlanningPage() {
           />
         </Paper>
       </Grid>
+
       <Grid item xs={3}>
-        {getHeader('Selected Places')}
+        <Header title="Selected Places" />
+
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <SelectedPlacesList selectedPlaces={selectedPartnerLocations} />
         </Paper>

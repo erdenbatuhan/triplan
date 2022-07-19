@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
+import CheckoutPage from './pages/CheckoutPage';
 import RestaurantProfilePage from './pages/RestaurantProfilePage';
 import EditRestaurantProfilePage from './pages/EditRestaurantProfilePage';
 import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
@@ -47,6 +48,7 @@ function App() {
             path="/trip-planning"
             element={isLoggedIn ? <TripPlanningPage /> : <Navigate to="/" />}
           />
+          <Route path="/checkout" element={isLoggedIn ? <CheckoutPage /> : <Navigate to="/" />} />
           <Route
             path="/trip-plan/:tripPlanId/summary"
             element={isLoggedIn ? <TripPlanSummaryPage /> : <Navigate to="/" />}
