@@ -1,18 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import emailjs from '@emailjs/browser';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { getUser } from '../queries/user-queries';
 
-const emailContent = {
-  to_name: 'Seba',
-  message: 'Have a nice vocation!',
-  to_email: 'anil.kults@gmail.com'
-};
+const emailjsCredentials = require('../credentials/emailjs_credentials.json');
 
-const emailjsCredentials = {
-  userId: 'service_f4fr2wo',
-  templeteId: 'template_hbnc70i',
-  publicKey: 'qS3HjNxeTPXvwDkQV'
-};
+// const emailContent = {
+//   to_name: 'Seba',
+//   message: 'Have a nice vocation!',
+//   to_email: 'anil.kults@gmail.com'
+// };
 
 // Custom component to wrap the PayPalButtons and handle currency changes
 export default function PaypalCheckoutButtons({ currency, amount, showSpinner }) {
@@ -21,6 +19,29 @@ export default function PaypalCheckoutButtons({ currency, amount, showSpinner })
   const [{ options, isPending }, dispatch] = usePayPalScriptReducer();
   // This values are the props in the UI
   const style = { layout: 'vertical' };
+  const [emailContent, setEmailContent] = useState({});
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+    getUser(authenticatedUser.user.id).then((data) => {
+      setUser(data);
+    });
+  }, [authenticatedUser]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    setEmailContent({
+      to_name: ('%s %s', user.firstName, user.lastName),
+      message: 'Have a nice vocation!',
+      to_email: user.email
+    });
+  }, [user]);
 
   const handleEmail = () => {
     emailjs.init(emailjsCredentials.publicKey);

@@ -58,7 +58,7 @@ router.get("/", AuthService, async (req, res) => {
 /**
  * Gets the user with given ID
  */
-router.get("/:id", AuthService, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await userController.findById(userId);
