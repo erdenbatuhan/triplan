@@ -12,6 +12,7 @@ import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
+import { getOptimizedRoute } from '../queries/route-optimization-queries';
 import * as partnerLocationDefaultFilter from '../queries/data/partner-location-default-filter.json';
 import {
   PARTNER_LOCATION_TYPE_RESTAURANT,
@@ -32,6 +33,19 @@ const fabStyle = {
   position: 'fixed'
 };
 
+function getOrderedLocations(locationList, orderList) {
+  const orderedList = [];
+  console.log(locationList);
+  console.log(orderList);
+  console.log(Object.keys(orderList).length);
+  for (let i = 0; i < Object.keys(orderList).length; i += 1) {
+    console.log(locationList[orderList[i]]);
+    orderedList.push(locationList[orderList[i]]);
+  }
+  console.log(orderedList);
+  return orderedList;
+}
+
 export default function TripPlanningPage() {
   const { state } = useLocation();
   const [searchParams] = useSearchParams();
@@ -51,6 +65,9 @@ export default function TripPlanningPage() {
     winWidth: window.innerWidth,
     winHeight: window.innerHeight
   });
+
+  const [partnerLocationsOrder, setPartnerLocationsOrderList] = useState([]);
+  const [orderedPartnerLocations, setOrderedPartnerLocations] = useState([]);
 
   const detectSize = () => {
     detectHW({
@@ -74,6 +91,18 @@ export default function TripPlanningPage() {
       .then((data) => setPartnerLocations(data))
       .finally(() => setLoading(false));
   }, [filterState]);
+
+  useEffect(() => {
+    getOptimizedRoute(selectedPartnerLocations).then((data) =>
+      setPartnerLocationsOrderList(data.response)
+    );
+  }, [selectedPartnerLocations]);
+
+  useEffect(() => {
+    setOrderedPartnerLocations(
+      getOrderedLocations(selectedPartnerLocations, partnerLocationsOrder)
+    );
+  }, [partnerLocationsOrder]);
 
   // Listening to the changes in query and partnerLocations
   useEffect(() => {
@@ -164,7 +193,11 @@ export default function TripPlanningPage() {
         </Paper>
         <Button
           onClick={() =>
-            navigate('/checkout', { state: { partnerLocations: selectedPartnerLocations } })
+            navigate('/checkout', {
+              state: {
+                partnerLocations: orderedPartnerLocations
+              }
+            })
           }>
           {' '}
           Continue{' '}
@@ -174,7 +207,7 @@ export default function TripPlanningPage() {
           <NavigationIcon
             sx={{ mr: 1 }}
             onClick={() =>
-              // navigate('/checkout', { state: { partnerLocations: selectedPartnerLocations } })
+              // navigate('/checkout', { state: { partnerLocations: orderedPartnerLocations } })
               navigate('/')
             }
           />
