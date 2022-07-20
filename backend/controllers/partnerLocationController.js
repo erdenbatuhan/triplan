@@ -9,14 +9,14 @@ const {
 const findDistinctCities = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      Restaurant.distinct("city"),
-      TouristAttraction.distinct("city"),
+      Restaurant.distinct("city", { city: { $nin : ["", null, undefined] } }),
+      TouristAttraction.distinct("city", { city: { $nin : ["", null, undefined] } }),
     ])
       .then(([restaurantCities, touristAttractionCities]) => {
-        const allCities = [...restaurantCities, ...touristAttractionCities];
-        const distinctCities = [...new Set(allCities)];
-
-        resolve(distinctCities);
+        resolve([...new Set([
+          ...restaurantCities,
+          ...touristAttractionCities
+        ])]);
       })
       .catch((err) => reject(err));
   });
