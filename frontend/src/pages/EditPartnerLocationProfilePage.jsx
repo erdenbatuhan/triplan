@@ -33,6 +33,7 @@ function EditPartnerLocationProfilePage() {
   const [ticketList, setTicketList] = useState([]);
   const [ticketsInEdit, setTicketsInEdit] = useState([]);
 
+  const [itemsInAdd, setItemsInAdd] = useState(false);
   const [itemsInEdit, setItemsInEdit] = useState(false);
 
   // TODO: will get partnerLocationType from auth token once the update on authentication occurs.
@@ -161,7 +162,15 @@ function EditPartnerLocationProfilePage() {
   };
 
   const handleAddMenuItem = async () => {
-    console.log('hey');
+    setItemsInAdd(true);
+  };
+
+  const handleAddCompletionClick = async (e, newItem) => {
+    if (partnerLocationType === 'restaurant') {
+      setRestaurantMenuList((menuItems) => [...menuItems, newItem]);
+    } else if (partnerLocationType === 'tourist-attraction') {
+      setTicketList((ticketItems) => [...ticketItems, newItem]);
+    }
   };
 
   const onSubmitClicked = async () => {
@@ -259,11 +268,6 @@ function EditPartnerLocationProfilePage() {
               />
             </Grid>
             <Grid item>
-              {/* <RestaurantMenuItems
-                restaurantMenuList={restaurantMenuList}
-                handleUpdateMenuList={handleUpdateMenuList}
-                inEdit
-              /> */}
               <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
                 <List spacing={2} overflow="auto">
                   {restaurantMenuList.map((menu) => {
@@ -291,9 +295,20 @@ function EditPartnerLocationProfilePage() {
                       item={menu}
                       locationType={partnerLocationType}
                       handleUpdateCompletionClick={handleUpdateCompletionClick}
+                      inAdd={false}
                     />
                   );
                 })
+              ) : (
+                // eslint-disable-next-line react/jsx-no-useless-fragment
+                <></>
+              )}
+              {itemsInAdd ? (
+                <EditMenuItem
+                  locationType={partnerLocationType}
+                  handleUpdateCompletionClick={handleAddCompletionClick}
+                  inAdd
+                />
               ) : (
                 // eslint-disable-next-line react/jsx-no-useless-fragment
                 <></>
@@ -311,6 +326,7 @@ function EditPartnerLocationProfilePage() {
                     item={ticket}
                     locationType={partnerLocationType}
                     handleUpdateCompletionClick={handleUpdateCompletionClick}
+                    inAdd={false}
                   />
                 );
               })

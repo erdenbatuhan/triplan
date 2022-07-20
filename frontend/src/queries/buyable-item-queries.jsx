@@ -46,3 +46,21 @@ export async function updateTicket(menu) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function addMenuItem(menuItem) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/menu-item`, {
+    method: `POST`,
+    mode: `cors`,
+    headers: HEADERS,
+    body: JSON.stringify(menuItem)
+  }).then((response) => response.json());
+}
+
+export async function addTicket(ticket) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/ticket`, {
+    method: `POST`,
+    mode: `cors`,
+    headers: HEADERS,
+    body: JSON.stringify(ticket)
+  }).then((response) => response.json());
+}

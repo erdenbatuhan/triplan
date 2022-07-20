@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Stack, Typography, TextField, Button } from '@mui/material';
 
 function EditMenuItem(props) {
-  const { item, locationType, handleUpdateCompletionClick } = props;
-  const { _id, name, description, price, type, image } = item; // reservationDate
+  const { item, inAdd, locationType, handleUpdateCompletionClick } = props;
+  // const { name, description, price, type, image } = item; // reservationDate
+  const [itemId, setItemId] = useState('');
 
-  const [itemName, setItemName] = useState(name);
-  const [itemDescription, setItemDescription] = useState(description);
-  const [itemPrice, setItemPrice] = useState(price);
+  const [itemName, setItemName] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
+  const [itemPrice, setItemPrice] = useState('');
 
   // const [itemReservationDate, setItemReservationDate] = useState(reservationDate);
 
-  const [itemFoodType, setItemFoodType] = useState(type);
-  const [itemPicture, setItemPicture] = useState(image);
+  const [itemFoodType, setItemFoodType] = useState('');
+  const [itemPicture, setItemPicture] = useState('');
 
-  const buttonText = locationType === 'restaurant' ? 'Menu' : 'Ticket';
+  const buttonItemNameText = locationType === 'restaurant' ? 'Menu' : 'Ticket';
+  const buttonText = inAdd
+    ? `Create New ${buttonItemNameText}!`
+    : `Complete ${buttonItemNameText} update!`;
   const nameLabel = locationType === 'restaurant' ? 'Menu Name' : 'Ticket Name';
   const descriptionLabel =
     locationType === 'restaurant' ? 'Menu Description' : 'Ticket Description';
@@ -24,6 +28,18 @@ function EditMenuItem(props) {
 
   const menuTypeLabel = 'Menu Food Type';
   const pictureLabel = 'Menu Picture';
+
+  useEffect(() => {
+    const isItemUndefined = typeof item !== 'undefined';
+    setItemId(isItemUndefined ? item._id : '');
+    setItemName(isItemUndefined ? item.name : '');
+    setItemDescription(isItemUndefined ? item.description : '');
+    setItemPrice(isItemUndefined ? item.price : '');
+    if (locationType === 'restaurant') {
+      setItemFoodType(isItemUndefined ? item.type : '');
+      setItemPicture(isItemUndefined ? item.image : '');
+    }
+  }, [item]);
 
   const onItemNameChange = (e) => {
     setItemName(e.target.value);
@@ -100,16 +116,26 @@ function EditMenuItem(props) {
       )}
       <Button
         onClick={(e) => {
-          handleUpdateCompletionClick(e, {
-            _id,
-            itemName,
-            itemDescription,
-            itemPrice,
-            itemPicture
-          });
+          handleUpdateCompletionClick(
+            e,
+            inAdd
+              ? {
+                  itemId,
+                  itemName,
+                  itemDescription,
+                  itemPrice,
+                  itemPicture
+                }
+              : {
+                  itemId,
+                  itemName,
+                  itemDescription,
+                  itemPrice,
+                  itemPicture
+                }
+          );
         }}>
-        {' '}
-        Complete {buttonText} update!{' '}
+        {buttonText}
       </Button>
     </Stack>
   );
