@@ -35,14 +35,9 @@ const fabStyle = {
 
 function getOrderedLocations(locationList, orderList) {
   const orderedList = [];
-  console.log(locationList);
-  console.log(orderList);
-  console.log(Object.keys(orderList).length);
   for (let i = 0; i < Object.keys(orderList).length; i += 1) {
-    console.log(locationList[orderList[i]]);
     orderedList.push(locationList[orderList[i]]);
   }
-  console.log(orderedList);
   return orderedList;
 }
 

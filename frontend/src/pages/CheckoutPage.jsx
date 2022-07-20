@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import { Button, Modal } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -12,6 +13,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import emailjs from '@emailjs/browser';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+// import Collapse from '@mui/material/Collapse';
 import Header from '../components/Header';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
@@ -25,6 +29,17 @@ import {
 } from '../shared/constants';
 
 const emailjsCredentials = require('../credentials/emailjs_credentials.json');
+
+const modalBoxStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
 
 function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
   let message =
@@ -58,6 +73,7 @@ function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
 
 export default function CheckoutPage() {
   const { state } = useLocation(); // Received from the previous route
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -396,9 +412,33 @@ export default function CheckoutPage() {
             />
           </PayPalScriptProvider>
         </Grid>
-
         <Grid item xs={1} />
       </Grid>
+      <Modal
+        open={isPaymentCompleted}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        style={{
+          display: 'flex',
+          justifyConent: 'center',
+          alignItems: 'center'
+        }}>
+        <Box sx={modalBoxStyle}>
+          <div className="center">
+            <Alert severity="success">
+              <AlertTitle>Success</AlertTitle>
+              Your payment has done <strong>Enjoy your vacation!</strong>
+            </Alert>
+            <Button
+              alignItems="center"
+              onClick={() => {
+                navigate('/main-page');
+              }}>
+              Continue
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 }
