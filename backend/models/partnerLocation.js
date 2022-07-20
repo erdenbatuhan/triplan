@@ -19,6 +19,7 @@ const PartnerLocationSchema = new Schema({
   googleLocationLink: { type: String, default: '', required: false },
   certificate: { type: String, default: '', required: false },
   locationPicture: { type: String, default: '', required: false },
+  partnerType: { type: String, required: true },
   googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents,
   associatedTripLocations: [{ 
     type: Schema.Types.ObjectId,
