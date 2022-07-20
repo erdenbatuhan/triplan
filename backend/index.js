@@ -22,6 +22,10 @@ app.listen(appProps["port"], () =>
   console.log(`Server Running on port: http://localhost:${appProps["port"]}`)
 );
 
+// Routes: City Info
+const cityInfoRoutes = require("./routes/cityInfoRoutes.js");
+app.use("/city-info", cityInfoRoutes);
+
 // Routes: User
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/user", userRoutes);

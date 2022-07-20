@@ -1,5 +1,6 @@
 export const HOST = `http://localhost:8008`;
 
+export const HOST_CITY_INFO = `${HOST}/city-info`;
 export const HOST_USER = `${HOST}/user`;
 export const HOST_FOLLOWING_RELATIONSHIP = `${HOST}/following-relationship`;
 export const HOST_GOOGLE_LOCATION_INFO = `${HOST}/google-location-info`;

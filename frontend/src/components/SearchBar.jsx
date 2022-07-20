@@ -1,33 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { getCities } from '../queries/partner-location-queries';
 
-function SearchBar() {
-  const [cities, setCities] = useState([]);
-  const [value, setValue] = useState('');
+function SearchBar({ label, entries, previousSelection, onSelectionChange }) {
+  const [selection, setSelection] = useState(previousSelection || '');
 
-  useEffect(() => {
-    getCities().then((data) => {
-      setCities(data);
-    });
-  }, []);
-
-  const setSelectedValue = (event, val) => {
-    setValue(val);
+  const setSelectedValue = (_, val) => {
+    setSelection(val); // Update state
+    onSelectionChange(val); // Update parent
   };
 
   return (
     <Autocomplete
       freeSolo
       disableClearable
-      options={cities.map((city) => city)}
+      options={entries.map((item) => item)}
       onChange={setSelectedValue}
-      value={value}
+      value={selection}
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Select a destination"
+          label={label}
           InputProps={{
             ...params.InputProps,
             type: 'search'

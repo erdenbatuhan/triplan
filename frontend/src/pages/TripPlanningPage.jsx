@@ -16,6 +16,7 @@ import {
   PARTNER_LOCATION_TYPE_RESTAURANT,
   PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
 } from '../shared/constants';
+import GoogleMap from '../components/GoogleMap';
 
 const fabStyle = {
   bgcolor: green[500],
@@ -35,8 +36,10 @@ export default function TripPlanningPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const filterData = state ? state.filterData : partnerLocationDefaultFilter;
-  const [filterState, setFilterState] = useState(filterData);
+  const [selectedCity] = useState(state ? state.selectedCity : null);
+  const [filterState, setFilterState] = useState(
+    state ? state.filterData : partnerLocationDefaultFilter
+  );
   const [loading, setLoading] = useState(false);
   const [partnerLocations, setPartnerLocations] = useState({
     restaurants: [],
@@ -149,6 +152,11 @@ export default function TripPlanningPage() {
 
       <Grid item xs={3}>
         <Header title="Selected Places" />
+
+        <GoogleMap
+          selectedCity={selectedCity}
+          selectedPartnerLocations={selectedPartnerLocations}
+        />
 
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <SelectedPlacesList selectedPartnerLocations={selectedPartnerLocations} />
