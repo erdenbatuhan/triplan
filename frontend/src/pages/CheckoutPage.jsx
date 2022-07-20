@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import { Button, Modal } from '@mui/material';
+import { Button, Modal, CardActionArea, CardMedia, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -22,11 +22,18 @@ import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
+import { createTransaction } from '../queries/transaction-queries';
 
 import {
   PARTNER_LOCATION_TYPE_RESTAURANT,
-  PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
+  PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION,
+  // CURRENCIES,
+  TRANSACTION_TYPE_WITHDRAW,
+  TRANSACTION_STATUS_SUCCESSFUL,
+  TRANSACTION_STATUS_REJECTED
 } from '../shared/constants';
+
+const walletImg = require('../assets/wallet-logo.png');
 
 const emailjsCredentials = require('../credentials/emailjs_credentials.json');
 
@@ -111,6 +118,22 @@ export default function CheckoutPage() {
           console.log('An error occurred, Please try again', error.text);
         }
       );
+  };
+
+  const handleWalletPayment = () => {
+    createTransaction({
+      amount: Number(totalPaidServicePrice),
+      type: TRANSACTION_TYPE_WITHDRAW,
+      incomingWalletId: null,
+      outgoingWalletId: wallet._id
+    }).then(({ transaction, outgoingWalletObject }) => {
+      if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
+        setWallet(outgoingWalletObject);
+        setPaymentCompleted(true);
+      } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
+        alert('Opps, something went wrong!');
+      }
+    });
   };
 
   // Listen to the changes in authenticated user
@@ -395,6 +418,44 @@ export default function CheckoutPage() {
               </ul>
             </li>
           </List>
+          <Card sx={{ width: '%100' }}>
+            <CardActionArea onClick={handleWalletPayment}>
+              <Grid container spacing={2} direction="row">
+                <Grid item xs={2}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '8vh'
+                    }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: '5vh', height: '5vh' }}
+                      image={walletImg}
+                      alt="wallet_icon"
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={10}>
+                  <CardContent>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '8vh'
+                      }}>
+                      <Typography gutterBottom variant="h6" component="div">
+                        Pay with Triplan Wallet
+                      </Typography>
+                    </div>
+                  </CardContent>
+                </Grid>
+              </Grid>
+            </CardActionArea>
+          </Card>
+          <br />
           <PayPalScriptProvider
             options={{
               'client-id':
@@ -427,7 +488,7 @@ export default function CheckoutPage() {
           <div className="center">
             <Alert severity="success">
               <AlertTitle>Success</AlertTitle>
-              Your payment has done <strong>Enjoy your vacation!</strong>
+              Your payment is successfull! <strong>Enjoy your vacation!</strong>
             </Alert>
             <Button
               alignItems="center"
