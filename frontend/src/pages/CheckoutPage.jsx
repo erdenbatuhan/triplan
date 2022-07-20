@@ -466,8 +466,6 @@ export default function CheckoutPage() {
             <PaypalCheckoutButtons
               currency="EUR"
               amount={totalPaidServicePrice}
-              partnerLocationList={partnerLocations}
-              servicesToBeBought={servicesToBeBought}
               onPaymentComplete={handleCompletePayment}
               showSpinner
             />
