@@ -11,16 +11,50 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import emailjs from '@emailjs/browser';
 import Header from '../components/Header';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { findUserWallet } from '../queries/user-queries';
+import { findUserWallet, getUser } from '../queries/user-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
+
 import {
   PARTNER_LOCATION_TYPE_RESTAURANT,
   PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
 } from '../shared/constants';
+
+const emailjsCredentials = require('../credentials/emailjs_credentials.json');
+
+function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
+  let message =
+    'Your optimized route plan is consist of following places. You can also click the link below to see the route on google maps.\r\n';
+  let googleMapsLink = 'https://www.google.com/maps/dir/';
+  for (let index = 0; index < partnerLocationList.length; index += 1) {
+    const loc = partnerLocationList[index];
+    message = message.concat('\r\n- ', loc.partnerLocation.name);
+    googleMapsLink = googleMapsLink.concat(loc.partnerLocation.name.replaceAll(' ', '+'), '/');
+  }
+  if (servicesToBeBought.length > 0) {
+    message = message.concat('\r\nYour Paid Services:\r\n');
+    for (let index = 0; index < servicesToBeBought.length; index += 1) {
+      const item = servicesToBeBought[index];
+      message = message.concat('\r\n- ', item.partnerLocation.name);
+      for (let j = 0; j < item.itemsToBeBought.length; j += 1) {
+        message = message.concat(
+          '\r\n\r\t- ',
+          `${item.itemsToBeBought[j].name} (${item.itemsToBeBought[j].price} €) x ${item.itemsToBeBought[j].count} = ${item.itemsToBeBought[j].finalPrice} €`
+        );
+      }
+      googleMapsLink = googleMapsLink.concat(item.partnerLocation.name.replaceAll(' ', '+'), '/');
+    }
+    message = message.concat('\r\n- Total paid amount : ', amount, '€');
+  }
+
+  message = message.concat('\r\n\r\nGoogle Maps Link:\r\n');
+  message = message.concat(googleMapsLink);
+  return message;
+}
 
 export default function CheckoutPage() {
   const { state } = useLocation(); // Received from the previous route
@@ -34,6 +68,34 @@ export default function CheckoutPage() {
   const [latestSelectionUpdateDate, setLatestSelectionUpdateDate] = useState(new Date()); // Used for easier force-rendering
   const [servicesToBeBought, setServicesToBeBought] = useState([]);
   const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
+  const [user, setUser] = useState(null);
+  const [emailContent] = useState({});
+  const [itemList, setItemList] = useState([]);
+  const [isPaymentCompleted, setPaymentCompleted] = useState(false);
+
+  const handleCompletePayment = (bool) => {
+    setPaymentCompleted(bool);
+  };
+
+  const handleEmail = () => {
+    emailjs.init(emailjsCredentials.publicKey);
+    // e.preventDefault(); // Prevents default refresh by the browser
+    emailjs
+      .send(
+        emailjsCredentials.userId,
+        emailjsCredentials.templeteId,
+        emailContent
+        // emailjs.publicKey
+      )
+      .then(
+        (result) => {
+          console.log('Message Sent, We will get back to you shortly', result.text);
+        },
+        (error) => {
+          console.log('An error occurred, Please try again', error.text);
+        }
+      );
+  };
 
   // Listen to the changes in authenticated user
   useEffect(() => {
@@ -133,6 +195,45 @@ export default function CheckoutPage() {
     );
     setTotalPaidServicePrice(totalPrice);
   }, [buyableItemSelections]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    emailContent.to_name = (user.firstName, ' ', user.lastName);
+    emailContent.to_email = user.email;
+  }, [user]);
+
+  useEffect(() => {
+    if (!partnerLocations) {
+      return;
+    }
+    setItemList(servicesToBeBought);
+    emailContent.message = generateEmailMessage(partnerLocations, itemList, totalPaidServicePrice);
+  }, [partnerLocations, servicesToBeBought, totalPaidServicePrice]);
+
+  useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+    getUser(authenticatedUser.user.id).then((data) => {
+      setUser(data);
+    });
+  }, [authenticatedUser]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    emailContent.to_name = (user.firstName, ' ', user.lastName);
+    emailContent.to_email = user.email;
+  }, [user]);
+
+  useEffect(() => {
+    if (isPaymentCompleted) {
+      handleEmail();
+    }
+  }, [isPaymentCompleted]);
 
   const handleItemSelectionCountChange = ({ partnerLocationId, updatedItemSelections }) => {
     setBuyableItemSelections({
@@ -290,6 +391,7 @@ export default function CheckoutPage() {
               amount={totalPaidServicePrice}
               partnerLocationList={partnerLocations}
               servicesToBeBought={servicesToBeBought}
+              onPaymentComplete={handleCompletePayment}
               showSpinner
             />
           </PayPalScriptProvider>

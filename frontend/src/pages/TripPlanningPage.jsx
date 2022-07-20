@@ -68,6 +68,7 @@ export default function TripPlanningPage() {
 
   const [partnerLocationsOrder, setPartnerLocationsOrderList] = useState([]);
   const [orderedPartnerLocations, setOrderedPartnerLocations] = useState([]);
+  console.log(orderedPartnerLocations);
 
   const detectSize = () => {
     detectHW({
@@ -195,7 +196,7 @@ export default function TripPlanningPage() {
           onClick={() =>
             navigate('/checkout', {
               state: {
-                partnerLocations: orderedPartnerLocations
+                partnerLocations: selectedPartnerLocations
               }
             })
           }>
