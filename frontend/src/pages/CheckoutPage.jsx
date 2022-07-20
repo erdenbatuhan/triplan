@@ -40,7 +40,6 @@ export default function CheckoutPage() {
     if (!authenticatedUser) {
       return;
     }
-
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
   }, [authenticatedUser]);
 
@@ -286,7 +285,13 @@ export default function CheckoutPage() {
               components: 'buttons',
               currency: 'EUR'
             }}>
-            <PaypalCheckoutButtons currency="EUR" amount={totalPaidServicePrice} showSpinner />
+            <PaypalCheckoutButtons
+              currency="EUR"
+              amount={totalPaidServicePrice}
+              partnerLocationList={partnerLocations}
+              servicesToBeBought={servicesToBeBought}
+              showSpinner
+            />
           </PayPalScriptProvider>
         </Grid>
 
