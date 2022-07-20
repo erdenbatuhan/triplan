@@ -63,7 +63,9 @@ router.post("/ticket", async (req, res) => {
  */
 router.post("/menu-item", async (req, res) => {
   try {
+    console.log("req.body: ", req.body);
     const menuItemCreated = await buyableItemController.addMenuItem(req.body);
+    console.log("menuItemCreated: ", menuItemCreated);
     res.status(200).send(menuItemCreated);
   } catch ({ message }) {
     res

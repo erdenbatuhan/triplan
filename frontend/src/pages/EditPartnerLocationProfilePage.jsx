@@ -11,10 +11,11 @@ import {
   getMenuItems,
   getTickets,
   updateMenuItem,
-  updateTicket
+  updateTicket,
+  addMenuItem,
+  addTicket
 } from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/RestaurantProfilePage/EditRestaurantCuisineBox';
-// import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
 import EditMenuItem from '../components/RestaurantProfilePage/EditMenuItem';
 
@@ -181,12 +182,26 @@ function EditPartnerLocationProfilePage() {
             phoneNumber: partnerPhoneNumber,
             cuisines: restaurantCuisines
           }),
-          restaurantMenuList.map((menu) => updateMenuItem(menu))
+          restaurantMenuList.map((menu) => {
+            const menuExists = typeof menu._id !== 'undefined';
+            if (menuExists) {
+              return updateMenuItem(menu);
+            }
+            return addMenuItem(menu);
+          })
         ]).then(() => console.log('update is completed!'));
       } else if (partnerLocationType === 'tourist-attraction') {
         Promise.all([
           saveTouristAttraction(updatedLocation),
-          ticketList.map((ticket) => updateTicket(ticket))
+          ticketList.map((ticket) => {
+            const ticketExists = typeof ticket._id !== 'undefined';
+            if (ticketExists) {
+              updateTicket(ticket);
+            } else {
+              addTicket(ticket);
+            }
+            return 0;
+          })
         ]).then(() => console.log('update is completed!'));
       }
       navigate(`/partner-profile/${partnerId}`);

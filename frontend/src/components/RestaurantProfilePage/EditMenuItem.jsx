@@ -85,16 +85,18 @@ function EditMenuItem(props) {
             price,
             type,
             // type,
-            partnerId,
+            appliedDiscountRate: 0,
+            restaurant: partnerId,
             image
           }
         : {
             name,
             description,
             price,
+            appliedDiscountRate: 0,
             // reservationDate,
             // expirationDate
-            partnerId
+            touristicAttraction: partnerId
           };
     itemObject = !inAdd ? { ...itemObject, _id } : itemObject;
     return itemObject;

@@ -9,6 +9,22 @@ export async function getBuyableItems(partnerLocationIdData) {
   }).then((response) => response.json());
 }
 
+export async function checkMenuItemExist(menuId) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/menu-item-exist?id=${menuId}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
+
+export async function checkTicketExist(menuId) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/ticket-exist?id=${menuId}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
+
 export async function getMenuItems(partnerLocationIdData) {
   return await fetch(`${HOST_BUYABLE_ITEM}/menu-item?id=${partnerLocationIdData}`, {
     method: `GET`,

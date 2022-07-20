@@ -65,21 +65,9 @@ const addTicket = (ticket) => {
 };
 
 const addMenuItem = (menuItem) => {
-  return new Promise((resolve, reject) => {
-    partnerLocationController
-      .findRestaurantById(menuItem.restaurant)
-      .then(async (restaurant) => {
-        if (!restaurant) {
-          return resolve(null);
-        }
-
-        const newMenuItem = new MenuItem(menuItem);
-        newMenuItem.restaurant = restaurant;
-
-        resolve(await MenuItem.create(newMenuItem));
-      })
-      .catch((err) => reject(err));
-  });
+  return MenuItem.exists({ restaurant: menuItem.restaurant })
+    .then(() => new Promise(MenuItem.insertMany([menuItem])))
+    .catch(() => new Promise((resolve) => resolve(null)));
 };
 
 const updateTicket = async (ticketId, fields) => {

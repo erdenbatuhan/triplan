@@ -24,7 +24,9 @@ function InfoCard(props) {
           </Typography>
         </Grid>
         <Grid item xs={3}>
-          <Typography align="center">{value}</Typography>
+          <Typography align="center">
+            {typeof value === 'undefined' ? 'Text is not obtained' : value}
+          </Typography>
         </Grid>
       </Grid>
     </Card>
@@ -33,11 +35,12 @@ function InfoCard(props) {
 
 InfoCard.propTypes = {
   title: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
   href: PropTypes.string
 };
 
 InfoCard.defaultProps = {
+  value: undefined,
   href: 'None'
 };
 
