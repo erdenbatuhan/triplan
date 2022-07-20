@@ -1,0 +1,4 @@
+python-tsp
+numpy
+flask
+flask_cors
