@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Stack, Typography, TextField, Button } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { Modal, Box, Stack, Typography, TextField, Button } from '@mui/material';
+
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4
+};
 
 function EditMenuItem(props) {
-  const { item, inAdd, locationType, handleUpdateCompletionClick } = props;
+  const { item, inAdd, itemEditAddMode, locationType, handleUpdateCompletionClick } = props;
+  const { partnerId } = useParams();
+
   // const { name, description, price, type, image } = item; // reservationDate
   const [itemId, setItemId] = useState('');
 
@@ -30,14 +45,19 @@ function EditMenuItem(props) {
   const pictureLabel = 'Menu Picture';
 
   useEffect(() => {
-    const isItemUndefined = typeof item !== 'undefined';
-    setItemId(isItemUndefined ? item._id : '');
-    setItemName(isItemUndefined ? item.name : '');
-    setItemDescription(isItemUndefined ? item.description : '');
-    setItemPrice(isItemUndefined ? item.price : '');
+    // const isItemUndefined = typeof item !== 'undefined';
+    console.log('item: ', item);
+    // console.log('isItemUndefined: ', isItemUndefined);
+    console.log('inAdd: ', inAdd);
+    console.log('!!!inAdd: ', !inAdd);
+
+    setItemId(!inAdd ? item._id : '');
+    setItemName(!inAdd ? item.name : '');
+    setItemDescription(!inAdd ? item.description : '');
+    setItemPrice(!inAdd ? item.price : '');
     if (locationType === 'restaurant') {
-      setItemFoodType(isItemUndefined ? item.type : '');
-      setItemPicture(isItemUndefined ? item.image : '');
+      setItemFoodType(!inAdd ? item.type : '');
+      setItemPicture(!inAdd ? item.image : '');
     }
   }, [item]);
 
@@ -63,81 +83,86 @@ function EditMenuItem(props) {
   };
 
   return (
-    <Stack spacing={2}>
-      <Typography align="center">Update Your Menu!</Typography>
-      <TextField
-        required
-        id="outlined-required"
-        label={nameLabel}
-        value={itemName}
-        onChange={(e) => onItemNameChange(e)}
-      />
-      <TextField
-        required
-        id="outlined-required"
-        label={descriptionLabel}
-        value={itemDescription}
-        onChange={(e) => onItemDescriptionChange(e)}
-      />
-      <TextField
-        required
-        id="outlined-required"
-        label={priceLabel}
-        value={itemPrice}
-        onChange={(e) => onItemPriceChange(e)}
-      />
-      {locationType === 'restaurant' ? (
-        <>
+    <Modal open={itemEditAddMode}>
+      <Box sx={{ ...modalStyle, width: 400 }}>
+        <Stack spacing={2}>
+          <Typography align="center">{buttonText}</Typography>
           <TextField
             required
             id="outlined-required"
-            label={menuTypeLabel}
-            value={itemFoodType}
-            onChange={(e) => onItemFoodTypeChange(e)}
+            label={nameLabel}
+            value={itemName}
+            onChange={(e) => onItemNameChange(e)}
           />
           <TextField
             required
             id="outlined-required"
-            label={pictureLabel}
-            value={itemPicture}
-            onChange={(e) => onItemPictureChange(e)}
+            label={descriptionLabel}
+            value={itemDescription}
+            onChange={(e) => onItemDescriptionChange(e)}
           />
-        </>
-      ) : (
-        // <TextField
-        //   required
-        //   id="outlined-required"
-        //   label={pictureLabel}
-        //   value={itemReservationDate}
-        //   onChange={(e) => onItemReservationDateChange(e)}
-        // />
-        // eslint-disable-next-line react/jsx-no-useless-fragment
-        <></>
-      )}
-      <Button
-        onClick={(e) => {
-          handleUpdateCompletionClick(
-            e,
-            inAdd
-              ? {
-                  itemId,
-                  itemName,
-                  itemDescription,
-                  itemPrice,
-                  itemPicture
-                }
-              : {
-                  itemId,
-                  itemName,
-                  itemDescription,
-                  itemPrice,
-                  itemPicture
-                }
-          );
-        }}>
-        {buttonText}
-      </Button>
-    </Stack>
+          <TextField
+            required
+            id="outlined-required"
+            label={priceLabel}
+            value={itemPrice}
+            onChange={(e) => onItemPriceChange(e)}
+          />
+          {locationType === 'restaurant' ? (
+            <>
+              <TextField
+                required
+                id="outlined-required"
+                label={menuTypeLabel}
+                value={itemFoodType}
+                onChange={(e) => onItemFoodTypeChange(e)}
+              />
+              <TextField
+                required
+                id="outlined-required"
+                label={pictureLabel}
+                value={itemPicture}
+                onChange={(e) => onItemPictureChange(e)}
+              />
+            </>
+          ) : (
+            // <TextField
+            //   required
+            //   id="outlined-required"
+            //   label={pictureLabel}
+            //   value={itemReservationDate}
+            //   onChange={(e) => onItemReservationDateChange(e)}
+            // />
+            // eslint-disable-next-line react/jsx-no-useless-fragment
+            <></>
+          )}
+          <Button
+            onClick={(e) => {
+              handleUpdateCompletionClick(
+                e,
+                inAdd
+                  ? {
+                      itemId,
+                      itemName,
+                      itemDescription,
+                      itemPrice,
+                      itemPicture,
+                      partnerId
+                    }
+                  : {
+                      itemId,
+                      itemName,
+                      itemDescription,
+                      itemPrice,
+                      partnerId
+                    }
+              );
+            }}>
+            {buttonText}
+          </Button>
+        </Stack>
+      </Box>
+    </Modal>
   );
 }
 
