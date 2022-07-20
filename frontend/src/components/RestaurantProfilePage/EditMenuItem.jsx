@@ -15,20 +15,20 @@ const modalStyle = {
 };
 
 function EditMenuItem(props) {
-  const { item, inAdd, itemEditAddMode, locationType, handleUpdateCompletionClick } = props;
+  const { item, inAdd, itemEditAddMode, locationType, handleItemChangeCompletionClick } = props;
   const { partnerId } = useParams();
 
   // const { name, description, price, type, image } = item; // reservationDate
-  const [itemId, setItemId] = useState('');
+  const [_id, setItemId] = useState('');
 
-  const [itemName, setItemName] = useState('');
-  const [itemDescription, setItemDescription] = useState('');
-  const [itemPrice, setItemPrice] = useState('');
+  const [name, setItemName] = useState('');
+  const [description, setItemDescription] = useState('');
+  const [price, setItemPrice] = useState('');
 
   // const [itemReservationDate, setItemReservationDate] = useState(reservationDate);
 
-  const [itemFoodType, setItemFoodType] = useState('');
-  const [itemPicture, setItemPicture] = useState('');
+  const [type, setItemFoodType] = useState('');
+  const [image, setItemPicture] = useState('');
 
   const buttonItemNameText = locationType === 'restaurant' ? 'Menu' : 'Ticket';
   const buttonText = inAdd
@@ -45,12 +45,6 @@ function EditMenuItem(props) {
   const pictureLabel = 'Menu Picture';
 
   useEffect(() => {
-    // const isItemUndefined = typeof item !== 'undefined';
-    console.log('item: ', item);
-    // console.log('isItemUndefined: ', isItemUndefined);
-    console.log('inAdd: ', inAdd);
-    console.log('!!!inAdd: ', !inAdd);
-
     setItemId(!inAdd ? item._id : '');
     setItemName(!inAdd ? item.name : '');
     setItemDescription(!inAdd ? item.description : '');
@@ -82,6 +76,30 @@ function EditMenuItem(props) {
     setItemPicture(e.target.value);
   };
 
+  const getChangedItemObject = () => {
+    let itemObject =
+      locationType === 'restaurant'
+        ? {
+            name,
+            description,
+            price,
+            type,
+            // type,
+            partnerId,
+            image
+          }
+        : {
+            name,
+            description,
+            price,
+            // reservationDate,
+            // expirationDate
+            partnerId
+          };
+    itemObject = !inAdd ? { ...itemObject, _id } : itemObject;
+    return itemObject;
+  };
+
   return (
     <Modal open={itemEditAddMode}>
       <Box sx={{ ...modalStyle, width: 400 }}>
@@ -91,21 +109,21 @@ function EditMenuItem(props) {
             required
             id="outlined-required"
             label={nameLabel}
-            value={itemName}
+            value={name}
             onChange={(e) => onItemNameChange(e)}
           />
           <TextField
             required
             id="outlined-required"
             label={descriptionLabel}
-            value={itemDescription}
+            value={description}
             onChange={(e) => onItemDescriptionChange(e)}
           />
           <TextField
             required
             id="outlined-required"
             label={priceLabel}
-            value={itemPrice}
+            value={price}
             onChange={(e) => onItemPriceChange(e)}
           />
           {locationType === 'restaurant' ? (
@@ -114,14 +132,14 @@ function EditMenuItem(props) {
                 required
                 id="outlined-required"
                 label={menuTypeLabel}
-                value={itemFoodType}
+                value={type}
                 onChange={(e) => onItemFoodTypeChange(e)}
               />
               <TextField
                 required
                 id="outlined-required"
                 label={pictureLabel}
-                value={itemPicture}
+                value={image}
                 onChange={(e) => onItemPictureChange(e)}
               />
             </>
@@ -138,25 +156,7 @@ function EditMenuItem(props) {
           )}
           <Button
             onClick={(e) => {
-              handleUpdateCompletionClick(
-                e,
-                inAdd
-                  ? {
-                      itemId,
-                      itemName,
-                      itemDescription,
-                      itemPrice,
-                      itemPicture,
-                      partnerId
-                    }
-                  : {
-                      itemId,
-                      itemName,
-                      itemDescription,
-                      itemPrice,
-                      partnerId
-                    }
-              );
+              handleItemChangeCompletionClick(e, getChangedItemObject());
             }}>
             {buttonText}
           </Button>

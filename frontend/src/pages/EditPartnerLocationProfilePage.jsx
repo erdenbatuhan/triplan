@@ -34,7 +34,7 @@ function EditPartnerLocationProfilePage() {
   const [ticketInEdit, setTicketInEdit] = useState([]);
 
   const [itemEditAddMode, setItemEditAddMode] = useState(false);
-
+  const [inAdd, setInAdd] = useState(false);
   // TODO: will get partnerLocationType from auth token once the update on authentication occurs.
   const { partnerId } = useParams();
   const navigate = useNavigate();
@@ -103,56 +103,49 @@ function EditPartnerLocationProfilePage() {
     const editItemId = e.target.value;
     if (partnerLocationType === 'restaurant') {
       const editItem = restaurantMenuList.filter((menu) => menu._id === editItemId)[0];
-      // setMenuItemsInEdit((menuItems) => [...menuItems, editItem]);
       setMenuItemInEdit(editItem);
     } else if (partnerLocationType === 'tourist-attraction') {
       const editItem = ticketList.filter((ticket) => ticket._id === editItemId)[0];
-      // setTicketsInEdit((tickets) => [...tickets, editItem]);
       setTicketInEdit(editItem);
     }
     setItemEditAddMode(true);
   };
 
-  const handleUpdateCompletionClick = (e, updateParams) => {
-    const { _id, itemName, itemDescription, itemPrice } = updateParams;
+  const handleEditCompletionClick = (e, updateParams) => {
     if (partnerLocationType === 'restaurant') {
-      const { itemType, itemPicture } = updateParams;
       setRestaurantMenuList((menuItems) => {
         const items = [...menuItems];
-        const idxItem = items.findIndex((item) => item._id === _id);
+        const idxItem = items.findIndex((item) => item._id === updateParams._id);
         const menuItemsEdited = { ...items[idxItem] };
-        menuItemsEdited.name = itemName;
-        menuItemsEdited.description = itemDescription;
-        menuItemsEdited.price = itemPrice;
-        menuItemsEdited.type = itemType;
-        menuItemsEdited.image = itemPicture;
+        menuItemsEdited.name = updateParams.name;
+        menuItemsEdited.description = updateParams.description;
+        menuItemsEdited.price = updateParams.price;
+        menuItemsEdited.type = updateParams.type;
+        menuItemsEdited.image = updateParams.image;
         items[idxItem] = menuItemsEdited;
         return items;
       });
-      setMenuItemInEdit((menuItems) => {
-        return menuItems.filter((menuItem) => menuItem._id !== _id);
-      });
+      setMenuItemInEdit({});
     } else if (partnerLocationType === 'tourist-attraction') {
       // const { ticketReservationDate } = updateParams;
       setTicketList((ticketItems) => {
         const items = [...ticketItems];
-        const idxItem = items.findIndex((item) => item._id === _id);
+        const idxItem = items.findIndex((item) => item._id === updateParams._id);
         const ticketItemsEdited = { ...items[idxItem] };
-        ticketItemsEdited.name = itemName;
-        ticketItemsEdited.description = itemDescription;
-        ticketItemsEdited.price = itemPrice;
+        ticketItemsEdited.name = updateParams.name;
+        ticketItemsEdited.description = updateParams.description;
+        ticketItemsEdited.price = updateParams.price;
         items[idxItem] = ticketItemsEdited;
         return items;
       });
-      setTicketInEdit((tickets) => {
-        return tickets.filter((ticket) => ticket._id !== _id);
-      });
+      setTicketInEdit({});
     }
-    setItemEditAddMode(true);
+    setItemEditAddMode(false);
   };
 
   const handleAddMenuItem = async () => {
     setItemEditAddMode(true);
+    setInAdd(true);
   };
 
   const handleAddCompletionClick = async (e, newItem) => {
@@ -161,11 +154,13 @@ function EditPartnerLocationProfilePage() {
     } else if (partnerLocationType === 'tourist-attraction') {
       setTicketList((ticketItems) => [...ticketItems, newItem]);
     }
+    setItemEditAddMode(false);
+    setInAdd(false);
   };
 
   const handleItemChangeCompletionClick = async (e, params) => {
-    if (itemEditAddMode) {
-      handleUpdateCompletionClick(e, params);
+    if (!inAdd) {
+      handleEditCompletionClick(e, params);
     } else {
       handleAddCompletionClick(e, params);
     }
@@ -289,8 +284,8 @@ function EditPartnerLocationProfilePage() {
                 key={menuItemInEdit._id}
                 item={menuItemInEdit}
                 locationType={partnerLocationType}
-                handleUpdateCompletionClick={handleItemChangeCompletionClick}
-                inAdd={false}
+                handleItemChangeCompletionClick={handleItemChangeCompletionClick}
+                inAdd={inAdd}
                 itemEditAddMode={itemEditAddMode}
               />
             </Grid>
@@ -303,9 +298,9 @@ function EditPartnerLocationProfilePage() {
                 key={ticketInEdit._id}
                 item={ticketInEdit}
                 locationType={partnerLocationType}
-                handleUpdateCompletionClick={handleUpdateCompletionClick}
-                inAdd={false}
-                itemEditAddMode
+                handleItemChangeCompletionClick={handleItemChangeCompletionClick}
+                inAdd={inAdd}
+                itemEditAddMode={itemEditAddMode}
               />
             ) : (
               // eslint-disable-next-line react/jsx-no-useless-fragment
