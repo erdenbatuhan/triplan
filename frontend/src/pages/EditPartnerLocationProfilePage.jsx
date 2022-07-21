@@ -15,9 +15,9 @@ import {
   addMenuItem,
   addTicket
 } from '../queries/buyable-item-queries';
-import EditRestaurantCuisineBox from '../components/RestaurantProfilePage/EditRestaurantCuisineBox';
-import BuyableItemCard from '../components/RestaurantProfilePage/BuyableItemCard';
-import EditItemModal from '../components/RestaurantProfilePage/EditItemModal';
+import EditRestaurantCuisineBox from '../components/PartnerLocationProfilePage/EditRestaurantCuisineBox';
+import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
+import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
 
 function EditPartnerLocationProfilePage() {
   const [partner, setPartner] = useState({});
