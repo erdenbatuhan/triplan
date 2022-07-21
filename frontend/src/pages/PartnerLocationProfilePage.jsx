@@ -83,7 +83,7 @@ export default function PartnerLocationProfilePage() {
         </Grid>
         <Grid item xs={9}>
           <Stack>
-            <Typography gutterBottom variant="h1" component="div" align="center">
+            <Typography variant="h1" component="div" align="center">
               {partner.name}
             </Typography>
             {partnerLocationType === 'restaurant' ? (

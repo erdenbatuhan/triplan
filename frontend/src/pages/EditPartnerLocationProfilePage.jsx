@@ -209,6 +209,11 @@ function EditPartnerLocationProfilePage() {
       console.error(`failed to update partner location ${e}`);
     }
   };
+
+  const onCancelClicked = () => {
+    navigate(`/partner-profile/${partnerId}`);
+  };
+
   return (
     <Box
       component="form"
@@ -328,6 +333,7 @@ function EditPartnerLocationProfilePage() {
           <Button onClick={handleAddMenuItem}>Add New Menu</Button>
         </Grid>
         <Grid item>
+          <Button onClick={onCancelClicked}>Cancel Update</Button>
           <Button onClick={onSubmitClicked}>Update Profile</Button>
         </Grid>
       </Grid>
