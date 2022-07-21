@@ -67,7 +67,13 @@ const sortLocationsByScore = (locations) => {
           const reviewCountScore = reviewCountScores[googleLocationInfoId];
           const followerRatingScore = 0;
 
-          return { [googleLocationInfoId]: ratingScore + reviewCountScore + followerRatingScore };
+          // Calculate the final score (between 0 and 3) using the intermediate scores
+          let finalScore = ratingScore + reviewCountScore + followerRatingScore;
+          if (!followerRatingScore) {
+            finalScore *= 1.5;
+          }
+
+          return { [googleLocationInfoId]: finalScore };
         }))
       )).catch(err => reject(err));
 
