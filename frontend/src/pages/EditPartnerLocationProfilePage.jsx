@@ -103,10 +103,10 @@ function EditPartnerLocationProfilePage() {
   const handleEditClick = (e) => {
     const editItemId = e.target.value;
     if (partnerLocationType === 'restaurant') {
-      const editItem = restaurantMenuList.filter((menu) => menu._id === editItemId)[0];
+      const editItem = restaurantMenuList.filter((_, idx) => idx.toString() === editItemId)[0];
       setMenuItemInEdit(editItem);
     } else if (partnerLocationType === 'tourist-attraction') {
-      const editItem = ticketList.filter((ticket) => ticket._id === editItemId)[0];
+      const editItem = ticketList.filter((_, idx) => idx.toString() === editItemId)[0];
       setTicketInEdit(editItem);
     }
     setItemEditAddMode(true);
@@ -278,11 +278,12 @@ function EditPartnerLocationProfilePage() {
             <Grid item>
               <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
                 <List spacing={2} overflow="auto">
-                  {restaurantMenuList.map((menu) => {
+                  {restaurantMenuList.map((menu, idx) => {
                     return (
                       <MenuCard
                         key={menu._id}
                         menuId={menu._id}
+                        menuIdx={idx}
                         name={menu.name}
                         content={menu.description}
                         price={menu.price.toString()}

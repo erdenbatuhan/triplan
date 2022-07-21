@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { Button, Stack } from '@mui/material';
 
 export default function MenuCard(props) {
-  const { menuId, name, content, price, image, handleEditClick, inEdit } = props;
+  const { menuIdx, name, content, price, image, handleEditClick, inEdit } = props;
   // const navigate = useNavigate();
   // const { partnerId } = useParams();
 
@@ -50,7 +50,7 @@ export default function MenuCard(props) {
             </Grid>
           </Grid>
           {inEdit ? (
-            <Button value={menuId} onClick={handleEditClick}>
+            <Button value={menuIdx} onClick={handleEditClick}>
               Edit
             </Button>
           ) : (
@@ -63,7 +63,8 @@ export default function MenuCard(props) {
 }
 
 MenuCard.propTypes = {
-  menuId: PropTypes.string.isRequired,
+  // menuId: PropTypes.string.isRequired,
+  menuIdx: PropTypes.number,
   name: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
@@ -72,5 +73,6 @@ MenuCard.propTypes = {
 };
 
 MenuCard.defaultProps = {
+  menuIdx: -1,
   inEdit: false
 };

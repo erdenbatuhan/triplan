@@ -47,21 +47,9 @@ const getMenuItemsByPartnerLocation = async (partnerId) => {
 };
 
 const addTicket = (ticket) => {
-  return new Promise((resolve, reject) => {
-    partnerLocationController
-      .findTouristAttractionById(ticket.touristAttraction)
-      .then(async (touristAttraction) => {
-        if (!touristAttraction) {
-          return resolve(null);
-        }
-
-        const newTicket = new Ticket(ticket);
-        newTicket.touristAttraction = touristAttraction;
-
-        resolve(await Ticket.create(newTicket));
-      })
-      .catch((err) => reject(err));
-  });
+  return Ticket.exists({ touristAttraction: ticket.touristAttraction })
+    .then(() => new Promise(Ticket.insertMany([ticket])))
+    .catch(() => new Promise((resolve) => resolve(null)));
 };
 
 const addMenuItem = (menuItem) => {

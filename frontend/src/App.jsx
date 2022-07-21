@@ -16,8 +16,8 @@ import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
 import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 
 export default function App() {
-  // const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
+  // const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
 
   const syncAuthUser = () => {
