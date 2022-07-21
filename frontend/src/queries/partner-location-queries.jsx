@@ -10,8 +10,8 @@ export async function getCities() {
   }).then((response) => response.json());
 }
 
-export async function getFilteredPartnerLocations(filter = partnerLocationDefaultFilter) {
-  return await fetch(`${HOST_PARTNER_LOCATION}/filtered`, {
+export async function getFilteredPartnerLocations(user, filter = partnerLocationDefaultFilter) {
+  return await fetch(`${HOST_PARTNER_LOCATION}/filtered?user=${user}`, {
     method: `POST`,
     mode: `cors`,
     headers: HEADERS,
