@@ -1,6 +1,7 @@
 const { Wallet } = require("./../models/wallet.js");
 
 const userController = require("./userController.js");
+const partnerLocationController = require("./partnerLocationController.js");
 
 const findOne = (id) => {
   return Wallet.findById(id);
@@ -19,7 +20,7 @@ const findByUserId = (userId) => {
   });
 };
 
-const createWallet = ({ ownerType, userId }) => {
+const createUserWallet = ({ userId }) => {
   return new Promise((resolve, reject) => {
     userController.findById(userId).then(async (user) => {
       // Create a new empty wallet
@@ -32,6 +33,20 @@ const createWallet = ({ ownerType, userId }) => {
   });
 };
 
+const createPartnerLocationWallet = ({ partnerLocationId }) => {
+  return new Promise((resolve, reject) => {
+    partnerLocationController.findPartnerLocationById(partnerLocationId).then(async (partnerLocation) => {
+      // Create a new empty wallet
+      const walletCreated = await Wallet.create(new Wallet());
+      // Assign the wallet created to the partner location
+      const partnerLocationUpdated = await partnerLocationController
+      .updatePartnerLocationFields(partnerLocationId, { "wallet": walletCreated });
+
+      resolve(partnerLocationUpdated);
+    }).catch(err => reject(err));
+  });
+};
+
 const updateWalletBalance = (wallet, balance) => {
   return Wallet.findOneAndUpdate(
     { "_id": wallet._id },
@@ -40,4 +55,4 @@ const updateWalletBalance = (wallet, balance) => {
   );
 };
 
-module.exports = { findOne, findByUserId, createWallet, updateWalletBalance };
+module.exports = { findOne, findByUserId, createUserWallet, updateWalletBalance, createPartnerLocationWallet };

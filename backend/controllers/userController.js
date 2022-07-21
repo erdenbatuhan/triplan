@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const { User } = require("../models/user.js");
+const { Wallet } = require("./../models/wallet.js");
 
 /**
  * Creates a user or updates an existing one
@@ -19,8 +20,12 @@ const signUp = async (req, res) => {
     // hash user password
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
+
+    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+
     const newUser = await save({
       ...req.body,
+      wallet,
       password: hash,
     });
 
