@@ -8,7 +8,6 @@ import { loginUser } from '../queries/user-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
 import { loginPartnerLocation } from '../queries/partner-location-queries';
 import { SECONDARY_COLOR } from '../shared/constants';
-
 // const logo = require('../assets/triplan_logo.png');
 
 function getDataFromToken(token) {

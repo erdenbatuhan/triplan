@@ -71,13 +71,14 @@ export default function MenuAppBar() {
     setIsLoggedIn(UserAuthHelper.isLoggedIn());
   }, [state]);
 
-  const syncAuthUser = () => {
-    setIsLoggedIn(UserAuthHelper.isLoggedIn());
-  };
+  // const syncAuthUser = () => {
+  //   setIsLoggedIn(UserAuthHelper.isLoggedIn());
+  // };
 
   const handleLogOut = () => {
     UserAuthHelper.logoutUser();
-    syncAuthUser();
+    // syncAuthUser();
+    navigate('/login');
   };
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);

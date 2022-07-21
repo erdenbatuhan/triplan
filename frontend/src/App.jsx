@@ -45,11 +45,11 @@ export default function App() {
         <NavigationBar />
 
         <Routes>
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={isLoggedIn ? <MainPage /> : <LoginPage />} />
           {/* <Route path="/login" element={isLoggedIn ? <HomePage /> : <LoginPage />} />
           <Route path="/signup" element={isLoggedIn ? <HomePage /> : <SignUpPage />} /> */}
-          <Route path="/login" element={isLoggedIn ? <MainPage /> : <LoginPage />} />
-          <Route path="/signup" element={isLoggedIn ? <MainPage /> : <SignUpPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
           <Route path="/user" element={isLoggedIn ? <UserProfilePage /> : <Navigate to="/" />} />
           <Route
             path="/trip-planning"
