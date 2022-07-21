@@ -7,6 +7,7 @@ const {
 } = require("./../models/partnerLocation.js");
 
 const googleLocationInfoController = require("./googleLocationInfoController.js");
+const tripLocationController = require("./tripLocationController.js");
 
 const { average } = require("../utils/objectUtils");
 
@@ -101,7 +102,7 @@ const calculateFollowedRatingScores = (userId, locations) => {
       const tripLocationIds = [].concat.apply([], locations.map(location => location.associatedTripLocations));
 
       // Trip location ratings of users followed
-      const tripLocationRatings = await trisLocationController.calculateTripLocationRatingsOfUsersFollowed(userId, tripLocationIds);
+      const tripLocationRatings = await tripLocationController.calculateTripLocationRatingsOfUsersFollowed(userId, tripLocationIds);
 
       // Calculate the normalized followed rating for each partner location
       resolve(Object.assign({}, ...locations.map(({ _id, associatedTripLocations }) => {
