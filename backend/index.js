@@ -12,7 +12,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("Connected to DB!"))
-  .catch((err) => console.log(err));
+  .catch(err => console.log(err));
 
 app.use(cors()); // CORS
 app.use(bodyParser.json()); // Parses the text as JSON and exposes the resulting object on req.body

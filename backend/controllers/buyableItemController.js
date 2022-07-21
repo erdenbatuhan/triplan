@@ -70,7 +70,7 @@ const findTicketsAndMenuItems = ({ restaurantIds, touristAttractionIds }) => {
       tickets.forEach(ticket => ticketData[ticket.touristAttraction].push(ticket));
 
       resolve({ menuItemData, ticketData });
-    }).catch((err) => reject(err));
+    }).catch(err => reject(err));
   })
 };
 

@@ -6,42 +6,81 @@ const {
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
 
+const googleLocationInfoController = require("./googleLocationInfoController.js");
+
 const findDistinctCities = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
       Restaurant.distinct("city", { city: { $nin : ["", null, undefined] } }),
       TouristAttraction.distinct("city", { city: { $nin : ["", null, undefined] } }),
-    ])
-      .then(([restaurantCities, touristAttractionCities]) => {
-        resolve([...new Set([
-          ...restaurantCities,
-          ...touristAttractionCities
-        ])]);
-      })
-      .catch((err) => reject(err));
+    ]).then(([restaurantCities, touristAttractionCities]) => {
+      resolve([...new Set([
+        ...restaurantCities,
+        ...touristAttractionCities
+      ])]);
+    }).catch(err => reject(err));
   });
 };
 
 const findFiltered = (filterData) => {
   return new Promise((resolve, reject) => {
+    // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
     Promise.all([
-      // Fetch all restaurants matching the specified filter in ascending order, cheapest first
       Restaurant.find({
         priceLevel: { $lte: filterData["restaurantFilter"]["priceLevel"] },
         cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
         foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
       }).sort({ priceLevel: "asc" }),
-      // Fetch all restaurants matching the specified filter in descending order, newly created first
       TouristAttraction.find({
         touristAttractionTypes: {
           $in: filterData["touristAttractionFilter"]["types"],
         },
-      }).sort({ createdAt: "desc" }),
-    ])
-      .then(([restaurants, touristAttractions]) => {
-        resolve({ restaurants, touristAttractions });
       })
-      .catch((err) => reject(err));
+    ]).then(([
+      restaurants, touristAttractions
+    ]) => {
+      // Sort the returned locations (restaurants and tourist attractions) by their "calculate scores"
+      Promise.all([
+        sortLocationsByScore(restaurants), sortLocationsByScore(touristAttractions)
+      ]).then(([
+        restaurantsSorted, touristAttractionsSorted 
+      ]) => {
+        resolve({ restaurants: restaurantsSorted, touristAttractions: touristAttractionsSorted });
+      }).catch(err => reject(err));
+    }).catch(err => reject(err));
+  });
+};
+
+const sortLocationsByScore = (locations) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Get the google location info ID, if exists, of each location
+      const googleLocationInfoIds = locations.filter(location => location.googleLocationInfo).map(location => location.googleLocationInfo["_id"]);
+
+      // Calculate the final scores
+      const finalScores = await Promise.all([
+        googleLocationInfoController.getRatingScores(googleLocationInfoIds),
+        googleLocationInfoController.getReviewCountScores(googleLocationInfoIds)
+      ]).then(([ ratingScores, reviewCountScores ]) => (
+        Object.assign({}, ...googleLocationInfoIds.map(googleLocationInfoId => {
+          const ratingScore = ratingScores[googleLocationInfoId];
+          const reviewCountScore = reviewCountScores[googleLocationInfoId];
+          const followerRatingScore = 0;
+
+          return { [googleLocationInfoId]: ratingScore + reviewCountScore + followerRatingScore };
+        }))
+      )).catch(err => reject(err));
+
+      // Sort the locations "in descending order" according to their calculated final scores
+      locations.sort((location1, location2) => (
+        (location2.googleLocationInfo ? (finalScores[location2.googleLocationInfo["_id"]] || 0) : 0) - 
+        (location1.googleLocationInfo ? (finalScores[location1.googleLocationInfo["_id"]] || 0) : 0)
+      ));
+
+      resolve(locations);
+    } catch (err) {
+      reject(err)
+    }
   });
 };
 
@@ -56,11 +95,9 @@ const findByTripLocations = (tripLocationIds) => {
       TouristAttraction.find({
         associatedTripLocations: { $in: tripLocationIds },
       }),
-    ])
-      .then(([restaurants, touristAttractions]) => {
-        resolve({ restaurants, touristAttractions });
-      })
-      .catch((err) => reject(err));
+    ]).then(([restaurants, touristAttractions]) => {
+      resolve({ restaurants, touristAttractions });
+    }).catch(err => reject(err));
   });
 };
 

@@ -1,5 +1,7 @@
 const { GoogleLocationInfo } = require("../models/googleLocationInfo.js");
 
+const { isEmpty, sortObject } = require("../utils/objectUtils.js");
+
 const find = () => {
   return GoogleLocationInfo.find().sort({ rating: "desc" }); // In descing order, the highest rated first
 };
@@ -12,22 +14,38 @@ const save = (googleLocationInfo) => {
   );
 };
 
-const getReviewScores = () => {
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      getReviewCountsForPlaces(), getTotalReviewCountsForCities()
-    ])
-      .then(([ reviewCountsForPlaces, totalReviewCountsForCities ]) => {
-        resolve(Object.assign({}, ...Object.entries(reviewCountsForPlaces).map(([_id, { city, review_count }]) => {
-          return { [_id]: review_count / totalReviewCountsForCities[city] }
-        })));
-      })
-      .catch(err => reject(err));
+const getRatingScores = (googleLocationInfoIds) => {
+  return GoogleLocationInfo.find(
+    !isEmpty(googleLocationInfoIds) ? { _id: { $in: googleLocationInfoIds } } : {}
+  ).select("rating").then(response => {
+    let ratingScores = Object.assign({}, ...response.map(({ _id, rating }) => (
+      { [_id]: rating / 5 }
+    )))
+    ratingScores = sortObject(ratingScores, true);
+
+    return ratingScores;
   });
 };
 
-const getReviewCountsForPlaces = () => {
-  return GoogleLocationInfo.find().select("city review_count").then(response => (
+const getReviewCountScores = (googleLocationInfoIds) => {
+  return new Promise((resolve, reject) => {
+    Promise.all([
+      getReviewCountsForPlaces(googleLocationInfoIds), getTotalReviewCountsForCities()
+    ]).then(([ reviewCountsForPlaces, totalReviewCountsForCities ]) => {
+      let reviewCountScores = Object.assign({}, ...Object.entries(reviewCountsForPlaces).map(([_id, { city, review_count }]) => (
+        { [_id]: review_count / totalReviewCountsForCities[city] }
+      )));
+      reviewCountScores = sortObject(reviewCountScores, true);
+
+      resolve(reviewCountScores);
+    }).catch(err => reject(err));
+  });
+};
+
+const getReviewCountsForPlaces = (googleLocationInfoIds) => {
+  return GoogleLocationInfo.find(
+    !isEmpty(googleLocationInfoIds) ? { _id: { $in: googleLocationInfoIds } } : {}
+  ).select("city review_count").then(response => (
     Object.assign({}, ...response.map(({ _id, city, review_count }) => (
       { [_id]: { city, review_count } }
     )))
@@ -47,4 +65,4 @@ const getTotalReviewCountsForCities = () => {
   ]).then(response => Object.assign({}, ...response.map(({ _id, totalReviewCount }) => ({ [_id]: totalReviewCount }))));
 };
 
-module.exports = { find, save, getReviewScores, getReviewCountsForPlaces, getTotalReviewCountsForCities };
+module.exports = { find, save, getRatingScores, getReviewCountScores, getReviewCountsForPlaces, getTotalReviewCountsForCities };
