@@ -41,7 +41,7 @@ function EditPartnerLocationProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
   // const partnerLocationType = location.state.partnerType;
-  const partnerLocationType = location.state ? location.state.partnerType : 'tourist-attraction'; // restaurant - tourist-attraction
+  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // restaurant - tourist-attraction
   const nameLabel = partnerLocationType === 'restaurant' ? 'Restaurant Name' : 'Museum Name';
   const phoneLabel =
     partnerLocationType === 'restaurant' ? 'Restaurant Phone Number' : 'Museum Phone Number';

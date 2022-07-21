@@ -28,7 +28,7 @@ export default function PartnerLocationProfilePage() {
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
   const navigate = useNavigate();
-  const partnerLocationType = location.state ? location.state.partnerType : 'tourist-attraction'; // tourist-attraction // restaurant
+  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // tourist-attraction // restaurant
 
   const handleEditClick = () => {
     navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
