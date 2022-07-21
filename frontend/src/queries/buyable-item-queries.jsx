@@ -73,6 +73,7 @@ export async function addMenuItem(menuItem) {
 }
 
 export async function addTicket(ticket) {
+  console.log('ticket: ', ticket);
   return await fetch(`${HOST_BUYABLE_ITEM}/ticket`, {
     method: `POST`,
     mode: `cors`,

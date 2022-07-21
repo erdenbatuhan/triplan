@@ -11,6 +11,7 @@ import RestaurantCuisineDisplay from '../components/RestaurantProfilePage/Restau
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import InfoCard from '../components/InfoCard';
+import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
@@ -92,7 +93,7 @@ export default function PartnerLocationProfilePage() {
                 <RestaurantMenuItems restaurantMenuList={menuList} inEdit={false} />
               </Stack>
             ) : (
-              <div>{ticketList}</div>
+              <TicketItemDisplay ticketList={ticketList} inEdit={false} />
             )}
           </Stack>
         </Grid>

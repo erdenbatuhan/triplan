@@ -42,16 +42,16 @@ function EditMenuItem(props) {
   // const menuType = 'Event Date';
 
   const menuTypeLabel = 'Menu Food Type';
-  const pictureLabel = 'Menu Picture';
+  const pictureLabel = locationType === 'restaurant' ? 'Menu Picture' : 'Ticket Picture';
 
   useEffect(() => {
     setItemId(!inAdd ? item._id : '');
     setItemName(!inAdd ? item.name : '');
     setItemDescription(!inAdd ? item.description : '');
     setItemPrice(!inAdd ? item.price : '');
+    setItemPicture(!inAdd ? item.image : '');
     if (locationType === 'restaurant') {
       setItemFoodType(!inAdd ? item.type : '');
-      setItemPicture(!inAdd ? item.image : '');
     }
   }, [item]);
 
@@ -94,9 +94,10 @@ function EditMenuItem(props) {
             description,
             price,
             appliedDiscountRate: 0,
-            // reservationDate,
-            // expirationDate
-            touristicAttraction: partnerId
+            reservationDate: new Date(),
+            expirationDate: new Date(),
+            touristAttraction: partnerId,
+            image
           };
     itemObject = !inAdd ? { ...itemObject, _id } : itemObject;
     return itemObject;
@@ -128,23 +129,21 @@ function EditMenuItem(props) {
             value={price}
             onChange={(e) => onItemPriceChange(e)}
           />
+          <TextField
+            required
+            id="outlined-required"
+            label={pictureLabel}
+            value={image}
+            onChange={(e) => onItemPictureChange(e)}
+          />
           {locationType === 'restaurant' ? (
-            <>
-              <TextField
-                required
-                id="outlined-required"
-                label={menuTypeLabel}
-                value={type}
-                onChange={(e) => onItemFoodTypeChange(e)}
-              />
-              <TextField
-                required
-                id="outlined-required"
-                label={pictureLabel}
-                value={image}
-                onChange={(e) => onItemPictureChange(e)}
-              />
-            </>
+            <TextField
+              required
+              id="outlined-required"
+              label={menuTypeLabel}
+              value={type}
+              onChange={(e) => onItemFoodTypeChange(e)}
+            />
           ) : (
             // <TextField
             //   required

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Box, Grid, Typography, TextField, Button, Stack, Paper, List } from '@mui/material';
+import { Box, Grid, Typography, TextField, Button, Paper, List } from '@mui/material';
 import {
   getRestaurant,
   getTouristAttraction,
@@ -18,6 +18,7 @@ import {
 import EditRestaurantCuisineBox from '../components/RestaurantProfilePage/EditRestaurantCuisineBox';
 import MenuCard from '../components/RestaurantProfilePage/MenuCard';
 import EditMenuItem from '../components/RestaurantProfilePage/EditMenuItem';
+// import TicketCard from '../components/RestaurantProfilePage/TicketCard';
 
 function EditPartnerLocationProfilePage() {
   const [partner, setPartner] = useState({});
@@ -41,7 +42,7 @@ function EditPartnerLocationProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
   // const partnerLocationType = location.state.partnerType;
-  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant';
+  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // restaurant - tourist-attraction
   const nameLabel = partnerLocationType === 'restaurant' ? 'Restaurant Name' : 'Museum Name';
   const phoneLabel =
     partnerLocationType === 'restaurant' ? 'Restaurant Phone Number' : 'Museum Phone Number';
@@ -49,6 +50,8 @@ function EditPartnerLocationProfilePage() {
     partnerLocationType === 'restaurant' ? 'Restaurant Address' : 'Museum Address';
   const pictureLabel =
     partnerLocationType === 'restaurant' ? 'Restaurant Picture' : 'Museum Picture';
+
+  const addButtonText = partnerLocationType === 'restaurant' ? 'Menu' : 'Ticket';
 
   useEffect(() => {
     if (partnerLocationType === 'restaurant') {
@@ -136,6 +139,7 @@ function EditPartnerLocationProfilePage() {
         ticketItemsEdited.name = updateParams.name;
         ticketItemsEdited.description = updateParams.description;
         ticketItemsEdited.price = updateParams.price;
+        ticketItemsEdited.image = updateParams.image;
         items[idxItem] = ticketItemsEdited;
         return items;
       });
@@ -151,9 +155,9 @@ function EditPartnerLocationProfilePage() {
 
   const handleAddCompletionClick = async (e, newItem) => {
     if (partnerLocationType === 'restaurant') {
-      setRestaurantMenuList((menuItems) => [...menuItems, newItem]);
+      setRestaurantMenuList((menuItems) => [newItem, ...menuItems]);
     } else if (partnerLocationType === 'tourist-attraction') {
-      setTicketList((ticketItems) => [...ticketItems, newItem]);
+      setTicketList((ticketItems) => [newItem, ...ticketItems]);
     }
     setItemEditAddMode(false);
     setInAdd(false);
@@ -196,11 +200,9 @@ function EditPartnerLocationProfilePage() {
           ticketList.map((ticket) => {
             const ticketExists = typeof ticket._id !== 'undefined';
             if (ticketExists) {
-              updateTicket(ticket);
-            } else {
-              addTicket(ticket);
+              return updateTicket(ticket);
             }
-            return 0;
+            return addTicket(ticket);
           })
         ]).then(() => console.log('update is completed!'));
       }
@@ -273,64 +275,49 @@ function EditPartnerLocationProfilePage() {
           </Grid>
         </Grid>
         {partnerLocationType === 'restaurant' ? (
-          <Stack>
-            <Grid item>
-              <EditRestaurantCuisineBox
-                selectedItems={restaurantCuisines}
-                handleChange={handleCuisineChange}
-              />
-            </Grid>
-            <Grid item>
-              <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
-                <List spacing={2} overflow="auto">
-                  {restaurantMenuList.map((menu, idx) => {
-                    return (
-                      <MenuCard
-                        key={menu._id}
-                        menuId={menu._id}
-                        menuIdx={idx}
-                        name={menu.name}
-                        content={menu.description}
-                        price={menu.price.toString()}
-                        image={menu.image}
-                        handleEditClick={handleEditClick}
-                        // updateMenuList={updateMenuList}
-                        inEdit
-                      />
-                    );
-                  })}
-                </List>
-              </Paper>
-              <EditMenuItem
-                key={menuItemInEdit._id}
-                item={menuItemInEdit}
-                locationType={partnerLocationType}
-                handleItemChangeCompletionClick={handleItemChangeCompletionClick}
-                inAdd={inAdd}
-                itemEditAddMode={itemEditAddMode}
-              />
-            </Grid>
-          </Stack>
+          <Grid item>
+            <EditRestaurantCuisineBox
+              selectedItems={restaurantCuisines}
+              handleChange={handleCuisineChange}
+            />
+          </Grid>
         ) : (
-          <div>
-            {ticketList}
-            {itemEditAddMode ? (
-              <EditMenuItem
-                key={ticketInEdit._id}
-                item={ticketInEdit}
-                locationType={partnerLocationType}
-                handleItemChangeCompletionClick={handleItemChangeCompletionClick}
-                inAdd={inAdd}
-                itemEditAddMode={itemEditAddMode}
-              />
-            ) : (
-              // eslint-disable-next-line react/jsx-no-useless-fragment
-              <></>
-            )}
-          </div>
+          // eslint-disable-next-line react/jsx-no-useless-fragment
+          <></>
         )}
         <Grid item>
-          <Button onClick={handleAddMenuItem}>Add New Menu</Button>
+          <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
+            <List spacing={2} overflow="auto">
+              {(partnerLocationType === 'restaurant' ? restaurantMenuList : ticketList).map(
+                (item, idx) => {
+                  return (
+                    <MenuCard
+                      key={item._id}
+                      menuId={item._id}
+                      menuIdx={idx}
+                      name={item.name}
+                      content={item.description}
+                      price={item.price.toString()}
+                      image={item.image}
+                      handleEditClick={handleEditClick}
+                      inEdit
+                    />
+                  );
+                }
+              )}
+            </List>
+          </Paper>
+          <EditMenuItem
+            key={partnerLocationType === 'restaurant' ? menuItemInEdit._id : ticketInEdit._id}
+            item={partnerLocationType === 'restaurant' ? menuItemInEdit : ticketInEdit}
+            locationType={partnerLocationType}
+            handleItemChangeCompletionClick={handleItemChangeCompletionClick}
+            inAdd={inAdd}
+            itemEditAddMode={itemEditAddMode}
+          />
+        </Grid>
+        <Grid item>
+          <Button onClick={handleAddMenuItem}>Add New {addButtonText}</Button>
         </Grid>
         <Grid item>
           <Button onClick={onCancelClicked}>Cancel Update</Button>

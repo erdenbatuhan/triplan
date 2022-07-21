@@ -3,7 +3,7 @@ import { Paper, List } from '@mui/material';
 import MenuCard from './MenuCard';
 
 function RestaurantMenuItems(props) {
-  const { restaurantMenuList, updateMenuList, inEdit } = props;
+  const { restaurantMenuList, inEdit } = props;
   return (
     <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
       <List spacing={2} overflow="auto">
@@ -16,7 +16,6 @@ function RestaurantMenuItems(props) {
               content={menu.description}
               price={menu.price.toString()}
               image={menu.image}
-              updateMenuList={updateMenuList}
               inEdit={inEdit}
             />
           );

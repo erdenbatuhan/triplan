@@ -27,8 +27,9 @@ router.get("/menu-item", async (req, res) => {
  */
 router.get("/ticket", async (req, res) => {
   try {
+    const touristAttractionId = req.query.id;
     const tickets = await buyableItemController.getTicketsByPartnerLocation(
-      req.body
+      touristAttractionId
     );
     res.status(200).send(tickets);
   } catch ({ message }) {
