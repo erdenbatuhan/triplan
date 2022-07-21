@@ -12,9 +12,13 @@ import {
   CardActions,
   Grid
 } from '@mui/material';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
+import PaypalCheckoutButtons from '../components/PaypalButtons';
 import {
   // CURRENCIES,
   TRANSACTION_TYPE_DEPOSIT,
@@ -41,6 +45,7 @@ export default function WalletPage() {
   // const [currency, setCurrency] = useState('EUR');
   const [transactionType, setTransactionType] = useState('');
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
+  const [isPaymentCompleted, setPaymentCompleted] = useState(false);
 
   // Listen to the changes in authenticated user
   useEffect(() => {
@@ -79,6 +84,11 @@ export default function WalletPage() {
         }
       });
     }
+  };
+
+  const handleCompletePayment = (bool) => {
+    handleTransaction();
+    setPaymentCompleted(bool);
   };
 
   return (
@@ -157,7 +167,21 @@ export default function WalletPage() {
               ))}
               </TextField> */}
             </div>
-            <Button
+            <PayPalScriptProvider
+              options={{
+                'client-id':
+                  'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
+                components: 'buttons',
+                currency: 'EUR'
+              }}>
+              <PaypalCheckoutButtons
+                currency="EUR"
+                amount={transactionAmount}
+                onPaymentComplete={handleCompletePayment}
+                showSpinner
+              />
+            </PayPalScriptProvider>
+            {/* <Button
               alignItems="right"
               onClick={() => {
                 handleTransaction();
@@ -165,7 +189,33 @@ export default function WalletPage() {
                 setTransactionAmount(0);
               }}>
               Confirm
-            </Button>
+            </Button> */}
+          </Box>
+        </Modal>
+        <Modal
+          open={isPaymentCompleted}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+          style={{
+            display: 'flex',
+            justifyConent: 'center',
+            alignItems: 'center'
+          }}>
+          <Box sx={style}>
+            <div className="center">
+              <Alert severity="success">
+                <AlertTitle>Success</AlertTitle>
+                Your payment is successfull!
+              </Alert>
+              <Button
+                alignItems="center"
+                onClick={() => {
+                  setTransactionDialogShown(false);
+                  setPaymentCompleted(false);
+                }}>
+                Continue
+              </Button>
+            </div>
           </Box>
         </Modal>
       </Card>
