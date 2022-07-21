@@ -5,6 +5,8 @@ const {
   Restaurant,
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
+const { Wallet } = require("./../models/wallet.js");
+
 
 const findDistinctCities = () => {
   return new Promise((resolve, reject) => {
@@ -105,8 +107,12 @@ const signUpRestaurant = async (req, res) => {
     // hash partner location password
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
+
+    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+
     const newPartnerLocation = await insertRestaurant({
       ...req.body,
+      wallet,
       password: hash,
     });
 
@@ -153,8 +159,12 @@ const signUpTouristAttraction = async (req, res) => {
     // hash partner location password
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
+
+    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+
     const newPartnerLocation = await insertTouristAttraction({
       ...req.body,
+      wallet,
       password: hash,
     });
 
@@ -312,6 +322,33 @@ const insertTouristAttraction = (touristAttraction) => {
   return TouristAttraction.insertMany([touristAttraction]);
 };
 
+const findPartnerLocationById = (partnerLocationId) => {
+  return new Promise((resolve, reject) => {
+    const restaurantFound = findRestaurantById(partnerLocationId);
+    const touristAttractionFound = findTouristAttractionById(partnerLocationId);
+
+    Promise.all([restaurantFound, touristAttractionFound]).then(([restaurant, touristAttraction]) => {
+      if ((!restaurant && !touristAttraction) || (restaurant && touristAttraction)) {
+        return resolve(null);
+      } else if (restaurant) {
+        resolve({restaurant, partnerLocationType: 'restaurant'});
+      } else {
+        resolve({touristAttraction, partnerLocationType: 'tourist-attraction'});
+      }
+    }).catch((err) => reject(err));
+  });
+};
+
+const updatePartnerLocationFields = async (id, fields) => {
+  const {partnerLocation, partnerLocationType} = await findPartnerLocationById(id);
+  
+  if (partnerLocationType == 'restaurant') {
+    return Restaurant.updateOne({ _id: id }, fields, { new: true });
+  } else {
+    return TouristAttraction.updateOne({ _id: id }, fields, { new: true });
+  }
+};
+
 module.exports = {
   findDistinctCities,
   findFiltered,
@@ -324,4 +361,6 @@ module.exports = {
   signUpTouristAttraction,
   loginRestaurant,
   loginTouristAttraction,
+  findPartnerLocationById,
+  updatePartnerLocationFields
 };
