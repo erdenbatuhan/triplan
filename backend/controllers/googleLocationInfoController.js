@@ -19,7 +19,7 @@ const getRatingScores = (googleLocationInfoIds) => {
     !isEmpty(googleLocationInfoIds) ? { _id: { $in: googleLocationInfoIds } } : {}
   ).select("rating").then(response => {
     let ratingScores = Object.assign({}, ...response.map(({ _id, rating }) => (
-      { [_id]: rating / 5 }
+      { [_id]: rating / 5 } // Normalized rating
     )))
     ratingScores = sortObject(ratingScores, true);
 

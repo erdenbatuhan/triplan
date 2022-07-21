@@ -24,8 +24,7 @@ router.get("/cities", async (req, res) => {
  */
 router.post("/filtered", async (req, res) => {
   try {
-    const partnerLocationsFiltered =
-      await partnerLocationController.findFiltered(req.body["filterData"]);
+    const partnerLocationsFiltered = await partnerLocationController.findFiltered(req.query["user"], req.body["filterData"]);
     res.status(200).send(partnerLocationsFiltered);
   } catch ({ message }) {
     res

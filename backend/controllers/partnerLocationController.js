@@ -8,6 +8,8 @@ const {
 
 const googleLocationInfoController = require("./googleLocationInfoController.js");
 
+const { average } = require("../utils/objectUtils");
+
 const findDistinctCities = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
@@ -22,7 +24,7 @@ const findDistinctCities = () => {
   });
 };
 
-const findFiltered = (filterData) => {
+const findFiltered = (userId, filterData) => {
   return new Promise((resolve, reject) => {
     // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
     Promise.all([
@@ -41,7 +43,7 @@ const findFiltered = (filterData) => {
     ]) => {
       // Sort the returned locations (restaurants and tourist attractions) by their "calculate scores"
       Promise.all([
-        sortLocationsByScore(restaurants), sortLocationsByScore(touristAttractions)
+        sortLocationsByScore(userId, restaurants), sortLocationsByScore(userId, touristAttractions)
       ]).then(([
         restaurantsSorted, touristAttractionsSorted 
       ]) => {
@@ -51,41 +53,69 @@ const findFiltered = (filterData) => {
   });
 };
 
-const sortLocationsByScore = (locations) => {
+const sortLocationsByScore = (userId, locations) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Get the google location info ID, if exists, of each location
       const googleLocationInfoIds = locations.filter(location => location.googleLocationInfo).map(location => location.googleLocationInfo["_id"]);
 
-      // Calculate the final scores
+      // Calculate the final scores (Between 0 and 3)
       const finalScores = await Promise.all([
         googleLocationInfoController.getRatingScores(googleLocationInfoIds),
-        googleLocationInfoController.getReviewCountScores(googleLocationInfoIds)
-      ]).then(([ ratingScores, reviewCountScores ]) => (
-        Object.assign({}, ...googleLocationInfoIds.map(googleLocationInfoId => {
-          const ratingScore = ratingScores[googleLocationInfoId];
-          const reviewCountScore = reviewCountScores[googleLocationInfoId];
-          const followerRatingScore = 0;
+        googleLocationInfoController.getReviewCountScores(googleLocationInfoIds),
+        userId ? calculateFollowedRatingScores(userId, locations) : new Promise(resolve => resolve({}))
+      ]).then(([ ratingScores, reviewCountScores, followedRatingScores ]) => (
+        Object.assign({}, ...locations.map(({ _id, googleLocationInfo }) => {
+          const followedRatingScore = followedRatingScores[_id] || 0;
 
-          // Calculate the final score (between 0 and 3) using the intermediate scores
-          let finalScore = ratingScore + reviewCountScore + followerRatingScore;
-          if (!followerRatingScore) {
-            finalScore *= 1.5;
+          if (!googleLocationInfo) { // If there is no google location info, just use the followed rating score
+            return { [_id]: followedRatingScore * 3 };
           }
 
-          return { [googleLocationInfoId]: finalScore };
+          const ratingScore = ratingScores[googleLocationInfo["_id"]];
+          const reviewCountScore = reviewCountScores[googleLocationInfo["_id"]];
+
+          if (!followedRatingScore) { // If there is no followed rating score, just use the rating and review count scores
+            return { [_id]: (ratingScore + reviewCountScore) * 3 / 2 };
+          }
+
+          // Otherwise, use all of the scores
+          return { [_id]: ratingScore + reviewCountScore + followedRatingScore };
         }))
       )).catch(err => reject(err));
 
       // Sort the locations "in descending order" according to their calculated final scores
-      locations.sort((location1, location2) => (
-        (location2.googleLocationInfo ? (finalScores[location2.googleLocationInfo["_id"]] || 0) : 0) - 
-        (location1.googleLocationInfo ? (finalScores[location1.googleLocationInfo["_id"]] || 0) : 0)
-      ));
+      locations.sort((a, b) => finalScores[b["_id"]] - finalScores[a["_id"]]);
 
       resolve(locations);
     } catch (err) {
       reject(err)
+    }
+  });
+};
+
+const calculateFollowedRatingScores = (userId, locations) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Get the trip location IDs of all places in a flattened list
+      const tripLocationIds = [].concat.apply([], locations.map(location => location.associatedTripLocations));
+
+      // Trip location ratings of users followed
+      const tripLocationRatings = await trisLocationController.calculateTripLocationRatingsOfUsersFollowed(userId, tripLocationIds);
+
+      // Calculate the normalized followed rating for each partner location
+      resolve(Object.assign({}, ...locations.map(({ _id, associatedTripLocations }) => {
+        const ratings = associatedTripLocations.filter(tripLocationId => (
+          Boolean(tripLocationRatings[tripLocationId]) // If the trip location has a rating by the people followed
+        )).map(tripLocationId => (
+          tripLocationRatings[tripLocationId]
+        ));
+
+        // Calculate the average score (normalized) of all ratings made for the partner location by the people followed
+        return { [_id]: average(ratings) / 5 };
+      })));
+    } catch (err) {
+      reject(err);
     }
   });
 };
