@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import NavigationBar from './components/NavigationBar';
-import HomePage from './pages/HomePage';
+// import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
@@ -19,6 +19,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
   // const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  console.log('App, ', isLoggedIn);
 
   const syncAuthUser = () => {
     setIsLoggedIn(UserAuthHelper.isLoggedIn());
@@ -44,9 +45,11 @@ export default function App() {
         <NavigationBar />
 
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={isLoggedIn ? <HomePage /> : <LoginPage />} />
-          <Route path="/signup" element={isLoggedIn ? <HomePage /> : <SignUpPage />} />
+          <Route path="/" element={isLoggedIn ? <MainPage /> : <LoginPage />} />
+          {/* <Route path="/login" element={isLoggedIn ? <HomePage /> : <LoginPage />} />
+          <Route path="/signup" element={isLoggedIn ? <HomePage /> : <SignUpPage />} /> */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
           <Route path="/user" element={isLoggedIn ? <UserProfilePage /> : <Navigate to="/" />} />
           <Route
             path="/trip-planning"
@@ -57,7 +60,7 @@ export default function App() {
             path="/trip-plan/:tripPlanId/summary"
             element={isLoggedIn ? <TripPlanSummaryPage /> : <Navigate to="/" />}
           />
-          <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
+          {/* <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} /> */}
           <Route path="/wallet" element={isLoggedIn ? <WalletPage /> : <Navigate to="/" />} />
           <Route
             path="/partner-profile/:partnerId"

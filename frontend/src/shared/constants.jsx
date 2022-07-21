@@ -82,3 +82,6 @@ export const CURRENCIES = [
     label: '€'
   }
 ];
+
+export const PRIMARY_COLOR = '#15A4FF';
+export const SECONDARY_COLOR = '#FFF7E3';

@@ -1,24 +1,35 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
-import { Box, Grid, Typography, TextField, Button } from '@mui/material';
+import { Box, Grid, TextField, Button } from '@mui/material';
+import { green, grey } from '@mui/material/colors';
 import { loginUser } from '../queries/user-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { loginPartnerLocation } from '../queries/partner-location-queries';
+import { SECONDARY_COLOR } from '../shared/constants';
+// const logo = require('../assets/triplan_logo.png');
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [partnerType, setPartnerType] = useState('user');
   const authContext = useContext(AuthUserContext);
+  const ref = useRef(null);
+  const navigate = useNavigate();
+
+  // const [height, setHeight] = useState(0);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    // setHeight(ref.current.offsetHeight);
+    setWidth(ref.current.offsetWidth);
+  }, []);
 
   const handleChange = (event, newLoginType) => {
     setPartnerType(newLoginType);
   };
-
-  const navigate = useNavigate();
 
   const onUsernameChanged = (e) => {
     setUsername(e.target.value);
@@ -38,7 +49,11 @@ function LoginPage() {
       const { token } = message;
       authContext.loginUser(token);
       if (token) {
-        navigate('/');
+        navigate('/', {
+          state: {
+            isLoggedIn: true
+          }
+        });
       }
     } catch (e) {
       console.error(`failed to find user ${username}`);
@@ -72,7 +87,8 @@ function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100vh'
+        height: '100vh',
+        backgroundColor: SECONDARY_COLOR
       }}>
       <Box
         component="form"
@@ -81,52 +97,86 @@ function LoginPage() {
           mt: 4,
           marginLeft: 5,
           marginRight: 5,
-          marginBottom: 5,
-          minWidth: 400
+          marginBottom: 5
         }}>
-        <div
-          style={{
-            display: 'flex',
+        <Box
+          ref={ref}
+          sx={{
             alignItems: 'center',
             justifyContent: 'center',
-            width: '100vh',
-            margin: 5
+            border: 1,
+            borderRadius: 4,
+            borderColor: grey[500],
+            padding: 1
           }}>
-          <ToggleButtonGroup color="primary" value={partnerType} exclusive onChange={handleChange}>
-            <ToggleButton value="user">User</ToggleButton>
-            <ToggleButton value="restaurant">Restaurant</ToggleButton>
-            <ToggleButton value="tourist-attraction">Tourist Attraction</ToggleButton>
-          </ToggleButtonGroup>
-        </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: 5
+            }}>
+            <ToggleButtonGroup
+              color="primary"
+              value={partnerType}
+              exclusive
+              onChange={handleChange}>
+              <ToggleButton value="user">User</ToggleButton>
+              <ToggleButton value="restaurant">Restaurant</ToggleButton>
+              <ToggleButton value="tourist-attraction">Tourist Attraction</ToggleButton>
+            </ToggleButtonGroup>
+          </div>
 
-        <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2}>
-          <Grid item>
-            <Typography align="center">Welcome to the Triplan!</Typography>
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            spacing={1}>
+            <br />
+            <Grid item>
+              <TextField
+                required
+                id="outlined-required"
+                label="Username"
+                defaultValue={username}
+                onChange={onUsernameChanged}
+                style={{ width: width * 0.8 }}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                required
+                id="outlined-required"
+                label="Password"
+                defaultValue={password}
+                onChange={onPasswordChanged}
+                style={{ width: width * 0.8 }}
+              />
+            </Grid>
+            <br />
+            <Grid item>
+              <Button
+                style={{
+                  color: '#FFFFFF',
+                  backgroundColor: green[500],
+                  width: width * 0.8,
+                  border: 1,
+                  borderColor: grey[500],
+                  borderRadius: 4,
+                  height: '40px'
+                }}
+                onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedPartner}>
+                Login
+              </Button>
+            </Grid>
+            <Grid item>
+              <p align="center">
+                If you havent registered yet to <a href="/signup">click</a> to signup!
+              </p>
+            </Grid>
           </Grid>
-          <Grid item>
-            <TextField
-              required
-              id="outlined-required"
-              label="Username"
-              defaultValue={username}
-              onChange={onUsernameChanged}
-            />
-          </Grid>
-          <Grid item>
-            <TextField
-              required
-              id="outlined-required"
-              label="Password"
-              defaultValue={password}
-              onChange={onPasswordChanged}
-            />
-          </Grid>
-          <Grid item>
-            <Button onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedPartner}>
-              Login
-            </Button>
-          </Grid>
-        </Grid>
+        </Box>
       </Box>
     </div>
   );
