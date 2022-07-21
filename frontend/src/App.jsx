@@ -6,18 +6,18 @@ import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
 import CheckoutPage from './pages/CheckoutPage';
-import RestaurantProfilePage from './pages/RestaurantProfilePage';
-import EditRestaurantProfilePage from './pages/EditRestaurantProfilePage';
 import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import WalletPage from './pages/WalletPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
+import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
+import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 
 export default function App() {
-  // const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
+  // const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
 
   const syncAuthUser = () => {
@@ -60,17 +60,12 @@ export default function App() {
           <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
           <Route path="/wallet" element={isLoggedIn ? <WalletPage /> : <Navigate to="/" />} />
           <Route
-            path="/restaurant-profile/:restaurantId"
-            element={isLoggedIn ? <RestaurantProfilePage /> : <Navigate to="/" />}
+            path="/partner-profile/:partnerId"
+            element={isLoggedIn ? <PartnerLocationProfilePage /> : <Navigate to="/" />}
           />
           <Route
-            path="/edit-restaurant-profile/:restaurantId"
-            element={isLoggedIn ? <EditRestaurantProfilePage /> : <Navigate to="/" />}
-          />
-          <Route
-            // TODO: will update to EditMenuItemPage after adding MenuItem to restaurant profiles with ID
-            path="/edit-restaurant-profile/:restaurantId/:menuId"
-            element={isLoggedIn ? <EditRestaurantProfilePage /> : <Navigate to="/" />}
+            path="/edit-partner-profile/:partnerId"
+            element={isLoggedIn ? <EditPartnerLocationProfilePage /> : <Navigate to="/" />}
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

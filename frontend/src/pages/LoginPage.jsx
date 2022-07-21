@@ -5,15 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { loginUser } from '../queries/user-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { loginPartnerLocation } from '../queries/partner-location-queries';
-
-function getDataFromToken(token) {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace('-', '+').replace('_', '/');
-  const payload = atob(base64);
-  const partnerData = JSON.parse(payload);
-  return partnerData;
-}
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -63,8 +56,10 @@ function LoginPage() {
       const { token } = message;
       authContext.loginUser(token);
       if (token) {
-        const partnerData = getDataFromToken(token);
-        navigate(`/restaurant-profile/${partnerData.partnerLocation.id}`);
+        const partnerData = UserAuthHelper.getDataFromToken(token);
+        navigate(`/partner-profile/${partnerData.partnerLocation.id}`, {
+          state: { partnerType: partnerData.partnerLocation.partnerType }
+        });
       }
     } catch (e) {
       console.error(`failed to create partner location ${e}`);

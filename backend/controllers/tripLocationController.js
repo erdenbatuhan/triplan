@@ -10,11 +10,11 @@ const create = (fields) => {
 
 const update = (id, fields) => {
   if (!exists(id)) {
-    return new Promise(resolve => resolve(null)); // Trip Location does not exist!
+    return new Promise((resolve) => resolve(null)); // Trip Location does not exist!
   }
 
   return TripLocation.findOneAndUpdate(
-    { "_id": id },
+    { _id: id },
     { $set: fields },
     { new: true }
   );

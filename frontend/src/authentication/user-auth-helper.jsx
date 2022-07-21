@@ -9,6 +9,14 @@ export class UserAuthHelper {
     localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(userData));
   }
 
+  static getDataFromToken(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace('-', '+').replace('_', '/');
+    const payload = atob(base64);
+    const partnerData = JSON.parse(payload);
+    return partnerData;
+  }
+
   static isLoggedIn() {
     return !!localStorage.getItem(this.LOCAL_STORAGE_KEY);
   }
