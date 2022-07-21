@@ -14,7 +14,7 @@ const modalStyle = {
   p: 4
 };
 
-function EditMenuItem(props) {
+function EditItemModal(props) {
   const { item, inAdd, itemEditAddMode, locationType, handleItemChangeCompletionClick } = props;
   const { partnerId } = useParams();
 
@@ -167,4 +167,4 @@ function EditMenuItem(props) {
   );
 }
 
-export default EditMenuItem;
+export default EditItemModal;

@@ -9,8 +9,8 @@ import ListItem from '@mui/material/ListItem';
 import PropTypes from 'prop-types';
 import { Button, Stack } from '@mui/material';
 
-export default function MenuCard(props) {
-  const { menuIdx, name, content, price, image, handleEditClick, inEdit } = props;
+export default function BuyableItemCard(props) {
+  const { itemIdx, name, content, price, image, handleEditClick, inEdit } = props;
   // const navigate = useNavigate();
   // const { partnerId } = useParams();
 
@@ -50,7 +50,7 @@ export default function MenuCard(props) {
             </Grid>
           </Grid>
           {inEdit ? (
-            <Button value={menuIdx} onClick={handleEditClick}>
+            <Button value={itemIdx} onClick={handleEditClick}>
               Edit
             </Button>
           ) : (
@@ -62,9 +62,8 @@ export default function MenuCard(props) {
   );
 }
 
-MenuCard.propTypes = {
-  // menuId: PropTypes.string.isRequired,
-  menuIdx: PropTypes.number,
+BuyableItemCard.propTypes = {
+  itemIdx: PropTypes.number,
   name: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
@@ -72,7 +71,7 @@ MenuCard.propTypes = {
   inEdit: PropTypes.bool
 };
 
-MenuCard.defaultProps = {
-  menuIdx: -1,
+BuyableItemCard.defaultProps = {
+  itemIdx: -1,
   inEdit: false
 };

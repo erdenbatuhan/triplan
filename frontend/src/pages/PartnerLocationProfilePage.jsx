@@ -6,12 +6,12 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import RestaurantMenuItems from '../components/RestaurantProfilePage/RestaurantMenuItems';
+import ItemListDisplay from '../components/RestaurantProfilePage/ItemListDisplay';
 import RestaurantCuisineDisplay from '../components/RestaurantProfilePage/RestaurantCuisineDisplay';
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import InfoCard from '../components/InfoCard';
-import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
+// import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
@@ -28,7 +28,7 @@ export default function PartnerLocationProfilePage() {
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
   const navigate = useNavigate();
-  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // tourist-attraction // restaurant
+  const partnerLocationType = location.state ? location.state.partnerType : 'tourist-attraction'; // tourist-attraction // restaurant
 
   const handleEditClick = () => {
     navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
@@ -90,10 +90,10 @@ export default function PartnerLocationProfilePage() {
             {partnerLocationType === 'restaurant' ? (
               <Stack>
                 <RestaurantCuisineDisplay cuisineList={cuisineList} />
-                <RestaurantMenuItems restaurantMenuList={menuList} inEdit={false} />
+                <ItemListDisplay itemList={menuList} inEdit={false} />
               </Stack>
             ) : (
-              <TicketItemDisplay ticketList={ticketList} inEdit={false} />
+              <ItemListDisplay itemList={ticketList} inEdit={false} />
             )}
           </Stack>
         </Grid>

@@ -16,9 +16,8 @@ import {
   addTicket
 } from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/RestaurantProfilePage/EditRestaurantCuisineBox';
-import MenuCard from '../components/RestaurantProfilePage/MenuCard';
-import EditMenuItem from '../components/RestaurantProfilePage/EditMenuItem';
-// import TicketCard from '../components/RestaurantProfilePage/TicketCard';
+import BuyableItemCard from '../components/RestaurantProfilePage/BuyableItemCard';
+import EditItemModal from '../components/RestaurantProfilePage/EditItemModal';
 
 function EditPartnerLocationProfilePage() {
   const [partner, setPartner] = useState({});
@@ -42,7 +41,7 @@ function EditPartnerLocationProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
   // const partnerLocationType = location.state.partnerType;
-  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // restaurant - tourist-attraction
+  const partnerLocationType = location.state ? location.state.partnerType : 'tourist-attraction'; // restaurant - tourist-attraction
   const nameLabel = partnerLocationType === 'restaurant' ? 'Restaurant Name' : 'Museum Name';
   const phoneLabel =
     partnerLocationType === 'restaurant' ? 'Restaurant Phone Number' : 'Museum Phone Number';
@@ -79,16 +78,16 @@ function EditPartnerLocationProfilePage() {
     setPartnerLocationPicture(partner.locationPicture);
   }, [partner]);
 
-  const onRestaurantNameChanged = (e) => {
+  const onPartnerNameChange = (e) => {
     setPartnerName(e.target.value);
   };
-  const onRestaurantAddressChanged = (e) => {
+  const onPartnerAddressChange = (e) => {
     setPartnerAddress(e.target.value);
   };
-  const onRestaurantPhoneNumberChanged = (e) => {
+  const onPartnerPhoneNumberChange = (e) => {
     setPartnerPhoneNumber(e.target.value);
   };
-  const onRestaurantLocationPictureChanged = (e) => {
+  const onPartnerLocationPictureChange = (e) => {
     setPartnerLocationPicture(e.target.value);
   };
 
@@ -238,7 +237,7 @@ function EditPartnerLocationProfilePage() {
                 id="outlined-required"
                 label={nameLabel}
                 value={partnerName}
-                onChange={(e) => onRestaurantNameChanged(e)}
+                onChange={(e) => onPartnerNameChange(e)}
               />
             </Grid>
             <Grid item>
@@ -247,7 +246,7 @@ function EditPartnerLocationProfilePage() {
                 id="outlined-required"
                 label={phoneLabel}
                 value={partnerPhoneNumber}
-                onChange={(e) => onRestaurantPhoneNumberChanged(e)}
+                onChange={(e) => onPartnerPhoneNumberChange(e)}
               />
             </Grid>
           </Grid>
@@ -260,7 +259,7 @@ function EditPartnerLocationProfilePage() {
                 id="outlined-required"
                 label={addressLabel}
                 value={partnerAddress}
-                onChange={(e) => onRestaurantAddressChanged(e)}
+                onChange={(e) => onPartnerAddressChange(e)}
               />
             </Grid>
             <Grid item>
@@ -269,7 +268,7 @@ function EditPartnerLocationProfilePage() {
                 id="outlined-required"
                 label={pictureLabel}
                 value={partnerLocationPicture}
-                onChange={(e) => onRestaurantLocationPictureChanged(e)}
+                onChange={(e) => onPartnerLocationPictureChange(e)}
               />
             </Grid>
           </Grid>
@@ -291,10 +290,10 @@ function EditPartnerLocationProfilePage() {
               {(partnerLocationType === 'restaurant' ? restaurantMenuList : ticketList).map(
                 (item, idx) => {
                   return (
-                    <MenuCard
+                    <BuyableItemCard
                       key={item._id}
                       menuId={item._id}
-                      menuIdx={idx}
+                      itemIdx={idx}
                       name={item.name}
                       content={item.description}
                       price={item.price.toString()}
@@ -307,7 +306,7 @@ function EditPartnerLocationProfilePage() {
               )}
             </List>
           </Paper>
-          <EditMenuItem
+          <EditItemModal
             key={partnerLocationType === 'restaurant' ? menuItemInEdit._id : ticketInEdit._id}
             item={partnerLocationType === 'restaurant' ? menuItemInEdit : ticketInEdit}
             locationType={partnerLocationType}
