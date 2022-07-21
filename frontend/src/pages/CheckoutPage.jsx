@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import { Button, Modal, CardActionArea, CardMedia, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -11,19 +12,75 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import emailjs from '@emailjs/browser';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+// import Collapse from '@mui/material/Collapse';
 import Header from '../components/Header';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { findUserWallet } from '../queries/user-queries';
+import { findUserWallet, getUser } from '../queries/user-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
+import { createTransaction } from '../queries/transaction-queries';
+
 import {
   PARTNER_LOCATION_TYPE_RESTAURANT,
-  PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
+  PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION,
+  // CURRENCIES,
+  TRANSACTION_TYPE_WITHDRAW,
+  TRANSACTION_STATUS_SUCCESSFUL,
+  TRANSACTION_STATUS_REJECTED
 } from '../shared/constants';
+
+const walletImg = require('../assets/wallet-logo.png');
+
+const emailjsCredentials = require('../credentials/emailjs_credentials.json');
+
+const modalBoxStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
+
+function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
+  let message =
+    'Your optimized route plan is consist of following places. You can also click the link below to see the route on google maps.\r\n';
+  let googleMapsLink = 'https://www.google.com/maps/dir/';
+  for (let index = 0; index < partnerLocationList.length; index += 1) {
+    const loc = partnerLocationList[index];
+    message = message.concat('\r\n- ', loc.partnerLocation.name);
+    googleMapsLink = googleMapsLink.concat(loc.partnerLocation.name.replaceAll(' ', '+'), '/');
+  }
+  if (servicesToBeBought.length > 0) {
+    message = message.concat('\r\nYour Paid Services:\r\n');
+    for (let index = 0; index < servicesToBeBought.length; index += 1) {
+      const item = servicesToBeBought[index];
+      message = message.concat('\r\n- ', item.partnerLocation.name);
+      for (let j = 0; j < item.itemsToBeBought.length; j += 1) {
+        message = message.concat(
+          '\r\n\r\t- ',
+          `${item.itemsToBeBought[j].name} (${item.itemsToBeBought[j].price} €) x ${item.itemsToBeBought[j].count} = ${item.itemsToBeBought[j].finalPrice} €`
+        );
+      }
+      googleMapsLink = googleMapsLink.concat(item.partnerLocation.name.replaceAll(' ', '+'), '/');
+    }
+    message = message.concat('\r\n- Total paid amount : ', amount, '€');
+  }
+
+  message = message.concat('\r\n\r\nGoogle Maps Link:\r\n');
+  message = message.concat(googleMapsLink);
+  return message;
+}
 
 export default function CheckoutPage() {
   const { state } = useLocation(); // Received from the previous route
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -34,6 +91,50 @@ export default function CheckoutPage() {
   const [latestSelectionUpdateDate, setLatestSelectionUpdateDate] = useState(new Date()); // Used for easier force-rendering
   const [servicesToBeBought, setServicesToBeBought] = useState([]);
   const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
+  const [user, setUser] = useState(null);
+  const [emailContent] = useState({});
+  const [itemList, setItemList] = useState([]);
+  const [isPaymentCompleted, setPaymentCompleted] = useState(false);
+
+  const handleCompletePayment = (bool) => {
+    setPaymentCompleted(bool);
+  };
+
+  const handleEmail = () => {
+    emailjs.init(emailjsCredentials.publicKey);
+    // e.preventDefault(); // Prevents default refresh by the browser
+    emailjs
+      .send(
+        emailjsCredentials.userId,
+        emailjsCredentials.templeteId,
+        emailContent
+        // emailjs.publicKey
+      )
+      .then(
+        (result) => {
+          console.log('Message Sent, We will get back to you shortly', result.text);
+        },
+        (error) => {
+          console.log('An error occurred, Please try again', error.text);
+        }
+      );
+  };
+
+  const handleWalletPayment = () => {
+    createTransaction({
+      amount: Number(totalPaidServicePrice),
+      type: TRANSACTION_TYPE_WITHDRAW,
+      incomingWalletId: null,
+      outgoingWalletId: wallet._id
+    }).then(({ transaction, outgoingWalletObject }) => {
+      if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
+        setWallet(outgoingWalletObject);
+        setPaymentCompleted(true);
+      } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
+        alert('Opps, something went wrong!');
+      }
+    });
+  };
 
   // Listen to the changes in authenticated user
   useEffect(() => {
@@ -133,6 +234,45 @@ export default function CheckoutPage() {
     );
     setTotalPaidServicePrice(totalPrice);
   }, [buyableItemSelections]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    emailContent.to_name = (user.firstName, ' ', user.lastName);
+    emailContent.to_email = user.email;
+  }, [user]);
+
+  useEffect(() => {
+    if (!partnerLocations) {
+      return;
+    }
+    setItemList(servicesToBeBought);
+    emailContent.message = generateEmailMessage(partnerLocations, itemList, totalPaidServicePrice);
+  }, [partnerLocations, servicesToBeBought, totalPaidServicePrice]);
+
+  useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+    getUser(authenticatedUser.user.id).then((data) => {
+      setUser(data);
+    });
+  }, [authenticatedUser]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    emailContent.to_name = (user.firstName, ' ', user.lastName);
+    emailContent.to_email = user.email;
+  }, [user]);
+
+  useEffect(() => {
+    if (isPaymentCompleted) {
+      handleEmail();
+    }
+  }, [isPaymentCompleted]);
 
   const handleItemSelectionCountChange = ({ partnerLocationId, updatedItemSelections }) => {
     setBuyableItemSelections({
@@ -278,6 +418,44 @@ export default function CheckoutPage() {
               </ul>
             </li>
           </List>
+          <Card sx={{ width: '%100' }}>
+            <CardActionArea onClick={handleWalletPayment}>
+              <Grid container spacing={2} direction="row">
+                <Grid item xs={2}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '8vh'
+                    }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: '5vh', height: '5vh' }}
+                      image={walletImg}
+                      alt="wallet_icon"
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={10}>
+                  <CardContent>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '8vh'
+                      }}>
+                      <Typography gutterBottom variant="h6" component="div">
+                        Pay with Triplan Wallet
+                      </Typography>
+                    </div>
+                  </CardContent>
+                </Grid>
+              </Grid>
+            </CardActionArea>
+          </Card>
+          <br />
           <PayPalScriptProvider
             options={{
               'client-id':
@@ -288,15 +466,38 @@ export default function CheckoutPage() {
             <PaypalCheckoutButtons
               currency="EUR"
               amount={totalPaidServicePrice}
-              partnerLocationList={partnerLocations}
-              servicesToBeBought={servicesToBeBought}
+              onPaymentComplete={handleCompletePayment}
               showSpinner
             />
           </PayPalScriptProvider>
         </Grid>
-
         <Grid item xs={1} />
       </Grid>
+      <Modal
+        open={isPaymentCompleted}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        style={{
+          display: 'flex',
+          justifyConent: 'center',
+          alignItems: 'center'
+        }}>
+        <Box sx={modalBoxStyle}>
+          <div className="center">
+            <Alert severity="success">
+              <AlertTitle>Success</AlertTitle>
+              Your payment is successfull! <strong>Enjoy your vacation!</strong>
+            </Alert>
+            <Button
+              alignItems="center"
+              onClick={() => {
+                navigate('/main-page');
+              }}>
+              Continue
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 }

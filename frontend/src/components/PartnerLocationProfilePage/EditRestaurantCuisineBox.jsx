@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Box, FormGroup, FormControlLabel, Checkbox, Typography } from '@mui/material';
-import * as constants from '../shared/constants';
+import * as constants from '../../shared/constants';
 
 function EditRestaurantCuisineBox(props) {
   const { selectedItems, handleChange } = props;

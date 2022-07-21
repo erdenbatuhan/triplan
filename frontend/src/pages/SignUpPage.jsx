@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
@@ -7,10 +7,10 @@ import { green, grey } from '@mui/material/colors';
 import { createNewUser } from '../queries/user-queries';
 import { createNewPartnerLocation } from '../queries/partner-location-queries';
 import { SECONDARY_COLOR } from '../shared/constants';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { AuthUserContext } from '../authentication/AuthUserContext';
 
 function SignUpPage() {
-  // const [firstName, setFirstName] = useState('');
-  // const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -21,25 +21,14 @@ function SignUpPage() {
   useEffect(() => {
     setWidth(ref.current.offsetWidth);
   }, []);
+  const authContext = useContext(AuthUserContext);
 
   const handleChange = (event, newLoginType) => {
     setPartnerType(newLoginType);
   };
 
-  // const [phoneNumber, setPhoneNumber] = useState('');
-  // const [gender, setGender] = useState('');
-  // const [dateOfBirth, setDateOfBirth] = useState('');
-  // const [nationality, setNationality] = useState('');
-  // const [profilePicture, setProfilePicture] = useState('');
-
   const navigate = useNavigate();
 
-  // const onFirstNameChanged = (e) => {
-  //   setFirstName(e.target.value);
-  // };
-  // const onLastNameChanged = (e) => {
-  //   setLastName(e.target.value);
-  // };
   const onEmailChanged = (e) => {
     setEmail(e.target.value);
   };
@@ -55,9 +44,6 @@ function SignUpPage() {
       const userData = {
         username,
         password,
-        // firstName,
-        // lastName,
-        // phoneNumber,
         email
       };
       const newUser = await createNewUser(userData);
@@ -77,9 +63,13 @@ function SignUpPage() {
         partnerType
       };
       const newPartnerLocation = await createNewPartnerLocation(partnerLocationData);
-      if (newPartnerLocation) {
-        // console.log(newPartnerLocation);
-        navigate('/');
+      const { token } = newPartnerLocation;
+      authContext.loginUser(token);
+      if (token) {
+        const partnerData = UserAuthHelper.getDataFromToken(token);
+        navigate(`/edit-partner-profile/${partnerData.partnerLocation.id}`, {
+          state: { partnerType: partnerData.partnerLocation.partnerType }
+        });
       }
     } catch (e) {
       console.error(`failed to create partner location ${e}`);
