@@ -57,7 +57,11 @@ function LoginPage() {
       const { token } = message;
       authContext.loginUser(token);
       if (token) {
-        navigate('/');
+        navigate('/', {
+          state: {
+            isLoggedIn: true
+          }
+        });
       }
     } catch (e) {
       console.error(`failed to find user ${username}`);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import HomeIcon from '@mui/icons-material/Home';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { PRIMARY_COLOR } from '../shared/constants';
 
@@ -59,16 +59,26 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function MenuAppBar() {
-  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  // const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const { state } = useLocation(); // Received from the previous route
+  console.log(isLoggedIn);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // logout function will be added
-    navigate('/login');
+  useEffect(() => {
+    setIsLoggedIn(UserAuthHelper.isLoggedIn());
+  }, [state]);
+
+  const syncAuthUser = () => {
+    setIsLoggedIn(UserAuthHelper.isLoggedIn());
   };
 
+  const handleLogOut = () => {
+    UserAuthHelper.logoutUser();
+    syncAuthUser();
+  };
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -86,8 +96,20 @@ export default function MenuAppBar() {
   };
 
   const navigateToMainPage = () => {
-    navigate('/main-page');
+    navigate('/');
   };
+
+  const navigateToLogin = () => {
+    navigate('/login');
+  };
+
+  const navigateToSignup = () => {
+    navigate('/signup');
+  };
+
+  // useEffect(() => {
+  //   syncAuthUser();
+  // }, [isLoggedIn]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -124,7 +146,7 @@ export default function MenuAppBar() {
             <HomeIcon />
           </IconButton>
 
-          {authenticatedUser ? (
+          {isLoggedIn ? (
             <div>
               <IconButton
                 size="large"
@@ -152,17 +174,16 @@ export default function MenuAppBar() {
                 onClose={handleClose}>
                 <MenuItem onClick={navigateToProfile}>Profile</MenuItem>
                 <MenuItem onClick={navigateToWallet}>Wallet</MenuItem>
-                <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                <MenuItem onClick={handleLogOut}>Log out</MenuItem>
               </Menu>
             </div>
           ) : (
             <div>
-              <IconButton color="inherit" size="small">
+              <IconButton color="inherit" size="small" onClick={navigateToLogin}>
                 Log in
               </IconButton>
-              <IconButton color="inherit" size="small">
-                {' '}
-                Sign up{' '}
+              <IconButton color="inherit" size="small" onClick={navigateToSignup}>
+                Sign up
               </IconButton>
             </div>
           )}
