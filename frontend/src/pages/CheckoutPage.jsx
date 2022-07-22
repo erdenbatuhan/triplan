@@ -136,7 +136,7 @@ export default function CheckoutPage() {
     });
   };
 
-  // Listen to the changes in authenticated user
+  // Listen to the changes in authenticatedUser
   useEffect(() => {
     if (!authenticatedUser) {
       return;

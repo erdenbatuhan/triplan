@@ -1,4 +1,4 @@
-# Triplan - Frontend
+# Triplan - Backend (Optimization Service)
 
 ### Local Setup
 

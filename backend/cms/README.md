@@ -1,4 +1,4 @@
-# Triplan - Frontend
+# Triplan - Backend (Content Management System)
 
 ### Local Setup
 
