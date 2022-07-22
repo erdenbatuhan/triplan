@@ -133,7 +133,6 @@ router.post("/signup", async (req, res) => {
     } else {
       await partnerLocationController.signUpTouristAttraction(req, res);
     }
-    console.log("parnter location after signup");
   } catch ({ message }) {
     res
       .status(400)

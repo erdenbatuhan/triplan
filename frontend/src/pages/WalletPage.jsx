@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import Typography from '@mui/material/Typography';
 import {
   Button,
@@ -12,6 +11,7 @@ import {
   CardActions,
   Grid
 } from '@mui/material';
+import EuroIcon from '@mui/icons-material/Euro';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -35,7 +35,8 @@ const style = {
   width: 500,
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4
+  p: 6,
+  borderRadius: '15px'
 };
 
 export default function WalletPage() {
@@ -93,65 +94,79 @@ export default function WalletPage() {
 
   return (
     <div>
-      <Grid container item md={4} spacing={0} alignItems="center" justifyContent="center">
-        <Grid item xs={3}>
-          <AccountBalanceWalletIcon style={{ fontSize: 100, color: ' #ffa726' }} />
-        </Grid>
-        <Grid item xs={9} display="flex" justifyContent="left">
-          <Typography variant="h3"> My Wallet</Typography>
-        </Grid>
-      </Grid>
-      <Card sx={{ maxWidth: 345 }}>
+      <Card
+        sx={{
+          width: '100%',
+          textAlign: 'center',
+          height: '100%',
+          p: 2,
+          boxShadow: 3
+        }}>
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            Current Balance:
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Your current balance in your wallet is <b>{wallet ? wallet.balance : 0} €</b>
+          <Typography variant="h6" color="text.secondary">
+            Current balance: <b>{wallet ? wallet.balance : 0} €</b>
           </Typography>
         </CardContent>
+
         <CardActions>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => {
-              setTransactionType(TRANSACTION_TYPE_DEPOSIT);
-              setTransactionDialogShown(true);
-            }}>
-            Deposit
-          </Button>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => {
-              setTransactionType(TRANSACTION_TYPE_WITHDRAW);
-              setTransactionDialogShown(true);
-            }}>
-            Withdraw
-          </Button>
+          <Grid container direction="column">
+            <Grid item sx={6}>
+              <Button
+                color="success"
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setTransactionType(TRANSACTION_TYPE_DEPOSIT);
+                  setTransactionDialogShown(true);
+                }}>
+                Manage Balance
+              </Button>
+            </Grid>
+
+            <Grid item sx={6} m={1}>
+              {/* <Button
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setTransactionType(TRANSACTION_TYPE_WITHDRAW);
+                  setTransactionDialogShown(true);
+                }}>
+                Withdraw
+              </Button> */}
+            </Grid>
+          </Grid>
         </CardActions>
-        <Modal
-          open={transactionDialogShown}
-          onClose={() => setTransactionDialogShown(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
+
+        <Modal open={transactionDialogShown} onClose={() => setTransactionDialogShown(false)}>
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography variant="h6" component="h2" color="text.secondary">
               How much money would you like to {transactionType} ?
             </Typography>
-            <div>
-              <Grid container item md={4} spacing={0} alignItems="center" justifyContent="center">
-                <Grid item xs={9}>
+
+            <Grid>
+              <Grid
+                container
+                item
+                md={4}
+                spacing={0}
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  '& .MuiTextField-root': { m: 2, width: '25ch' }
+                }}
+                p={2}>
+                <Grid item xs={9} pr="4">
                   <TextField
                     id="standard-basic"
-                    label="Amount"
+                    label="Please enter the amount"
                     variant="standard"
                     value={transactionAmount}
                     onChange={(event) => setTransactionAmount(event.target.value)}
                   />
                 </Grid>
-                <Grid item xs={3} display="flex" justifyContent="left">
-                  <p>€</p>
+
+                <Grid item xs={3}>
+                  <EuroIcon sx={{ pt: 2, pl: 20 }} />
                 </Grid>
               </Grid>
               {/* <TextField
@@ -166,7 +181,8 @@ export default function WalletPage() {
                 </MenuItem>
               ))}
               </TextField> */}
-            </div>
+            </Grid>
+
             <PayPalScriptProvider
               options={{
                 'client-id':
@@ -192,6 +208,7 @@ export default function WalletPage() {
             </Button> */}
           </Box>
         </Modal>
+
         <Modal
           open={isPaymentCompleted}
           aria-labelledby="modal-modal-title"
@@ -207,6 +224,7 @@ export default function WalletPage() {
                 <AlertTitle>Success</AlertTitle>
                 Your payment is successfull!
               </Alert>
+
               <Button
                 alignItems="center"
                 onClick={() => {

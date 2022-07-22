@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const { GoogleLocationInfo } = require("./googleLocationInfo.js");
 const { TripLocation } = require("./tripLocation.js");
+const { Wallet } = require("./wallet.js");
 
 const { extendSchema } = require("./../utils/schemaUtils.js");
 const enums = require("./../utils/enums.js");
@@ -25,7 +26,8 @@ const PartnerLocationSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: TripLocation.name,
     required: false
-  }] // One-to-Many Relation using Reference
+  }], // One-to-Many Relation using Reference
+  wallet: { type: Schema.Types.ObjectId, ref: Wallet.name } // One-to-One Relation using Reference
 });
 
 const Restaurant = mongoose.model(

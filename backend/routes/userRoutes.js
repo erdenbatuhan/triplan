@@ -15,9 +15,7 @@ const walletController = require("./../controllers/walletController.js");
  */
 router.post("/signup", async (req, res) => {
   try {
-    console.log("req.body: ", req.body);
     await userController.signUp(req, res);
-    console.log("after signup");
     // res.status(200).send(await userController.signUp(req, res));
   } catch ({ message }) {
     res
@@ -69,7 +67,9 @@ router.get("/:id", async (req, res) => {
 
     return res.status(200).send(user);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the user! Error => ${message}`);
+    res
+      .status(400)
+      .send(`An error occurred while getting the user! Error => ${message}`);
   }
 });
 

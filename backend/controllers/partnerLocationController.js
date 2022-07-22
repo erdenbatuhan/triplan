@@ -5,6 +5,8 @@ const {
   Restaurant,
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
+const { Wallet } = require("./../models/wallet.js");
+
 
 const googleLocationInfoController = require("./googleLocationInfoController.js");
 const tripLocationController = require("./tripLocationController.js");
@@ -179,16 +181,21 @@ const signUpRestaurant = async (req, res) => {
     // hash partner location password
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
+
+    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+
     const newPartnerLocation = await insertRestaurant({
       ...req.body,
+      wallet,
       password: hash,
     });
 
     // return jwt
     const payload = {
       partnerLocation: {
-        id: newPartnerLocation._id,
-        username: newPartnerLocation.username,
+        id: newPartnerLocation[0]._id,
+        username: newPartnerLocation[0].username,
+        partnerType: newPartnerLocation[0].partnerType,
       },
     };
 
@@ -226,16 +233,21 @@ const signUpTouristAttraction = async (req, res) => {
     // hash partner location password
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
+
+    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+
     const newPartnerLocation = await insertTouristAttraction({
       ...req.body,
+      wallet,
       password: hash,
     });
 
     // return jwt
     const payload = {
       partnerLocation: {
-        id: newPartnerLocation._id,
-        username: newPartnerLocation.username,
+        id: newPartnerLocation[0]._id,
+        username: newPartnerLocation[0].username,
+        partnerType: newPartnerLocation[0].partnerType,
       },
     };
 
@@ -278,6 +290,7 @@ const loginRestaurant = async (req, res) => {
       partnerLocation: {
         id: restaurant[0]._id,
         username,
+        partnerType: restaurant[0].partnerType,
       },
     };
     jwt.sign(
@@ -331,6 +344,7 @@ const loginTouristAttraction = async (req, res) => {
       partnerLocation: {
         id: touristAttraction[0]._id,
         username,
+        partnerType: touristAttraction[0].partnerType,
       },
     };
     jwt.sign(
@@ -359,7 +373,6 @@ const loginTouristAttraction = async (req, res) => {
 };
 
 const findRestaurantByUsername = (username) => {
-  console.log("username:", username);
   return Restaurant.find({ username: { $eq: username } });
 };
 
@@ -383,6 +396,33 @@ const insertTouristAttraction = (touristAttraction) => {
   return TouristAttraction.insertMany([touristAttraction]);
 };
 
+const findPartnerLocationById = (partnerLocationId) => {
+  return new Promise((resolve, reject) => {
+    const restaurantFound = findRestaurantById(partnerLocationId);
+    const touristAttractionFound = findTouristAttractionById(partnerLocationId);
+
+    Promise.all([restaurantFound, touristAttractionFound]).then(([restaurant, touristAttraction]) => {
+      if ((!restaurant && !touristAttraction) || (restaurant && touristAttraction)) {
+        return resolve(null);
+      } else if (restaurant) {
+        resolve({restaurant, partnerLocationType: 'restaurant'});
+      } else {
+        resolve({touristAttraction, partnerLocationType: 'tourist-attraction'});
+      }
+    }).catch((err) => reject(err));
+  });
+};
+
+const updatePartnerLocationFields = async (id, fields) => {
+  const {partnerLocation, partnerLocationType} = await findPartnerLocationById(id);
+  
+  if (partnerLocationType == 'restaurant') {
+    return Restaurant.updateOne({ _id: id }, fields, { new: true });
+  } else {
+    return TouristAttraction.updateOne({ _id: id }, fields, { new: true });
+  }
+};
+
 module.exports = {
   findDistinctCities,
   findFiltered,
@@ -395,4 +435,6 @@ module.exports = {
   signUpTouristAttraction,
   loginRestaurant,
   loginTouristAttraction,
+  findPartnerLocationById,
+  updatePartnerLocationFields
 };
