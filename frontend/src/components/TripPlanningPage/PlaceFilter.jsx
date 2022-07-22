@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Stack } from '@mui/material';
 import SelectCuisines from './SelectCuisines';
 import SelectPriceLevels from './SelectPriceLevels';
@@ -8,13 +8,23 @@ import SelectFoodType from './SelectFoodType';
 // import PropTypes from 'prop-types';
 
 function PlaceFilter(props) {
-  const { handleContinueClick, handleFilterChange, calledFrom } = props; // filterState,
+  const { filterState, handleContinueClick, handleFilterChange, calledFrom } = props; // filterState,
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
   const [selectedFoodTypes, setSelectedFoodTypes] = useState([]);
   const [allCuisinesSelected, setAllCuisinesSelected] = useState(false);
   const [allPriceLevelsSelected, setAllPriceLevelsSelected] = useState(false);
+
+  useEffect(() => {
+    console.log('filterState: ', filterState);
+    if (calledFrom === 'TripPlanningPage') {
+      setSelectedPlaces(filterState.filterData.touristAttractionFilter.types);
+      setSelectedCuisine(filterState.filterData.restaurantFilter.cuisines);
+      setSelectedFoodTypes(filterState.filterData.restaurantFilter.foodTypes);
+      setSelectedPriceLevel(filterState.filterData.restaurantFilter.priceLevel);
+    }
+  }, [filterState]);
 
   const handlePlaceTypeChange = (event) => {
     const { value, checked } = event.target;
