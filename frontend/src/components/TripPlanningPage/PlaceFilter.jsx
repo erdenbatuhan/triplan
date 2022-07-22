@@ -17,7 +17,6 @@ function PlaceFilter(props) {
   const [allPriceLevelsSelected, setAllPriceLevelsSelected] = useState(false);
 
   useEffect(() => {
-    console.log('filterState: ', filterState);
     if (calledFrom === 'TripPlanningPage') {
       setSelectedPlaces(filterState.filterData.touristAttractionFilter.types);
       setSelectedCuisine(filterState.filterData.restaurantFilter.cuisines);
