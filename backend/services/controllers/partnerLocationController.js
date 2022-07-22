@@ -12,7 +12,7 @@ const findDistinctCities = () => {
     TouristAttraction.distinct("city", { city: { $nin : ["", null, undefined] } }),
   ]).then(([restaurantCities, touristAttractionCities]) => (
     [...new Set([ ...restaurantCities, ...touristAttractionCities ])]
-  ));
+  ))
 };
 
 const findFiltered = (filterData) => {
@@ -86,7 +86,7 @@ const signUpRestaurant = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
 
     const newPartnerLocation = await createRestaurant({
       ...req.body,
@@ -138,7 +138,7 @@ const signUpTouristAttraction = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
 
     const newPartnerLocation = await createTouristAttraction({
       ...req.body,
@@ -315,18 +315,27 @@ const findPartnerLocationById = (partnerLocationId) => {
     const restaurantFound = findRestaurantById(partnerLocationId);
     const touristAttractionFound = findTouristAttractionById(partnerLocationId);
 
-    Promise.all([restaurantFound, touristAttractionFound]).then(([restaurant, touristAttraction]) => {
-      if ((!restaurant && !touristAttraction) || (restaurant && touristAttraction)) {
-        return resolve(null);
-      } else if (restaurant) {
-        resolve({restaurant, partnerLocationType: 'restaurant'});
-      } else {
-        resolve({touristAttraction, partnerLocationType: 'tourist-attraction'});
-      }
-    }).catch((err) => reject(err));
+    Promise.all([restaurantFound, touristAttractionFound])
+      .then(([restaurant, touristAttraction]) => {
+        if (
+          (!restaurant && !touristAttraction) ||
+          (restaurant && touristAttraction)
+        ) {
+          return resolve(null);
+        } else if (restaurant) {
+          resolve({ restaurant, partnerLocationType: "restaurant" });
+        } else {
+          resolve({
+            touristAttraction,
+            partnerLocationType: "tourist-attraction",
+          });
+        }
+      })
+      .catch((err) => reject(err));
   });
 };
 
+<<<<<<< HEAD:backend/services/controllers/partnerLocationController.js
 const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
   return Restaurant.updateOne(
     { _id: restaurantId }, 
@@ -341,6 +350,17 @@ const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation) =
     { $push: { associatedTripLocations: tripLocation } },
     { new: true, runValidators: true }
   );
+=======
+const updatePartnerLocationFields = async (id, fields) => {
+  const { partnerLocation, partnerLocationType } =
+    await findPartnerLocationById(id);
+
+  if (partnerLocationType == "restaurant") {
+    return Restaurant.updateOne({ _id: id }, fields, { new: true });
+  } else {
+    return TouristAttraction.updateOne({ _id: id }, fields, { new: true });
+  }
+>>>>>>> ef6f024 (filter is working with clicking filter after making changes.):backend/controllers/partnerLocationController.js
 };
 
 module.exports = {
@@ -357,6 +377,10 @@ module.exports = {
   loginTouristAttraction,
   updatePartnerLocationFields,
   findPartnerLocationById,
+<<<<<<< HEAD:backend/services/controllers/partnerLocationController.js
   addTripLocationToRestaurant,
   addTripLocationToTouristAttraction
+=======
+  updatePartnerLocationFields,
+>>>>>>> ef6f024 (filter is working with clicking filter after making changes.):backend/controllers/partnerLocationController.js
 };

@@ -5,6 +5,7 @@ import SelectCuisines from './SelectCuisines';
 import SelectPriceLevels from './SelectPriceLevels';
 import SelectPlaceType from './SelectPlaceType';
 import SelectFoodType from './SelectFoodType';
+import * as constants from '../../shared/constants';
 // import PropTypes from 'prop-types';
 
 function PlaceFilter(props) {
@@ -87,8 +88,8 @@ function PlaceFilter(props) {
     const filterData = {
       filterData: {
         restaurantFilter: {
-          cuisines: selectedCuisine,
-          priceLevel: selectedPriceLevel,
+          cuisines: selectedCuisine[0] === 'None' ? constants.cuisines : selectedCuisine,
+          priceLevel: selectedPriceLevel[0] === 'None' ? constants.priceLevels : selectedPriceLevel,
           foodTypes: selectedFoodTypes
         },
         touristAttractionFilter: {
