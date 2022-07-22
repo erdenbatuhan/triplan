@@ -123,6 +123,8 @@ function UserProfilePage() {
         </Grid>
       </Grid>
 
+      <Grid item xs={1} />
+
       <Grid item xs={6}>
         <Grid>
           <Typography align="left" variant="h6" color="text.secondary">
@@ -131,22 +133,20 @@ function UserProfilePage() {
           <Divider />
         </Grid>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
-          <Grid item xs={3}>
-            {/* <Stack direction="row" spacing={12}>
-              {mockProfileInfoCardData.map((infoData) => (
-                <Grid item key={infoData.id}>
-                  <InfoCard
-                    key={infoData.id}
-                    title={infoData.title}
-                    value={infoData.value}
-                    href={infoData.href}
-                  />
-                </Grid>
-              ))}
-              </Stack> */}
-          </Grid>
-          <Grid item xs={9}>
-            <Stack spacing={2}>
+          {/* <Stack direction="row" spacing={12}>
+            {mockProfileInfoCardData.map((infoData) => (
+              <Grid item key={infoData.id}>
+                <InfoCard
+                  key={infoData.id}
+                  title={infoData.title}
+                  value={infoData.value}
+                  href={infoData.href}
+                />
+              </Grid>
+            ))}
+            </Stack> */}
+          <Grid item xs={9} sx={{ width: '100%' }}>
+            <Stack spacing={2} pt={4}>
               {mockTripCardData.map((tripData) => {
                 return (
                   <TripCard
@@ -161,7 +161,7 @@ function UserProfilePage() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={3} />
+      <Grid item xs={2} />
     </Grid>
   );
 
