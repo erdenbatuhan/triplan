@@ -1,0 +1,33 @@
+service: triplan-cms
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  stage: prod
+  runtime: nodejs14.x
+  region: eu-central-1
+  deploymentBucket: triplan-cms-deployment-bucket
+  timeout: 20
+  environment:
+    ["REGION"]: self:provider.region
+    ["CMS_STORAGE_BUCKET_NAME"]: triplan-cms-bucket
+    ["CMS_STORAGE_BUCKET_DIRECTORY_IMG"]: img
+    ["CMS_STORAGE_BUCKET_URL"]: https://triplan-cms-bucket.s3.eu-central-1.amazonaws.com
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:GetObject"
+            - "s3:PutObject"
+          Resource:
+            - "arn:aws:s3:::${self:provider.environment.CMS_STORAGE_BUCKET_NAME}/*"
+
+functions:
+  upload:
+    handler: handler.upload
+    events:
+      - httpApi:
+          path: /
+          method: post
+
