@@ -7,8 +7,6 @@ const {
 } = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
-const scoreController = require("./scoreController.js");
-
 const findDistinctCities = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
