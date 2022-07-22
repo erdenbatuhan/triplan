@@ -44,8 +44,21 @@ const findById = (id) => {
   return TripPlan.findById(id);
 };
 
-const findByUser = (userId) => {
-  return TripPlan.find({ user: userId });
+const findByUsers = (userIds) => {
+  return TripPlan.find({ user: { $in: userIds } });
 };
 
-module.exports = { findWithPartnerLocationsByTripPlan, findById, findByUser };
+const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
+  return TripPlan.find({
+    user: { $in: userIds },
+    tripLocations: { $in: tripLocationIds }
+  }).then(response => (
+    Object.assign({}, ...response.map(item => (
+      Object.assign({}, ...item.tripLocations.map(tripLocation => (
+        { [tripLocation]: item.user }
+      )))
+    )))
+  ));
+};
+
+module.exports = { findWithPartnerLocationsByTripPlan, findById, findByUsers, findTripLocationsPlannedByUsers };

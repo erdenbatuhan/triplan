@@ -12,15 +12,18 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("Connected to DB!"))
-  .catch((err) => console.log(err));
+  .catch(err => console.log(err));
 
 app.use(cors()); // CORS
 app.use(bodyParser.json()); // Parses the text as JSON and exposes the resulting object on req.body
 
-app.get("/", (req, res) => res.send("Please specify the whole URI!"));
 app.listen(appProps["port"], () =>
   console.log(`Server Running on port: http://localhost:${appProps["port"]}`)
 );
+
+// Routes: Health Check
+const healthCheckRoutes = require("./routes/healthCheckRoutes.js");
+app.use("/", healthCheckRoutes);
 
 // Routes: City Info
 const cityInfoRoutes = require("./routes/cityInfoRoutes.js");

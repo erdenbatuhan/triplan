@@ -90,29 +90,17 @@ const findTicketsAndMenuItems = ({ restaurantIds, touristAttractionIds }) => {
       }),
       Ticket.find({ touristAttraction: { $in: touristAttractionIds } }).sort({
         price: "asc",
-      }),
-    ])
-      .then(([menuItems, tickets]) => {
-        menuItemData = Object.assign(
-          {},
-          ...restaurantIds.map((id) => ({ [id]: [] }))
-        );
-        ticketData = Object.assign(
-          {},
-          ...touristAttractionIds.map((id) => ({ [id]: [] }))
-        );
-
-        menuItems.forEach((menuItem) =>
-          menuItemData[menuItem.restaurant].push(menuItem)
-        );
-        tickets.forEach((ticket) =>
-          ticketData[ticket.touristAttraction].push(ticket)
-        );
-
-        resolve({ menuItemData, ticketData });
       })
-      .catch((err) => reject(err));
-  });
+    ]).then(([menuItems, tickets]) => {
+      menuItemData = Object.assign({}, ...restaurantIds.map(id => ({ [id]: [] })));
+      ticketData = Object.assign({}, ...touristAttractionIds.map(id => ({ [id]: [] })));
+
+      menuItems.forEach(menuItem => menuItemData[menuItem.restaurant].push(menuItem));
+      tickets.forEach(ticket => ticketData[ticket.touristAttraction].push(ticket));
+
+      resolve({ menuItemData, ticketData });
+    }).catch(err => reject(err));
+  })
 };
 
 module.exports = {

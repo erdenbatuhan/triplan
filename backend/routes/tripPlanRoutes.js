@@ -39,7 +39,7 @@ router.get("/:id/trip-location", async (req, res) => {
 router.get("/user/:id", async (req, res) => {
   try {
     const userId = req.params.id;
-    res.status(200).send(await (tripPlanController.findByUser(userId)));
+    res.status(200).send(await (tripPlanController.findByUsers([userId])));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
   }

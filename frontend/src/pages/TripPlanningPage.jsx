@@ -11,6 +11,7 @@ import Header from '../components/Header';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import { getOptimizedRoute } from '../queries/route-optimization-queries';
 import * as partnerLocationDefaultFilter from '../queries/data/partner-location-default-filter.json';
@@ -46,6 +47,7 @@ export default function TripPlanningPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [selectedCity] = useState(state ? state.selectedCity : null);
   const [filterState, setFilterState] = useState(
     state ? state.filterData : partnerLocationDefaultFilter
@@ -63,7 +65,6 @@ export default function TripPlanningPage() {
 
   const [partnerLocationsOrder, setPartnerLocationsOrderList] = useState([]);
   const [orderedPartnerLocations, setOrderedPartnerLocations] = useState([]);
-  console.log(orderedPartnerLocations);
 
   const detectSize = () => {
     detectHW({
@@ -80,13 +81,17 @@ export default function TripPlanningPage() {
     };
   }, [windowDimenion]);
 
-  // Listenining to the changes in filterState
+  // Listenining to the changes in authenticatedUser and filterState
   useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+
     setLoading(true);
-    getFilteredPartnerLocations(filterState)
+    getFilteredPartnerLocations(authenticatedUser.user.id, filterState)
       .then((data) => setPartnerLocations(data))
       .finally(() => setLoading(false));
-  }, [filterState]);
+  }, [authenticatedUser, filterState]);
 
   useEffect(() => {
     getOptimizedRoute(selectedPartnerLocations).then((data) =>
@@ -191,7 +196,7 @@ export default function TripPlanningPage() {
           onClick={() =>
             navigate('/checkout', {
               state: {
-                partnerLocations: selectedPartnerLocations
+                partnerLocations: orderedPartnerLocations
               }
             })
           }>

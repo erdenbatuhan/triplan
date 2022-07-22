@@ -15,10 +15,10 @@ import EuroIcon from '@mui/icons-material/Euro';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
-import PaypalCheckoutButtons from '../components/PaypalButtons';
 import {
   // CURRENCIES,
   TRANSACTION_TYPE_DEPOSIT,
@@ -48,7 +48,7 @@ export default function WalletPage() {
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
 
-  // Listen to the changes in authenticated user
+  // Listen to the changes in authenticatedUser
   useEffect(() => {
     if (!authenticatedUser) {
       return;
