@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-const AuthService = require("../middleware/AuthService");
 require("dotenv").config();
 
 const adminController = require("../controllers/adminController.js");
@@ -10,6 +9,7 @@ const adminController = require("../controllers/adminController.js");
  * Creates a admin or updates an existing one
  */
 router.post("/signup", async (req, res) => {
+  console.log(req.body);
   try {
     await adminController.signUp(req, res);
     // res.status(200).send(await userController.signUp(req, res));

@@ -65,3 +65,7 @@ app.use("/buyable-item", buyableItemRoutes);
 // Routes: Buyable Item
 const withdrawRequestRoutes = require("./routes/withdrawRequestRoutes.js");
 app.use("/withdraw-request", withdrawRequestRoutes);
+
+// Routes: User
+const adminRoutes = require("./routes/adminRoutes.js");
+app.use("/admin", adminRoutes);

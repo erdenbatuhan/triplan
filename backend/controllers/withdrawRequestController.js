@@ -16,4 +16,4 @@ const deleteWithdrawRequest = (id) => {
   return WithdrawRequest.deleteOne({ _id: id });
 };
 
-module.exports ={find, sendWithdrawRequest, deleteWithdrawRequest}
+module.exports ={find, sendWithdrawRequest, deleteWithdrawRequest, findById}

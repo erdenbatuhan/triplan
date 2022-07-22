@@ -22,7 +22,6 @@ const signUp = async (req, res) => {
 
     const newAdmin = await save({
       ...req.body,
-      wallet,
       password: hash,
     });
 

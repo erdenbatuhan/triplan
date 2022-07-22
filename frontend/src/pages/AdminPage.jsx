@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import { createNewAdmin } from '../queries/admin-queries';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -38,9 +39,27 @@ const rows = [
   { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 }
 ];
 
+const username = 'admin';
+const password = 'admin123';
+const email = 'seba.tum2022@gmail.com';
+
 function AdminPage() {
   const [selectedRows, setSelectedRows] = useState();
   const [value, setValue] = React.useState('1');
+
+  const adminData = {
+    username,
+    password,
+    email
+  };
+  const onSubmitClickedUser = async () => {
+    try {
+      const newAdmin = await createNewAdmin(adminData);
+      console.log(newAdmin);
+    } catch (e) {
+      console.error(`failed to create user ${e}`);
+    }
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -102,6 +121,7 @@ function AdminPage() {
           </Box>
         </TabPanel>
       </TabContext>
+      <Button onClick={onSubmitClickedUser}>Sign Up</Button>
     </Box>
   );
 }
