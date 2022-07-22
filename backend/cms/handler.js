@@ -3,9 +3,17 @@
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 
+const readRequestBody = (event) => {
+  try {
+    return JSON.parse(event.body);
+  } catch {
+    return event.body;
+  }
+}
+
 module.exports.upload = async (event) => {
   const owner = event.queryStringParameters.owner;
-  const encodedImage = JSON.parse(event.body).image;
+  const encodedImage = readRequestBody(event).image;
 
   if (!owner || !encodedImage) {
     console.log(`An error occurred with the parameters!\nReceived:\n- Owner: ${owner}\n- Image: ${encodedImage}`);

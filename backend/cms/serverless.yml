@@ -9,10 +9,10 @@ provider:
   deploymentBucket: triplan-cms-deployment-bucket
   timeout: 20
   environment:
-    ["REGION"]: self:provider.region
-    ["CMS_STORAGE_BUCKET_NAME"]: triplan-cms-bucket
-    ["CMS_STORAGE_BUCKET_DIRECTORY_IMG"]: img
-    ["CMS_STORAGE_BUCKET_URL"]: https://triplan-cms-bucket.s3.eu-central-1.amazonaws.com
+    ["REGION"]: "self:provider.region"
+    ["CMS_STORAGE_BUCKET_NAME"]: "triplan-cms-bucket"
+    ["CMS_STORAGE_BUCKET_DIRECTORY_IMG"]: "img"
+    ["CMS_STORAGE_BUCKET_URL"]: "https://triplan-cms-bucket.s3.eu-central-1.amazonaws.com"
   iam:
     role:
       statements:
