@@ -7,7 +7,6 @@ const {
 } = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
-
 const googleLocationInfoController = require("./googleLocationInfoController.js");
 const tripLocationController = require("./tripLocationController.js");
 
