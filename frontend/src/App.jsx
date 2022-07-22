@@ -10,6 +10,7 @@ import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import WalletPage from './pages/WalletPage';
+import AdminPage from './pages/AdminPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
 import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
@@ -70,6 +71,7 @@ export default function App() {
             path="/edit-partner-profile/:partnerId"
             element={isLoggedIn ? <EditPartnerLocationProfilePage /> : <Navigate to="/" />}
           />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
