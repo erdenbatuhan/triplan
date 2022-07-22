@@ -30,10 +30,10 @@ const getRatingScores = (googleLocationInfoIds) => {
 const getReviewCountScores = (googleLocationInfoIds) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      getReviewCountsForPlaces(googleLocationInfoIds), getTotalReviewCountsForCities()
-    ]).then(([ reviewCountsForPlaces, totalReviewCountsForCities ]) => {
+      getReviewCountsForPlaces(googleLocationInfoIds), getMaxReviewCountsForCities()
+    ]).then(([ reviewCountsForPlaces, maxReviewCountsForCities ]) => {
       let reviewCountScores = Object.assign({}, ...Object.entries(reviewCountsForPlaces).map(([_id, { city, review_count }]) => (
-        { [_id]: review_count / totalReviewCountsForCities[city] }
+        { [_id]: review_count / maxReviewCountsForCities[city] }
       )));
       reviewCountScores = sortObject(reviewCountScores, true);
 
@@ -52,17 +52,17 @@ const getReviewCountsForPlaces = (googleLocationInfoIds) => {
   ));
 };
 
-const getTotalReviewCountsForCities = () => {
+const getMaxReviewCountsForCities = () => {
   return GoogleLocationInfo.aggregate([
     {
       $group: {
         _id: "$city",
-        totalReviewCount: {
-          $sum: `$review_count`
+        maxReviewCount: {
+          $max: `$review_count`
         }
       }
     }
-  ]).then(response => Object.assign({}, ...response.map(({ _id, totalReviewCount }) => ({ [_id]: totalReviewCount }))));
+  ]).then(response => Object.assign({}, ...response.map(({ _id, maxReviewCount }) => ({ [_id]: maxReviewCount }))));
 };
 
-module.exports = { find, save, getRatingScores, getReviewCountScores, getReviewCountsForPlaces, getTotalReviewCountsForCities };
+module.exports = { find, save, getRatingScores, getReviewCountScores, getReviewCountsForPlaces, getMaxReviewCountsForCities };
