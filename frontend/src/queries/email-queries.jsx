@@ -21,7 +21,7 @@ export function generateEmailPaidServices(servicesToBeBought) {
         .join(', ');
       return `${partnerLocation.name}  ->  ${itemString}`;
     })
-    .join('\n');
+    .join('\r\n');
 
   return `\r\nYour Paid Services:\r\n${serviceInfo}`;
 }
