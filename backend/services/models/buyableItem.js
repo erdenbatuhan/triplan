@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const { Restaurant, TouristAttraction } = require("./partnerLocation.js");
 
-const { extendSchema } = require("./../utils/schemaUtils.js");
+const { extendSchema } = require("./../utils/mongooseUtils.js");
 const enums = require("./../utils/enums.js");
 
 const BuyableItemSchema = new Schema({

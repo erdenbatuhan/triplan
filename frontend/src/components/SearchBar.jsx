@@ -17,6 +17,7 @@ function SearchBar({ label, entries, previousSelection, onSelectionChange }) {
       options={entries.map((item) => item)}
       onChange={setSelectedValue}
       value={selection}
+      // sx={{ width: '66%' }}
       renderInput={(params) => (
         <TextField
           {...params}

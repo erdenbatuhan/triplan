@@ -13,7 +13,9 @@ import {
   updateMenuItem,
   updateTicket,
   addMenuItem,
-  addTicket
+  addTicket,
+  deleteMenuItem,
+  deleteTicket
 } from '../queries/buyable-item-queries';
 import EditRestaurantCuisineBox from '../components/PartnerLocationProfilePage/EditRestaurantCuisineBox';
 import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
@@ -30,9 +32,11 @@ function EditPartnerLocationProfilePage() {
   const [restaurantCuisines, setRestaurantCuisines] = useState([]);
   const [restaurantMenuList, setRestaurantMenuList] = useState([]);
   const [menuItemInEdit, setMenuItemInEdit] = useState([]);
+  const [menuItemInDelete, setMenuItemInDelete] = useState([]);
 
   const [ticketList, setTicketList] = useState([]);
   const [ticketInEdit, setTicketInEdit] = useState([]);
+  const [ticketInDelete, setTicketInDelete] = useState([]);
 
   const [itemEditAddMode, setItemEditAddMode] = useState(false);
   const [inAdd, setInAdd] = useState(false);
@@ -114,6 +118,23 @@ function EditPartnerLocationProfilePage() {
     setItemEditAddMode(true);
   };
 
+  const handleDeleteClick = (e) => {
+    const deleteItemId = e.target.value;
+    if (partnerLocationType === 'restaurant') {
+      const deleteItem = restaurantMenuList.filter((_, idx) => idx.toString() === deleteItemId)[0];
+      setMenuItemInDelete((deletedMenuItems) => [...deletedMenuItems, deleteItem]);
+      setRestaurantMenuList((menuList) => {
+        return menuList.filter((_, idx) => idx.toString() !== deleteItemId);
+      });
+    } else if (partnerLocationType === 'tourist-attraction') {
+      const deleteItem = ticketList.filter((_, idx) => idx.toString() === deleteItemId)[0];
+      setTicketInDelete((deletedTickets) => [...deletedTickets, deleteItem]);
+      setTicketList((tickets) => {
+        return tickets.filter((_, idx) => idx.toString() !== deleteItemId);
+      });
+    }
+  };
+
   const handleEditCompletionClick = (e, updateParams) => {
     if (partnerLocationType === 'restaurant') {
       setRestaurantMenuList((menuItems) => {
@@ -191,6 +212,9 @@ function EditPartnerLocationProfilePage() {
               return updateMenuItem(menu);
             }
             return addMenuItem(menu);
+          }),
+          menuItemInDelete.map((deletedMenu) => {
+            return deleteMenuItem(deletedMenu._id);
           })
         ]).then(() => console.log('update is completed!'));
       } else if (partnerLocationType === 'tourist-attraction') {
@@ -202,6 +226,9 @@ function EditPartnerLocationProfilePage() {
               return updateTicket(ticket);
             }
             return addTicket(ticket);
+          }),
+          ticketInDelete.map((deletedTicket) => {
+            return deleteTicket(deletedTicket._id);
           })
         ]).then(() => console.log('update is completed!'));
       }
@@ -299,6 +326,7 @@ function EditPartnerLocationProfilePage() {
                       price={item.price.toString()}
                       image={item.image}
                       handleEditClick={handleEditClick}
+                      handleDeleteClick={handleDeleteClick}
                       inEdit
                     />
                   );

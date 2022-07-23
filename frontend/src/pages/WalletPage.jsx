@@ -60,7 +60,7 @@ export default function WalletPage() {
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
 
-  // Listen to the changes in authenticatedUser
+  // Listening to the changes in authenticatedUser
   useEffect(() => {
     if (!authenticatedUser) {
       return;
