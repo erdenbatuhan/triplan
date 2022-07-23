@@ -7,35 +7,33 @@ export function generateEmailRoute(partnerLocations) {
 }
 
 export function generateEmailPaidServices(servicesToBeBought) {
-  let str = '';
-  if (servicesToBeBought.length > 0) {
-    str = str.concat('\r\nYour Paid Services:\r\n');
-    for (let index = 0; index < servicesToBeBought.length; index += 1) {
-      const item = servicesToBeBought[index];
-      str = str.concat(item.partnerLocation.name, '  ->  ');
-      for (let j = 0; j < item.itemsToBeBought.length; j += 1) {
-        str = str.concat(
-          `${item.itemsToBeBought[j].name} (${item.itemsToBeBought[j].price} €) x ${item.itemsToBeBought[j].count} = ${item.itemsToBeBought[j].finalPrice} €, `
-        );
-      }
-    }
-  } else {
-    str = 'You do not have any prepaid service.';
+  if (servicesToBeBought.length === 0) {
+    return 'You do not have any prepaid services!';
   }
-  return str;
+
+  const serviceInfo = servicesToBeBought
+    .map(({ partnerLocation, itemsToBeBought }) => {
+      const itemString = itemsToBeBought
+        .map(
+          ({ name, price, count, finalPrice }) =>
+            `${name} (${price} €) x ${count} = ${finalPrice} €`
+        )
+        .join(', ');
+      return `${partnerLocation.name}  ->  ${itemString}`;
+    })
+    .join('\n');
+
+  return `\r\nYour Paid Services:\r\n${serviceInfo}`;
 }
 
 export function generateEmailAmount(amount) {
   return `- Total paid amount : ${amount} €`;
 }
 
-export function generateEmailGoogleMapsLink(partnerLocationList) {
-  let googleMapsLink = 'https://www.google.com/maps/dir/';
-  for (let index = 0; index < partnerLocationList.length; index += 1) {
-    const loc = partnerLocationList[index];
-    googleMapsLink = googleMapsLink.concat(loc.partnerLocation.name.replaceAll(' ', '+'), '/');
-  }
-  return googleMapsLink;
+export function generateEmailGoogleMapsLink(partnerLocations) {
+  return `https://www.google.com/maps/dir/${partnerLocations
+    .map(({ name }) => name.replaceAll(' ', '+'))
+    .join('/')}`;
 }
 
 export function generatePaypalEmail(paypalEmail) {
