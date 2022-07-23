@@ -7,7 +7,7 @@ export default function FollowingsCard({ listName, list }) {
   return (
     <Grid sx={{ width: '100%' }} alignItems="stretch">
       <Typography
-        sx={{ color: 'text.secondary', fontWeight: 'medium', fontSize: 25 }}
+        sx={{ color: 'text.secondary', fontWeight: 'medium', fontSize: 25, pt: 2 }}
         align="center">
         {listName}
       </Typography>

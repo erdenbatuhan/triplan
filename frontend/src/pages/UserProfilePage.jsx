@@ -32,8 +32,9 @@ const style = {
   width: 500,
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 6,
-  borderRadius: '15px'
+  borderRadius: '15px',
+  maxHeight: '50%',
+  overflow: 'auto'
 };
 
 function UserProfilePage() {
@@ -95,7 +96,7 @@ function UserProfilePage() {
               sx={{
                 width: '100%',
                 textAlign: 'center',
-                height: '100%',
+                // height: '100%',
                 boxShadow: 4
               }}>
               <CardContent>
