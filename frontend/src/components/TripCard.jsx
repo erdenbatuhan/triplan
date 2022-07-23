@@ -3,9 +3,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-function TripCard(props) {
-  const { name /* , isRated */ } = props;
-
+function TripCard({ name }) {
   return (
     <Card variant="outlined" sx={{ boxShadow: 2, height: '100%' }}>
       <Accordion>
@@ -22,7 +20,6 @@ function TripCard(props) {
 
 TripCard.propTypes = {
   name: PropTypes.string.isRequired
-  // isRated: PropTypes.bool.isRequired
 };
 
 export default TripCard;

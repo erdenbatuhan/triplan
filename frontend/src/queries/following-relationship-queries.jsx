@@ -1,6 +1,6 @@
 import { HOST_FOLLOWING_RELATIONSHIP, HEADERS } from './constants';
 
-export async function getUserFollowers(userId) {
+export async function getFollowers(userId) {
   return await fetch(`${HOST_FOLLOWING_RELATIONSHIP}/user/${userId}/followers`, {
     method: `GET`,
     mode: `cors`,
@@ -8,7 +8,7 @@ export async function getUserFollowers(userId) {
   }).then((response) => response.json());
 }
 
-export async function getUserFollowed(userId) {
+export async function getFollowed(userId) {
   return await fetch(`${HOST_FOLLOWING_RELATIONSHIP}/user/${userId}/followed`, {
     method: `GET`,
     mode: `cors`,

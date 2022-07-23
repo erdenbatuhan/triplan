@@ -12,19 +12,16 @@ import {
   Modal
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Spinner from '../components/Spinner';
 import TripCard from '../components/TripCard';
 import WalletPage from './WalletPage';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { getUserFollowers, getUserFollowed } from '../queries/following-relationship-queries';
-import { getTripPlansOfUser } from '../queries/trip-plan-queries';
+import { getUser } from '../queries/user-queries';
+import { getFollowers, getFollowed } from '../queries/following-relationship-queries';
+import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
 
-const mockImgData = {
-  img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-  title: 'Sea star'
-};
-
-const style = {
+const followingCardParentCardStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -37,43 +34,107 @@ const style = {
   overflow: 'auto'
 };
 
+const avatarStyle = {
+  width: '200px',
+  height: '200px'
+};
+
 function UserProfilePage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
-  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState({});
+  const [trips, setTrips] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [followed, setFollowed] = useState([]);
-  const [trips, setTrips] = useState([]);
+  const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
   const [isFollowersShown, setIsFollowersShown] = useState(false);
   const [isFollowedShown, setIsFollowedShown] = useState(false);
 
-  // Listen to the changes in authenticatedUser, trips, followers and followed
+  const getFollowersOfUser = () => {
+    return getFollowers(authenticatedUser.user.id).then((data) => {
+      setFollowers(data);
+      return data;
+    });
+  };
+
+  const getFollowedOfUser = () => {
+    return getFollowed(authenticatedUser.user.id).then((data) => {
+      setFollowed(data);
+      return data;
+    });
+  };
+
+  const getCountText = (count, onClick) => {
+    return (
+      <Box
+        onClick={onClick}
+        sx={{
+          color: 'text.primary',
+          fontSize: 34,
+          fontWeight: 'medium',
+          '&:hover': {
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            textDecorationColor: 'cornflowerblue',
+            textDecorationThickness: 'from-font'
+          }
+        }}>
+        {count}
+      </Box>
+    );
+  };
+
+  // Listening to the changes in authenticatedUser
   useEffect(() => {
     if (!authenticatedUser) {
       return;
     }
-    getUserFollowers(authenticatedUser.user.id).then((data) => setFollowers(data));
-    getUserFollowed(authenticatedUser.user.id).then((data) => setFollowed(data));
-    setUsername(authenticatedUser.user.username);
-    getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTrips(data));
-  }, [authenticatedUser, followers, followed, trips]);
+
+    setLoading(true);
+    Promise.all([
+      // Get the authenticated user
+      getUser(authenticatedUser.user.id).then((data) => setUser(data)),
+      // Fetch the trip plans of the user
+      getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTrips(data)),
+      // Get followers and followed of the user, and then get the num trips planned by each of them
+      Promise.all([getFollowersOfUser(), getFollowedOfUser()]).then(
+        ([followersOfUser, followedOfUser]) => {
+          const users = [...followersOfUser, ...followedOfUser];
+          const distinctUserIds = [...new Set(users.map(({ _id }) => _id))];
+
+          return getNumTripsPlannedByUsers(distinctUserIds).then((data) => {
+            setNumTripsPlannedByUsers(
+              Object.assign(
+                {},
+                ...data.map(({ _id, numTripsPlanned }) => ({ [_id]: numTripsPlanned }))
+              )
+            );
+          });
+        }
+      )
+    ]).finally(() => setLoading(false));
+  }, [authenticatedUser]);
+
+  /**
+   * TODO: addFollower().then(() => getFollowersOfUser())
+   * TODO: addFollowed().then(() => getFollowedOfUser())
+   */
+
+  if (loading) {
+    return <Spinner marginTop="5em" />;
+  }
 
   return (
     <Grid container spacing={2} m={5}>
       <Grid item xs={3}>
         <Grid container direction="column" justifyContent="center" alignItems="center">
           <Grid item xs={6}>
-            <Avatar
-              sx={{ width: '100%', height: '100%' }}
-              src={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              alt={mockImgData.title}
-              loading="lazy"
-            />
+            <Avatar sx={avatarStyle} src={user.profilePicture} loading="lazy" />
           </Grid>
 
           <Grid item xs={3}>
             <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'h6.fontSize' }}>
-              {username}
+              {user.username || '...'}
             </Typography>
           </Grid>
 
@@ -96,7 +157,6 @@ function UserProfilePage() {
               sx={{
                 width: '100%',
                 textAlign: 'center',
-                // height: '100%',
                 boxShadow: 4
               }}>
               <CardContent>
@@ -107,20 +167,20 @@ function UserProfilePage() {
                         p: 2
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Followers </Box>
-
-                      <Box
-                        onClick={() => setIsFollowersShown(true)}
-                        sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
-                        {followers.length}
-                      </Box>
+                      {getCountText(followers.length, () => setIsFollowersShown(true))}
                     </Box>
+
                     <Modal
                       open={isFollowersShown}
                       onClose={() => {
                         setIsFollowersShown(false);
                       }}>
-                      <Card sx={style}>
-                        <FollowingsCard listName="Followers" list={followers} />
+                      <Card sx={followingCardParentCardStyle}>
+                        <FollowingsCard
+                          listName="Followers"
+                          list={followers}
+                          numTripsPlannedByUsers={numTripsPlannedByUsers}
+                        />
                       </Card>
                     </Modal>
                   </Grid>
@@ -135,20 +195,20 @@ function UserProfilePage() {
                         p: 2
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Following </Box>
-
-                      <Box
-                        onClick={() => setIsFollowedShown(true)}
-                        sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
-                        {followed.length}
-                      </Box>
+                      {getCountText(followed.length, () => setIsFollowedShown(true))}
                     </Box>
+
                     <Modal
                       open={isFollowedShown}
                       onClose={() => {
                         setIsFollowedShown(false);
                       }}>
-                      <Card sx={style}>
-                        <FollowingsCard listName="Following" list={followed} />
+                      <Card sx={followingCardParentCardStyle}>
+                        <FollowingsCard
+                          listName="Following"
+                          list={followed}
+                          numTripsPlannedByUsers={numTripsPlannedByUsers}
+                        />
                       </Card>
                     </Modal>
                   </Grid>
@@ -172,14 +232,7 @@ function UserProfilePage() {
           <Grid item xs={9} sx={{ width: '100%' }}>
             <Stack spacing={2} pt={4}>
               {trips.map((trip) => {
-                return (
-                  <TripCard
-                    key={trip.id}
-                    name={trip.name}
-                    // isRated={tripData.isRated}
-                    // href={tripData.href}
-                  />
-                );
+                return <TripCard key={trip._id} name={trip.name} />;
               })}
             </Stack>
           </Grid>

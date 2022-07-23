@@ -166,6 +166,7 @@ export default function TripPlanningPage() {
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
+
   return (
     <div>
       <Grid container spacing={1}>

@@ -3,7 +3,7 @@ import React from 'react';
 import { List, Typography, Grid } from '@mui/material';
 import UserItemCard from './UserItemCard';
 
-export default function FollowingsCard({ listName, list }) {
+export default function FollowingsCard({ listName, list, numTripsPlannedByUsers }) {
   return (
     <Grid sx={{ width: '100%' }} alignItems="stretch">
       <Typography
@@ -20,7 +20,13 @@ export default function FollowingsCard({ listName, list }) {
         }}>
         {list
           ? list.map((user) => {
-              return <UserItemCard user={user} />;
+              return (
+                <UserItemCard
+                  key={`${listName}-user._id`}
+                  user={user}
+                  numTripsPlannedByUser={numTripsPlannedByUsers[user._id]}
+                />
+              );
             })
           : []}
       </List>

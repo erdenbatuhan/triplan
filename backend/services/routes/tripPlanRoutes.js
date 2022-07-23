@@ -36,9 +36,9 @@ router.get("/:id/location", async (req, res) => {
 /**
  * Gets the number of trips planned by the given users
  */
-router.get("/count/user", async (req, res) => {
+router.get("/user/count", async (req, res) => {
   try {
-    const userIds = req.query.users.split(",");
+    const userIds = req.query.users ? req.query.users.split(",") : []; // [] means "fetch all"
     res.status(200).send(await (tripPlanController.getNumTripsPlannedByUsers(userIds)));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting the number of trips planned by the given users! Error => ${message}`);

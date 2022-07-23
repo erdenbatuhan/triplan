@@ -10,10 +10,11 @@ import {
   CardActionArea
 } from '@mui/material';
 
-export default function UserItemCard({ user }) {
+export default function UserItemCard({ user, numTripsPlannedByUser }) {
   return (
     <Card sx={{ display: 'flex', margin: '10px' }}>
-      <Avatar sx={{ m: 2 }} />
+      <Avatar sx={{ m: 2 }} src={user.profilePicture} loading="lazy" />
+
       <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
         <CardActionArea>
           <CardContent sx={{ flex: '1 0 auto' }}>
@@ -21,8 +22,8 @@ export default function UserItemCard({ user }) {
               <Grid item xs={6}>
                 <Typography variant="subtitle1">{user.username}</Typography>
 
-                <Typography variant="body2" color="text.secondary">
-                  {user.username}
+                <Typography variant="subtitle2" color="text.secondary">
+                  Has planned {numTripsPlannedByUser || 'no'} trips so far
                 </Typography>
               </Grid>
               <Grid item xs={6} p={1}>
