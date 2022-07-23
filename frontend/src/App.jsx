@@ -6,7 +6,6 @@ import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
 import CheckoutPage from './pages/CheckoutPage';
-import TripPlanSummaryPage from './pages/TripPlanSummaryPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import WalletPage from './pages/WalletPage';
@@ -58,10 +57,6 @@ export default function App() {
           <Route
             path="/trip-plan/:tripPlanId/checkout"
             element={isLoggedIn ? <CheckoutPage /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/trip-plan/:tripPlanId/summary"
-            element={isLoggedIn ? <TripPlanSummaryPage /> : <Navigate to="/" />}
           />
           {/* <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} /> */}
           <Route path="/wallet" element={isLoggedIn ? <WalletPage /> : <Navigate to="/" />} />

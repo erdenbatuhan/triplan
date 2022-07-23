@@ -10,7 +10,7 @@ import StarRatings from 'react-star-ratings';
 import Spinner from './Spinner';
 import { updateRatingAndCommentOfTripLocation } from '../queries/trip-location-queries';
 
-export default function TripLocationSummaryCard({
+export default function TripPlanRatingCard({
   index,
   ranking,
   tripLocation,

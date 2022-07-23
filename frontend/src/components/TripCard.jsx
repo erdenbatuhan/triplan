@@ -1,25 +1,22 @@
+import React from 'react';
 import { Card, Typography, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import PropTypes from 'prop-types';
-import React from 'react';
+import TripPlanRatings from './TripPlanRatings';
 
-function TripCard({ name }) {
+function TripCard({ tripPlan }) {
   return (
     <Card variant="outlined" sx={{ boxShadow: 2, height: '100%' }}>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>{name}</Typography>
+          <Typography> {tripPlan.name} </Typography>
         </AccordionSummary>
+
         <AccordionDetails>
-          <Typography>Your trip summary</Typography>
+          <TripPlanRatings tripPlanId={tripPlan._id} />
         </AccordionDetails>
       </Accordion>
     </Card>
   );
 }
-
-TripCard.propTypes = {
-  name: PropTypes.string.isRequired
-};
 
 export default TripCard;

@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import TripLocationSummaryCard from '../components/TripPlanSummaryCard';
-import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-queries';
+import TripPlanRatingCard from './TripPlanRatingCard';
+import { getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 
-export default function TripLocationSummaryPage() {
-  const [tripPlan, setTripPlan] = useState({});
+export default function TripPlanRatings({ tripPlanId }) {
   const [detailedLocations, setDetailedLocations] = useState([]);
 
-  // Fetch all the trip locations of the trip plan for every change in trip plan ID
-  const { tripPlanId } = useParams();
+  // Listening to the change in tripPlanId
   useEffect(() => {
-    getTripPlan(tripPlanId).then((data) => setTripPlan(data));
     getLocationsOfTripPlan(tripPlanId).then((data) => setDetailedLocations(data));
   }, [tripPlanId]);
 
@@ -31,10 +27,8 @@ export default function TripLocationSummaryPage() {
           alignItems: 'center',
           marginTop: '2em'
         }}>
-        <h4>{tripPlan.name} - Summary</h4>
-
         {detailedLocations.map(({ tripLocation, partnerLocation }, idx) => (
-          <TripLocationSummaryCard
+          <TripPlanRatingCard
             key={tripLocation._id}
             index={idx}
             ranking={idx + 1}

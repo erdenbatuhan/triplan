@@ -48,7 +48,7 @@ function UserProfilePage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
-  const [trips, setTrips] = useState([]);
+  const [tripPlans, setTripPlans] = useState([]);
   const [followersData, setFollowersData] = useState({});
   const [followedData, setFollowedData] = useState({});
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
@@ -100,7 +100,7 @@ function UserProfilePage() {
       // Get the authenticated user
       getUser(authenticatedUser.user.id).then((data) => setUser(data)),
       // Fetch the trip plans of the user
-      getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTrips(data)),
+      getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTripPlans(data)),
       // Get followers and followed of the user, and then get the num trips planned by each of them
       Promise.all([getFollowersOfUser(), getFollowedOfUser()]).then(
         ([followersOfUser, followedOfUser]) => {
@@ -119,11 +119,6 @@ function UserProfilePage() {
       )
     ]).finally(() => setLoading(false));
   }, [authenticatedUser]);
-
-  /**
-   * TODO: addFollower().then(() => getFollowersOfUser())
-   * TODO: addFollowed().then(() => getFollowedOfUser())
-   */
 
   const isFollowed = (userId) => !!followedData[userId];
 
@@ -259,15 +254,15 @@ function UserProfilePage() {
       <Grid item xs={6}>
         <Grid>
           <Typography align="left" variant="h6" color="text.secondary">
-            Trips: {trips.length}
+            Trips: {tripPlans.length}
           </Typography>
           <Divider />
         </Grid>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
           <Grid item xs={9} sx={{ width: '100%' }}>
             <Stack spacing={2} pt={4}>
-              {trips.map((trip) => {
-                return <TripCard key={trip._id} name={trip.name} />;
+              {tripPlans.map((tripPlan) => {
+                return <TripCard key={tripPlan._id} tripPlan={tripPlan} />;
               })}
             </Stack>
           </Grid>
