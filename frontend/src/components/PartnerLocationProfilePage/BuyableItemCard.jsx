@@ -10,7 +10,8 @@ import PropTypes from 'prop-types';
 import { Button, Stack } from '@mui/material';
 
 export default function BuyableItemCard(props) {
-  const { itemIdx, name, content, price, image, handleEditClick, inEdit } = props;
+  const { itemIdx, name, content, price, image, handleEditClick, handleDeleteClick, inEdit } =
+    props;
   // const navigate = useNavigate();
   // const { partnerId } = useParams();
 
@@ -50,9 +51,14 @@ export default function BuyableItemCard(props) {
             </Grid>
           </Grid>
           {inEdit ? (
-            <Button value={itemIdx} onClick={handleEditClick}>
-              Edit
-            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button value={itemIdx} onClick={handleEditClick}>
+                Edit
+              </Button>
+              <Button value={itemIdx} onClick={handleDeleteClick}>
+                Delete
+              </Button>
+            </Stack>
           ) : (
             <></>
           )}

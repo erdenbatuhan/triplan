@@ -80,3 +80,11 @@ export async function addTicket(ticket) {
     body: JSON.stringify(ticket)
   }).then((response) => response.json());
 }
+
+export async function deleteMenuItem(deletedMenu) {
+  return await deletedMenu;
+}
+
+export async function deleteTicket(deletedTicket) {
+  return await deletedTicket;
+}
