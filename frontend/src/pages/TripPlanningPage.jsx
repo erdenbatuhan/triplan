@@ -33,6 +33,10 @@ export default function TripPlanningPage() {
   const [filterState, setFilterState] = useState(
     state ? state.filterData : partnerLocationDefaultFilter
   );
+  const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(
+    state ? state.isRestaurantEnabled : true
+  );
+
   const [loading, setLoading] = useState(false);
   const [tripPlanCreationInProgress, setTripPlanCreationInProgress] = useState(false);
   const [partnerLocations, setPartnerLocations] = useState({
@@ -69,7 +73,7 @@ export default function TripPlanningPage() {
     if (!authenticatedUser) {
       return;
     }
-
+    console.log('filterState: ', filterState);
     setLoading(true);
     getFilteredPartnerLocations(authenticatedUser.user.id, filterState)
       .then((data) => setPartnerLocations(data))
@@ -135,6 +139,10 @@ export default function TripPlanningPage() {
     );
   };
 
+  const handleRestaurantEnable = (event) => {
+    setIsRestaurantEnabled(event.target.checked);
+  };
+
   const handleFilterChange = (newFilterState) => {
     setFilterState(newFilterState);
   };
@@ -159,7 +167,7 @@ export default function TripPlanningPage() {
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
-
+  const isRestaurantIncluded = true;
   return (
     <div>
       <Grid container spacing={1}>
@@ -169,21 +177,27 @@ export default function TripPlanningPage() {
           <PlaceFilter
             filterState={filterState}
             handleFilterChange={handleFilterChange}
+            isRestaurantEnabled={isRestaurantEnabled}
+            handleRestaurantEnable={handleRestaurantEnable}
             calledFrom="TripPlanningPage"
           />
         </Grid>
+        {isRestaurantIncluded ? (
+          <Grid item xs={3}>
+            <Header title="Restaurants" />
 
-        <Grid item xs={3}>
-          <Header title="Restaurants" />
-
-          <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
-            <PlacesList
-              partnerLocations={partnerLocations.restaurants}
-              selectedPartnerLocationObject={selectedPartnerLocationObject}
-              onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
-            />
-          </Paper>
-        </Grid>
+            <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+              <PlacesList
+                partnerLocations={partnerLocations.restaurants}
+                selectedPartnerLocationObject={selectedPartnerLocationObject}
+                onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
+              />
+            </Paper>
+          </Grid>
+        ) : (
+          // eslint-disable-next-line react/jsx-no-useless-fragment
+          <></>
+        )}
 
         <Grid item xs={3}>
           <Header title="Tourist Attractions" />

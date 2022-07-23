@@ -19,6 +19,7 @@ const CustomGrid = styled(Grid)(() => ({
 export default function MainPage() {
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState('');
+  const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(true);
 
   useEffect(() => {
     getCities().then((data) => setCities(data));
@@ -36,8 +37,12 @@ export default function MainPage() {
     ) {
       console.log('choosing filter is mandatory');
     } else {
-      navigate('/trip-planning', { state: { selectedCity, filterData } });
+      navigate('/trip-plan', { state: { selectedCity, filterData, isRestaurantEnabled } });
     }
+  };
+
+  const handleRestaurantEnable = (event) => {
+    setIsRestaurantEnabled(event.target.checked);
   };
 
   const handleCitySelectionChange = (newVal) => {
@@ -74,7 +79,12 @@ export default function MainPage() {
           </CustomGrid>
         </CustomGrid>
         <CustomGrid item width="85%" md={8} marginTop={2}>
-          <PlaceFilter calledFrom="MainPage" handleContinueClick={handleButtonClick} />
+          <PlaceFilter
+            calledFrom="MainPage"
+            handleContinueClick={handleButtonClick}
+            isRestaurantEnabled={isRestaurantEnabled}
+            handleRestaurantEnable={handleRestaurantEnable}
+          />
         </CustomGrid>
       </CustomGrid>
     </Box>

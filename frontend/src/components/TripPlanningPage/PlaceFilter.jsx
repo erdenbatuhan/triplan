@@ -1,12 +1,19 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Stack } from '@mui/material';
+import { Box, Button, Stack, Switch, FormControlLabel } from '@mui/material';
 import * as constants from '../../shared/constants';
 import FilterSelectionMenu from './FilterSelectionMenu';
 // import PropTypes from 'prop-types';
 
 function PlaceFilter(props) {
-  const { filterState, handleContinueClick, handleFilterChange, calledFrom } = props; // filterState,
+  const {
+    filterState,
+    handleFilterChange,
+    handleContinueClick,
+    isRestaurantEnabled,
+    handleRestaurantEnable,
+    calledFrom
+  } = props; // filterState,
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
@@ -66,29 +73,39 @@ function PlaceFilter(props) {
   };
 
   const handleButtonClick = () => {
-    const taTypes = [];
+    let taTypes = [];
+    let restCuisines = [];
+    let restPriceLevel = [];
+    let restFoodTypes = [];
+
     if (selectedPlaces.includes('all')) {
-      taTypes.push(constants.touristAttractions);
+      // taTypes.push(constants.touristAttractions);
+      taTypes = constants.touristAttractions;
     } else {
       selectedPlaces.forEach((place) => taTypes.push(constants.touristAttractionsMapper[place]));
     }
+    if (isRestaurantEnabled) {
+      restCuisines = selectedCuisine.includes('all') ? constants.cuisines : selectedCuisine;
+      restPriceLevel = selectedPriceLevel.includes('all')
+        ? constants.priceLevels
+        : selectedPriceLevel;
+      restFoodTypes = selectedFoodTypes.includes('all') ? constants.foodTypes : selectedFoodTypes;
+    }
+
     const filterData = {
       filterData: {
         restaurantFilter: {
-          cuisines: selectedCuisine.includes('all') ? constants.cuisines : selectedCuisine,
-          priceLevel: selectedPriceLevel.includes('all')
-            ? constants.priceLevels
-            : selectedPriceLevel,
-          foodTypes: selectedFoodTypes.includes('all') ? constants.foodTypes : selectedFoodTypes
+          cuisines: restCuisines,
+          priceLevel: restPriceLevel,
+          foodTypes: restFoodTypes
         },
         touristAttractionFilter: {
-          types: selectedFoodTypes.includes('all')
+          types: selectedPlaces.includes('all')
             ? [constants.places, constants.touristAttractions]
             : [selectedPlaces, taTypes]
         }
       }
     };
-
     if (calledFrom !== 'MainPage') {
       handleFilterChange(filterData);
     } else {
@@ -98,6 +115,13 @@ function PlaceFilter(props) {
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+      <FormControlLabel
+        control={
+          <Switch onChange={handleRestaurantEnable} checked={isRestaurantEnabled} color="primary" />
+        }
+        label="Looking for restaurants as well?"
+        labelPlacement="top"
+      />
       <Stack
         direction={calledFrom === 'MainPage' ? 'row' : 'column'}
         sx={{
@@ -112,21 +136,27 @@ function PlaceFilter(props) {
           handleSelectionChange={handlePlaceTypeChange}
           filteredItemType="places"
         />
-        <FilterSelectionMenu
-          selectedItems={selectedCuisine}
-          handleSelectionChange={handleCuisineChangeCheckbox}
-          filteredItemType="cuisines"
-        />
-        <FilterSelectionMenu
-          selectedItems={selectedPriceLevel}
-          handleSelectionChange={handlePriceLevelChangeCheckbox}
-          filteredItemType="priceLevels"
-        />
-        <FilterSelectionMenu
-          selectedItems={selectedFoodTypes}
-          handleSelectionChange={handleFoodTypeChange}
-          filteredItemType="foodTypes"
-        />
+        {isRestaurantEnabled ? (
+          <>
+            <FilterSelectionMenu
+              selectedItems={selectedCuisine}
+              handleSelectionChange={handleCuisineChangeCheckbox}
+              filteredItemType="cuisines"
+            />
+            <FilterSelectionMenu
+              selectedItems={selectedPriceLevel}
+              handleSelectionChange={handlePriceLevelChangeCheckbox}
+              filteredItemType="priceLevels"
+            />
+            <FilterSelectionMenu
+              selectedItems={selectedFoodTypes}
+              handleSelectionChange={handleFoodTypeChange}
+              filteredItemType="foodTypes"
+            />
+          </>
+        ) : (
+          <></>
+        )}
         {calledFrom === 'TripPlanningPage' ? (
           <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
             <Button onClick={handleButtonClick}>Filter!</Button>
