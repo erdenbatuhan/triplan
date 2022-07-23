@@ -12,7 +12,7 @@ export const cuisines = [
   'Mexican'
 ];
 export const priceLevels = ['€', '€€', '€€€'];
-export const foodTypes = ['Regular', 'Vegetarian', 'Vegan'];
+export const foodTypes = ['Regular', 'Vegetarian', 'Vegan', 'Gluten Free'];
 export const places = [
   'Museum',
   'Art Gallery',

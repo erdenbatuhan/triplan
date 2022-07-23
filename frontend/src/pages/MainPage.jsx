@@ -1,13 +1,13 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
+// import e from 'cors';
 import Background from '../assets/main-page-background.png';
 import DatePicker from '../components/DatePicker';
 import SearchBar from '../components/SearchBar';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
-import { getCityInfoByName } from '../queries/city-info-queries';
+// import { getCityInfoByName } from '../queries/city-info-queries';
 import { getCities } from '../queries/partner-location-queries';
 
 const CustomGrid = styled(Grid)(() => ({
@@ -25,7 +25,18 @@ export default function MainPage() {
 
   const navigate = useNavigate();
   const handleButtonClick = (filterData) => {
-    navigate('/trip-planning', { state: { selectedCity, filterData } });
+    if (!selectedCity || selectedCity === '') {
+      console.log('city selection is mandatory'); // error log
+    } else if (
+      filterData.filterData.restaurantFilter.cuisines.length === 0 &&
+      filterData.filterData.restaurantFilter.foodTypes.length === 0 &&
+      filterData.filterData.restaurantFilter.priceLevel.length === 0 &&
+      filterData.filterData.touristAttractionFilter.types[0].length === 0
+    ) {
+      console.log('choosing filter is mandatory');
+    } else {
+      navigate('/trip-planning', { state: { selectedCity, filterData } });
+    }
   };
 
   const handleCitySelectionChange = (newVal) => {

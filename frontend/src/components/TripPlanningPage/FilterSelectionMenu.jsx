@@ -3,6 +3,13 @@ import React from 'react';
 import { Box, FormGroup, FormControlLabel, Checkbox, Typography } from '@mui/material';
 import * as constants from '../../shared/constants';
 
+const menuNames = {
+  places: 'Place',
+  cuisines: 'Cuisine',
+  priceLevels: 'Price Level',
+  foodTypes: 'Diet'
+};
+
 function FilterSelectionMenu(props) {
   const { selectedItems, handleSelectionChange, filteredItemType } = props;
   return (
@@ -15,7 +22,7 @@ function FilterSelectionMenu(props) {
         maxHeight: 300,
         overflow: 'auto'
       }}>
-      <Typography align="left">Type of Food(s)</Typography>
+      <Typography align="left">{menuNames[filteredItemType]} Options</Typography>
       <FormGroup>
         <FormControlLabel
           control={<Checkbox checked={selectedItems.includes('all')} />}
