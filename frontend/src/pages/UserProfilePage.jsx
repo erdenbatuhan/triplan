@@ -17,7 +17,12 @@ import TripCard from '../components/TripCard';
 import WalletPage from './WalletPage';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser } from '../queries/user-queries';
-import { getFollowers, getFollowed } from '../queries/following-relationship-queries';
+import {
+  createFollowingRelationship,
+  deleteFollowingRelationship,
+  getFollowers,
+  getFollowed
+} from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
 
@@ -44,22 +49,22 @@ function UserProfilePage() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
   const [trips, setTrips] = useState([]);
-  const [followers, setFollowers] = useState([]);
-  const [followed, setFollowed] = useState([]);
+  const [followersData, setFollowersData] = useState({});
+  const [followedData, setFollowedData] = useState({});
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
   const [isFollowersShown, setIsFollowersShown] = useState(false);
   const [isFollowedShown, setIsFollowedShown] = useState(false);
 
   const getFollowersOfUser = () => {
     return getFollowers(authenticatedUser.user.id).then((data) => {
-      setFollowers(data);
+      setFollowersData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
       return data;
     });
   };
 
   const getFollowedOfUser = () => {
     return getFollowed(authenticatedUser.user.id).then((data) => {
-      setFollowed(data);
+      setFollowedData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
       return data;
     });
   };
@@ -120,6 +125,28 @@ function UserProfilePage() {
    * TODO: addFollowed().then(() => getFollowedOfUser())
    */
 
+  const isFollowed = (userId) => !!followedData[userId];
+
+  const updateFollowingRelationship = (userId) => {
+    if (isFollowed(userId)) {
+      // User was being followed, now "unfollow" them
+      setLoading(true);
+      deleteFollowingRelationship(authenticatedUser.user.id, userId)
+        .then(() => {
+          delete followedData[userId]; // Remove the user from the followed data object
+        })
+        .finally(() => setLoading(false));
+    } else {
+      // User was "not" being followed, now "follow" them
+      setLoading(true);
+      createFollowingRelationship(authenticatedUser.user.id, userId)
+        .then(() => {
+          followedData[userId] = followersData[userId]; // Add the user to the followed data object
+        })
+        .finally(() => setLoading(false));
+    }
+  };
+
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
@@ -167,7 +194,9 @@ function UserProfilePage() {
                         p: 2
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Followers </Box>
-                      {getCountText(followers.length, () => setIsFollowersShown(true))}
+                      {getCountText(Object.keys(followersData).length, () =>
+                        setIsFollowersShown(true)
+                      )}
                     </Box>
 
                     <Modal
@@ -178,8 +207,10 @@ function UserProfilePage() {
                       <Card sx={followingCardParentCardStyle}>
                         <FollowingsCard
                           listName="Followers"
-                          list={followers}
+                          list={Object.values(followersData)}
                           numTripsPlannedByUsers={numTripsPlannedByUsers}
+                          isFollowed={isFollowed}
+                          onFollowingsButtonClick={updateFollowingRelationship}
                         />
                       </Card>
                     </Modal>
@@ -195,7 +226,9 @@ function UserProfilePage() {
                         p: 2
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Following </Box>
-                      {getCountText(followed.length, () => setIsFollowedShown(true))}
+                      {getCountText(Object.keys(followedData).length, () =>
+                        setIsFollowedShown(true)
+                      )}
                     </Box>
 
                     <Modal
@@ -206,8 +239,10 @@ function UserProfilePage() {
                       <Card sx={followingCardParentCardStyle}>
                         <FollowingsCard
                           listName="Following"
-                          list={followed}
+                          list={Object.values(followedData)}
                           numTripsPlannedByUsers={numTripsPlannedByUsers}
+                          isFollowed={() => true}
+                          onFollowingsButtonClick={updateFollowingRelationship}
                         />
                       </Card>
                     </Modal>

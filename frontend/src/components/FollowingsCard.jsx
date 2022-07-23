@@ -3,7 +3,13 @@ import React from 'react';
 import { List, Typography, Grid } from '@mui/material';
 import UserItemCard from './UserItemCard';
 
-export default function FollowingsCard({ listName, list, numTripsPlannedByUsers }) {
+export default function FollowingsCard({
+  listName,
+  list,
+  numTripsPlannedByUsers,
+  isFollowed,
+  onFollowingsButtonClick
+}) {
   return (
     <Grid sx={{ width: '100%' }} alignItems="stretch">
       <Typography
@@ -25,6 +31,8 @@ export default function FollowingsCard({ listName, list, numTripsPlannedByUsers 
                   key={`${listName}-user._id`}
                   user={user}
                   numTripsPlannedByUser={numTripsPlannedByUsers[user._id]}
+                  followingsButtonText={isFollowed(user._id) ? 'Unfollow' : 'Follow'}
+                  onFollowingsButtonClick={onFollowingsButtonClick}
                 />
               );
             })

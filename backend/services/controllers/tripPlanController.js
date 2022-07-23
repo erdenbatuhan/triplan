@@ -52,7 +52,7 @@ const findById = (id) => {
 };
 
 const findByUsers = (userIds) => {
-  return TripPlan.find({ user: { $in: userIds } });
+  return TripPlan.find({ user: { $in: userIds } }).sort({ updatedAt: "desc" });
 };
 
 const getNumTripsPlannedByUsers = (userIds) => {
@@ -96,7 +96,7 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
   return TripPlan.find({
     user: { $in: userIds },
     tripLocations: { $in: tripLocationIds }
-  }).then(response => (
+  }).sort({ updatedAt: "desc" }).then(response => (
     Object.assign({}, ...response.map(item => (
       Object.assign({}, ...item.tripLocations.map(tripLocation => (
         { [tripLocation]: item.user }

@@ -10,7 +10,12 @@ import {
   CardActionArea
 } from '@mui/material';
 
-export default function UserItemCard({ user, numTripsPlannedByUser }) {
+export default function UserItemCard({
+  user,
+  numTripsPlannedByUser,
+  followingsButtonText,
+  onFollowingsButtonClick
+}) {
   return (
     <Card sx={{ display: 'flex', margin: '10px' }}>
       <Avatar sx={{ m: 2 }} src={user.profilePicture} loading="lazy" />
@@ -27,8 +32,12 @@ export default function UserItemCard({ user, numTripsPlannedByUser }) {
                 </Typography>
               </Grid>
               <Grid item xs={6} p={1}>
-                <Button size="small" variant="contained" color="primary">
-                  Unfollow/Follow
+                <Button
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => onFollowingsButtonClick(user._id)}>
+                  {followingsButtonText}
                 </Button>
               </Grid>
             </Grid>
