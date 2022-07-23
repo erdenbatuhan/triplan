@@ -24,3 +24,12 @@ export async function getWithdrawRequest(id) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function removeWithdrawRequest(id) {
+  console.log(`${HOST_WITHDRAW_REQUEST}/remove/${id}`);
+  return await fetch(`${HOST_WITHDRAW_REQUEST}/remove/${id}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}

@@ -47,7 +47,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("remove/:id", async (req, res) => {
+router.get("/remove/:id", async (req, res) => {
+  console.log(req);
   try {
     const withdrawRequestId = req.params.id;
     const withdrawRequest = await withdrawRequestController.removeWithdrawRequest(withdrawRequestId);

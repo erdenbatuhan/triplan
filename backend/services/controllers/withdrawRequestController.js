@@ -9,11 +9,11 @@ const findById = (id) => {
 };
 
 const sendWithdrawRequest = (withdrawRequest) => {
-  console.log(withdrawRequest);
   return WithdrawRequest.insertMany([withdrawRequest]);
 };
 
 const removeWithdrawRequest = (id) => {
+  console.log(id);
   return WithdrawRequest.deleteOne({ _id: id });
 };
 

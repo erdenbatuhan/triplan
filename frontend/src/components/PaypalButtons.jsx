@@ -56,7 +56,6 @@ export default function PaypalCheckoutButtons({
         onApprove={(data, actions) => {
           return actions.order.capture().then(completePayment(true));
         }}
-        onError={completePayment(false)}
       />
     </>
   );

@@ -31,6 +31,8 @@ import {
 import {
   generatePaypalEmail,
   generatePaypalWithdrawAmount,
+  generateIntroMessage,
+  // generateRequestId,
   handleEmail
 } from '../queries/email-queries';
 
@@ -83,27 +85,36 @@ export default function WalletPage() {
         outgoingWalletId: null
       }).then(({ transaction, incomingWalletObject }) => {
         if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
+          console.log('successfull');
           setWallet(incomingWalletObject);
         } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
           alert('Opps, something went wrong!');
         }
       });
     } else if (transactionType === TRANSACTION_TYPE_WITHDRAW) {
+      const { _id } = authenticatedUserData;
       const { username } = authenticatedUserData;
       const { email } = authenticatedUserData;
-      console.log(authenticatedUserData.username, authenticatedUserData.email);
+      console.log(
+        authenticatedUserData.username,
+        authenticatedUserData.email,
+        authenticatedUserData._id
+      );
       const newWithdrawRequest = {
+        userId: _id,
         username,
         email,
         paypalEmail,
         amount: transactionAmount
       };
 
-      createNewWithdrawRequest(newWithdrawRequest).then(() => {
+      createNewWithdrawRequest(newWithdrawRequest).then((response) => {
+        console.log(response);
         handleEmail(
           {
             to_name: username,
             to_email: email,
+            intro_message: generateIntroMessage('create'),
             paypal_email: generatePaypalEmail(paypalEmail),
             amount: generatePaypalWithdrawAmount(transactionAmount)
           },
@@ -135,8 +146,9 @@ export default function WalletPage() {
   };
 
   const handleCompletePayment = (bool) => {
+    console.log(bool);
     handleTransaction();
-    setPaymentCompleted(true);
+    setPaymentCompleted(bool);
     setIsPaymentSuccessfull(bool);
   };
 
@@ -150,6 +162,11 @@ export default function WalletPage() {
           p: 2,
           boxShadow: 3
         }}>
+        <CardContent>
+          <Typography variant="h5" color="text.primary">
+            Wallet
+          </Typography>
+        </CardContent>
         <CardContent>
           <Typography variant="h6" color="text.secondary">
             Current balance: <b>{wallet ? wallet.balance : 0} €</b>
@@ -230,15 +247,19 @@ export default function WalletPage() {
                   '& .MuiTextField-root': { m: 2, width: '25ch' }
                 }}
                 p={2}>
-                <Grid item xs={9} pr="4">
-                  <TextField
-                    id="standard-basic"
-                    label="Please enter Paypal email address"
-                    variant="standard"
-                    value={paypalEmail}
-                    onChange={(event) => setPaypalEmail(event.target.value)}
-                  />
-                </Grid>
+                {transactionType === TRANSACTION_TYPE_WITHDRAW ? (
+                  <Grid item xs={9} pr="4">
+                    <TextField
+                      id="standard-basic"
+                      label="Please enter Paypal email address"
+                      variant="standard"
+                      value={paypalEmail}
+                      onChange={(event) => setPaypalEmail(event.target.value)}
+                    />
+                  </Grid>
+                ) : (
+                  <div />
+                )}
               </Grid>
 
               {/* <TextField

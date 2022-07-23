@@ -32,4 +32,5 @@ router.post("/partner-location", async (req, res) => {
   }
 });
 
+
 module.exports = router;

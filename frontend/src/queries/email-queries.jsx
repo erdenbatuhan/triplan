@@ -44,11 +44,25 @@ export function generateEmailGoogleMapsLink(partnerLocationList) {
 }
 
 export function generatePaypalEmail(paypalEmail) {
-  return `- Paypal account for withdraw request : ${paypalEmail}`;
+  return `Paypal account for withdraw request : ${paypalEmail}`;
+}
+
+export function generateIntroMessage(type) {
+  if (type === 'create') {
+    return 'Your withdraw request is processing. It would take 2-3 working days.';
+  }
+  if (type === 'close') {
+    return 'Your withdraw request is approved.';
+  }
+  return null;
+}
+
+export function generateRequestId(id) {
+  return `Request Id : ${id} €`;
 }
 
 export function generatePaypalWithdrawAmount(amount) {
-  return `- The amount of withdraw : ${amount} €`;
+  return `The amount of withdraw : ${amount} €`;
 }
 
 export async function handleEmail(emailContent, templeteName) {
