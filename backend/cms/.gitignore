@@ -19,3 +19,12 @@
 # Built Visual Studio Code Extensions
 *.vsix
 
+### Serverless ignores
+
+# Package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+

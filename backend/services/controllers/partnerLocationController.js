@@ -1,142 +1,47 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const {
-  Restaurant,
-  TouristAttraction,
-} = require("./../models/partnerLocation.js");
+const { Restaurant, TouristAttraction } = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
-const googleLocationInfoController = require("./googleLocationInfoController.js");
-const tripLocationController = require("./tripLocationController.js");
-
-const { average } = require("../utils/objectUtils");
+const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findDistinctCities = () => {
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      Restaurant.distinct("city", { city: { $nin : ["", null, undefined] } }),
-      TouristAttraction.distinct("city", { city: { $nin : ["", null, undefined] } }),
-    ]).then(([restaurantCities, touristAttractionCities]) => {
-      resolve([...new Set([
-        ...restaurantCities,
-        ...touristAttractionCities
-      ])]);
-    }).catch(err => reject(err));
-  });
+  return Promise.all([
+    Restaurant.distinct("city", { city: { $nin : ["", null, undefined] } }),
+    TouristAttraction.distinct("city", { city: { $nin : ["", null, undefined] } }),
+  ]).then(([restaurantCities, touristAttractionCities]) => (
+    [...new Set([ ...restaurantCities, ...touristAttractionCities ])]
+  ));
 };
 
-const findFiltered = (userId, filterData) => {
-  return new Promise((resolve, reject) => {
-    // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
-    Promise.all([
-      Restaurant.find({
-        priceLevel: { $lte: filterData["restaurantFilter"]["priceLevel"] },
-        cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
-        foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
-      }).sort({ priceLevel: "asc" }),
-      TouristAttraction.find({
-        touristAttractionTypes: {
-          $in: filterData["touristAttractionFilter"]["types"],
-        },
-      })
-    ]).then(([
-      restaurants, touristAttractions
-    ]) => {
-      // Sort the returned locations (restaurants and tourist attractions) by their "calculate scores"
-      Promise.all([
-        sortLocationsByScore(userId, restaurants), sortLocationsByScore(userId, touristAttractions)
-      ]).then(([
-        restaurantsSorted, touristAttractionsSorted 
-      ]) => {
-        resolve({ restaurants: restaurantsSorted, touristAttractions: touristAttractionsSorted });
-      }).catch(err => reject(err));
-    }).catch(err => reject(err));
-  });
-};
-
-const sortLocationsByScore = (userId, locations) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Get the google location info ID, if exists, of each location
-      const googleLocationInfoIds = locations.filter(location => location.googleLocationInfo).map(location => location.googleLocationInfo["_id"]);
-
-      // Calculate the final scores (Between 0 and 3)
-      const finalScores = await Promise.all([
-        googleLocationInfoController.getRatingScores(googleLocationInfoIds),
-        googleLocationInfoController.getReviewCountScores(googleLocationInfoIds),
-        userId ? calculateFollowedRatingScores(userId, locations) : new Promise(resolve => resolve({}))
-      ]).then(([ ratingScores, reviewCountScores, followedRatingScores ]) => (
-        Object.assign({}, ...locations.map(({ _id, googleLocationInfo }) => {
-          const followedRatingScore = followedRatingScores[_id] || 0;
-
-          if (!googleLocationInfo) { // If there is no google location info, just use the followed rating score
-            return { [_id]: followedRatingScore * 3 };
-          }
-
-          const ratingScore = ratingScores[googleLocationInfo["_id"]];
-          const reviewCountScore = reviewCountScores[googleLocationInfo["_id"]];
-
-          if (!followedRatingScore) { // If there is no followed rating score, just use the rating and review count scores
-            return { [_id]: (ratingScore + reviewCountScore) * 3 / 2 };
-          }
-
-          // Otherwise, use all of the scores
-          return { [_id]: ratingScore + reviewCountScore + followedRatingScore };
-        }))
-      )).catch(err => reject(err));
-
-      // Sort the locations "in descending order" according to their calculated final scores
-      locations.sort((a, b) => finalScores[b["_id"]] - finalScores[a["_id"]]);
-
-      resolve(locations);
-    } catch (err) {
-      reject(err)
-    }
-  });
-};
-
-const calculateFollowedRatingScores = (userId, locations) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Get the trip location IDs of all places in a flattened list
-      const tripLocationIds = [].concat.apply([], locations.map(location => location.associatedTripLocations));
-
-      // Trip location ratings of users followed
-      const tripLocationRatings = await tripLocationController.calculateTripLocationRatingsOfUsersFollowed(userId, tripLocationIds);
-
-      // Calculate the normalized followed rating for each partner location
-      resolve(Object.assign({}, ...locations.map(({ _id, associatedTripLocations }) => {
-        const ratings = associatedTripLocations.filter(tripLocationId => (
-          Boolean(tripLocationRatings[tripLocationId]) // If the trip location has a rating by the people followed
-        )).map(tripLocationId => (
-          tripLocationRatings[tripLocationId]
-        ));
-
-        // Calculate the average score (normalized) of all ratings made for the partner location by the people followed
-        return { [_id]: average(ratings) / 5 };
-      })));
-    } catch (err) {
-      reject(err);
-    }
-  });
+const findFiltered = (filterData) => {
+  // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
+  return Promise.all([
+    Restaurant.find({
+      priceLevel: { $lte: filterData["restaurantFilter"]["priceLevel"] },
+      cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
+      foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
+    }).sort({ priceLevel: "asc" }),
+    TouristAttraction.find({
+      touristAttractionTypes: {
+        $in: filterData["touristAttractionFilter"]["types"],
+      },
+    })
+  ]).then(([ restaurants, touristAttractions ]) => ({ restaurants, touristAttractions }));
 };
 
 const findByTripLocations = (tripLocationIds) => {
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      // Fetch all restaurants associated with the given trip locations
-      Restaurant.find({
-        associatedTripLocations: { $in: tripLocationIds },
-      }),
-      // Fetch all restaurants associated with the given trip locations
-      TouristAttraction.find({
-        associatedTripLocations: { $in: tripLocationIds },
-      }),
-    ]).then(([restaurants, touristAttractions]) => {
-      resolve({ restaurants, touristAttractions });
-    }).catch(err => reject(err));
-  });
+  return Promise.all([
+    // Fetch all restaurants associated with the given trip locations
+    Restaurant.find({
+      associatedTripLocations: { $in: tripLocationIds },
+    }),
+    // Fetch all restaurants associated with the given trip locations
+    TouristAttraction.find({
+      associatedTripLocations: { $in: tripLocationIds },
+    }),
+  ]).then(([restaurants, touristAttractions]) => ({ restaurants, touristAttractions }));
 };
 
 const findRestaurantById = (restaurantId) => {
@@ -147,7 +52,7 @@ const saveRestaurant = (restaurant) => {
   return Restaurant.findOneAndUpdate(
     restaurant._id ? { _id: restaurant._id } : null,
     restaurant,
-    { upsert: true, new: true }
+    { upsert: true, new: true, runValidators: true }
   );
 };
 
@@ -159,7 +64,7 @@ const saveTouristAttraction = (touristAttraction) => {
   return TouristAttraction.findOneAndUpdate(
     touristAttraction._id ? { _id: touristAttraction._id } : null,
     touristAttraction,
-    { upsert: true, new: true }
+    { upsert: true, new: true, runValidators: true }
   );
 };
 
@@ -183,7 +88,7 @@ const signUpRestaurant = async (req, res) => {
 
     const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
 
-    const newPartnerLocation = await insertRestaurant({
+    const newPartnerLocation = await createRestaurant({
       ...req.body,
       wallet,
       password: hash,
@@ -235,7 +140,7 @@ const signUpTouristAttraction = async (req, res) => {
 
     const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
 
-    const newPartnerLocation = await insertTouristAttraction({
+    const newPartnerLocation = await createTouristAttraction({
       ...req.body,
       wallet,
       password: hash,
@@ -387,12 +292,22 @@ const findTouristAttractionByEmail = (email) => {
   return TouristAttraction.find({ email: { $eq: email } });
 };
 
-const insertRestaurant = (restaurant) => {
-  return Restaurant.insertMany([restaurant]);
+const createRestaurant = (restaurant) => {
+  return Restaurant.insertMany([{ ...restaurant, partnerType: PARTNER_TYPES[0] }]);
 };
 
-const insertTouristAttraction = (touristAttraction) => {
-  return TouristAttraction.insertMany([touristAttraction]);
+const createTouristAttraction = (touristAttraction) => {
+  return TouristAttraction.insertMany([{ ...touristAttraction, partnerType: PARTNER_TYPES[1] }]);
+};
+
+const updatePartnerLocationFields = async (id, fields) => {
+  const { partnerLocationType } = await findPartnerLocationById(id);
+  
+  if (partnerLocationType === PARTNER_TYPES[0]) {
+    return Restaurant.updateOne({ _id: id }, fields, { new: true, runValidators: true });
+  } else {
+    return TouristAttraction.updateOne({ _id: id }, fields, { new: true, runValidators: true });
+  }
 };
 
 const findPartnerLocationById = (partnerLocationId) => {
@@ -412,14 +327,20 @@ const findPartnerLocationById = (partnerLocationId) => {
   });
 };
 
-const updatePartnerLocationFields = async (id, fields) => {
-  const {partnerLocation, partnerLocationType} = await findPartnerLocationById(id);
-  
-  if (partnerLocationType == 'restaurant') {
-    return Restaurant.updateOne({ _id: id }, fields, { new: true });
-  } else {
-    return TouristAttraction.updateOne({ _id: id }, fields, { new: true });
-  }
+const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
+  return Restaurant.updateOne(
+    { _id: restaurantId }, 
+    { $push: { associatedTripLocations: tripLocation } },
+    { new: true, runValidators: true }
+  );
+};
+
+const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation) => {
+  return TouristAttraction.updateOne(
+    { _id: touristAttractionId }, 
+    { $push: { associatedTripLocations: tripLocation } },
+    { new: true, runValidators: true }
+  );
 };
 
 module.exports = {
@@ -434,6 +355,8 @@ module.exports = {
   signUpTouristAttraction,
   loginRestaurant,
   loginTouristAttraction,
+  updatePartnerLocationFields,
   findPartnerLocationById,
-  updatePartnerLocationFields
+  addTripLocationToRestaurant,
+  addTripLocationToTouristAttraction
 };

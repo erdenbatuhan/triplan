@@ -63,7 +63,7 @@ const updateTicket = async (ticketId, fields) => {
     return new Promise((resolve) => resolve(null));
   }
 
-  return Ticket.updateOne({ _id: ticketId }, fields, { new: true });
+  return Ticket.updateOne({ _id: ticketId }, fields, { new: true, runValidators: true });
 };
 
 const updateMenuItem = async (menuItemId, fields) => {
@@ -71,7 +71,7 @@ const updateMenuItem = async (menuItemId, fields) => {
     return new Promise((resolve) => resolve(null));
   }
 
-  return MenuItem.updateOne({ _id: menuItemId }, fields, { new: true });
+  return MenuItem.updateOne({ _id: menuItemId }, fields, { new: true, runValidators: true });
 };
 
 const deleteTicket = (ticketId) => {
@@ -83,24 +83,18 @@ const deleteMenuItem = (menuItemId) => {
 };
 
 const findTicketsAndMenuItems = ({ restaurantIds, touristAttractionIds }) => {
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      MenuItem.find({ restaurant: { $in: restaurantIds } }).sort({
-        price: "asc",
-      }),
-      Ticket.find({ touristAttraction: { $in: touristAttractionIds } }).sort({
-        price: "asc",
-      })
-    ]).then(([menuItems, tickets]) => {
-      menuItemData = Object.assign({}, ...restaurantIds.map(id => ({ [id]: [] })));
-      ticketData = Object.assign({}, ...touristAttractionIds.map(id => ({ [id]: [] })));
+  return Promise.all([
+    MenuItem.find({ restaurant: { $in: restaurantIds } }).sort({ price: "asc" }),
+    Ticket.find({ touristAttraction: { $in: touristAttractionIds } }).sort({ price: "asc" })
+  ]).then(([menuItems, tickets]) => {
+    menuItemData = Object.assign({}, ...restaurantIds.map(id => ({ [id]: [] })));
+    ticketData = Object.assign({}, ...touristAttractionIds.map(id => ({ [id]: [] })));
 
-      menuItems.forEach(menuItem => menuItemData[menuItem.restaurant].push(menuItem));
-      tickets.forEach(ticket => ticketData[ticket.touristAttraction].push(ticket));
+    menuItems.forEach(menuItem => menuItemData[menuItem.restaurant].push(menuItem));
+    tickets.forEach(ticket => ticketData[ticket.touristAttraction].push(ticket));
 
-      resolve({ menuItemData, ticketData });
-    }).catch(err => reject(err));
-  })
+    return { menuItemData, ticketData };
+  });
 };
 
 module.exports = {

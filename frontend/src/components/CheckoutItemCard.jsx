@@ -16,7 +16,7 @@ import Select from '@mui/material/Select';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import Spinner from './Spinner';
-import { PARTNER_LOCATION_TYPE_RESTAURANT } from '../shared/constants';
+import { PARTNER_TYPE_RESTAURANT } from '../shared/constants';
 
 const MAX_NUM_ITEMS_BUYABLE = 9;
 
@@ -24,7 +24,6 @@ export default function CheckoutItemCard({
   loading,
   index,
   partnerLocation,
-  partnerLocationType,
   items,
   itemSelections,
   onItemSelectionChange,
@@ -89,7 +88,7 @@ export default function CheckoutItemCard({
                             <Avatar src={item.image} />
                           ) : (
                             <Avatar>
-                              {partnerLocationType === PARTNER_LOCATION_TYPE_RESTAURANT ? (
+                              {partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT ? (
                                 <FastfoodIcon />
                               ) : (
                                 <ConfirmationNumberIcon />

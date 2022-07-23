@@ -1,7 +1,10 @@
 const { TripPlan } = require("./../models/tripPlan.js");
 
 const tripLocationController = require("./tripLocationController.js");
+const followingRelationshipController = require("./followingRelationshipController.js");
 const partnerLocationController = require("./partnerLocationController.js");
+
+const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
   return findById(tripPlanId).then(async (tripPlan) => {
@@ -48,6 +51,28 @@ const findByUsers = (userIds) => {
   return TripPlan.find({ user: { $in: userIds } });
 };
 
+const calculateTripLocationRatingsOfUsersFollowed = (userId, tripLocationIds) => {
+  // Among the trip locations, find the ones planned by the people followed and the ratings they have given
+  return Promise.all([
+    tripLocationController.findByIds(tripLocationIds), // Find trip locations by IDs
+    followingRelationshipController.getFollowed(userId) // Get the users followed by the current user
+  ]).then(async ([
+    tripLocations,
+    followedUsers
+  ]) => {
+    // Find all the trip locations planned by the people followed
+    const followedUserIds = followedUsers.map(({ _id }) => _id);
+    const tripLocationsPlannedByPeopleFollowed = await findTripLocationsPlannedByUsers(followedUserIds, tripLocationIds);
+
+    // For the trip locations of the partner locations, set the ratings of the people followed
+    return Object.assign({}, ...tripLocations.filter(({ _id }) => (
+      Boolean(tripLocationsPlannedByPeopleFollowed[_id]) // If the trip location planned by one of the users followed
+    )).map(({ _id, rating }) => (
+      { [_id]: rating }
+    )));
+  });
+}
+
 const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
   return TripPlan.find({
     user: { $in: userIds },
@@ -61,4 +86,26 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
   ));
 };
 
-module.exports = { findWithPartnerLocationsByTripPlan, findById, findByUsers, findTripLocationsPlannedByUsers };
+const createTripPlan = async (userId, { name, partnerLocations }) => {
+  // Create as many trip lococations as there are restaurants
+  const tripLocationsCreated = await Promise.all(partnerLocations.map(() => tripLocationController.create()));
+
+  return Promise.all([
+    // Add the created trip locations to the partner locations
+    Promise.all(partnerLocations.map(({ _id, partnerType }, idx) => (
+      (partnerType === PARTNER_TYPES[0]
+        ? partnerLocationController.addTripLocationToRestaurant(_id, tripLocationsCreated[idx])
+        : partnerLocationController.addTripLocationToTouristAttraction(_id, tripLocationsCreated[idx])
+    )))),
+    // Create a new trip plan with the created trip locations
+    TripPlan.create({ name, user: userId, tripLocations: tripLocationsCreated })
+  ]).then(([ partnerLocationUpdates, tripPlan ]) => {
+    if (partnerLocationUpdates.length !== tripLocationsCreated.length) {
+      throw new Error("Something went wrong while adding the created trip locations to some of the partner locations!");
+    }
+
+    return tripPlan;
+  });
+};
+
+module.exports = { findWithPartnerLocationsByTripPlan, findById, findByUsers, calculateTripLocationRatingsOfUsersFollowed, findTripLocationsPlannedByUsers, createTripPlan };

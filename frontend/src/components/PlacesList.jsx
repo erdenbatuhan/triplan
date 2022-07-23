@@ -4,8 +4,7 @@ import PlaceCard from './PlaceCard';
 
 export default function PlacesList({
   partnerLocations,
-  selectedPartnerLocations,
-  partnerLocationType,
+  selectedPartnerLocationObject,
   onSelectedPartnerLocationsChange
 }) {
   const [partnerLocationDictionary, setPartnerLocationDictionary] = useState({});
@@ -22,29 +21,21 @@ export default function PlacesList({
   }, [partnerLocations]);
 
   const selectPartnerLocation = (selectedPartnerLocationId) => {
-    selectedPartnerLocations.push({
-      partnerLocation: partnerLocationDictionary[selectedPartnerLocationId],
-      partnerLocationType
+    onSelectedPartnerLocationsChange({
+      ...selectedPartnerLocationObject,
+      selectedPartnerLocationId: partnerLocationDictionary[selectedPartnerLocationId]
     });
-    onSelectedPartnerLocationsChange(selectedPartnerLocations);
   };
 
   const deselectPartnerLocation = (deselectedPartnerLocationId) => {
-    const selectedPartnerLocationIds = selectedPartnerLocations.map(
-      ({ partnerLocation }) => partnerLocation._id
-    );
+    const selectedPartnerLocationsUpdated = { ...selectedPartnerLocationObject }; // Copy the object
+    delete selectedPartnerLocationsUpdated[deselectedPartnerLocationId]; // Delete the deselected one
 
-    selectedPartnerLocations.splice(
-      selectedPartnerLocationIds.indexOf(deselectedPartnerLocationId),
-      1
-    );
-    onSelectedPartnerLocationsChange(selectedPartnerLocations);
+    onSelectedPartnerLocationsChange(selectedPartnerLocationsUpdated);
   };
 
-  const isSelected = (partnerLocationToCheck) => {
-    return selectedPartnerLocations.some(({ partnerLocation }) => {
-      return partnerLocationToCheck === partnerLocation;
-    });
+  const isSelected = (partnerLocationToId) => {
+    return selectedPartnerLocationObject[partnerLocationToId];
   };
 
   return (
@@ -57,7 +48,7 @@ export default function PlacesList({
               title={partnerLocation.name}
               content={partnerLocation.place_description || ''}
               locationPicture={partnerLocation.locationPicture}
-              cardSelected={isSelected(partnerLocation)}
+              cardSelected={isSelected(partnerLocation._id)}
               onPlaceCardSelect={selectPartnerLocation}
               onPlaceCardDeselect={deselectPartnerLocation}
             />

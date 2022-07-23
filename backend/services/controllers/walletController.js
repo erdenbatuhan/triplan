@@ -51,7 +51,7 @@ const updateWalletBalance = (wallet, balance) => {
   return Wallet.findOneAndUpdate(
     { "_id": wallet._id },
     { balance },
-    { new: true }
+    { new: true, runValidators: true }
   );
 };
 

@@ -12,7 +12,7 @@ const updateFields = (id, fields) => {
     return new Promise(resolve => resolve(null)); // Transaction does not exist!
   }
 
-  return Transaction.updateOne({ "_id": id }, fields, { new: true });
+  return Transaction.updateOne({ "_id": id }, fields, { new: true, runValidators: true });
 };
 
 const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId }) => {

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const partnerLocationController = require("./../controllers/partnerLocationController.js");
+const scoreController = require("./../controllers/scoreController.js");
 
 /**
  * Gets the distinct cities
@@ -24,8 +25,10 @@ router.get("/cities", async (req, res) => {
  */
 router.post("/filtered", async (req, res) => {
   try {
-    const partnerLocationsFiltered = await partnerLocationController.findFiltered(req.query["user"], req.body["filterData"]);
-    res.status(200).send(partnerLocationsFiltered);
+    const partnerLocationsFiltered = await partnerLocationController.findFiltered(req.body["filterData"]);
+    const partnerLocationsSorted = await scoreController.sortLocations(req.query["user"], partnerLocationsFiltered);
+
+    res.status(200).send(partnerLocationsSorted);
   } catch ({ message }) {
     res
       .status(400)
