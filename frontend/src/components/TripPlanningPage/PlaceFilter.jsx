@@ -1,10 +1,6 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Stack } from '@mui/material';
-// import SelectCuisines from './SelectCuisines';
-// import SelectPriceLevels from './SelectPriceLevels';
-// import SelectPlaceType from './SelectPlaceType';
-// import SelectFoodType from './SelectFoodType';
 import * as constants from '../../shared/constants';
 import FilterSelectionMenu from './FilterSelectionMenu';
 // import PropTypes from 'prop-types';
@@ -15,8 +11,6 @@ function PlaceFilter(props) {
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
   const [selectedFoodTypes, setSelectedFoodTypes] = useState([]);
-  // const [allCuisinesSelected, setAllCuisinesSelected] = useState(false);
-  // const [allPriceLevelsSelected, setAllPriceLevelsSelected] = useState(false);
 
   useEffect(() => {
     if (calledFrom === 'TripPlanningPage') {
@@ -49,24 +43,6 @@ function PlaceFilter(props) {
     }
   };
 
-  // const handleCuisineChange = (event) => {
-  //   if (event.target.value === 'None') {
-  //     setAllCuisinesSelected(true);
-  //     setSelectedCuisine([event.target.value]);
-  //   } else {
-  //     setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
-  //   }
-  // };
-
-  // const handleCuisineSelectionRemove = (removedCuisine) => {
-  //   if (removedCuisine === 'None') {
-  //     setAllCuisinesSelected(false);
-  //   }
-  //   setSelectedCuisine((cuisines) => {
-  //     return cuisines.filter((cuisine) => cuisine !== removedCuisine);
-  //   });
-  // };
-
   const handlePriceLevelChangeCheckbox = (event) => {
     const { value, checked } = event.target;
     if (checked) {
@@ -77,24 +53,6 @@ function PlaceFilter(props) {
       });
     }
   };
-
-  // const handlePriceLevelChange = (event) => {
-  //   if (event.target.value === 'None') {
-  //     setAllPriceLevelsSelected(true);
-  //     setSelectedPriceLevel([event.target.value]);
-  //   } else {
-  //     setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
-  //   }
-  // };
-
-  // const handlePriceLevelRemove = (removedPriceLevel) => {
-  //   if (removedPriceLevel === 'None') {
-  //     setAllPriceLevelsSelected(false);
-  //   }
-  //   setSelectedPriceLevel((priceLevels) => {
-  //     return priceLevels.filter((priceLevel) => priceLevel !== removedPriceLevel);
-  //   });
-  // };
 
   const handleFoodTypeChange = (event) => {
     const { value, checked } = event.target;
@@ -111,12 +69,14 @@ function PlaceFilter(props) {
     const filterData = {
       filterData: {
         restaurantFilter: {
-          cuisines: selectedCuisine[0] === 'None' ? constants.cuisines : selectedCuisine,
-          priceLevel: selectedPriceLevel[0] === 'None' ? constants.priceLevels : selectedPriceLevel,
-          foodTypes: selectedFoodTypes
+          cuisines: selectedCuisine.includes('all') ? constants.cuisines : selectedCuisine,
+          priceLevel: selectedPriceLevel.includes('all')
+            ? constants.priceLevels
+            : selectedPriceLevel,
+          foodTypes: selectedFoodTypes.includes('all') ? constants.foodTypes : selectedFoodTypes
         },
         touristAttractionFilter: {
-          types: selectedPlaces
+          types: selectedPlaces.includes('all') ? constants.places : selectedPlaces
         }
       }
     };
@@ -138,10 +98,6 @@ function PlaceFilter(props) {
           marginBottom: 5,
           minWidth: 250
         }}>
-        {/* <SelectPlaceType
-          selectedPlaces={selectedPlaces}
-          handlePlaceTypeChange={handlePlaceTypeChange}
-        /> */}
         <FilterSelectionMenu
           selectedItems={selectedPlaces}
           handleSelectionChange={handlePlaceTypeChange}
@@ -152,27 +108,11 @@ function PlaceFilter(props) {
           handleSelectionChange={handleCuisineChangeCheckbox}
           filteredItemType="cuisines"
         />
-        {/* <SelectCuisines
-          selectedItems={selectedCuisine}
-          handleChange={handleCuisineChange}
-          handleRemove={handleCuisineSelectionRemove}
-          allOptionIsSelected={allCuisinesSelected}
-        />
-        <SelectPriceLevels
-          selectedItems={selectedPriceLevel}
-          handleChange={handlePriceLevelChange}
-          handleRemove={handlePriceLevelRemove}
-          allOptionIsSelected={allPriceLevelsSelected}
-        /> */}
         <FilterSelectionMenu
           selectedItems={selectedPriceLevel}
           handleSelectionChange={handlePriceLevelChangeCheckbox}
           filteredItemType="priceLevels"
         />
-        {/* <SelectFoodType
-          selectedFoodTypes={selectedFoodTypes}
-          handleFoodTypeChange={handleFoodTypeChange}
-        /> */}
         <FilterSelectionMenu
           selectedItems={selectedFoodTypes}
           handleSelectionChange={handleFoodTypeChange}
