@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Stack } from '@mui/material';
-import SelectCuisines from './SelectCuisines';
-import SelectPriceLevels from './SelectPriceLevels';
-import SelectPlaceType from './SelectPlaceType';
-import SelectFoodType from './SelectFoodType';
+// import SelectCuisines from './SelectCuisines';
+// import SelectPriceLevels from './SelectPriceLevels';
+// import SelectPlaceType from './SelectPlaceType';
+// import SelectFoodType from './SelectFoodType';
 import * as constants from '../../shared/constants';
+import FilterSelectionMenu from './FilterSelectionMenu';
 // import PropTypes from 'prop-types';
 
 function PlaceFilter(props) {
@@ -14,8 +15,8 @@ function PlaceFilter(props) {
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
   const [selectedFoodTypes, setSelectedFoodTypes] = useState([]);
-  const [allCuisinesSelected, setAllCuisinesSelected] = useState(false);
-  const [allPriceLevelsSelected, setAllPriceLevelsSelected] = useState(false);
+  // const [allCuisinesSelected, setAllCuisinesSelected] = useState(false);
+  // const [allPriceLevelsSelected, setAllPriceLevelsSelected] = useState(false);
 
   useEffect(() => {
     if (calledFrom === 'TripPlanningPage') {
@@ -37,41 +38,63 @@ function PlaceFilter(props) {
     }
   };
 
-  const handleCuisineChange = (event) => {
-    if (event.target.value === 'None') {
-      setAllCuisinesSelected(true);
-      setSelectedCuisine([event.target.value]);
+  const handleCuisineChangeCheckbox = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedCuisine((cuisines) => [...cuisines, value]);
     } else {
-      setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
+      setSelectedCuisine((cuisines) => {
+        return cuisines.filter((cuisine) => cuisine !== value);
+      });
     }
   };
 
-  const handleCuisineSelectionRemove = (removedCuisine) => {
-    if (removedCuisine === 'None') {
-      setAllCuisinesSelected(false);
-    }
-    setSelectedCuisine((cuisines) => {
-      return cuisines.filter((cuisine) => cuisine !== removedCuisine);
-    });
-  };
+  // const handleCuisineChange = (event) => {
+  //   if (event.target.value === 'None') {
+  //     setAllCuisinesSelected(true);
+  //     setSelectedCuisine([event.target.value]);
+  //   } else {
+  //     setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
+  //   }
+  // };
 
-  const handlePriceLevelChange = (event) => {
-    if (event.target.value === 'None') {
-      setAllPriceLevelsSelected(true);
-      setSelectedPriceLevel([event.target.value]);
+  // const handleCuisineSelectionRemove = (removedCuisine) => {
+  //   if (removedCuisine === 'None') {
+  //     setAllCuisinesSelected(false);
+  //   }
+  //   setSelectedCuisine((cuisines) => {
+  //     return cuisines.filter((cuisine) => cuisine !== removedCuisine);
+  //   });
+  // };
+
+  const handlePriceLevelChangeCheckbox = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedPriceLevel((priceLevels) => [...priceLevels, value]);
     } else {
-      setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
+      setSelectedPriceLevel((priceLevels) => {
+        return priceLevels.filter((priceLevel) => priceLevel !== value);
+      });
     }
   };
 
-  const handlePriceLevelRemove = (removedPriceLevel) => {
-    if (removedPriceLevel === 'None') {
-      setAllPriceLevelsSelected(false);
-    }
-    setSelectedPriceLevel((priceLevels) => {
-      return priceLevels.filter((priceLevel) => priceLevel !== removedPriceLevel);
-    });
-  };
+  // const handlePriceLevelChange = (event) => {
+  //   if (event.target.value === 'None') {
+  //     setAllPriceLevelsSelected(true);
+  //     setSelectedPriceLevel([event.target.value]);
+  //   } else {
+  //     setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
+  //   }
+  // };
+
+  // const handlePriceLevelRemove = (removedPriceLevel) => {
+  //   if (removedPriceLevel === 'None') {
+  //     setAllPriceLevelsSelected(false);
+  //   }
+  //   setSelectedPriceLevel((priceLevels) => {
+  //     return priceLevels.filter((priceLevel) => priceLevel !== removedPriceLevel);
+  //   });
+  // };
 
   const handleFoodTypeChange = (event) => {
     const { value, checked } = event.target;
@@ -115,11 +138,21 @@ function PlaceFilter(props) {
           marginBottom: 5,
           minWidth: 250
         }}>
-        <SelectPlaceType
+        {/* <SelectPlaceType
           selectedPlaces={selectedPlaces}
           handlePlaceTypeChange={handlePlaceTypeChange}
+        /> */}
+        <FilterSelectionMenu
+          selectedItems={selectedPlaces}
+          handleSelectionChange={handlePlaceTypeChange}
+          filteredItemType="places"
         />
-        <SelectCuisines
+        <FilterSelectionMenu
+          selectedItems={selectedCuisine}
+          handleSelectionChange={handleCuisineChangeCheckbox}
+          filteredItemType="cuisines"
+        />
+        {/* <SelectCuisines
           selectedItems={selectedCuisine}
           handleChange={handleCuisineChange}
           handleRemove={handleCuisineSelectionRemove}
@@ -130,10 +163,20 @@ function PlaceFilter(props) {
           handleChange={handlePriceLevelChange}
           handleRemove={handlePriceLevelRemove}
           allOptionIsSelected={allPriceLevelsSelected}
+        /> */}
+        <FilterSelectionMenu
+          selectedItems={selectedPriceLevel}
+          handleSelectionChange={handlePriceLevelChangeCheckbox}
+          filteredItemType="priceLevels"
         />
-        <SelectFoodType
+        {/* <SelectFoodType
           selectedFoodTypes={selectedFoodTypes}
           handleFoodTypeChange={handleFoodTypeChange}
+        /> */}
+        <FilterSelectionMenu
+          selectedItems={selectedFoodTypes}
+          handleSelectionChange={handleFoodTypeChange}
+          filteredItemType="foodTypes"
         />
         {calledFrom === 'TripPlanningPage' ? (
           <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
