@@ -5,9 +5,16 @@ import * as constants from '../../shared/constants';
 
 function FilterSelectionMenu(props) {
   const { selectedItems, handleSelectionChange, filteredItemType } = props;
-
   return (
-    <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
+    <Box
+      sx={{
+        p: 2,
+        borderColor: 'black',
+        border: 1,
+        borderTop: 1,
+        maxHeight: 300,
+        overflow: 'auto'
+      }}>
       <Typography align="left">Type of Food(s)</Typography>
       <FormGroup>
         <FormControlLabel

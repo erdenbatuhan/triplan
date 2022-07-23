@@ -14,7 +14,7 @@ function PlaceFilter(props) {
 
   useEffect(() => {
     if (calledFrom === 'TripPlanningPage') {
-      setSelectedPlaces(filterState.filterData.touristAttractionFilter.types);
+      setSelectedPlaces(filterState.filterData.touristAttractionFilter.types[0]);
       setSelectedCuisine(filterState.filterData.restaurantFilter.cuisines);
       setSelectedFoodTypes(filterState.filterData.restaurantFilter.foodTypes);
       setSelectedPriceLevel(filterState.filterData.restaurantFilter.priceLevel);
@@ -66,6 +66,12 @@ function PlaceFilter(props) {
   };
 
   const handleButtonClick = () => {
+    const taTypes = [];
+    if (selectedPlaces.includes('all')) {
+      taTypes.push(constants.touristAttractions);
+    } else {
+      selectedPlaces.forEach((place) => taTypes.push(constants.touristAttractionsMapper[place]));
+    }
     const filterData = {
       filterData: {
         restaurantFilter: {
@@ -76,10 +82,13 @@ function PlaceFilter(props) {
           foodTypes: selectedFoodTypes.includes('all') ? constants.foodTypes : selectedFoodTypes
         },
         touristAttractionFilter: {
-          types: selectedPlaces.includes('all') ? constants.places : selectedPlaces
+          types: selectedFoodTypes.includes('all')
+            ? [constants.places, constants.touristAttractions]
+            : [selectedPlaces, taTypes]
         }
       }
     };
+
     if (calledFrom !== 'MainPage') {
       handleFilterChange(filterData);
     } else {

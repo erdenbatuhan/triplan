@@ -30,7 +30,7 @@ const findFiltered = (filterData) => {
     }).sort({ priceLevel: "asc" }),
     TouristAttraction.find({
       touristAttractionTypes: {
-        $in: filterData["touristAttractionFilter"]["types"],
+        $in: filterData["touristAttractionFilter"]["types"][1],
       },
     }),
   ]).then(([restaurants, touristAttractions]) => ({
