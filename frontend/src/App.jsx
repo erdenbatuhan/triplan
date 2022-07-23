@@ -52,7 +52,7 @@ export default function App() {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/user" element={isLoggedIn ? <UserProfilePage /> : <Navigate to="/" />} />
           <Route
-            path="/trip-planning"
+            path="/trip-plan"
             element={isLoggedIn ? <TripPlanningPage /> : <Navigate to="/" />}
           />
           <Route
