@@ -20,12 +20,15 @@ const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
     tripLocationIds = {}
     tripPlan.tripLocations.forEach((tripLocation, idx) => tripLocationIds[tripLocation["_id"]] = idx);
 
-    // Find the trip locations and preserve the original sorting
-    tripLocations = await tripLocationController.findByIds(Object.keys(tripLocationIds));
-    tripLocations.sort((a, b) => tripLocationIds[a["_id"]] - tripLocationIds[b["_id"]]);
+    let { tripLocations, partnerLocations } = await Promise.all([
+      // Find the trip locations
+      tripLocationController.findByIds(Object.keys(tripLocationIds)),
+      // Get information of the partner locations
+      partnerLocationController.findByTripLocations(Object.keys(tripLocationIds))
+    ]).then(([ tripLocations, partnerLocations ]) => ({ tripLocations, partnerLocations }));
 
-    // Get information of the partner locations and merge the results into a single array
-    partnerLocations = await partnerLocationController.findByTripLocations(Object.keys(tripLocationIds));
+    // Preserve the original sorting for trip locations and merge the partner locations into a single list
+    tripLocations.sort((a, b) => tripLocationIds[a["_id"]] - tripLocationIds[b["_id"]]);
     partnerLocations = [].concat.apply([], Object.values(partnerLocations));
 
     // Return the trip locations and the partner locations connected to them
