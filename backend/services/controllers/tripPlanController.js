@@ -99,8 +99,8 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
 
 const createTripPlan = async (userId, { name, partnerLocations }) => {
   const { tripLocationsCreated, partnerLocationsSorted } = await Promise.all([
-    // Create as many trip lococations as there are restaurants
-    Promise.all(partnerLocations.map(() => tripLocationController.create())),
+    // Create as many trip lococations as there are restaurants with an increasing order
+    Promise.all(partnerLocations.map((_, idx) => tripLocationController.create({ order: idx }))),
     // Get the optimized route order from the optimization service
     optimizationServiceQueries.calculateOptimizedOrder(partnerLocations)
   ]).then(([ tripLocationsCreated, optimizedOrder ]) => ({
