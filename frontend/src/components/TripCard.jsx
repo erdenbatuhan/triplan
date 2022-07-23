@@ -15,14 +15,14 @@ const style = {
 };
 
 function TripCard(props) {
-  const { tripName, isRated } = props;
+  const { name /* , isRated */ } = props;
   const [openSummary, setOpenSummary] = useState(false);
 
   return (
-    <Card variant="outlined" sx={{ boxShadow: 2 }}>
+    <Card variant="outlined" sx={{ boxShadow: 2, height: '100%' }}>
       <Grid container justifyContent="center" alignItems="center" sx={{ p: 1, mx: 1 }}>
         <Grid item xs={9}>
-          <Typography align="center">{tripName}</Typography>
+          <Typography align="center">{name}</Typography>
         </Grid>
         <Grid item xs={3}>
           <CardActions>
@@ -30,7 +30,7 @@ function TripCard(props) {
               onClick={() => {
                 setOpenSummary(true);
               }}>
-              {isRated ? 'Rated' : 'Rate Trip'}
+              {/* isRated ? 'Rated' : 'Rate Trip' */}
             </Button>
           </CardActions>
         </Grid>
@@ -51,8 +51,8 @@ function TripCard(props) {
 }
 
 TripCard.propTypes = {
-  tripName: PropTypes.string.isRequired,
-  isRated: PropTypes.bool.isRequired
+  name: PropTypes.string.isRequired
+  // isRated: PropTypes.bool.isRequired
 };
 
 export default TripCard;

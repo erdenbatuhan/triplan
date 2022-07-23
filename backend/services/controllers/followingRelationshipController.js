@@ -4,8 +4,8 @@ const userController = require("./userController.js");
 
 const createFollowingRelationship = ({ followerId, followedId }) => {
   return new Promise((resolve, reject) => {
-    const followerPromise = userController.findOne(followerId);
-    const followedPromise = userController.findOne(followedId);
+    const followerPromise = userController.findById(followerId);
+    const followedPromise = userController.findById(followedId);
 
     Promise.all([followerPromise, followedPromise]).then(([follower, followed]) => {
       if (!follower || !followed) {

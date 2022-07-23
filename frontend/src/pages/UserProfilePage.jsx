@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Grid,
   Stack,
@@ -7,55 +7,38 @@ import {
   IconButton,
   Divider,
   Card,
-  CardContent
+  CardContent,
+  Box
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import TripCard from '../components/TripCard';
 // import InfoCard from '../components/InfoCard';
 import WalletPage from './WalletPage';
-
-const mockTripCardData = [
-  {
-    id: '0',
-    tripName: 'Munich',
-    isRated: true,
-    href: '/'
-  },
-  {
-    id: '1',
-    tripName: 'Berlin',
-    isRated: false,
-    href: '/'
-  }
-];
-
-/* const mockProfileInfoCardData = [
-  {
-    id: '0',
-    title: 'Trips',
-    value: '3',
-    href: '/'
-  },
-  {
-    id: '1',
-    title: 'Followers',
-    value: '10',
-    href: '/'
-  },
-  {
-    id: '2',
-    title: 'Following',
-    value: '17',
-    href: '/'
-  }
-]; */
+import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { getUserFollowers, getUserFollowed } from '../queries/following-relationship-queries';
+import { getTripPlansOfUser } from '../queries/trip-plan-queries';
 
 const mockImgData = {
   img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
   title: 'Sea star'
 };
 function UserProfilePage() {
-  // const [userData, setUserData] = useState([]);
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [username, setUsername] = useState('');
+  const [followers, setFollowers] = useState([]);
+  const [followed, setFollowed] = useState([]);
+  const [trips, setTrips] = useState([]);
+
+  // Listen to the changes in authenticatedUser, trips, followers and followed
+  useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+    getUserFollowers(authenticatedUser.user.id).then((data) => setFollowers(data));
+    getUserFollowed(authenticatedUser.user.id).then((data) => setFollowed(data));
+    setUsername(authenticatedUser.user.username);
+    getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTrips(data));
+  }, [authenticatedUser, followers, followed, trips]);
 
   return (
     <Grid container spacing={2} m={5}>
@@ -73,16 +56,17 @@ function UserProfilePage() {
 
           <Grid item xs={3}>
             <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'h6.fontSize' }}>
-              Jane Doe
+              {username}
             </Typography>
           </Grid>
 
           <Grid item xs={3}>
             <Typography align="center">
-              <IconButton>
+              <IconButton sx={{ p: 0, display: 'inline' }}>
                 <LocationOnIcon fontSize="small" sx={{ color: '#f44336', fontStyle: 'italic' }} />
               </IconButton>
-              Berlin
+
+              <Typography sx={{ display: 'inline' }}>Berlin</Typography>
             </Typography>
           </Grid>
 
@@ -96,25 +80,38 @@ function UserProfilePage() {
                 width: '100%',
                 textAlign: 'center',
                 height: '100%',
-                p: 2,
                 boxShadow: 4
               }}>
               <CardContent>
                 <Grid container>
                   <Grid item sx={4} alignItems="center">
-                    <Typography variant="h6" color="text.secondary">
-                      Followers
-                    </Typography>
+                    <Box
+                      sx={{
+                        p: 2
+                      }}>
+                      <Box sx={{ color: 'text.secondary' }}> Followers </Box>
+
+                      <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
+                        {followers.length}
+                      </Box>
+                    </Box>
                   </Grid>
 
                   <Grid item sx={4}>
-                    <Divider orientation="vertical" sx={{ ontWeight: 'bold', pl: 2 }} />
+                    <Divider orientation="vertical" sx={{ fontWeight: 'bold' }} />
                   </Grid>
 
                   <Grid item sx={4} alignItems="center">
-                    <Typography variant="h6" color="text.secondary" sx={{ pl: 2 }}>
-                      Following
-                    </Typography>
+                    <Box
+                      sx={{
+                        p: 2
+                      }}>
+                      <Box sx={{ color: 'text.secondary' }}> Following </Box>
+
+                      <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
+                        {followed.length}
+                      </Box>
+                    </Box>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -128,32 +125,20 @@ function UserProfilePage() {
       <Grid item xs={6}>
         <Grid>
           <Typography align="left" variant="h6" color="text.secondary">
-            Trips:
+            Trips: {trips.length}
           </Typography>
           <Divider />
         </Grid>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
-          {/* <Stack direction="row" spacing={12}>
-            {mockProfileInfoCardData.map((infoData) => (
-              <Grid item key={infoData.id}>
-                <InfoCard
-                  key={infoData.id}
-                  title={infoData.title}
-                  value={infoData.value}
-                  href={infoData.href}
-                />
-              </Grid>
-            ))}
-            </Stack> */}
           <Grid item xs={9} sx={{ width: '100%' }}>
             <Stack spacing={2} pt={4}>
-              {mockTripCardData.map((tripData) => {
+              {trips.map((trip) => {
                 return (
                   <TripCard
-                    key={tripData.id}
-                    tripName={tripData.tripName}
-                    isRated={tripData.isRated}
-                    href={tripData.href}
+                    key={trip.id}
+                    name={trip.name}
+                    // isRated={tripData.isRated}
+                    // href={tripData.href}
                   />
                 );
               })}
@@ -164,77 +149,6 @@ function UserProfilePage() {
       <Grid item xs={2} />
     </Grid>
   );
-
-  /* return (
-    <Box
-      component="form"
-      noValidate
-      sx={{
-        mt: 4,
-        marginLeft: 5,
-        marginRight: 5,
-        marginBottom: 5,
-        minWidth: 400
-      }}>
-      <Grid container spacing={2}>
-        <Grid item xs={3}>
-          <Grid container direction="column" justifyContent="center" alignItems="center">
-            <Grid item xs={6}>
-              <img
-                src={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format`}
-                srcSet={`${mockImgData.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                alt={mockImgData.title}
-                loading="lazy"
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Typography align="center">Jane Doe</Typography>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography align="center">Berlin</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={9}>
-          <Grid
-            container
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-            spacing={4}>
-            <Grid item xs={3}>
-              <Stack direction="row" spacing={12}>
-                {mockProfileInfoCardData.map((infoData) => (
-                  <Grid item key={infoData.id}>
-                    <InfoCard
-                      key={infoData.id}
-                      title={infoData.title}
-                      value={infoData.value}
-                      href={infoData.href}
-                    />
-                  </Grid>
-                ))}
-              </Stack>
-            </Grid>
-            <Grid item xs={9}>
-              <Stack spacing={2}>
-                {mockTripCardData.map((tripData) => {
-                  return (
-                    <TripCard
-                      key={tripData.id}
-                      tripName={tripData.tripName}
-                      isRated={tripData.isRated}
-                      href={tripData.href}
-                    />
-                  );
-                })}
-              </Stack>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Box>
-  ); */
 }
 
 export default UserProfilePage;

@@ -93,19 +93,27 @@ export default function WalletPage() {
   };
 
   return (
-    <div>
+    <div sx={{ height: '100%', width: '100%' }}>
       <Card
         sx={{
           width: '100%',
           textAlign: 'center',
           height: '100%',
-          p: 2,
           boxShadow: 3
         }}>
         <CardContent>
-          <Typography variant="h6" color="text.secondary">
-            Current balance: <b>{wallet ? wallet.balance : 0} €</b>
-          </Typography>
+          <Box
+            sx={{
+              color: 'text.secondary',
+              display: 'inline',
+              mx: 0.5
+            }}>
+            Current balance:
+          </Box>
+
+          <Box sx={{ color: 'text.primary', fontWeight: 'bold', display: 'inline' }}>
+            {wallet ? wallet.balance : 0} €
+          </Box>
         </CardContent>
 
         <CardActions>
@@ -113,7 +121,6 @@ export default function WalletPage() {
             <Grid item sx={6}>
               <Button
                 color="success"
-                size="small"
                 variant="outlined"
                 onClick={() => {
                   setTransactionType(TRANSACTION_TYPE_DEPOSIT);

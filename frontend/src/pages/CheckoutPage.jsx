@@ -418,6 +418,7 @@ export default function CheckoutPage() {
               </ul>
             </li>
           </List>
+
           <Card sx={{ width: '%100' }}>
             <CardActionArea onClick={handleWalletPayment}>
               <Grid container spacing={2} direction="row">
@@ -437,6 +438,7 @@ export default function CheckoutPage() {
                     />
                   </div>
                 </Grid>
+
                 <Grid item xs={10}>
                   <CardContent>
                     <div
@@ -455,7 +457,9 @@ export default function CheckoutPage() {
               </Grid>
             </CardActionArea>
           </Card>
+
           <br />
+
           <PayPalScriptProvider
             options={{
               'client-id':
@@ -471,8 +475,10 @@ export default function CheckoutPage() {
             />
           </PayPalScriptProvider>
         </Grid>
+
         <Grid item xs={1} />
       </Grid>
+
       <Modal
         open={isPaymentCompleted}
         aria-labelledby="modal-modal-title"
@@ -488,6 +494,7 @@ export default function CheckoutPage() {
               <AlertTitle>Success</AlertTitle>
               Your payment is successfull! <strong>Enjoy your vacation!</strong>
             </Alert>
+
             <Button
               alignItems="center"
               onClick={() => {
