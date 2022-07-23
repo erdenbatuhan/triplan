@@ -2,13 +2,8 @@ import emailjs from '@emailjs/browser';
 
 const emailjsCredentials = require('../credentials/emailjs_credentials.json');
 
-export function generateEmailRoute(partnerLocationList) {
-  let route = '';
-  for (let index = 0; index < partnerLocationList.length; index += 1) {
-    const loc = partnerLocationList[index];
-    route = route.concat(loc.partnerLocation.name, '  ->  ');
-  }
-  return route;
+export function generateEmailRoute(partnerLocations) {
+  return partnerLocations.map(({ name }) => name).join('  ->  ');
 }
 
 export function generateEmailPaidServices(servicesToBeBought) {
