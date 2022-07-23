@@ -21,7 +21,7 @@ const exists = (id) => {
 };
 
 const findByIds = (ids) => {
-  return TripLocation.find({ _id: { $in: ids } }).sort({ createdAt: "desc" }); // In descending order/newly created first
+  return TripLocation.find({ _id: { $in: ids } }).sort({ order: "asc" }); // In ascending order
 };
 
 module.exports = { create, update, exists, findByIds };

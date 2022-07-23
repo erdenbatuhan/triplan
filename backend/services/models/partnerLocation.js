@@ -25,7 +25,7 @@ const PartnerLocationSchema = new Schema({
     enum : enums.PARTNER_TYPES,
     required: true
   },
-  googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents,
+  googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents
   associatedTripLocations: [{ 
     type: Schema.Types.ObjectId,
     ref: TripLocation.name,

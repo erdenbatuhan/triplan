@@ -16,37 +16,26 @@ const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
       return null;
     }
 
-    // Keep the trip location IDs in a map (for sorting purposes)
-    tripLocationIds = {}
-    tripPlan.tripLocations.forEach((tripLocation, idx) => tripLocationIds[tripLocation["_id"]] = idx);
+    tripLocationIds = tripPlan.tripLocations.map(({ _id }) => _id);
 
     let { tripLocations, partnerLocations } = await Promise.all([
       // Find the trip locations
-      tripLocationController.findByIds(Object.keys(tripLocationIds)),
+      tripLocationController.findByIds(tripLocationIds),
       // Get information of the partner locations
-      partnerLocationController.findByTripLocations(Object.keys(tripLocationIds))
+      partnerLocationController.findByTripLocations(tripLocationIds)
     ]).then(([ tripLocations, partnerLocations ]) => ({ tripLocations, partnerLocations }));
 
-    // Preserve the original sorting for trip locations and merge the partner locations into a single list
-    tripLocations.sort((a, b) => tripLocationIds[a["_id"]] - tripLocationIds[b["_id"]]);
+    // Store all partner locations in an object for fast access
     partnerLocations = [].concat.apply([], Object.values(partnerLocations));
+    partnerLocationsObject = Object.assign({}, ...partnerLocations.map(partnerLocation => 
+      Object.assign({}, ...partnerLocation.associatedTripLocations.map(({ _id }) => ({ [_id]: partnerLocation })))
+    ))
 
     // Return the trip locations and the partner locations connected to them
-    return tripLocations.map(tripLocation => {
-      // Find the partner location connected to the current trip location
-      const partnerLocation = partnerLocations.find(partnerLocation => {
-        return partnerLocation.associatedTripLocations.includes(tripLocation["_id"]);
-      });
-
-      // Check if the partner location is found
-      if (!partnerLocation) {
-        throw new Error(`Trip location with ID=${tripLocation["_id"]} does not belong to any partner location, ` + 
-                        `which shouldn't have happened!`);
-      }
-
-      // Return the trip location with the partner location connected to it
-      return { tripLocation, partnerLocation };
-    });
+    return tripLocations.map(tripLocation => ({
+      tripLocation,
+      partnerLocation: partnerLocationsObject[tripLocation._id]
+    }));
   });
 };
 
