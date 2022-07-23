@@ -122,11 +122,10 @@ router.put("/menu-item/:id", async (req, res) => {
 /**
  * Deletes an existing ticket
  */
-router.delete("/ticket/:id", async (req, res) => {
+router.delete("/ticket", async (req, res) => {
   try {
-    const ticketRemoved = await buyableItemController.deleteTicket(
-      req.params.id
-    );
+    const ticketId = req.query.id;
+    const ticketRemoved = await buyableItemController.deleteTicket(ticketId);
 
     if (!ticketRemoved) {
       return res.status(404).send(`The ticket not found!`);
@@ -143,10 +142,11 @@ router.delete("/ticket/:id", async (req, res) => {
 /**
  * Deletes an existing menu item
  */
-router.delete("/menu-item/:id", async (req, res) => {
+router.delete("/menu-item", async (req, res) => {
   try {
+    const menuItemId = req.query.id;
     const menuItemRemoved = await buyableItemController.deleteMenuItem(
-      req.params.id
+      menuItemId
     );
 
     if (!menuItemRemoved) {
