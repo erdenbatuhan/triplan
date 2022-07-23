@@ -34,6 +34,18 @@ router.get("/:id/location", async (req, res) => {
 });
 
 /**
+ * Gets the number of trips planned by the given users
+ */
+router.get("/count/user", async (req, res) => {
+  try {
+    const userIds = req.query.users.split(",");
+    res.status(200).send(await (tripPlanController.getNumTripsPlannedByUsers(userIds)));
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while getting the number of trips planned by the given users! Error => ${message}`);
+  }
+});
+
+/**
  * Gets the trip plans of a user
  */
 router.get("/user/:id", async (req, res) => {
@@ -54,18 +66,6 @@ router.post("/user/:id", async (req, res) => {
     res.status(200).send(await (tripPlanController.createTripPlan(userId, req.body)));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while creating a trip plan for the user using the locations provided! Error => ${message}`);
-  }
-});
-
-/**
- * Gets the number of trips planned by the given users
- */
-router.post("/count/user", async (req, res) => {
-  try {
-    const userIds = req.query.users.split(",");
-    res.status(200).send(await (tripPlanController.getNumTripsPlannedByUsers(userIds)));
-  } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the number of trips planned by the given users! Error => ${message}`);
   }
 });
 

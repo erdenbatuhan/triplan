@@ -55,6 +55,21 @@ const findByUsers = (userIds) => {
   return TripPlan.find({ user: { $in: userIds } });
 };
 
+const getNumTripsPlannedByUsers = (userIds) => {
+  const aggregatePipeline = !isEmpty(userIds) ? [{
+    $match: { user: { $in: getAsObjectIds(userIds) } }
+  }] : []
+
+  aggregatePipeline.push({
+    $group: {
+      _id: "$user",
+      numTripsPlanned: { $sum: 1 }
+    }
+  });
+
+  return TripPlan.aggregate(aggregatePipeline);
+}
+
 const calculateTripLocationRatingsOfUsersFollowed = (userId, tripLocationIds) => {
   // Among the trip locations, find the ones planned by the people followed and the ratings they have given
   return Promise.all([
@@ -121,27 +136,12 @@ const createTripPlan = async (userId, { name, partnerLocations }) => {
   });
 };
 
-const getNumTripsPlannedByUsers = (userIds) => {
-  const aggregatePipeline = !isEmpty(userIds) ? [{
-    $match: { user: { $in: getAsObjectIds(userIds) } }
-  }] : []
-
-  aggregatePipeline.push({
-    $group: {
-      _id: "$user",
-      numTripsPlanned: { $sum: 1 }
-    }
-  });
-
-  return TripPlan.aggregate(aggregatePipeline);
-}
-
 module.exports = {
   findWithPartnerLocationsByTripPlan,
   findById,
   findByUsers,
+  getNumTripsPlannedByUsers,
   calculateTripLocationRatingsOfUsersFollowed,
   findTripLocationsPlannedByUsers,
-  createTripPlan,
-  getNumTripsPlannedByUsers
+  createTripPlan
 };
