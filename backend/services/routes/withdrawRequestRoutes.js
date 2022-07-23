@@ -47,4 +47,22 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("remove/:id", async (req, res) => {
+  try {
+    const withdrawRequestId = req.params.id;
+    const withdrawRequest = await withdrawRequestController.removeWithdrawRequest(withdrawRequestId);
+
+    if (!withdrawRequest) {
+      return res.status(404).send(`No withdrawRequest found with ID=${withdrawRequestId}!`);
+    }
+
+    return res.status(200).send(withdrawRequest);
+  } catch ({ message }) {
+    res
+      .status(400)
+      .send(`An error occurred while removing the withdraw request! Error => ${message}`);
+  }
+});
+
+
 module.exports = router;

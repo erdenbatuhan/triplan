@@ -15,10 +15,12 @@ import EuroIcon from '@mui/icons-material/Euro';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import { green } from '@mui/material/colors';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { findUserWallet } from '../queries/user-queries';
+import { findUserWallet, getUser } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
+import { createNewWithdrawRequest } from '../queries/withdraw-request-queries';
 import {
   // CURRENCIES,
   TRANSACTION_TYPE_DEPOSIT,
@@ -26,6 +28,11 @@ import {
   TRANSACTION_STATUS_SUCCESSFUL,
   TRANSACTION_STATUS_REJECTED
 } from '../shared/constants';
+import {
+  generatePaypalEmail,
+  generatePaypalWithdrawAmount,
+  handleEmail
+} from '../queries/email-queries';
 
 const style = {
   position: 'absolute',
@@ -41,8 +48,11 @@ const style = {
 
 export default function WalletPage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [authenticatedUserData, setAuthenticatedUserData] = useState();
   const [wallet, setWallet] = useState(null);
   const [transactionAmount, setTransactionAmount] = useState(0);
+  const [paypalEmail, setPaypalEmail] = useState('');
+  const [isPaymentSuccessfull, setIsPaymentSuccessfull] = useState(false);
   // const [currency, setCurrency] = useState('EUR');
   const [transactionType, setTransactionType] = useState('');
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
@@ -55,6 +65,13 @@ export default function WalletPage() {
     }
 
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
+  }, [authenticatedUser]);
+
+  useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+    getUser(authenticatedUser.user.id).then((data) => setAuthenticatedUserData(data));
   }, [authenticatedUser]);
 
   const handleTransaction = () => {
@@ -72,24 +89,55 @@ export default function WalletPage() {
         }
       });
     } else if (transactionType === TRANSACTION_TYPE_WITHDRAW) {
-      createTransaction({
-        amount: Number(transactionAmount),
-        type: transactionType,
-        incomingWalletId: null,
-        outgoingWalletId: wallet._id
-      }).then(({ transaction, outgoingWalletObject }) => {
-        if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
-          setWallet(outgoingWalletObject);
-        } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
-          alert('Opps, something went wrong!');
-        }
+      const { username } = authenticatedUserData;
+      const { email } = authenticatedUserData;
+      console.log(authenticatedUserData.username, authenticatedUserData.email);
+      const newWithdrawRequest = {
+        username,
+        email,
+        paypalEmail,
+        amount: transactionAmount
+      };
+
+      createNewWithdrawRequest(newWithdrawRequest).then(() => {
+        handleEmail(
+          {
+            to_name: username,
+            to_email: email,
+            paypal_email: generatePaypalEmail(paypalEmail),
+            amount: generatePaypalWithdrawAmount(transactionAmount)
+          },
+          'withdrawRequest'
+        ).then(() => {
+          setIsPaymentSuccessfull(true);
+          // if (response === 200) {
+          //   setIsPaymentSuccessfull(true);
+          // } else {
+          //   setIsPaymentSuccessfull(false);
+          // }
+          setPaymentCompleted(true);
+        });
       });
+
+      // createTransaction({
+      //   amount: Number(transactionAmount),
+      //   type: transactionType,
+      //   incomingWalletId: null,
+      //   outgoingWalletId: wallet._id
+      // }).then(({ transaction, outgoingWalletObject }) => {
+      //   if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
+      //     setWallet(outgoingWalletObject);
+      //   } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
+      //     alert('Opps, something went wrong!');
+      //   }
+      // });
     }
   };
 
   const handleCompletePayment = (bool) => {
     handleTransaction();
-    setPaymentCompleted(bool);
+    setPaymentCompleted(true);
+    setIsPaymentSuccessfull(bool);
   };
 
   return (
@@ -109,8 +157,8 @@ export default function WalletPage() {
         </CardContent>
 
         <CardActions>
-          <Grid container direction="column">
-            <Grid item sx={6}>
+          <Grid container direction="row">
+            <Grid item sx={6} m={1}>
               <Button
                 color="success"
                 size="small"
@@ -119,12 +167,13 @@ export default function WalletPage() {
                   setTransactionType(TRANSACTION_TYPE_DEPOSIT);
                   setTransactionDialogShown(true);
                 }}>
-                Manage Balance
+                Deposit
               </Button>
             </Grid>
 
             <Grid item sx={6} m={1}>
-              {/* <Button
+              <Button
+                color="error"
                 size="small"
                 variant="outlined"
                 onClick={() => {
@@ -132,7 +181,7 @@ export default function WalletPage() {
                   setTransactionDialogShown(true);
                 }}>
                 Withdraw
-              </Button> */}
+              </Button>
             </Grid>
           </Grid>
         </CardActions>
@@ -169,6 +218,29 @@ export default function WalletPage() {
                   <EuroIcon sx={{ pt: 2, pl: 20 }} />
                 </Grid>
               </Grid>
+
+              <Grid
+                container
+                item
+                md={4}
+                spacing={0}
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  '& .MuiTextField-root': { m: 2, width: '25ch' }
+                }}
+                p={2}>
+                <Grid item xs={9} pr="4">
+                  <TextField
+                    id="standard-basic"
+                    label="Please enter Paypal email address"
+                    variant="standard"
+                    value={paypalEmail}
+                    onChange={(event) => setPaypalEmail(event.target.value)}
+                  />
+                </Grid>
+              </Grid>
+
               {/* <TextField
               id="outlined-select-currency"
               select
@@ -182,21 +254,37 @@ export default function WalletPage() {
               ))}
               </TextField> */}
             </Grid>
+            {transactionType === TRANSACTION_TYPE_DEPOSIT ? (
+              <PayPalScriptProvider
+                options={{
+                  'client-id':
+                    'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
+                  components: 'buttons',
+                  currency: 'EUR'
+                }}>
+                <PaypalCheckoutButtons
+                  currency="EUR"
+                  amount={transactionAmount}
+                  onPaymentComplete={handleCompletePayment}
+                  showSpinner
+                />
+              </PayPalScriptProvider>
+            ) : (
+              <Button
+                style={{
+                  color: '#FFFFFF',
+                  backgroundColor: green[500],
+                  width: '100%',
+                  border: 1,
+                  // borderColor: grey[500],
+                  borderRadius: 4,
+                  height: '60px'
+                }}
+                onClick={handleTransaction}>
+                Send Withdraw Request
+              </Button>
+            )}
 
-            <PayPalScriptProvider
-              options={{
-                'client-id':
-                  'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
-                components: 'buttons',
-                currency: 'EUR'
-              }}>
-              <PaypalCheckoutButtons
-                currency="EUR"
-                amount={transactionAmount}
-                onPaymentComplete={handleCompletePayment}
-                showSpinner
-              />
-            </PayPalScriptProvider>
             {/* <Button
               alignItems="right"
               onClick={() => {
@@ -220,9 +308,11 @@ export default function WalletPage() {
           }}>
           <Box sx={style}>
             <div className="center">
-              <Alert severity="success">
-                <AlertTitle>Success</AlertTitle>
-                Your payment is successfull!
+              <Alert severity={isPaymentSuccessfull ? 'success' : 'error'}>
+                <AlertTitle>{isPaymentSuccessfull ? 'Success' : 'Error'}</AlertTitle>
+                {isPaymentSuccessfull
+                  ? `Your ${transactionType} process completed successfully!`
+                  : `Your ${transactionType} process failed plase check your information!`}
               </Alert>
 
               <Button

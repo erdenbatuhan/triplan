@@ -86,7 +86,7 @@ function UserProfilePage() {
             </Typography>
           </Grid>
 
-          <Grid item xs={9} m={4}>
+          <Grid item xs={9} m={2}>
             <WalletPage />
           </Grid>
 
