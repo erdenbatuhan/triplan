@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, FormControl, Select, MenuItem, Typography, InputLabel } from '@mui/material';
 import SelectedMenuItem from './SelectedMenuItem';
 import * as constants from '../../shared/constants';
 
 function SelectPriceLevels(props) {
   const { selectedItems, handleChange, handleRemove, allOptionIsSelected } = props;
+  const [availableOptions, setAvailableOptions] = useState(constants.priceLevels);
+
+  useEffect(() => {
+    const currentAvailableOptions = constants.priceLevels.filter(
+      (priceLevel) => !selectedItems.includes(priceLevel)
+    );
+    setAvailableOptions(currentAvailableOptions);
+  }, [selectedItems]);
+
   return (
     <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
       <Typography align="left">Price Level(s)</Typography>
@@ -14,9 +23,7 @@ function SelectPriceLevels(props) {
         </InputLabel>
         <Select
           sx={{ marginTop: 2 }}
-          labelId="demo-select-small"
-          id="demo-select-small"
-          value={selectedItems[-1]}
+          value=""
           label="Select Price Level(s)"
           defaultValue=""
           disabled={allOptionIsSelected}
@@ -24,7 +31,7 @@ function SelectPriceLevels(props) {
           <MenuItem value="None">
             <em>All Levels</em>
           </MenuItem>
-          {constants.priceLevels.map((priceLevel, idx) => {
+          {availableOptions.map((priceLevel, idx) => {
             return (
               // eslint-disable-next-line react/no-array-index-key
               <MenuItem key={idx} value={priceLevel}>

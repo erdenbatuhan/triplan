@@ -1,18 +1,23 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const { Restaurant, TouristAttraction } = require("./../models/partnerLocation.js");
+const {
+  Restaurant,
+  TouristAttraction,
+} = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findDistinctCities = () => {
   return Promise.all([
-    Restaurant.distinct("city", { city: { $nin : ["", null, undefined] } }),
-    TouristAttraction.distinct("city", { city: { $nin : ["", null, undefined] } }),
-  ]).then(([restaurantCities, touristAttractionCities]) => (
-    [...new Set([ ...restaurantCities, ...touristAttractionCities ])]
-  ));
+    Restaurant.distinct("city", { city: { $nin: ["", null, undefined] } }),
+    TouristAttraction.distinct("city", {
+      city: { $nin: ["", null, undefined] },
+    }),
+  ]).then(([restaurantCities, touristAttractionCities]) => [
+    ...new Set([...restaurantCities, ...touristAttractionCities]),
+  ]);
 };
 
 const findFiltered = (filterData) => {
@@ -25,10 +30,13 @@ const findFiltered = (filterData) => {
     }).sort({ priceLevel: "asc" }),
     TouristAttraction.find({
       touristAttractionTypes: {
-        $in: filterData["touristAttractionFilter"]["types"],
+        $in: filterData["touristAttractionFilter"]["types"][1],
       },
-    })
-  ]).then(([ restaurants, touristAttractions ]) => ({ restaurants, touristAttractions }));
+    }),
+  ]).then(([restaurants, touristAttractions]) => ({
+    restaurants,
+    touristAttractions,
+  }));
 };
 
 const findByTripLocations = (tripLocationIds) => {
@@ -41,7 +49,10 @@ const findByTripLocations = (tripLocationIds) => {
     TouristAttraction.find({
       associatedTripLocations: { $in: tripLocationIds },
     }),
-  ]).then(([restaurants, touristAttractions]) => ({ restaurants, touristAttractions }));
+  ]).then(([restaurants, touristAttractions]) => ({
+    restaurants,
+    touristAttractions,
+  }));
 };
 
 const findRestaurantById = (restaurantId) => {
@@ -86,7 +97,7 @@ const signUpRestaurant = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
 
     const newPartnerLocation = await createRestaurant({
       ...req.body,
@@ -138,7 +149,7 @@ const signUpTouristAttraction = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
 
     const newPartnerLocation = await createTouristAttraction({
       ...req.body,
@@ -293,20 +304,30 @@ const findTouristAttractionByEmail = (email) => {
 };
 
 const createRestaurant = (restaurant) => {
-  return Restaurant.insertMany([{ ...restaurant, partnerType: PARTNER_TYPES[0] }]);
+  return Restaurant.insertMany([
+    { ...restaurant, partnerType: PARTNER_TYPES[0] },
+  ]);
 };
 
 const createTouristAttraction = (touristAttraction) => {
-  return TouristAttraction.insertMany([{ ...touristAttraction, partnerType: PARTNER_TYPES[1] }]);
+  return TouristAttraction.insertMany([
+    { ...touristAttraction, partnerType: PARTNER_TYPES[1] },
+  ]);
 };
 
 const updatePartnerLocationFields = async (id, fields) => {
   const { partnerLocationType } = await findPartnerLocationById(id);
-  
+
   if (partnerLocationType === PARTNER_TYPES[0]) {
-    return Restaurant.updateOne({ _id: id }, fields, { new: true, runValidators: true });
+    return Restaurant.updateOne({ _id: id }, fields, {
+      new: true,
+      runValidators: true,
+    });
   } else {
-    return TouristAttraction.updateOne({ _id: id }, fields, { new: true, runValidators: true });
+    return TouristAttraction.updateOne({ _id: id }, fields, {
+      new: true,
+      runValidators: true,
+    });
   }
 };
 
@@ -315,29 +336,40 @@ const findPartnerLocationById = (partnerLocationId) => {
     const restaurantFound = findRestaurantById(partnerLocationId);
     const touristAttractionFound = findTouristAttractionById(partnerLocationId);
 
-    Promise.all([restaurantFound, touristAttractionFound]).then(([restaurant, touristAttraction]) => {
-      if ((!restaurant && !touristAttraction) || (restaurant && touristAttraction)) {
-        return resolve(null);
-      } else if (restaurant) {
-        resolve({restaurant, partnerLocationType: 'restaurant'});
-      } else {
-        resolve({touristAttraction, partnerLocationType: 'tourist-attraction'});
-      }
-    }).catch((err) => reject(err));
+    Promise.all([restaurantFound, touristAttractionFound])
+      .then(([restaurant, touristAttraction]) => {
+        if (
+          (!restaurant && !touristAttraction) ||
+          (restaurant && touristAttraction)
+        ) {
+          return resolve(null);
+        } else if (restaurant) {
+          resolve({ restaurant, partnerLocationType: "restaurant" });
+        } else {
+          resolve({
+            touristAttraction,
+            partnerLocationType: "tourist-attraction",
+          });
+        }
+      })
+      .catch((err) => reject(err));
   });
 };
 
 const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
   return Restaurant.updateOne(
-    { _id: restaurantId }, 
+    { _id: restaurantId },
     { $push: { associatedTripLocations: tripLocation } },
     { new: true, runValidators: true }
   );
 };
 
-const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation) => {
+const addTripLocationToTouristAttraction = (
+  touristAttractionId,
+  tripLocation
+) => {
   return TouristAttraction.updateOne(
-    { _id: touristAttractionId }, 
+    { _id: touristAttractionId },
     { $push: { associatedTripLocations: tripLocation } },
     { new: true, runValidators: true }
   );
@@ -358,5 +390,5 @@ module.exports = {
   updatePartnerLocationFields,
   findPartnerLocationById,
   addTripLocationToRestaurant,
-  addTripLocationToTouristAttraction
+  addTripLocationToTouristAttraction,
 };
