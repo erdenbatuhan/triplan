@@ -73,7 +73,6 @@ export default function TripPlanningPage() {
     if (!authenticatedUser) {
       return;
     }
-    console.log('filterState: ', filterState);
     setLoading(true);
     getFilteredPartnerLocations(authenticatedUser.user.id, filterState)
       .then((data) => setPartnerLocations(data))
@@ -167,7 +166,6 @@ export default function TripPlanningPage() {
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
-  const isRestaurantIncluded = true;
   return (
     <div>
       <Grid container spacing={1}>
@@ -182,7 +180,7 @@ export default function TripPlanningPage() {
             calledFrom="TripPlanningPage"
           />
         </Grid>
-        {isRestaurantIncluded ? (
+        {isRestaurantEnabled ? (
           <Grid item xs={3}>
             <Header title="Restaurants" />
 
