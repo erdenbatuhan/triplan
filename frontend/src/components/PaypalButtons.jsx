@@ -14,8 +14,8 @@ export default function PaypalCheckoutButtons({
   // This values are the props in the UI
   const style = { layout: 'horizontal', label: 'paypal' };
 
-  const completePayment = () => {
-    onPaymentComplete(true); // Update parent
+  const completePayment = (bool) => {
+    onPaymentComplete(bool); // Update parent
   };
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function PaypalCheckoutButtons({
             });
         }}
         onApprove={(data, actions) => {
-          return actions.order.capture().then(completePayment());
+          return actions.order.capture().then(completePayment(true));
         }}
       />
     </>

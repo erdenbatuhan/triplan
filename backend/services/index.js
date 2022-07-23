@@ -64,3 +64,11 @@ app.use("/transaction", transactionRoutes);
 // Routes: Buyable Item
 const buyableItemRoutes = require("./routes/buyableItemRoutes.js");
 app.use("/buyable-item", buyableItemRoutes);
+
+// Routes: Withdraw Request
+const withdrawRequestRoutes = require("./routes/withdrawRequestRoutes.js");
+app.use("/withdraw-request", withdrawRequestRoutes);
+
+// Routes: Admin
+const adminRoutes = require("./routes/adminRoutes.js");
+app.use("/admin", adminRoutes);
