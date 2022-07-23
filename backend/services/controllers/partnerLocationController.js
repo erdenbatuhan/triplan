@@ -1,18 +1,23 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const { Restaurant, TouristAttraction } = require("./../models/partnerLocation.js");
+const {
+  Restaurant,
+  TouristAttraction,
+} = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findDistinctCities = () => {
   return Promise.all([
-    Restaurant.distinct("city", { city: { $nin : ["", null, undefined] } }),
-    TouristAttraction.distinct("city", { city: { $nin : ["", null, undefined] } }),
-  ]).then(([restaurantCities, touristAttractionCities]) => (
-    [...new Set([ ...restaurantCities, ...touristAttractionCities ])]
-  ))
+    Restaurant.distinct("city", { city: { $nin: ["", null, undefined] } }),
+    TouristAttraction.distinct("city", {
+      city: { $nin: ["", null, undefined] },
+    }),
+  ]).then(([restaurantCities, touristAttractionCities]) => [
+    ...new Set([...restaurantCities, ...touristAttractionCities]),
+  ]);
 };
 
 const findFiltered = (filterData) => {
@@ -27,8 +32,11 @@ const findFiltered = (filterData) => {
       touristAttractionTypes: {
         $in: filterData["touristAttractionFilter"]["types"],
       },
-    })
-  ]).then(([ restaurants, touristAttractions ]) => ({ restaurants, touristAttractions }));
+    }),
+  ]).then(([restaurants, touristAttractions]) => ({
+    restaurants,
+    touristAttractions,
+  }));
 };
 
 const findByTripLocations = (tripLocationIds) => {
@@ -41,7 +49,10 @@ const findByTripLocations = (tripLocationIds) => {
     TouristAttraction.find({
       associatedTripLocations: { $in: tripLocationIds },
     }),
-  ]).then(([restaurants, touristAttractions]) => ({ restaurants, touristAttractions }));
+  ]).then(([restaurants, touristAttractions]) => ({
+    restaurants,
+    touristAttractions,
+  }));
 };
 
 const findRestaurantById = (restaurantId) => {
@@ -293,20 +304,30 @@ const findTouristAttractionByEmail = (email) => {
 };
 
 const createRestaurant = (restaurant) => {
-  return Restaurant.insertMany([{ ...restaurant, partnerType: PARTNER_TYPES[0] }]);
+  return Restaurant.insertMany([
+    { ...restaurant, partnerType: PARTNER_TYPES[0] },
+  ]);
 };
 
 const createTouristAttraction = (touristAttraction) => {
-  return TouristAttraction.insertMany([{ ...touristAttraction, partnerType: PARTNER_TYPES[1] }]);
+  return TouristAttraction.insertMany([
+    { ...touristAttraction, partnerType: PARTNER_TYPES[1] },
+  ]);
 };
 
 const updatePartnerLocationFields = async (id, fields) => {
   const { partnerLocationType } = await findPartnerLocationById(id);
-  
+
   if (partnerLocationType === PARTNER_TYPES[0]) {
-    return Restaurant.updateOne({ _id: id }, fields, { new: true, runValidators: true });
+    return Restaurant.updateOne({ _id: id }, fields, {
+      new: true,
+      runValidators: true,
+    });
   } else {
-    return TouristAttraction.updateOne({ _id: id }, fields, { new: true, runValidators: true });
+    return TouristAttraction.updateOne({ _id: id }, fields, {
+      new: true,
+      runValidators: true,
+    });
   }
 };
 
@@ -335,32 +356,23 @@ const findPartnerLocationById = (partnerLocationId) => {
   });
 };
 
-<<<<<<< HEAD:backend/services/controllers/partnerLocationController.js
 const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
   return Restaurant.updateOne(
-    { _id: restaurantId }, 
+    { _id: restaurantId },
     { $push: { associatedTripLocations: tripLocation } },
     { new: true, runValidators: true }
   );
 };
 
-const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation) => {
+const addTripLocationToTouristAttraction = (
+  touristAttractionId,
+  tripLocation
+) => {
   return TouristAttraction.updateOne(
-    { _id: touristAttractionId }, 
+    { _id: touristAttractionId },
     { $push: { associatedTripLocations: tripLocation } },
     { new: true, runValidators: true }
   );
-=======
-const updatePartnerLocationFields = async (id, fields) => {
-  const { partnerLocation, partnerLocationType } =
-    await findPartnerLocationById(id);
-
-  if (partnerLocationType == "restaurant") {
-    return Restaurant.updateOne({ _id: id }, fields, { new: true });
-  } else {
-    return TouristAttraction.updateOne({ _id: id }, fields, { new: true });
-  }
->>>>>>> ef6f024 (filter is working with clicking filter after making changes.):backend/controllers/partnerLocationController.js
 };
 
 module.exports = {
@@ -377,10 +389,6 @@ module.exports = {
   loginTouristAttraction,
   updatePartnerLocationFields,
   findPartnerLocationById,
-<<<<<<< HEAD:backend/services/controllers/partnerLocationController.js
   addTripLocationToRestaurant,
-  addTripLocationToTouristAttraction
-=======
-  updatePartnerLocationFields,
->>>>>>> ef6f024 (filter is working with clicking filter after making changes.):backend/controllers/partnerLocationController.js
+  addTripLocationToTouristAttraction,
 };
