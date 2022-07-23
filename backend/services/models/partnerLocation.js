@@ -5,7 +5,7 @@ const { GoogleLocationInfo } = require("./googleLocationInfo.js");
 const { TripLocation } = require("./tripLocation.js");
 const { Wallet } = require("./wallet.js");
 
-const { extendSchema } = require("./../utils/schemaUtils.js");
+const { extendSchema } = require("./../utils/mongooseUtils.js");
 const enums = require("./../utils/enums.js");
 
 const PartnerLocationSchema = new Schema({

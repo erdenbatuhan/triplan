@@ -6,3 +6,7 @@ module.exports.extendSchema = (schema, definition) => {
     timestamps: true
   });
 }
+
+module.exports.getAsObjectIds = (ids) => {
+  return ids ? ids.map(id => mongoose.Types.ObjectId(id)) : []
+}
