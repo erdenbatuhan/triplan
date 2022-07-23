@@ -7,6 +7,8 @@ const partnerLocationController = require("./partnerLocationController.js");
 const optimizationServiceQueries = require("./../queries/optimizationServiceQueries.js");
 
 const { PARTNER_TYPES } = require("./../utils/enums.js");
+const { getAsObjectIds } = require("./../utils/mongooseUtils.js");
+const { isEmpty } = require("./../utils/objectUtils.js");
 
 const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
   return findById(tripPlanId).then(async (tripPlan) => {
@@ -119,4 +121,27 @@ const createTripPlan = async (userId, { name, partnerLocations }) => {
   });
 };
 
-module.exports = { findWithPartnerLocationsByTripPlan, findById, findByUsers, calculateTripLocationRatingsOfUsersFollowed, findTripLocationsPlannedByUsers, createTripPlan };
+const getNumTripsPlannedByUsers = (userIds) => {
+  const aggregatePipeline = !isEmpty(userIds) ? [{
+    $match: { user: { $in: getAsObjectIds(userIds) } }
+  }] : []
+
+  aggregatePipeline.push({
+    $group: {
+      _id: "$user",
+      numTripsPlanned: { $sum: 1 }
+    }
+  });
+
+  return TripPlan.aggregate(aggregatePipeline);
+}
+
+module.exports = {
+  findWithPartnerLocationsByTripPlan,
+  findById,
+  findByUsers,
+  calculateTripLocationRatingsOfUsersFollowed,
+  findTripLocationsPlannedByUsers,
+  createTripPlan,
+  getNumTripsPlannedByUsers
+};
