@@ -51,10 +51,7 @@ function UserProfilePage() {
       return;
     }
     getUserFollowers(authenticatedUser.user.id).then((data) => setFollowers(data));
-    getUserFollowed(authenticatedUser.user.id).then((data) => {
-      console.log(data);
-      setFollowed(data);
-    });
+    getUserFollowed(authenticatedUser.user.id).then((data) => setFollowed(data));
     setUsername(authenticatedUser.user.username);
     getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTrips(data));
   }, [authenticatedUser, followers, followed, trips]);
