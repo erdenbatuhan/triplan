@@ -6,15 +6,11 @@ const { average } = require("../utils/objectUtils.js");
 
 module.exports.sortLocations = (userId, { restaurants, touristAttractions }) => {
   // Sort the returned locations (restaurants and tourist attractions) by their "calculate scores"
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      sortLocationsByScore(userId, restaurants), sortLocationsByScore(userId, touristAttractions)
-    ]).then(([
-      restaurantsSorted, touristAttractionsSorted 
-    ]) => resolve({
-      restaurants: restaurantsSorted, touristAttractions: touristAttractionsSorted
-    })).catch(err => reject(err));
-  });
+  return Promise.all([
+    sortLocationsByScore(userId, restaurants), sortLocationsByScore(userId, touristAttractions)
+  ]).then(([
+    restaurantsSorted, touristAttractionsSorted 
+  ]) => ({ restaurants: restaurantsSorted, touristAttractions: touristAttractionsSorted }));
 };
 
 const sortLocationsByScore = (userId, locations) => {

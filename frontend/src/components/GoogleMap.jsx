@@ -28,7 +28,7 @@ function GoogleMap({ selectedCity, selectedPartnerLocations }) {
   // Listening to the changes in selectedPartnerLocations
   useEffect(() => {
     setGoogleLocationInfoList(
-      selectedPartnerLocations.map(({ partnerLocation }) => partnerLocation.googleLocationInfo)
+      selectedPartnerLocations.map(({ googleLocationInfo }) => googleLocationInfo)
     );
   }, [selectedPartnerLocations]);
 

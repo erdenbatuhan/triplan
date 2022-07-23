@@ -13,12 +13,7 @@ import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
-import { getOptimizedRoute } from '../queries/route-optimization-queries';
 import * as partnerLocationDefaultFilter from '../queries/data/partner-location-default-filter.json';
-import {
-  PARTNER_LOCATION_TYPE_RESTAURANT,
-  PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
-} from '../shared/constants';
 import GoogleMap from '../components/GoogleMap';
 
 const fabStyle = {
@@ -33,14 +28,6 @@ const fabStyle = {
   left: 'auto',
   position: 'fixed'
 };
-
-function getOrderedLocations(locationList, orderList) {
-  const orderedList = [];
-  for (let i = 0; i < Object.keys(orderList).length; i += 1) {
-    orderedList.push(locationList[orderList[i]]);
-  }
-  return orderedList;
-}
 
 export default function TripPlanningPage() {
   const { state } = useLocation();
@@ -57,14 +44,11 @@ export default function TripPlanningPage() {
     restaurants: [],
     touristAttractions: []
   });
-  const [selectedPartnerLocations, setSelectedPartnerLocations] = useState([]);
+  const [selectedPartnerLocationObject, setSelectedPartnerLocationObject] = useState({});
   const [windowDimenion, detectHW] = useState({
     winWidth: window.innerWidth,
     winHeight: window.innerHeight
   });
-
-  const [partnerLocationsOrder, setPartnerLocationsOrderList] = useState([]);
-  const [orderedPartnerLocations, setOrderedPartnerLocations] = useState([]);
 
   const detectSize = () => {
     detectHW({
@@ -93,18 +77,6 @@ export default function TripPlanningPage() {
       .finally(() => setLoading(false));
   }, [authenticatedUser, filterState]);
 
-  useEffect(() => {
-    getOptimizedRoute(selectedPartnerLocations).then((data) =>
-      setPartnerLocationsOrderList(data.response)
-    );
-  }, [selectedPartnerLocations]);
-
-  useEffect(() => {
-    setOrderedPartnerLocations(
-      getOrderedLocations(selectedPartnerLocations, partnerLocationsOrder)
-    );
-  }, [partnerLocationsOrder]);
-
   // Listening to the changes in query and partnerLocations
   useEffect(() => {
     const preselectedRestaurantIds = searchParams.get('preselectedRestaurantIds');
@@ -112,27 +84,19 @@ export default function TripPlanningPage() {
 
     // Preselect partner locations if there are any
     if ((preselectedRestaurantIds || preselectedTouristAttractionIds) && partnerLocations) {
-      setSelectedPartnerLocations([
+      setSelectedPartnerLocationObject([
         // Preselected restaurants
-        ...partnerLocations.restaurants
-          .filter(({ _id }) => preselectedRestaurantIds.includes(_id))
-          .map((partnerLocation) => ({
-            partnerLocation,
-            partnerLocationType: PARTNER_LOCATION_TYPE_RESTAURANT
-          })),
+        ...partnerLocations.restaurants.filter(({ _id }) => preselectedRestaurantIds.includes(_id)),
         // Preselected tourist attractions
-        ...partnerLocations.touristAttractions
-          .filter(({ _id }) => preselectedTouristAttractionIds.includes(_id))
-          .map((partnerLocation) => ({
-            partnerLocation,
-            partnerLocationType: PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION
-          }))
+        ...partnerLocations.touristAttractions.filter(({ _id }) =>
+          preselectedTouristAttractionIds.includes(_id)
+        )
       ]);
     }
   }, [searchParams, partnerLocations]);
 
   const handleSelectedPartnerLocationsChange = (selectedPartnerLocationsChanged) => {
-    setSelectedPartnerLocations([...selectedPartnerLocationsChanged]); // Create a copy of the new list to force re-rendering
+    setSelectedPartnerLocationObject([...selectedPartnerLocationsChanged]); // Create a copy of the new list to force re-rendering
   };
 
   const handleFilterChange = (newFilterState) => {
@@ -161,8 +125,7 @@ export default function TripPlanningPage() {
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <PlacesList
             partnerLocations={partnerLocations.restaurants}
-            selectedPartnerLocations={selectedPartnerLocations}
-            partnerLocationType={PARTNER_LOCATION_TYPE_RESTAURANT}
+            selectedPartnerLocationObject={selectedPartnerLocationObject}
             onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
           />
         </Paper>
@@ -174,8 +137,7 @@ export default function TripPlanningPage() {
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
           <PlacesList
             partnerLocations={partnerLocations.touristAttractions}
-            selectedPartnerLocations={selectedPartnerLocations}
-            partnerLocationType={PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION}
+            selectedPartnerLocationObject={selectedPartnerLocationObject}
             onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
           />
         </Paper>
@@ -186,17 +148,19 @@ export default function TripPlanningPage() {
 
         <GoogleMap
           selectedCity={selectedCity}
-          selectedPartnerLocations={selectedPartnerLocations}
+          selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
         />
 
         <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
-          <SelectedPlacesList selectedPartnerLocations={selectedPartnerLocations} />
+          <SelectedPlacesList
+            selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
+          />
         </Paper>
         <Button
           onClick={() =>
             navigate('/checkout', {
               state: {
-                partnerLocations: orderedPartnerLocations
+                partnerLocations: Object.values(selectedPartnerLocationObject)
               }
             })
           }>

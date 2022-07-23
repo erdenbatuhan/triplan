@@ -10,7 +10,7 @@ const save = (googleLocationInfo) => {
   return User.findOneAndUpdate(
     googleLocationInfo._id ? { "_id": googleLocationInfo._id } : null,
     googleLocationInfo,
-    { upsert: true, new: true }
+    { upsert: true, new: true, runValidators: true }
   );
 };
 
@@ -28,17 +28,15 @@ const getRatingScores = (googleLocationInfoIds) => {
 };
 
 const getReviewCountScores = (googleLocationInfoIds) => {
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      getReviewCountsForPlaces(googleLocationInfoIds), getMaxReviewCountsForCities()
-    ]).then(([ reviewCountsForPlaces, maxReviewCountsForCities ]) => {
-      let reviewCountScores = Object.assign({}, ...Object.entries(reviewCountsForPlaces).map(([_id, { city, review_count }]) => (
-        { [_id]: review_count / maxReviewCountsForCities[city] }
-      )));
-      reviewCountScores = sortObject(reviewCountScores, true);
+  return Promise.all([
+    getReviewCountsForPlaces(googleLocationInfoIds), getMaxReviewCountsForCities()
+  ]).then(([ reviewCountsForPlaces, maxReviewCountsForCities ]) => {
+    let reviewCountScores = Object.assign({}, ...Object.entries(reviewCountsForPlaces).map(([_id, { city, review_count }]) => (
+      { [_id]: review_count / maxReviewCountsForCities[city] }
+    )));
+    reviewCountScores = sortObject(reviewCountScores, true);
 
-      resolve(reviewCountScores);
-    }).catch(err => reject(err));
+    return reviewCountScores;
   });
 };
 
