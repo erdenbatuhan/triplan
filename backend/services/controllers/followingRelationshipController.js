@@ -15,7 +15,7 @@ const createFollowingRelationship = ({ followerId, followedId }) => {
       FollowingRelationship.findOneAndUpdate(
         { follower, followed }, // Filter to check if the record exists
         { follower, followed }, // Fields inserted/updated
-        { upsert: true, new: true }
+        { upsert: true, new: true, runValidators: true }
       ).then(result => {
         if (!result) {
           return reject(new Error(`An error occurred while upserting!`))

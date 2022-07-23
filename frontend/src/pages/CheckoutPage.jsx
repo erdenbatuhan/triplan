@@ -25,8 +25,8 @@ import { getBuyableItems } from '../queries/buyable-item-queries';
 import { createTransaction } from '../queries/transaction-queries';
 
 import {
-  PARTNER_LOCATION_TYPE_RESTAURANT,
-  PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION,
+  PARTNER_TYPE_RESTAURANT,
+  PARTNER_TYPE_TOURIST_ATTRACTION,
   // CURRENCIES,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
@@ -144,20 +144,20 @@ export default function CheckoutPage() {
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
   }, [authenticatedUser]);
 
-  // Listen to the changes in partnerLocationData
+  // Listen to the changes in partnerLocations
   useEffect(() => {
     // Request body needed to get the buyable items
     const selectedPartnerLocationIds = {
       restaurantIds: partnerLocations
-        .filter(({ partnerLocationType }) => {
-          return partnerLocationType === PARTNER_LOCATION_TYPE_RESTAURANT;
+        .filter(({ partnerType }) => {
+          return partnerType === PARTNER_TYPE_RESTAURANT;
         })
-        .map(({ partnerLocation }) => partnerLocation._id),
+        .map(({ _id }) => _id),
       touristAttractionIds: partnerLocations
-        .filter(({ partnerLocationType }) => {
-          return partnerLocationType === PARTNER_LOCATION_TYPE_TOURIST_ATTRACTION;
+        .filter(({ partnerType }) => {
+          return partnerType === PARTNER_TYPE_TOURIST_ATTRACTION;
         })
-        .map(({ partnerLocation }) => partnerLocation._id)
+        .map(({ _id }) => _id)
     };
 
     setLoading(true);
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
         const fetchedBuyableItemData = { ...menuItemData, ...ticketData };
         const emptyBuyableItemSelections = {};
 
-        partnerLocations.forEach(({ partnerLocation }) => {
+        partnerLocations.forEach((partnerLocation) => {
           emptyBuyableItemSelections[partnerLocation._id] = Object.assign(
             {},
             ...fetchedBuyableItemData[partnerLocation._id].map((item) => ({ [item._id]: 0 }))
@@ -187,7 +187,7 @@ export default function CheckoutPage() {
     // After each selection, calculate the services ready to be bought
     const updatedServicesToBeBought = [];
 
-    partnerLocations.forEach(({ partnerLocation }) => {
+    partnerLocations.forEach((partnerLocation) => {
       const buyableItems = buyableItemData[partnerLocation._id];
       const itemsToBeBought = [];
 
@@ -247,6 +247,7 @@ export default function CheckoutPage() {
     if (!partnerLocations) {
       return;
     }
+
     setItemList(servicesToBeBought);
     emailContent.message = generateEmailMessage(partnerLocations, itemList, totalPaidServicePrice);
   }, [partnerLocations, servicesToBeBought, totalPaidServicePrice]);
@@ -300,15 +301,14 @@ export default function CheckoutPage() {
               '& ul': { padding: 0 }
             }}>
             {partnerLocations
-              .filter(({ partnerLocation }) => partnerLocation)
-              .map(({ partnerLocation, partnerLocationType }, idx) => (
+              .filter((partnerLocation) => partnerLocation)
+              .map((partnerLocation, idx) => (
                 <li key={`CheckoutPage-CheckoutItemCard-${partnerLocation._id}`}>
                   <ul>
                     <CheckoutItemCard
                       loading={loading}
                       index={idx + 1}
                       partnerLocation={partnerLocation}
-                      partnerLocationType={partnerLocationType}
                       items={buyableItemData[partnerLocation._id] || []}
                       itemSelections={buyableItemSelections[partnerLocation._id] || []}
                       onItemSelectionChange={handleItemSelectionCountChange}

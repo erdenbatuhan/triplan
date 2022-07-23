@@ -137,7 +137,7 @@ const updateFields = (id, fields) => {
     return new Promise((resolve) => resolve(null)); // User does not exist!
   }
 
-  return User.updateOne({ _id: id }, fields, { new: true });
+  return User.updateOne({ _id: id }, fields, { new: true, runValidators: true });
 };
 
 module.exports = {

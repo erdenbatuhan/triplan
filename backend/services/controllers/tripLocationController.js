@@ -12,7 +12,7 @@ const update = (id, fields) => {
   return TripLocation.findOneAndUpdate(
     { _id: id },
     { $set: fields },
-    { new: true }
+    { new: true, runValidators: true }
   );
 };
 

@@ -1,6 +1,10 @@
+module.exports.PARTNER_TYPES = [
+  "restaurant", "tourist_attraction"
+];
+
 module.exports.FOOD_TYPES = [
   "Regular", "Vegetarian", "Vegan"
-]
+];
 
 module.exports.TOURIST_ATTRACTION_TYPES = [
   "tourist_attraction", "museum", "point_of_interest", "establishment", "church", "place_of_worship", "park",
@@ -9,16 +13,16 @@ module.exports.TOURIST_ATTRACTION_TYPES = [
   "stadium", "home_goods_store", "cafe", "library", "zoo", "parking", "book_store", "cemetery", "amusement_park",
   "movie_theater", "jewelry_store", "train_station", "transit_station", "shopping_mall", "general_contractor",
   "finance", "health", "route", "hair_care", "university", "meal_takeaway"
-]
+];
 
 module.exports.CUISINES = [
   "Japanese", "Chinese", "Indian", "Lebanese", "Turkish", "Greek", "Italian", "German", "Spanish", "American", "Mexican"
-]
+];
 
 module.exports.TRANSACTION_TYPE = [
   "Deposit", "Withdraw", "Purchase"
-]
+];
 
 module.exports.TRANSACTION_STATUS = [
   "Successful", "Rejected"
-]
+];

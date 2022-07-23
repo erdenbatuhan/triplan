@@ -6,7 +6,7 @@ export default function SelectedPlacesList({ selectedPartnerLocations }) {
   return (
     <Stack spacing={2}>
       {selectedPartnerLocations
-        ? selectedPartnerLocations.map(({ partnerLocation }) => (
+        ? selectedPartnerLocations.map((partnerLocation) => (
             <PlaceCard
               key={partnerLocation._id}
               id={partnerLocation._id}
