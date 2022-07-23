@@ -31,7 +31,7 @@ export default function CheckoutItemCard({
 }) {
   const [updatedItemSelections, setUpdatedItemSelections] = useState([]);
 
-  // Listen to the changes in latestSelectionUpdate
+  // Listening to the changes in latestSelectionUpdate
   useEffect(() => {
     setUpdatedItemSelections(itemSelections);
   }, [latestSelectionUpdateDate]);
@@ -71,7 +71,8 @@ export default function CheckoutItemCard({
                 bgcolor: 'background.paper',
                 position: 'relative',
                 overflow: 'auto',
-                height: '15em',
+                minHeight: '1.5em',
+                maxHeight: '15em',
                 marginTop: '10px',
                 '& ul': { padding: 0 }
               }}>

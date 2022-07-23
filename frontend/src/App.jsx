@@ -16,8 +16,8 @@ import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
 import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
-  // const [isLoggedIn, setIsLoggedIn] = useState(true);
+  // const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
   console.log('App, ', isLoggedIn);
 
@@ -55,7 +55,10 @@ export default function App() {
             path="/trip-planning"
             element={isLoggedIn ? <TripPlanningPage /> : <Navigate to="/" />}
           />
-          <Route path="/checkout" element={isLoggedIn ? <CheckoutPage /> : <Navigate to="/" />} />
+          <Route
+            path="/trip-plan/:tripPlanId/checkout"
+            element={isLoggedIn ? <CheckoutPage /> : <Navigate to="/" />}
+          />
           <Route
             path="/trip-plan/:tripPlanId/summary"
             element={isLoggedIn ? <TripPlanSummaryPage /> : <Navigate to="/" />}

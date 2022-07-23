@@ -8,8 +8,8 @@ export async function getTripPlan(tripPlanId) {
   }).then((response) => response.json());
 }
 
-export async function getDetailedTripLocationsOfTripPlan(tripPlanId) {
-  return await fetch(`${HOST_TRIP_PLAN}/${tripPlanId}/trip-location`, {
+export async function getLocationsOfTripPlan(tripPlanId) {
+  return await fetch(`${HOST_TRIP_PLAN}/${tripPlanId}/location`, {
     method: `GET`,
     mode: `cors`,
     headers: HEADERS

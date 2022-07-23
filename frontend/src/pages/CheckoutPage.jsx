@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -21,6 +21,7 @@ import CheckoutItemCard from '../components/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
+import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
 import { createTransaction } from '../queries/transaction-queries';
 
@@ -54,8 +55,8 @@ function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
   let googleMapsLink = 'https://www.google.com/maps/dir/';
   for (let index = 0; index < partnerLocationList.length; index += 1) {
     const loc = partnerLocationList[index];
-    message = message.concat('\r\n- ', loc.partnerLocation.name);
-    googleMapsLink = googleMapsLink.concat(loc.partnerLocation.name.replaceAll(' ', '+'), '/');
+    message = message.concat('\r\n- ', loc.name);
+    googleMapsLink = googleMapsLink.concat(loc.name.replaceAll(' ', '+'), '/');
   }
   if (servicesToBeBought.length > 0) {
     message = message.concat('\r\nYour Paid Services:\r\n');
@@ -79,13 +80,14 @@ function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
 }
 
 export default function CheckoutPage() {
-  const { state } = useLocation(); // Received from the previous route
+  const { tripPlanId } = useParams();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [wallet, setWallet] = useState(null);
-  const [partnerLocations] = useState(state ? state.partnerLocations : []);
+  const [tripPlan, setTripPlan] = useState({});
+  const [partnerLocations, setPartnerLocations] = useState([]);
   const [buyableItemData, setBuyableItemData] = useState({});
   const [buyableItemSelections, setBuyableItemSelections] = useState({});
   const [latestSelectionUpdateDate, setLatestSelectionUpdateDate] = useState(new Date()); // Used for easier force-rendering
@@ -136,15 +138,33 @@ export default function CheckoutPage() {
     });
   };
 
-  // Listen to the changes in authenticatedUser
+  // Update the trip plan data for every change in trip plan ID
+  useEffect(() => {
+    if (!tripPlanId) {
+      navigate('/');
+      return;
+    }
+
+    // Fetch the trip plan itself
+    getTripPlan(tripPlanId).then((data) => setTripPlan(data));
+
+    // Fetch all the partner locations of the trip plan
+    getLocationsOfTripPlan(tripPlanId)
+      .then((data) => setPartnerLocations(data.map(({ partnerLocation }) => partnerLocation)))
+      .catch(() => navigate('/'));
+  }, [tripPlanId]);
+
+  // Listening to the changes in authenticatedUser
   useEffect(() => {
     if (!authenticatedUser) {
       return;
     }
+
+    getUser(authenticatedUser.user.id).then((data) => setUser(data));
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
   }, [authenticatedUser]);
 
-  // Listen to the changes in partnerLocations
+  // Listening to the changes in partnerLocations
   useEffect(() => {
     // Request body needed to get the buyable items
     const selectedPartnerLocationIds = {
@@ -182,7 +202,7 @@ export default function CheckoutPage() {
       });
   }, [partnerLocations]);
 
-  // Listen to the changes in buyableItemSelections
+  // Listening to the changes in buyableItemSelections
   useEffect(() => {
     // After each selection, calculate the services ready to be bought
     const updatedServicesToBeBought = [];
@@ -235,14 +255,17 @@ export default function CheckoutPage() {
     setTotalPaidServicePrice(totalPrice);
   }, [buyableItemSelections]);
 
+  // Listening to the changes in user
   useEffect(() => {
     if (!user) {
       return;
     }
+
     emailContent.to_name = (user.firstName, ' ', user.lastName);
     emailContent.to_email = user.email;
   }, [user]);
 
+  // Listening to the changes in partnerLocations, servicesToBeBought, totalPaidServicePrice
   useEffect(() => {
     if (!partnerLocations) {
       return;
@@ -252,23 +275,7 @@ export default function CheckoutPage() {
     emailContent.message = generateEmailMessage(partnerLocations, itemList, totalPaidServicePrice);
   }, [partnerLocations, servicesToBeBought, totalPaidServicePrice]);
 
-  useEffect(() => {
-    if (!authenticatedUser) {
-      return;
-    }
-    getUser(authenticatedUser.user.id).then((data) => {
-      setUser(data);
-    });
-  }, [authenticatedUser]);
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    emailContent.to_name = (user.firstName, ' ', user.lastName);
-    emailContent.to_email = user.email;
-  }, [user]);
-
+  // Listening to the changes in isPaymentCompleted
   useEffect(() => {
     if (isPaymentCompleted) {
       handleEmail();
@@ -289,7 +296,7 @@ export default function CheckoutPage() {
         <Grid item xs={1} />
 
         <Grid item xs={6}>
-          <Header title="Your Optimized Route Plan" />
+          <Header title={`Your Optimized Route Plan for ${tripPlan.name}`} />
 
           <List
             sx={{
