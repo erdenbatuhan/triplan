@@ -8,26 +8,42 @@ import {
   Divider,
   Card,
   CardContent,
-  Box
+  Box,
+  Modal
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import TripCard from '../components/TripCard';
-// import InfoCard from '../components/InfoCard';
 import WalletPage from './WalletPage';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUserFollowers, getUserFollowed } from '../queries/following-relationship-queries';
 import { getTripPlansOfUser } from '../queries/trip-plan-queries';
+import FollowingsCard from '../components/FollowingsCard';
 
 const mockImgData = {
   img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
   title: 'Sea star'
 };
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 6,
+  borderRadius: '15px'
+};
+
 function UserProfilePage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [username, setUsername] = useState('');
   const [followers, setFollowers] = useState([]);
   const [followed, setFollowed] = useState([]);
   const [trips, setTrips] = useState([]);
+  const [isFollowersShown, setIsFollowersShown] = useState(false);
+  const [isFollowedShown, setIsFollowedShown] = useState(false);
 
   // Listen to the changes in authenticatedUser, trips, followers and followed
   useEffect(() => {
@@ -35,7 +51,10 @@ function UserProfilePage() {
       return;
     }
     getUserFollowers(authenticatedUser.user.id).then((data) => setFollowers(data));
-    getUserFollowed(authenticatedUser.user.id).then((data) => setFollowed(data));
+    getUserFollowed(authenticatedUser.user.id).then((data) => {
+      console.log(data);
+      setFollowed(data);
+    });
     setUsername(authenticatedUser.user.username);
     getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTrips(data));
   }, [authenticatedUser, followers, followed, trips]);
@@ -91,10 +110,21 @@ function UserProfilePage() {
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Followers </Box>
 
-                      <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
+                      <Box
+                        onClick={() => setIsFollowersShown(true)}
+                        sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
                         {followers.length}
                       </Box>
                     </Box>
+                    <Modal
+                      open={isFollowersShown}
+                      onClose={() => {
+                        setIsFollowersShown(false);
+                      }}>
+                      <Card sx={style}>
+                        <FollowingsCard listName="Followers" list={followers} />
+                      </Card>
+                    </Modal>
                   </Grid>
 
                   <Grid item sx={4}>
@@ -108,10 +138,21 @@ function UserProfilePage() {
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Following </Box>
 
-                      <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
+                      <Box
+                        onClick={() => setIsFollowedShown(true)}
+                        sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
                         {followed.length}
                       </Box>
                     </Box>
+                    <Modal
+                      open={isFollowedShown}
+                      onClose={() => {
+                        setIsFollowedShown(false);
+                      }}>
+                      <Card sx={style}>
+                        <FollowingsCard listName="Following" list={followed} />
+                      </Card>
+                    </Modal>
                   </Grid>
                 </Grid>
               </CardContent>
