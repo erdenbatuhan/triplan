@@ -7,6 +7,8 @@ const partnerLocationController = require("./partnerLocationController.js");
 const optimizationServiceQueries = require("./../queries/optimizationServiceQueries.js");
 
 const { PARTNER_TYPES } = require("./../utils/enums.js");
+const { getAsObjectIds } = require("./../utils/mongooseUtils.js");
+const { isEmpty } = require("./../utils/objectUtils.js");
 
 const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
   return findById(tripPlanId).then(async (tripPlan) => {
@@ -52,6 +54,21 @@ const findById = (id) => {
 const findByUsers = (userIds) => {
   return TripPlan.find({ user: { $in: userIds } });
 };
+
+const getNumTripsPlannedByUsers = (userIds) => {
+  const aggregatePipeline = !isEmpty(userIds) ? [{
+    $match: { user: { $in: getAsObjectIds(userIds) } }
+  }] : []
+
+  aggregatePipeline.push({
+    $group: {
+      _id: "$user",
+      numTripsPlanned: { $sum: 1 }
+    }
+  });
+
+  return TripPlan.aggregate(aggregatePipeline);
+}
 
 const calculateTripLocationRatingsOfUsersFollowed = (userId, tripLocationIds) => {
   // Among the trip locations, find the ones planned by the people followed and the ratings they have given
@@ -119,4 +136,12 @@ const createTripPlan = async (userId, { name, partnerLocations }) => {
   });
 };
 
-module.exports = { findWithPartnerLocationsByTripPlan, findById, findByUsers, calculateTripLocationRatingsOfUsersFollowed, findTripLocationsPlannedByUsers, createTripPlan };
+module.exports = {
+  findWithPartnerLocationsByTripPlan,
+  findById,
+  findByUsers,
+  getNumTripsPlannedByUsers,
+  calculateTripLocationRatingsOfUsersFollowed,
+  findTripLocationsPlannedByUsers,
+  createTripPlan
+};

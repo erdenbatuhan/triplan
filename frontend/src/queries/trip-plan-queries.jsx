@@ -32,3 +32,11 @@ export async function createTripPlan(userId, tripPlanName, partnerLocations) {
     body: JSON.stringify({ name: tripPlanName, partnerLocations })
   }).then((response) => response.json());
 }
+
+export async function getNumTripsPlannedByUsers(userIds) {
+  return await fetch(`${HOST_TRIP_PLAN}/count/user?users=${userIds.join(',')}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
