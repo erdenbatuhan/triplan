@@ -4,6 +4,8 @@ const tripLocationController = require("./tripLocationController.js");
 const followingRelationshipController = require("./followingRelationshipController.js");
 const partnerLocationController = require("./partnerLocationController.js");
 
+const optimizationServiceQueries = require("./../queries/optimizationServiceQueries.js");
+
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
@@ -87,12 +89,21 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
 };
 
 const createTripPlan = async (userId, { name, partnerLocations }) => {
-  // Create as many trip lococations as there are restaurants
-  const tripLocationsCreated = await Promise.all(partnerLocations.map(() => tripLocationController.create()));
+  const { tripLocationsCreated, partnerLocationsSorted } = await Promise.all([
+    // Create as many trip lococations as there are restaurants
+    Promise.all(partnerLocations.map(() => tripLocationController.create())),
+    // Get the optimized route order from the optimization service
+    optimizationServiceQueries.calculateOptimizedOrder(partnerLocations)
+  ]).then(([ tripLocationsCreated, optimizedOrder ]) => ({
+    // Return the created trip locations as is
+    tripLocationsCreated,
+    // Sort the partner locations in "ascending" order based on the order returned from the optimization service
+    partnerLocationsSorted: partnerLocations.sort((a, b) => optimizedOrder[a["_id"]] - optimizedOrder[b["_id"]])
+  }));
 
   return Promise.all([
     // Add the created trip locations to the partner locations
-    Promise.all(partnerLocations.map(({ _id, partnerType }, idx) => (
+    Promise.all(partnerLocationsSorted.map(({ _id, partnerType }, idx) => (
       (partnerType === PARTNER_TYPES[0]
         ? partnerLocationController.addTripLocationToRestaurant(_id, tripLocationsCreated[idx])
         : partnerLocationController.addTripLocationToTouristAttraction(_id, tripLocationsCreated[idx])

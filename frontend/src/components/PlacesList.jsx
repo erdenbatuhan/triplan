@@ -23,7 +23,7 @@ export default function PlacesList({
   const selectPartnerLocation = (selectedPartnerLocationId) => {
     onSelectedPartnerLocationsChange({
       ...selectedPartnerLocationObject,
-      selectedPartnerLocationId: partnerLocationDictionary[selectedPartnerLocationId]
+      [selectedPartnerLocationId]: partnerLocationDictionary[selectedPartnerLocationId]
     });
   };
 
