@@ -22,7 +22,14 @@ function FilterSelectionMenu(props) {
         maxHeight: 300,
         overflow: 'auto'
       }}>
-      <Typography align="left">{menuNames[filteredItemType]} Options</Typography>
+      <Typography
+        variant="h6"
+        color="text.primary"
+        align="center"
+        sx={{ textDecoration: 'underline' }}
+        display="inline">
+        {menuNames[filteredItemType]} Options
+      </Typography>
       <FormGroup>
         <FormControlLabel
           control={<Checkbox checked={selectedItems.includes('all')} />}

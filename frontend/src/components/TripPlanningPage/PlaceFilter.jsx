@@ -97,14 +97,14 @@ function PlaceFilter(props) {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
       <Stack
         direction={calledFrom === 'MainPage' ? 'row' : 'column'}
         sx={{
-          mt: 2,
+          mt: 1,
           marginLeft: 1,
-          marginRight: 5,
-          marginBottom: 5,
+          marginRight: 1,
+          marginBottom: 3,
           minWidth: 250
         }}>
         <FilterSelectionMenu
@@ -136,7 +136,10 @@ function PlaceFilter(props) {
         )}
       </Stack>
       {calledFrom === 'MainPage' ? (
-        <Button variant="outlined" onClick={handleButtonClick}>
+        <Button
+          variant="outlined"
+          sx={{ width: 100, height: 40, marginRight: 1 }}
+          onClick={handleButtonClick}>
           Continue
         </Button>
       ) : (
