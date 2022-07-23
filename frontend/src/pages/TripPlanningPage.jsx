@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
@@ -11,6 +10,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
 import Spinner from '../components/Spinner';
 import Header from '../components/Header';
 import PlacesList from '../components/PlacesList';
@@ -18,6 +18,7 @@ import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
+import { createTripPlan } from '../queries/trip-plan-queries';
 import * as partnerLocationDefaultFilter from '../queries/data/partner-location-default-filter.json';
 import GoogleMap from '../components/GoogleMap';
 import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
@@ -27,7 +28,7 @@ export default function TripPlanningPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [authenticatedUser] = useState({ user: { id: '62c430e748c4994b2c42af0f' } });
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [selectedCity] = useState(state ? state.selectedCity : null);
   const [filterState, setFilterState] = useState(
     state ? state.filterData : partnerLocationDefaultFilter
@@ -41,6 +42,8 @@ export default function TripPlanningPage() {
   const [selectedPartnerLocationObject, setSelectedPartnerLocationObject] = useState({});
   const [numRestaurantsSelected, setNumRestaurantsSelected] = useState(0);
   const [numTouristAttractionsSelected, setNumTouristAttractionsSelected] = useState(0);
+  const [tripPlanName, setTripPlanName] = useState('');
+  const [tripPlanNamePlaceholder, setTripPlanNamePlaceholder] = useState('');
   const [windowDimenion, detectHW] = useState({
     winWidth: window.innerWidth,
     winHeight: window.innerHeight
@@ -102,6 +105,20 @@ export default function TripPlanningPage() {
     }
   }, [searchParams, partnerLocations]);
 
+  // Listening to the changes in numRestaurantsSelected and numTouristAttractionsSelected
+  useEffect(() => {
+    // Set a placeholder name for the trip plan
+    const cityText = `Awesome ${selectedCity} Trip with`;
+    const restaurantText = numRestaurantsSelected
+      ? ` ${numRestaurantsSelected} Restaurants and`
+      : ``;
+    const touristAttractionText = numTouristAttractionsSelected
+      ? ` ${numTouristAttractionsSelected} Tourist Attractions and`
+      : ``;
+
+    setTripPlanNamePlaceholder(`${cityText}${restaurantText}${touristAttractionText}!`);
+  }, [numRestaurantsSelected, numTouristAttractionsSelected]);
+
   const handleSelectedPartnerLocationsChange = (selectedPartnerLocationsChanged) => {
     setSelectedPartnerLocationObject({ ...selectedPartnerLocationsChanged }); // Create a copy to force re-rendering
 
@@ -120,6 +137,23 @@ export default function TripPlanningPage() {
 
   const handleFilterChange = (newFilterState) => {
     setFilterState(newFilterState);
+  };
+
+  const proceedWithTripPlanCreation = () => {
+    setLoading(true);
+
+    createTripPlan(
+      authenticatedUser.user.id,
+      tripPlanName,
+      Object.values(selectedPartnerLocationObject)
+    )
+      .then(({ _id }) => {
+        navigate(`/trip-plan/${_id}/checkout`);
+      })
+      .finally(() => {
+        setLoading(false);
+        setTripPlanCreationInProgress(false);
+      });
   };
 
   if (loading) {
@@ -228,14 +262,32 @@ export default function TripPlanningPage() {
               What would you like to call this trip?
             </Typography>
 
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Awesome {selectedCity} Trip with
-              {numRestaurantsSelected ? ` ${numRestaurantsSelected} Restaurants and` : ``}
-              {numTouristAttractionsSelected
-                ? ` ${numTouristAttractionsSelected} Tourist Attractions`
-                : ``}
-              !
-            </Typography>
+            <TextField
+              sx={{ mt: 2 }}
+              label="Plan Name"
+              placeholder={tripPlanNamePlaceholder}
+              rows={4}
+              fullWidth
+              value={tripPlanName}
+              onChange={(event) => setTripPlanName(event.target.value)}
+            />
+
+            <Button
+              disabled={!tripPlanName}
+              variant="extended"
+              sx={{
+                mt: 2,
+                bgcolor: '#15A4FF',
+                '&:hover': {
+                  bgcolor: green[600]
+                },
+                border: '3px',
+                borderStyle: 'solid',
+                borderRadius: '10px'
+              }}
+              onClick={proceedWithTripPlanCreation}>
+              Proceed
+            </Button>
           </Box>
         </Fade>
       </Modal>

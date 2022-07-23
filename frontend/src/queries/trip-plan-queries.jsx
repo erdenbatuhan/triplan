@@ -23,3 +23,12 @@ export async function getTripPlansOfUser(userId) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function createTripPlan(userId, tripPlanName, partnerLocations) {
+  return await fetch(`${HOST_TRIP_PLAN}/user/${userId}`, {
+    method: `POST`,
+    mode: `cors`,
+    headers: HEADERS,
+    body: JSON.stringify({ name: tripPlanName, partnerLocations })
+  }).then((response) => response.json());
+}
