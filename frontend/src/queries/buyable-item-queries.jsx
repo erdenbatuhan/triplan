@@ -81,10 +81,18 @@ export async function addTicket(ticket) {
   }).then((response) => response.json());
 }
 
-export async function deleteMenuItem(deletedMenu) {
-  return await deletedMenu;
+export async function deleteMenuItem(deletedMenuId) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/menu-item?id=${deletedMenuId}`, {
+    method: `DELETE`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
 }
 
-export async function deleteTicket(deletedTicket) {
-  return await deletedTicket;
+export async function deleteTicket(deletedTicketId) {
+  return await fetch(`${HOST_BUYABLE_ITEM}/ticket?id=${deletedTicketId}`, {
+    method: `DELETE`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
 }

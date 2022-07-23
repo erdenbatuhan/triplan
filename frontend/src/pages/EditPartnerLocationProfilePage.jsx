@@ -214,7 +214,7 @@ function EditPartnerLocationProfilePage() {
             return addMenuItem(menu);
           }),
           menuItemInDelete.map((deletedMenu) => {
-            return deleteMenuItem(deletedMenu);
+            return deleteMenuItem(deletedMenu._id);
           })
         ]).then(() => console.log('update is completed!'));
       } else if (partnerLocationType === 'tourist-attraction') {
@@ -228,7 +228,7 @@ function EditPartnerLocationProfilePage() {
             return addTicket(ticket);
           }),
           ticketInDelete.map((deletedTicket) => {
-            return deleteTicket(deletedTicket);
+            return deleteTicket(deletedTicket._id);
           })
         ]).then(() => console.log('update is completed!'));
       }
