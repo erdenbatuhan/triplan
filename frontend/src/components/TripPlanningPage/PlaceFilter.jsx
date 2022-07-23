@@ -1,20 +1,32 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import React, { useState } from 'react';
-import { Box, Button, Stack } from '@mui/material';
-import SelectCuisines from './SelectCuisines';
-import SelectPriceLevels from './SelectPriceLevels';
-import SelectPlaceType from './SelectPlaceType';
-import SelectFoodType from './SelectFoodType';
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Stack, Switch, FormControlLabel } from '@mui/material';
+import * as constants from '../../shared/constants';
+import FilterSelectionMenu from './FilterSelectionMenu';
 // import PropTypes from 'prop-types';
 
 function PlaceFilter(props) {
-  const { handleContinueClick, handleFilterChange, calledFrom } = props; // filterState,
+  const {
+    filterState,
+    handleFilterChange,
+    handleContinueClick,
+    isRestaurantEnabled,
+    handleRestaurantEnable,
+    calledFrom
+  } = props; // filterState,
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [selectedCuisine, setSelectedCuisine] = useState([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
   const [selectedFoodTypes, setSelectedFoodTypes] = useState([]);
-  const [allCuisinesSelected, setAllCuisinesSelected] = useState(false);
-  const [allPriceLevelsSelected, setAllPriceLevelsSelected] = useState(false);
+
+  useEffect(() => {
+    if (calledFrom === 'TripPlanningPage') {
+      setSelectedPlaces(filterState.filterData.touristAttractionFilter.types[0]);
+      setSelectedCuisine(filterState.filterData.restaurantFilter.cuisines);
+      setSelectedFoodTypes(filterState.filterData.restaurantFilter.foodTypes);
+      setSelectedPriceLevel(filterState.filterData.restaurantFilter.priceLevel);
+    }
+  }, [filterState]);
 
   const handlePlaceTypeChange = (event) => {
     const { value, checked } = event.target;
@@ -27,40 +39,26 @@ function PlaceFilter(props) {
     }
   };
 
-  const handleCuisineChange = (event) => {
-    if (event.target.value === 'None') {
-      setAllCuisinesSelected(true);
-      setSelectedCuisine([event.target.value]);
+  const handleCuisineChangeCheckbox = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedCuisine((cuisines) => [...cuisines, value]);
     } else {
-      setSelectedCuisine((cuisines) => [...cuisines, event.target.value]);
+      setSelectedCuisine((cuisines) => {
+        return cuisines.filter((cuisine) => cuisine !== value);
+      });
     }
   };
 
-  const handleCuisineSelectionRemove = (removedCuisine) => {
-    if (removedCuisine === 'None') {
-      setAllCuisinesSelected(false);
-    }
-    setSelectedCuisine((cuisines) => {
-      return cuisines.filter((cuisine) => cuisine !== removedCuisine);
-    });
-  };
-
-  const handlePriceLevelChange = (event) => {
-    if (event.target.value === 'None') {
-      setAllPriceLevelsSelected(true);
-      setSelectedPriceLevel([event.target.value]);
+  const handlePriceLevelChangeCheckbox = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedPriceLevel((priceLevels) => [...priceLevels, value]);
     } else {
-      setSelectedPriceLevel((priceLevels) => [...priceLevels, event.target.value]);
+      setSelectedPriceLevel((priceLevels) => {
+        return priceLevels.filter((priceLevel) => priceLevel !== value);
+      });
     }
-  };
-
-  const handlePriceLevelRemove = (removedPriceLevel) => {
-    if (removedPriceLevel === 'None') {
-      setAllPriceLevelsSelected(false);
-    }
-    setSelectedPriceLevel((priceLevels) => {
-      return priceLevels.filter((priceLevel) => priceLevel !== removedPriceLevel);
-    });
   };
 
   const handleFoodTypeChange = (event) => {
@@ -75,15 +73,36 @@ function PlaceFilter(props) {
   };
 
   const handleButtonClick = () => {
+    let taTypes = [];
+    let restCuisines = [];
+    let restPriceLevel = [];
+    let restFoodTypes = [];
+
+    if (selectedPlaces.includes('all')) {
+      // taTypes.push(constants.touristAttractions);
+      taTypes = constants.touristAttractions;
+    } else {
+      selectedPlaces.forEach((place) => taTypes.push(constants.touristAttractionsMapper[place]));
+    }
+    if (isRestaurantEnabled) {
+      restCuisines = selectedCuisine.includes('all') ? constants.cuisines : selectedCuisine;
+      restPriceLevel = selectedPriceLevel.includes('all')
+        ? constants.priceLevels
+        : selectedPriceLevel;
+      restFoodTypes = selectedFoodTypes.includes('all') ? constants.foodTypes : selectedFoodTypes;
+    }
+
     const filterData = {
       filterData: {
         restaurantFilter: {
-          cuisines: selectedCuisine,
-          priceLevel: selectedPriceLevel,
-          foodTypes: selectedFoodTypes
+          cuisines: restCuisines,
+          priceLevel: restPriceLevel,
+          foodTypes: restFoodTypes
         },
         touristAttractionFilter: {
-          types: selectedPlaces
+          types: selectedPlaces.includes('all')
+            ? [constants.places, constants.touristAttractions]
+            : [selectedPlaces, taTypes]
         }
       }
     };
@@ -95,36 +114,49 @@ function PlaceFilter(props) {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+      <FormControlLabel
+        control={
+          <Switch onChange={handleRestaurantEnable} checked={isRestaurantEnabled} color="primary" />
+        }
+        label="Looking for restaurants as well?"
+        labelPlacement="top"
+      />
       <Stack
         direction={calledFrom === 'MainPage' ? 'row' : 'column'}
         sx={{
-          mt: 2,
+          mt: 1,
           marginLeft: 1,
-          marginRight: 5,
-          marginBottom: 5,
+          marginRight: 1,
+          marginBottom: 3,
           minWidth: 250
         }}>
-        <SelectPlaceType
-          selectedPlaces={selectedPlaces}
-          handlePlaceTypeChange={handlePlaceTypeChange}
+        <FilterSelectionMenu
+          selectedItems={selectedPlaces}
+          handleSelectionChange={handlePlaceTypeChange}
+          filteredItemType="places"
         />
-        <SelectCuisines
-          selectedItems={selectedCuisine}
-          handleChange={handleCuisineChange}
-          handleRemove={handleCuisineSelectionRemove}
-          allOptionIsSelected={allCuisinesSelected}
-        />
-        <SelectPriceLevels
-          selectedItems={selectedPriceLevel}
-          handleChange={handlePriceLevelChange}
-          handleRemove={handlePriceLevelRemove}
-          allOptionIsSelected={allPriceLevelsSelected}
-        />
-        <SelectFoodType
-          selectedFoodTypes={selectedFoodTypes}
-          handleFoodTypeChange={handleFoodTypeChange}
-        />
+        {isRestaurantEnabled ? (
+          <>
+            <FilterSelectionMenu
+              selectedItems={selectedCuisine}
+              handleSelectionChange={handleCuisineChangeCheckbox}
+              filteredItemType="cuisines"
+            />
+            <FilterSelectionMenu
+              selectedItems={selectedPriceLevel}
+              handleSelectionChange={handlePriceLevelChangeCheckbox}
+              filteredItemType="priceLevels"
+            />
+            <FilterSelectionMenu
+              selectedItems={selectedFoodTypes}
+              handleSelectionChange={handleFoodTypeChange}
+              filteredItemType="foodTypes"
+            />
+          </>
+        ) : (
+          <></>
+        )}
         {calledFrom === 'TripPlanningPage' ? (
           <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
             <Button onClick={handleButtonClick}>Filter!</Button>
@@ -134,7 +166,10 @@ function PlaceFilter(props) {
         )}
       </Stack>
       {calledFrom === 'MainPage' ? (
-        <Button variant="outlined" onClick={handleButtonClick}>
+        <Button
+          variant="outlined"
+          sx={{ width: 100, height: 40, marginRight: 1 }}
+          onClick={handleButtonClick}>
           Continue
         </Button>
       ) : (
