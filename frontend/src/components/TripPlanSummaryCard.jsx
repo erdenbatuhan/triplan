@@ -24,14 +24,14 @@ export default function TripLocationSummaryCard({
   const [rating, setRating] = useState(tripLocation ? tripLocation.rating : 0);
   const [comment, setComment] = useState(tripLocation ? tripLocation.comment : '');
 
-  // Listen to the changes in latestUpdate
+  // Listening to the changes in latestUpdate
   useEffect(() => {
     setChangesMade(false);
     setRating(tripLocation.rating);
     setComment(tripLocation.comment);
   }, [latestUpdate]);
 
-  // Listen to the changes in rating and comment
+  // Listening to the changes in rating and comment
   useEffect(() => {
     setChangesMade(tripLocation.rating !== rating || tripLocation.comment !== comment);
   }, [rating, comment]);

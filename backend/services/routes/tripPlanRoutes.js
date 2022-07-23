@@ -16,9 +16,9 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
- * Gets the trip locations (inc. the information of partner locations) of a trip plan
+ * Gets the locations (both trip locations and partner locations) of a trip plan
  */
-router.get("/:id/trip-location", async (req, res) => {
+router.get("/:id/location", async (req, res) => {
   try {
     const tripPlanId = req.params.id;
     const tripLocations = await tripPlanController.findWithPartnerLocationsByTripPlan(tripPlanId);

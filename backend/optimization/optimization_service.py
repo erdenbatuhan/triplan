@@ -1,30 +1,45 @@
-from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS
-from optimization_utils import get_tsp_result
 import numpy as np
 
-app = Flask("KUAI App")
+from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
+
+from optimization_utils import get_tsp_result
+
+
+app = Flask("Triplan Optimization Service")
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/', methods=('POST',))
+
+@app.route("/", methods=(["POST"]))
 def optimize():
-    place_order = [0]
-    data = request.json
-    if len(data) > 1:
-      only_place_list = [p for p in data if p["partnerLocation"]["partnerType"] != "restaurant"]
-      place_loc_list = [(p["partnerLocation"]["googleLocationInfo"]["latitude"], 
-                        p["partnerLocation"]["googleLocationInfo"]["longitude"]) for p in only_place_list]
-      place_id_list = [p["partnerLocation"]["_id"] for p in only_place_list]
-      
-      place_order, distance = get_tsp_result(place_loc_list)
-    else:
-      place_order = list(range(len(data) - 1))
-    
-    res = {"response": []}
-    res["response"] = place_order
-    response = jsonify(res)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return make_response(response, 201)
+    partner_locations = request.json
+
+    # restaurants = list(filter(lambda loc: loc == "restaurant", partner_locations))
+    # tourist_attractions = list(filter(lambda loc: loc == "tourist-attraction", partner_locations))
+
+    # Find the sortable locations and their coordinates (latitudes and longitudes)
+    sortable_locations = [loc for loc in partner_locations if "googleLocationInfo" in loc]
+    location_coordinates = [
+      (loc["googleLocationInfo"]["latitude"], loc["googleLocationInfo"]["longitude"])
+      for loc in sortable_locations
+    ]
+
+    # Process only the "sortable" locations in the algorithm and keep the result in a dictionary
+    location_indices_ordered, _ = get_tsp_result(location_coordinates)
+    location_dict_ordered = {sortable_locations[loc_idx]["_id"]: loc_idx for loc_idx in location_indices_ordered}
+
+    # Add the locations with no google location info to the dictionary by the order they were given in the request body
+    min_idx_unordered = len(sortable_locations)
+    unsortable_location_indices = [idx for (idx, loc) in enumerate(partner_locations) if "googleLocationInfo" not in loc]
+    for i, unordered_loc_idx in enumerate(unsortable_location_indices):
+      location_dict_ordered[partner_locations[unordered_loc_idx]["_id"]] = min_idx_unordered + i
+
+    # Return the collected dictionary as a response 
+    response = jsonify({ "response": location_dict_ordered })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return make_response(response, 200)
+
 
 if __name__ == "__main__":
-    app.run(debug=True, host='localhost', port=6006)
+    app.run(debug=True, host="0.0.0.0", port=6006)
