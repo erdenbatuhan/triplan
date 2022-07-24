@@ -4,6 +4,8 @@ const router = express.Router();
 const partnerLocationController = require("./../controllers/partnerLocationController.js");
 const scoreController = require("./../controllers/scoreController.js");
 
+const { PARTNER_TYPES } = require("./../utils/enums.js");
+
 /**
  * Gets the distinct cities
  */
@@ -131,7 +133,7 @@ router.post("/tourist-attraction", async (req, res) => {
  */
 router.post("/signup", async (req, res) => {
   try {
-    if (req.body.partnerType === "restaurant") {
+    if (req.body.partnerType === PARTNER_TYPES[0]) {
       await partnerLocationController.signUpRestaurant(req, res);
     } else {
       await partnerLocationController.signUpTouristAttraction(req, res);
@@ -147,7 +149,7 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    if (req.body.partnerType === "restaurant") {
+    if (req.body.partnerType === PARTNER_TYPES[0]) {
       await partnerLocationController.loginRestaurant(req, res);
     } else {
       await partnerLocationController.loginTouristAttraction(req, res);

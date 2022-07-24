@@ -10,25 +10,27 @@ const enums = require("./../utils/enums.js");
 
 const PartnerLocationSchema = new Schema({
   name: { type: String, required: true },
-  email: { type: String, default: '', required: false },
-  description: { type: String, default: '', required: false },
+  email: { type: String, default: "", required: false },
+  description: { type: String, default: "", required: false },
   city: { type: String, required: true },
   country: { type: String, required: true },
-  address: { type: String, default: '', required: false }, 
-  phoneNumber: { type: String, default: '', required: false },
-  locationPicture: { type: String, default: '', required: false },
+  address: { type: String, default: "", required: false }, 
+  phoneNumber: { type: String, default: "", required: false },
+  locationPicture: { type: String, default: "", required: false },
   partnerType: {
     type: String,
-    enum : enums.PARTNER_TYPES,
-    required: true
+    enum: enums.PARTNER_TYPES,
+    required: true,
   },
   googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents
-  associatedTripLocations: [{ 
-    type: Schema.Types.ObjectId,
-    ref: TripLocation.name,
-    required: false
-  }], // One-to-Many Relation using Reference
-  wallet: { type: Schema.Types.ObjectId, ref: Wallet.name, required: false } // One-to-One Relation using Reference
+  associatedTripLocations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: TripLocation.name,
+      required: false,
+    },
+  ], // One-to-Many Relation using Reference
+  wallet: { type: Schema.Types.ObjectId, ref: Wallet.name }, // One-to-One Relation using Reference
 });
 
 const Restaurant = mongoose.model(
@@ -38,14 +40,24 @@ const Restaurant = mongoose.model(
       type: [String],
       enum : enums.CUISINES,
       default: [],
-      required: false
+      required: false,
+    },
+    priceLevels: {
+      type: [String],
+      enum: enums.PRICE_LEVELS,
+      default: [
+        enums.PRICE_LEVELS[0],
+        enums.PRICE_LEVELS[1],
+        enums.PRICE_LEVELS[2],
+      ],
+      required: true,
     },
     foodTypes: {
       type: [String],
       enum: enums.FOOD_TYPES,
       default: [enums.FOOD_TYPES[0]],
-      required: true
-    }
+      required: true,
+    },
   })
 );
 
@@ -56,8 +68,8 @@ const TouristAttraction = mongoose.model(
       type: [String],
       enum: enums.TOURIST_ATTRACTION_TYPES,
       default: [enums.TOURIST_ATTRACTION_TYPES[0]],
-      required: true
-    }
+      required: true,
+    },
   })
 );
 
