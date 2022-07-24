@@ -44,9 +44,15 @@ const Restaurant = mongoose.model(
       enum: enums.CUISINES,
       required: false,
     },
-    menuList: {
-      type: Array,
-      required: false,
+    priceLevels: {
+      type: [String],
+      enum: enums.PRICE_LEVELS,
+      default: [
+        enums.PRICE_LEVELS[0],
+        enums.PRICE_LEVELS[1],
+        enums.PRICE_LEVELS[2],
+      ],
+      required: true,
     },
     foodTypes: {
       type: [String],
