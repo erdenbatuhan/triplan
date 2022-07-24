@@ -94,13 +94,10 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, c
         if (type == enums.TRANSACTION_TYPE[2] && !!outgoingWallet) {
           const user = await userController.findUserByWallet(outgoingWallet._id);
 
-          // Consume coupon if used
+          // Consume coupon if used. Otherwise, check for coupon eligibility
           if (couponUsed) {
             couponConsumed = await couponController.deactivateCouponForUser(user._id);
-          }
-
-          // Check if eligible for a coupon
-          if (amount >= MIN_AMOUNT_FOR_COUPON) {
+          } else if (amount >= MIN_AMOUNT_FOR_COUPON) {
             couponEarned = await couponController.createCouponForUser(user._id);
           }
         }
