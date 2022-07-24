@@ -17,6 +17,7 @@ import {
   deleteMenuItem,
   deleteTicket
 } from '../queries/buyable-item-queries';
+import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
 import EditRestaurantCuisineBox from '../components/PartnerLocationProfilePage/EditRestaurantCuisineBox';
 import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
 import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
@@ -45,19 +46,22 @@ function EditPartnerLocationProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
   // const partnerLocationType = location.state.partnerType;
-  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // restaurant - tourist-attraction
-  const nameLabel = partnerLocationType === 'restaurant' ? 'Restaurant Name' : 'Museum Name';
+  const partnerLocationType = location.state ? location.state.partnerType : PARTNER_TYPE_RESTAURANT; // restaurant - tourist-attraction
+  const nameLabel =
+    partnerLocationType === PARTNER_TYPE_RESTAURANT ? 'Restaurant Name' : 'Museum Name';
   const phoneLabel =
-    partnerLocationType === 'restaurant' ? 'Restaurant Phone Number' : 'Museum Phone Number';
+    partnerLocationType === PARTNER_TYPE_RESTAURANT
+      ? 'Restaurant Phone Number'
+      : 'Museum Phone Number';
   const addressLabel =
-    partnerLocationType === 'restaurant' ? 'Restaurant Address' : 'Museum Address';
+    partnerLocationType === PARTNER_TYPE_RESTAURANT ? 'Restaurant Address' : 'Museum Address';
   const pictureLabel =
-    partnerLocationType === 'restaurant' ? 'Restaurant Picture' : 'Museum Picture';
+    partnerLocationType === PARTNER_TYPE_RESTAURANT ? 'Restaurant Picture' : 'Museum Picture';
 
-  const addButtonText = partnerLocationType === 'restaurant' ? 'Menu' : 'Ticket';
+  const addButtonText = partnerLocationType === PARTNER_TYPE_RESTAURANT ? 'Menu' : 'Ticket';
 
   useEffect(() => {
-    if (partnerLocationType === 'restaurant') {
+    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
       getRestaurant(partnerId).then((data) => {
         setPartner(data);
         setRestaurantCuisines(data.cuisines);
@@ -65,7 +69,7 @@ function EditPartnerLocationProfilePage() {
       getMenuItems(partnerId).then((data) => {
         setRestaurantMenuList(data);
       });
-    } else if (partnerLocationType === 'tourist-attraction') {
+    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       getTouristAttraction(partnerId).then((data) => {
         setPartner(data);
       });
@@ -108,10 +112,10 @@ function EditPartnerLocationProfilePage() {
 
   const handleEditClick = (e) => {
     const editItemId = e.target.value;
-    if (partnerLocationType === 'restaurant') {
+    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
       const editItem = restaurantMenuList.filter((_, idx) => idx.toString() === editItemId)[0];
       setMenuItemInEdit(editItem);
-    } else if (partnerLocationType === 'tourist-attraction') {
+    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       const editItem = ticketList.filter((_, idx) => idx.toString() === editItemId)[0];
       setTicketInEdit(editItem);
     }
@@ -120,13 +124,13 @@ function EditPartnerLocationProfilePage() {
 
   const handleDeleteClick = (e) => {
     const deleteItemId = e.target.value;
-    if (partnerLocationType === 'restaurant') {
+    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
       const deleteItem = restaurantMenuList.filter((_, idx) => idx.toString() === deleteItemId)[0];
       setMenuItemInDelete((deletedMenuItems) => [...deletedMenuItems, deleteItem]);
       setRestaurantMenuList((menuList) => {
         return menuList.filter((_, idx) => idx.toString() !== deleteItemId);
       });
-    } else if (partnerLocationType === 'tourist-attraction') {
+    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       const deleteItem = ticketList.filter((_, idx) => idx.toString() === deleteItemId)[0];
       setTicketInDelete((deletedTickets) => [...deletedTickets, deleteItem]);
       setTicketList((tickets) => {
@@ -136,7 +140,7 @@ function EditPartnerLocationProfilePage() {
   };
 
   const handleEditCompletionClick = (e, updateParams) => {
-    if (partnerLocationType === 'restaurant') {
+    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
       setRestaurantMenuList((menuItems) => {
         const items = [...menuItems];
         const idxItem = items.findIndex((item) => item._id === updateParams._id);
@@ -150,7 +154,7 @@ function EditPartnerLocationProfilePage() {
         return items;
       });
       setMenuItemInEdit({});
-    } else if (partnerLocationType === 'tourist-attraction') {
+    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       // const { ticketReservationDate } = updateParams;
       setTicketList((ticketItems) => {
         const items = [...ticketItems];
@@ -174,9 +178,9 @@ function EditPartnerLocationProfilePage() {
   };
 
   const handleAddCompletionClick = async (e, newItem) => {
-    if (partnerLocationType === 'restaurant') {
+    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
       setRestaurantMenuList((menuItems) => [newItem, ...menuItems]);
-    } else if (partnerLocationType === 'tourist-attraction') {
+    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       setTicketList((ticketItems) => [newItem, ...ticketItems]);
     }
     setItemEditAddMode(false);
@@ -199,7 +203,7 @@ function EditPartnerLocationProfilePage() {
         address: partnerAddress,
         locationPicture: partnerLocationPicture
       };
-      if (partnerLocationType === 'restaurant') {
+      if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
         Promise.all([
           saveRestaurant({
             ...updatedLocation,
@@ -217,7 +221,7 @@ function EditPartnerLocationProfilePage() {
             return deleteMenuItem(deletedMenu._id);
           })
         ]).then(() => console.log('update is completed!'));
-      } else if (partnerLocationType === 'tourist-attraction') {
+      } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
         Promise.all([
           saveTouristAttraction(updatedLocation),
           ticketList.map((ticket) => {
@@ -300,7 +304,7 @@ function EditPartnerLocationProfilePage() {
             </Grid>
           </Grid>
         </Grid>
-        {partnerLocationType === 'restaurant' ? (
+        {partnerLocationType === PARTNER_TYPE_RESTAURANT ? (
           <Grid item>
             <EditRestaurantCuisineBox
               selectedItems={restaurantCuisines}
@@ -314,29 +318,34 @@ function EditPartnerLocationProfilePage() {
         <Grid item>
           <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
             <List spacing={2} overflow="auto">
-              {(partnerLocationType === 'restaurant' ? restaurantMenuList : ticketList).map(
-                (item, idx) => {
-                  return (
-                    <BuyableItemCard
-                      key={item._id}
-                      menuId={item._id}
-                      itemIdx={idx}
-                      name={item.name}
-                      content={item.description}
-                      price={item.price.toString()}
-                      image={item.image}
-                      handleEditClick={handleEditClick}
-                      handleDeleteClick={handleDeleteClick}
-                      inEdit
-                    />
-                  );
-                }
-              )}
+              {(partnerLocationType === PARTNER_TYPE_RESTAURANT
+                ? restaurantMenuList
+                : ticketList
+              ).map((item, idx) => {
+                return (
+                  <BuyableItemCard
+                    key={item._id}
+                    menuId={item._id}
+                    itemIdx={idx}
+                    name={item.name}
+                    content={item.description}
+                    price={item.price.toString()}
+                    image={item.image}
+                    handleEditClick={handleEditClick}
+                    handleDeleteClick={handleDeleteClick}
+                    inEdit
+                  />
+                );
+              })}
             </List>
           </Paper>
           <EditItemModal
-            key={partnerLocationType === 'restaurant' ? menuItemInEdit._id : ticketInEdit._id}
-            item={partnerLocationType === 'restaurant' ? menuItemInEdit : ticketInEdit}
+            key={
+              partnerLocationType === PARTNER_TYPE_RESTAURANT
+                ? menuItemInEdit._id
+                : ticketInEdit._id
+            }
+            item={partnerLocationType === PARTNER_TYPE_RESTAURANT ? menuItemInEdit : ticketInEdit}
             locationType={partnerLocationType}
             handleItemChangeCompletionClick={handleItemChangeCompletionClick}
             inAdd={inAdd}
