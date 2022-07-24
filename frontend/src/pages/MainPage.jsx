@@ -10,6 +10,7 @@ import SearchBar from '../components/SearchBar';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 // import { getCityInfoByName } from '../queries/city-info-queries';
 import { getCities } from '../queries/partner-location-queries';
+// import TransactionHistoryModal from '../components/TransactionHistoryModal';
 
 const CustomGrid = styled(Grid)(() => ({
   justifyContent: 'center',
@@ -20,6 +21,7 @@ export default function MainPage() {
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState('');
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(true);
+  // const [transitionModalShown, setTransitionModalShown] = useState(true);
 
   useEffect(() => {
     getCities().then((data) => setCities(data));
@@ -87,6 +89,10 @@ export default function MainPage() {
           />
         </CustomGrid>
       </CustomGrid>
+      {/* <TransactionHistoryModal
+        open={transitionModalShown}
+        onClose={() => setTransitionModalShown(false)}
+      /> */}
     </Box>
   );
 }
