@@ -93,112 +93,110 @@ export default function TransactionHistoryModal({ open, onClose }) {
             Transaction History
           </Typography>
 
-          {loading ? (
-            <Spinner marginTop="2em" />
-          ) : (
-            <div>
-              <Grid sx={{ pt: 2 }} container spacing={0}>
-                {createTableRow('TransactionHistory-TableHeader', [
-                  { content: 'From', size: 2 },
-                  { content: 'To', size: 2 },
-                  { content: 'Date', size: 3 },
-                  { content: 'Amount', size: 2 },
-                  { content: 'Type', size: 2 },
-                  { content: 'Status', size: 1 }
-                ])}
-              </Grid>
+          <Grid sx={{ pt: 2 }} container spacing={0}>
+            {createTableRow('TransactionHistory-TableHeader', [
+              { content: 'From', size: 2 },
+              { content: 'To', size: 2 },
+              { content: 'Date', size: 3 },
+              { content: 'Amount', size: 2 },
+              { content: 'Type', size: 2 },
+              { content: 'Status', size: 1 }
+            ])}
+          </Grid>
 
-              <hr />
+          <hr />
 
-              <List
-                sx={{
-                  width: '100%',
-                  minWidth: '60em',
-                  bgcolor: 'background.paper',
-                  position: 'relative',
-                  overflow: 'auto',
-                  height: '30em',
-                  '& ul': { padding: 0 }
-                }}
-                subheader={<li />}>
-                {Object.keys(previousTransactions).map((month) => (
-                  <li key={`TransactionHistory-${month}`}>
-                    <ul>
-                      <ListSubheader sx={{ fontWeight: 500 }}>{month}</ListSubheader>
+          <List
+            sx={{
+              width: '100%',
+              minWidth: '60em',
+              bgcolor: 'background.paper',
+              position: 'relative',
+              overflow: 'auto',
+              height: '30em',
+              '& ul': { padding: 0 }
+            }}
+            subheader={<li />}>
+            {loading ? (
+              <Spinner marginTop="2em" />
+            ) : (
+              Object.keys(previousTransactions).map((month) => (
+                <li key={`TransactionHistory-${month}`}>
+                  <ul>
+                    <ListSubheader sx={{ fontWeight: 500 }}>{month}</ListSubheader>
 
-                      {previousTransactions[month].map((transaction) => {
-                        return (
-                          <Grid
-                            key={`TransactionHistory-${month}-${transaction._id}`}
-                            sx={{ width: '100%', pt: 0 }}
-                            container
-                            spacing={0}
-                            alignItems="stretch">
-                            {createTableRow(
-                              `TransactionHistory-${month}-${transaction._id}-TableRow`,
-                              [
-                                {
-                                  content: walletOwnerData[transaction.incoming] || '-',
-                                  size: 2,
-                                  style: {
-                                    fontWeight: walletId === transaction.incoming ? 'bold' : ''
-                                  }
-                                },
-                                {
-                                  content: walletOwnerData[transaction.outgoing] || '-',
-                                  size: 2,
-                                  style: {
-                                    fontWeight: walletId === transaction.outgoing ? 'bold' : ''
-                                  }
-                                },
-                                {
-                                  content: getReadableDate(transaction.createdAt),
-                                  size: 3
-                                },
-                                {
-                                  content: `${walletId === transaction.outgoing ? '+' : '-'} ${
-                                    transaction.amount
-                                  } €`,
-                                  size: 2,
-                                  style: {
-                                    color:
-                                      walletId === transaction.outgoing
-                                        ? 'success.main'
-                                        : 'error.main'
-                                  }
-                                },
-                                { content: transaction.type, size: 2 },
-                                {
-                                  content:
-                                    transaction.status === TRANSACTION_STATUS_SUCCESSFUL ? (
-                                      <Tooltip title={TRANSACTION_STATUS_SUCCESSFUL}>
-                                        <CheckCircleOutlineIcon />
-                                      </Tooltip>
-                                    ) : (
-                                      <Tooltip title={TRANSACTION_STATUS_REJECTED}>
-                                        <ErrorOutlineIcon />
-                                      </Tooltip>
-                                    ),
-                                  size: 1,
-                                  style: {
-                                    color:
-                                      transaction.status === TRANSACTION_STATUS_SUCCESSFUL
-                                        ? 'success.main'
-                                        : 'error.main'
-                                  },
-                                  icon: true
+                    {previousTransactions[month].map((transaction) => {
+                      return (
+                        <Grid
+                          key={`TransactionHistory-${month}-${transaction._id}`}
+                          sx={{ width: '100%', pt: 0 }}
+                          container
+                          spacing={0}
+                          alignItems="stretch">
+                          {createTableRow(
+                            `TransactionHistory-${month}-${transaction._id}-TableRow`,
+                            [
+                              {
+                                content: walletOwnerData[transaction.incoming] || '-',
+                                size: 2,
+                                style: {
+                                  fontWeight: walletId === transaction.incoming ? 'bold' : ''
                                 }
-                              ]
-                            )}
-                          </Grid>
-                        );
-                      })}
-                    </ul>
-                  </li>
-                ))}
-              </List>
-            </div>
-          )}
+                              },
+                              {
+                                content: walletOwnerData[transaction.outgoing] || '-',
+                                size: 2,
+                                style: {
+                                  fontWeight: walletId === transaction.outgoing ? 'bold' : ''
+                                }
+                              },
+                              {
+                                content: getReadableDate(transaction.createdAt),
+                                size: 3
+                              },
+                              {
+                                content: `${walletId === transaction.outgoing ? '+' : '-'} ${
+                                  transaction.amount
+                                } €`,
+                                size: 2,
+                                style: {
+                                  color:
+                                    walletId === transaction.outgoing
+                                      ? 'success.main'
+                                      : 'error.main'
+                                }
+                              },
+                              { content: transaction.type, size: 2 },
+                              {
+                                content:
+                                  transaction.status === TRANSACTION_STATUS_SUCCESSFUL ? (
+                                    <Tooltip title={TRANSACTION_STATUS_SUCCESSFUL}>
+                                      <CheckCircleOutlineIcon />
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip title={TRANSACTION_STATUS_REJECTED}>
+                                      <ErrorOutlineIcon />
+                                    </Tooltip>
+                                  ),
+                                size: 1,
+                                style: {
+                                  color:
+                                    transaction.status === TRANSACTION_STATUS_SUCCESSFUL
+                                      ? 'success.main'
+                                      : 'error.main'
+                                },
+                                icon: true
+                              }
+                            ]
+                          )}
+                        </Grid>
+                      );
+                    })}
+                  </ul>
+                </li>
+              ))
+            )}
+          </List>
         </Grid>
       </Box>
     </Modal>
