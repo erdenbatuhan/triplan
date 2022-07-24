@@ -73,7 +73,7 @@ router.delete("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const id = req.query.id;
-    const itemBought = itemBoughtController.getItemBoughtEntryById(id);
+    const itemBought = await itemBoughtController.getItemBoughtEntryById(id);
     res.status(200).send(itemBought);
   } catch ({ message }) {
     res
@@ -89,9 +89,8 @@ router.get("/", async (req, res) => {
  */
 router.post("/locations", async (req, res) => {
   try {
-    const itemsBought = itemBoughtController.getItemsBoughtByTripLocations(
-      req.body
-    );
+    const itemsBought =
+      await itemBoughtController.getItemsBoughtByTripLocations(req.body);
     res.status(200).send(itemsBought);
   } catch ({ message }) {
     res
