@@ -37,10 +37,7 @@ const Restaurant = mongoose.model(
     cuisines: {
       type: [String],
       enum : enums.CUISINES,
-      required: false
-    },
-    menuList: {
-      type: Array,
+      default: [],
       required: false
     },
     foodTypes: {
