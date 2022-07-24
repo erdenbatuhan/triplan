@@ -1,4 +1,5 @@
 const { Transaction } = require("./../models/transaction.js");
+const { MIN_AMOUNT_FOR_COUPON } = require("./../models/coupon.js");
 
 const walletController = require("./walletController.js");
 const userController = require("./userController.js");
@@ -99,7 +100,7 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, c
           }
 
           // Check if eligible for a coupon
-          if (amount >= 100) {
+          if (amount >= MIN_AMOUNT_FOR_COUPON) {
             couponEarned = await couponController.createCouponForUser(user._id);
           }
         }
