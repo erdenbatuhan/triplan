@@ -9,16 +9,13 @@ const { extendSchema } = require("./../utils/mongooseUtils.js");
 const enums = require("./../utils/enums.js");
 
 const PartnerLocationSchema = new Schema({
-  name: { type: String, default: '', required: false },
-  username: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-  city: { type: String, default: '', required: true },
-  country: { type: String, default: '', required: true },
+  name: { type: String, required: true },
+  email: { type: String, default: '', required: false },
+  description: { type: String, default: '', required: false },
+  city: { type: String, required: true },
+  country: { type: String, required: true },
   address: { type: String, default: '', required: false }, 
   phoneNumber: { type: String, default: '', required: false },
-  googleLocationLink: { type: String, default: '', required: false },
-  certificate: { type: String, default: '', required: false },
   locationPicture: { type: String, default: '', required: false },
   partnerType: {
     type: String,
@@ -31,7 +28,7 @@ const PartnerLocationSchema = new Schema({
     ref: TripLocation.name,
     required: false
   }], // One-to-Many Relation using Reference
-  wallet: { type: Schema.Types.ObjectId, ref: Wallet.name } // One-to-One Relation using Reference
+  wallet: { type: Schema.Types.ObjectId, ref: Wallet.name, required: false } // One-to-One Relation using Reference
 });
 
 const Restaurant = mongoose.model(

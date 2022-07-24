@@ -1,5 +1,5 @@
 module.exports.PARTNER_TYPES = [
-  "restaurant", "tourist_attraction"
+  "RESTAURANT", "TOURIST_ATTRACTION"
 ];
 
 module.exports.FOOD_TYPES = [
