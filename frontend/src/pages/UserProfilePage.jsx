@@ -25,24 +25,7 @@ import {
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
-
-const followingCardParentCardStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 500,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  borderRadius: '15px',
-  maxHeight: '50%',
-  overflow: 'auto'
-};
-
-const avatarStyle = {
-  width: '200px',
-  height: '200px'
-};
+import { followingCardParentCardStyle, avatarStyle } from '../shared/styles';
 
 function UserProfilePage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());

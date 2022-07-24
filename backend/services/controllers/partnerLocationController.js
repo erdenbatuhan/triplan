@@ -375,6 +375,14 @@ const addTripLocationToTouristAttraction = (
   );
 };
 
+const findRestaurantWalletsByWalletIds = (walletIds) => {
+  return Restaurant.find({ wallet: { $in: walletIds} }).select("name wallet");
+}
+
+const findTouristAttractionWalletsByWalletIds = (walletIds) => {
+  return TouristAttraction.find({ wallet: { $in: walletIds} }).select("name wallet");
+}
+
 module.exports = {
   findDistinctCities,
   findFiltered,
@@ -391,4 +399,6 @@ module.exports = {
   findPartnerLocationById,
   addTripLocationToRestaurant,
   addTripLocationToTouristAttraction,
+  findRestaurantWalletsByWalletIds,
+  findTouristAttractionWalletsByWalletIds
 };
