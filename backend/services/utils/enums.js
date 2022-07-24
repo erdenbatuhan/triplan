@@ -26,3 +26,7 @@ module.exports.TRANSACTION_TYPE = [
 module.exports.TRANSACTION_STATUS = [
   "Successful", "Rejected"
 ];
+
+module.exports.CONFIRMATION_STATUS = [
+  "No Request", "Requested", "Approved"
+];

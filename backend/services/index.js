@@ -76,3 +76,8 @@ app.use("/admin", adminRoutes);
 // Routes: Coupon
 const couponRoutes = require("./routes/couponRoutes.js");
 app.use("/coupon", couponRoutes);
+
+// Routes: Partner Signup Request
+const partnerSignupRequestRoutes = require("./routes/partnerSignupRequestRoutes.js");
+app.use("/partner-signup-request", partnerSignupRequestRoutes);
+

@@ -60,7 +60,8 @@ function SignUpPage() {
         username,
         password,
         email,
-        partnerType
+        partnerType,
+        confirmed: 'No Request'
       };
       const newPartnerLocation = await createNewPartnerLocation(partnerLocationData);
       const { token } = newPartnerLocation;
