@@ -30,6 +30,7 @@
     "import/prefer-default-export": "off",
     "no-return-await": "off",
     "no-underscore-dangle": "off",
+    "no-promise-executor-return": "off",
     "prefer-spread": "off",
     "react/prop-types": "off",
     "react/no-array-index-key": "off",
