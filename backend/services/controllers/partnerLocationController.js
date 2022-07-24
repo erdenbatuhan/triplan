@@ -344,11 +344,11 @@ const findPartnerLocationById = (partnerLocationId) => {
         ) {
           return resolve(null);
         } else if (restaurant) {
-          resolve({ restaurant, partnerLocationType: "restaurant" });
+          resolve({ restaurant, partnerLocationType: PARTNER_TYPES[0] });
         } else {
           resolve({
             touristAttraction,
-            partnerLocationType: "tourist-attraction",
+            partnerLocationType: PARTNER_TYPES[1],
           });
         }
       })
