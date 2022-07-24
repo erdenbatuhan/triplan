@@ -2,6 +2,7 @@ const { Transaction } = require("./../models/transaction.js");
 
 const walletController = require("./walletController.js");
 const userController = require("./userController.js");
+const couponController = require("./couponController.js");
 
 const enums = require("./../utils/enums.js");
 
@@ -37,7 +38,7 @@ const updateFields = (id, fields) => {
   return Transaction.updateOne({ "_id": id }, fields, { new: true, runValidators: true });
 };
 
-const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId }) => {
+const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
   return new Promise((resolve, reject) => {
     const incomingWalletPromise = incomingWalletId ? walletController.findOne(incomingWalletId) : new Promise((resolve) => resolve(null));
     const outgoingWalletPromise = outgoingWalletId ? walletController.findOne(outgoingWalletId) : new Promise((resolve) => resolve(null));
@@ -47,19 +48,20 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId })
         return resolve(null);
       }
 
+      // Check if the transaction is purchase but at least one of the wallets is missing
       if (type == enums.TRANSACTION_TYPE[2] && !(incomingWallet && outgoingWallet)) {
         throw new Error("There must be an incoming and an outgoing wallet for the purchase transaction!");
       }
 
-      // Check if the "outgoing" wallet has enough balance
-      if (outgoingWallet && outgoingWallet.balance < amount) {
+      // Check if the transaction is not deposit and the "outgoing" wallet has enough balance
+      if (type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
         const transactionRejected = await Transaction.create({
           amount, type,
           "incoming": incomingWallet, "outgoing": outgoingWallet,
           "status": enums.TRANSACTION_STATUS[1] // Rejected Transaction
         });
 
-        return resolve({ "transaction": transactionRejected });
+        return resolve({ "transaction": transactionRejected, "reason": "Not enough balance!" });
       }
 
       let updatedIncomingWalletPromise = new Promise((resolve) => resolve(null));
@@ -81,23 +83,42 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId })
       ]).then(async ([
         updatedIncomingWallet, updatedOutgoingWallet
       ]) => {
+        let [couponConsumed, couponEarned] = [undefined, undefined]
+
         if (!updatedIncomingWallet && !updatedOutgoingWallet) {
           return resolve(null);
         }
 
+        // If the transaction is a purchase and there is an outgoing wallet
+        if (type == enums.TRANSACTION_TYPE[2] && !!outgoingWallet) {
+          const user = await userController.findUserByWallet(outgoingWallet._id);
+
+          // Consume coupon if used
+          if (couponUsed) {
+            couponConsumed = await couponController.deactivateCouponForUser(user._id);
+          }
+
+          // Check if eligible for a coupon
+          if (amount >= 100) {
+            couponEarned = await couponController.createCouponForUser(user._id);
+          }
+        }
+
         const transactionCreated = await Transaction.create({
           amount, type,
+          "status": enums.TRANSACTION_STATUS[0], // Successfull Transaction
+          couponEarned,
           "incoming": updatedIncomingWallet, "outgoing": updatedOutgoingWallet,
-          "status": enums.TRANSACTION_STATUS[0] // Successfull Transaction
         });
-        
+
         /**
          * Add also the actual "updated" wallet objects with "new" balances
          * since "Transaction.create" function returns the IDs of "incoming" and "outgoing" wallets
          */
         resolve({
           "transaction": transactionCreated,
-          ...{ "incomingWalletObject": updatedIncomingWallet, "outgoingWalletObject": updatedOutgoingWallet }
+          ...{ "incomingWalletObject": updatedIncomingWallet, "outgoingWalletObject": updatedOutgoingWallet },
+          ...{ couponConsumed, couponEarned }
         });
       })
     }).catch(err => reject(err));
