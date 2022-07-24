@@ -55,4 +55,20 @@ const updateWalletBalance = (wallet, balance) => {
   );
 };
 
-module.exports = { findOne, findByUserId, createUserWallet, updateWalletBalance, createPartnerLocationWallet };
+const findOwnersByIds = (walletIds) => {
+  return Promise.all([
+    userController.findWalletsByWalletIds(walletIds),
+    partnerLocationController.findRestaurantWalletsByWalletIds(walletIds),
+    partnerLocationController.findTouristAttractionWalletsByWalletIds(walletIds)
+  ]).then(([ userWallets, restaurantWallets, touristAttractionWallets ]) => {
+    const walletResponse = {}
+
+    userWallets.forEach(({ username, wallet }) => walletResponse[wallet] = username);
+    restaurantWallets.forEach(({ name, wallet }) => walletResponse[wallet] = name);
+    touristAttractionWallets.forEach(({ name, wallet }) => walletResponse[wallet] = name);
+
+    return walletResponse;
+  })
+}
+
+module.exports = { findOne, findByUserId, createUserWallet, updateWalletBalance, createPartnerLocationWallet, findOwnersByIds };
