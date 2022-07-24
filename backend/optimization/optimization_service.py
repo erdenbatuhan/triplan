@@ -14,9 +14,6 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 def optimize():
     partner_locations = request.json
 
-    # restaurants = list(filter(lambda loc: loc == "restaurant", partner_locations))
-    # tourist_attractions = list(filter(lambda loc: loc == "tourist-attraction", partner_locations))
-
     # Find the sortable locations and their coordinates (latitudes and longitudes)
     sortable_locations = [loc for loc in partner_locations if "googleLocationInfo" in loc]
     location_coordinates = [

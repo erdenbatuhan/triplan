@@ -20,6 +20,7 @@ import { handleEmail } from '../queries/email-queries';
 
 // import { modalStyle } from '../shared/styles';
 // import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
+import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
@@ -46,7 +47,7 @@ export default function PartnerLocationProfilePage() {
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
   const navigate = useNavigate();
-  const partnerLocationType = location.state ? location.state.partnerType : 'restaurant'; // tourist-attraction // restaurant
+  const partnerLocationType = location.state ? location.state.partnerType : PARTNER_TYPE_RESTAURANT; // tourist-attraction // restaurant
 
   const handleEditClick = () => {
     navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
@@ -77,7 +78,7 @@ export default function PartnerLocationProfilePage() {
   console.log(isConfirmed);
 
   useEffect(() => {
-    if (partnerLocationType === 'restaurant') {
+    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
       getRestaurant(partnerId).then((data) => {
         setPartner(data);
         console.log(data);
@@ -87,7 +88,7 @@ export default function PartnerLocationProfilePage() {
       getMenuItems(partnerId).then((data) => {
         setMenuList(data);
       });
-    } else if (partnerLocationType === 'tourist-attraction') {
+    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       getTouristAttraction(partnerId).then((data) => {
         setPartner(data);
         setIsConfirmed(data.confirmed);

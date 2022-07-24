@@ -12,7 +12,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("Connected to DB!"))
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
 app.use(cors()); // CORS
 app.use(bodyParser.json()); // Parses the text as JSON and exposes the resulting object on req.body
@@ -64,6 +64,10 @@ app.use("/transaction", transactionRoutes);
 // Routes: Buyable Item
 const buyableItemRoutes = require("./routes/buyableItemRoutes.js");
 app.use("/buyable-item", buyableItemRoutes);
+
+// Routes: Item Bought
+const itemBoughtRoutes = require("./routes/itemBoughtRoutes.js");
+app.use("/item-bought", itemBoughtRoutes);
 
 // Routes: Withdraw Request
 const withdrawRequestRoutes = require("./routes/withdrawRequestRoutes.js");

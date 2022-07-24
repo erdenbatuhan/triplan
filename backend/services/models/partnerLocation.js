@@ -23,16 +23,18 @@ const PartnerLocationSchema = new Schema({
   locationPicture: { type: String, default: '', required: false },
   partnerType: {
     type: String,
-    enum : enums.PARTNER_TYPES,
-    required: true
+    enum: enums.PARTNER_TYPES,
+    required: true,
   },
   googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents
-  associatedTripLocations: [{ 
-    type: Schema.Types.ObjectId,
-    ref: TripLocation.name,
-    required: false
-  }], // One-to-Many Relation using Reference
-  wallet: { type: Schema.Types.ObjectId, ref: Wallet.name } // One-to-One Relation using Reference
+  associatedTripLocations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: TripLocation.name,
+      required: false,
+    },
+  ], // One-to-Many Relation using Reference
+  wallet: { type: Schema.Types.ObjectId, ref: Wallet.name }, // One-to-One Relation using Reference
 });
 
 const Restaurant = mongoose.model(
@@ -41,18 +43,25 @@ const Restaurant = mongoose.model(
     cuisines: {
       type: [String],
       enum : enums.CUISINES,
-      required: false
+      default: [],
+      required: false,
     },
-    menuList: {
-      type: Array,
-      required: false
+    priceLevels: {
+      type: [String],
+      enum: enums.PRICE_LEVELS,
+      default: [
+        enums.PRICE_LEVELS[0],
+        enums.PRICE_LEVELS[1],
+        enums.PRICE_LEVELS[2],
+      ],
+      required: true,
     },
     foodTypes: {
       type: [String],
       enum: enums.FOOD_TYPES,
       default: [enums.FOOD_TYPES[0]],
-      required: true
-    }
+      required: true,
+    },
   })
 );
 
@@ -63,8 +72,8 @@ const TouristAttraction = mongoose.model(
       type: [String],
       enum: enums.TOURIST_ATTRACTION_TYPES,
       default: [enums.TOURIST_ATTRACTION_TYPES[0]],
-      required: true
-    }
+      required: true,
+    },
   })
 );
 
