@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 const { TripLocation } = require("./tripLocation.js");
 
+const enums = require("./../utils/enums.js");
+
 const ItemBought = mongoose.model(
   "ItemBought",
   new Schema(
@@ -13,7 +15,11 @@ const ItemBought = mongoose.model(
         ref: TripLocation.name,
         required: true,
       }, // One-to-One Relation using Reference
-      itemType: { type: String, required: true },
+      itemType: {
+        type: String,
+        enum: enums.ITEM_TYPES,
+        required: true,
+      }
     },
     {
       timestamps: true,

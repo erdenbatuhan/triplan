@@ -24,13 +24,13 @@ const findFiltered = (filterData) => {
   // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
   return Promise.all([
     Restaurant.find({
-      // TODO: city: filterData["city"],
+      city: filterData["city"],
       priceLevel: { $in: filterData["restaurantFilter"]["priceLevels"] },
       cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
       foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
     }).sort({ priceLevel: "asc" }),
     TouristAttraction.find({
-      // TODO: city: filterData["city"],
+      city: filterData["city"],
       touristAttractionTypes: {
         $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
       },
