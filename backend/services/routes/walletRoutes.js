@@ -20,7 +20,6 @@ router.post("/", async (req, res) => {
 
 /**
  * Creates a wallet under a partner location
- * 
  */
 router.post("/partner-location", async (req, res) => {
   try {
@@ -32,5 +31,18 @@ router.post("/partner-location", async (req, res) => {
   }
 });
 
+/**
+ * Find owners of the given wallets
+ */
+router.get("/owner", async (req, res) => {
+  try {
+    const walletIds = req.query.walletIds ? req.query.walletIds.split(",") : []; // [] means "fetch all"
+    const walletsFound = await walletController.findOwnersByIds(walletIds);
+
+    res.status(200).send(walletsFound);
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while finding owners of the given wallets! Error => ${message}`);
+  }
+});
 
 module.exports = router;

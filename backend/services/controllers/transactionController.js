@@ -1,12 +1,28 @@
-const walletController = require("./walletController.js");
-const enums = require("./../utils/enums.js");
-
 const { Transaction } = require("./../models/transaction.js");
 
+const walletController = require("./walletController.js");
+const userController = require("./userController.js");
+
+const enums = require("./../utils/enums.js");
+
 const findTransactionsByUser = (userId) => {
-  return Transaction.find({
-    $or: [ { incoming: userId }, { outgoing: userId } ]
-  }).sort({ updatedAt: "desc" })
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await userController.findById(userId);
+
+      if (!user) {
+        resolve(null);
+      }
+
+      const transactionsFound = await Transaction.find({
+        $or: [ { incoming: user.wallet }, { outgoing: user.wallet } ]
+      }).sort({ updatedAt: "desc" });
+
+      resolve({ user: user._id, wallet: user.wallet, transactions: transactionsFound });
+    } catch (err) {
+      reject(err);
+    }
+  });
 }
 
 const exists = (id) => {
