@@ -62,7 +62,7 @@ router.delete("/delete-item-entry", async (req, res) => {
     res
       .status(400)
       .send(
-        `An error occurred while deleting the menu item! Error => ${message}`
+        `An error occurred while deleting the item bought entry! Error => ${message}`
       );
   }
 });
