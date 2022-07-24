@@ -51,7 +51,7 @@ export function generateIntroMessage(type) {
 }
 
 export function generateRequestId(id) {
-  return `Request Id : ${id} €`;
+  return `Request Id : ${id}`;
 }
 
 export function generatePaypalWithdrawAmount(amount) {
@@ -62,8 +62,8 @@ export async function handleEmail(emailContent, templeteName) {
   emailjs.init(emailjsCredentials.publicKey);
   // e.preventDefault(); // Prevents default refresh by the browser
   let templeteId = '';
-  if (templeteName === 'withdrawRequest') {
-    templeteId = emailjsCredentials.templetesIds.withdrawRequest;
+  if (templeteName === 'general') {
+    templeteId = emailjsCredentials.templetesIds.general;
   } else if (templeteName === 'checkout') {
     templeteId = emailjsCredentials.templetesIds.checkout;
   }

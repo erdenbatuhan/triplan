@@ -6,7 +6,11 @@ export const modalStyle = {
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
-  p: 4
+  p: 4,
+  display: 'flex',
+  justifyConent: 'center',
+  alignItems: 'center',
+  borderRadius: 8
 };
 
 export const followingCardParentCardStyle = {
