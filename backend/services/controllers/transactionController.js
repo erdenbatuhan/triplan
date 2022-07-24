@@ -4,9 +4,9 @@ const enums = require("./../utils/enums.js");
 const { Transaction } = require("./../models/transaction.js");
 
 const findTransactionsByUser = (userId) => {
-  return Transaction.find({ $or: [
-    { incoming: userId }, { outgoing: userId }
-  ]}).sort({ updatedAt: "desc" })
+  return Transaction.find({
+    $or: [ { incoming: userId }, { outgoing: userId } ]
+  }).sort({ updatedAt: "desc" })
 }
 
 const exists = (id) => {
