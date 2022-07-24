@@ -3,6 +3,12 @@ const enums = require("./../utils/enums.js");
 
 const { Transaction } = require("./../models/transaction.js");
 
+const findTransactionsByUser = (userId) => {
+  return Transaction.find({ $or: [
+    { incoming: userId }, { outgoing: userId }
+  ]}).sort({ updatedAt: "desc" })
+}
+
 const exists = (id) => {
   return Transaction.exists({ _id: id });
 };
@@ -82,4 +88,4 @@ const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId })
   })
 };
 
-module.exports = { exists, updateFields, createTransaction };
+module.exports = { findTransactionsByUser, exists, updateFields, createTransaction };
