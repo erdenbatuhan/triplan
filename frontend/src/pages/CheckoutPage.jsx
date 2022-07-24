@@ -24,7 +24,6 @@ import { findUserWallet, getUser } from '../queries/user-queries';
 import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
 import { createTransaction } from '../queries/transaction-queries';
-
 import {
   PARTNER_TYPE_RESTAURANT,
   PARTNER_TYPE_TOURIST_ATTRACTION,
@@ -33,21 +32,10 @@ import {
   TRANSACTION_STATUS_SUCCESSFUL,
   TRANSACTION_STATUS_REJECTED
 } from '../shared/constants';
+import { modalStyle as modalBoxStyle } from '../shared/styles';
 
 const walletImg = require('../assets/wallet-logo.png');
-
 const emailjsCredentials = require('../credentials/emailjs_credentials.json');
-
-const modalBoxStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 500,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
 
 function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
   let message =

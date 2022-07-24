@@ -7,17 +7,7 @@ import { getPreviousTransactions } from '../queries/transaction-queries';
 import { getOwnersOfWallets } from '../queries/wallet-queries';
 import { getReadableDate, getReadableMonthYearFromTimestamp } from '../shared/date-utils';
 import { TRANSACTION_STATUS_SUCCESSFUL, TRANSACTION_STATUS_REJECTED } from '../shared/constants';
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4
-};
+import { modalStyle } from '../shared/styles';
 
 export default function TransactionHistoryModal({ open, onClose }) {
   const [authenticatedUser] = useState({
