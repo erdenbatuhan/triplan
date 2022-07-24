@@ -178,3 +178,6 @@ export const CURRENCIES = [
 
 export const PRIMARY_COLOR = '#15A4FF';
 export const SECONDARY_COLOR = '#FFF7E3';
+
+export const MIN_AMOUNT_FOR_COUPON = 100;
+export const DEFAULT_VALUE_OF_COUPON = 5;

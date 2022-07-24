@@ -140,6 +140,10 @@ const updateFields = (id, fields) => {
   return User.updateOne({ _id: id }, fields, { new: true, runValidators: true });
 };
 
+const findUserByWallet = (walletId) => {
+  return User.find({ wallet: walletId }).then(users => users[0]);
+}
+
 const findWalletsByWalletIds = (walletIds) => {
   return User.find({ wallet: { $in: walletIds } }).select("username wallet");
 }
@@ -155,5 +159,6 @@ module.exports = {
   exists,
   save,
   updateFields,
+  findUserByWallet,
   findWalletsByWalletIds
 };

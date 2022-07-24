@@ -72,3 +72,7 @@ app.use("/withdraw-request", withdrawRequestRoutes);
 // Routes: Admin
 const adminRoutes = require("./routes/adminRoutes.js");
 app.use("/admin", adminRoutes);
+
+// Routes: Coupon
+const couponRoutes = require("./routes/couponRoutes.js");
+app.use("/coupon", couponRoutes);
