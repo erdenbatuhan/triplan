@@ -24,13 +24,15 @@ const findFiltered = (filterData) => {
   // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
   return Promise.all([
     Restaurant.find({
-      priceLevel: { $lte: filterData["restaurantFilter"]["priceLevel"] },
+      city: filterData["city"],
+      priceLevel: { $in: filterData["restaurantFilter"]["priceLevels"] },
       cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
       foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
     }).sort({ priceLevel: "asc" }),
     TouristAttraction.find({
+      city: filterData["city"],
       touristAttractionTypes: {
-        $in: filterData["touristAttractionFilter"]["types"][1] // TODO: Do we need 1 here?
+        $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
       },
     }),
   ]).then(([restaurants, touristAttractions]) => ({
@@ -344,11 +346,11 @@ const findPartnerLocationById = (partnerLocationId) => {
         ) {
           return resolve(null);
         } else if (restaurant) {
-          resolve({ restaurant, partnerLocationType: "restaurant" });
+          resolve({ restaurant, partnerLocationType: PARTNER_TYPES[0] });
         } else {
           resolve({
             touristAttraction,
-            partnerLocationType: "tourist-attraction",
+            partnerLocationType: PARTNER_TYPES[1],
           });
         }
       })
@@ -376,12 +378,14 @@ const addTripLocationToTouristAttraction = (
 };
 
 const findRestaurantWalletsByWalletIds = (walletIds) => {
-  return Restaurant.find({ wallet: { $in: walletIds} }).select("name wallet");
-}
+  return Restaurant.find({ wallet: { $in: walletIds } }).select("name wallet");
+};
 
 const findTouristAttractionWalletsByWalletIds = (walletIds) => {
-  return TouristAttraction.find({ wallet: { $in: walletIds} }).select("name wallet");
-}
+  return TouristAttraction.find({ wallet: { $in: walletIds } }).select(
+    "name wallet"
+  );
+};
 
 module.exports = {
   findDistinctCities,
@@ -400,5 +404,5 @@ module.exports = {
   addTripLocationToRestaurant,
   addTripLocationToTouristAttraction,
   findRestaurantWalletsByWalletIds,
-  findTouristAttractionWalletsByWalletIds
+  findTouristAttractionWalletsByWalletIds,
 };

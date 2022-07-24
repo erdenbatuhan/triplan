@@ -11,7 +11,7 @@ export default function SelectedPlacesList({ selectedPartnerLocations }) {
               key={partnerLocation._id}
               id={partnerLocation._id}
               title={partnerLocation.name}
-              content={partnerLocation.place_description || ''}
+              content={partnerLocation.description || ''}
               locationPicture={partnerLocation.locationPicture}
             />
           ))
