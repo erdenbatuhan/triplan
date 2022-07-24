@@ -9,11 +9,13 @@ import {
   Card,
   CardContent,
   Box,
-  Modal
+  Modal,
+  Button
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import Spinner from '../components/Spinner';
 import TripCard from '../components/TripCard';
+import TransactionHistoryModal from '../components/TransactionHistoryModal';
 import WalletPage from './WalletPage';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser } from '../queries/user-queries';
@@ -35,8 +37,9 @@ function UserProfilePage() {
   const [followersData, setFollowersData] = useState({});
   const [followedData, setFollowedData] = useState({});
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
-  const [isFollowersShown, setIsFollowersShown] = useState(false);
-  const [isFollowedShown, setIsFollowedShown] = useState(false);
+  const [followersModalShown, setFollowersModalShown] = useState(false);
+  const [followedModalShown, setFollowedModalShown] = useState(false);
+  const [transitionModalShown, setTransitionModalShown] = useState(false);
 
   const getFollowersOfUser = () => {
     return getFollowers(authenticatedUser.user.id).then((data) => {
@@ -154,6 +157,11 @@ function UserProfilePage() {
           </Grid>
 
           <Grid item xs={9} m={2}>
+            <Button onClick={() => setTransitionModalShown(true)}> All Transactions </Button>
+            <TransactionHistoryModal
+              open={transitionModalShown}
+              onClose={() => setTransitionModalShown(false)}
+            />
             <WalletPage />
           </Grid>
 
@@ -173,14 +181,14 @@ function UserProfilePage() {
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Followers </Box>
                       {getCountText(Object.keys(followersData).length, () =>
-                        setIsFollowersShown(true)
+                        setFollowersModalShown(true)
                       )}
                     </Box>
 
                     <Modal
-                      open={isFollowersShown}
+                      open={followersModalShown}
                       onClose={() => {
-                        setIsFollowersShown(false);
+                        setFollowersModalShown(false);
                       }}>
                       <Card sx={followingCardParentCardStyle}>
                         <FollowingsCard
@@ -205,14 +213,14 @@ function UserProfilePage() {
                       }}>
                       <Box sx={{ color: 'text.secondary' }}> Following </Box>
                       {getCountText(Object.keys(followedData).length, () =>
-                        setIsFollowedShown(true)
+                        setFollowedModalShown(true)
                       )}
                     </Box>
 
                     <Modal
-                      open={isFollowedShown}
+                      open={followedModalShown}
                       onClose={() => {
-                        setIsFollowedShown(false);
+                        setFollowedModalShown(false);
                       }}>
                       <Card sx={followingCardParentCardStyle}>
                         <FollowingsCard
@@ -237,16 +245,18 @@ function UserProfilePage() {
       <Grid item xs={6}>
         <Grid>
           <Typography align="left" variant="h6" color="text.secondary">
-            Trips: {tripPlans.length}
+            Trips: {tripPlans.length || 0}
           </Typography>
           <Divider />
         </Grid>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
           <Grid item xs={9} sx={{ width: '100%' }}>
             <Stack spacing={2} pt={4}>
-              {tripPlans.map((tripPlan) => {
-                return <TripCard key={tripPlan._id} tripPlan={tripPlan} />;
-              })}
+              {tripPlans
+                ? tripPlans.map((tripPlan) => {
+                    return <TripCard key={tripPlan._id} tripPlan={tripPlan} />;
+                  })
+                : []}
             </Stack>
           </Grid>
         </Grid>

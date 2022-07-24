@@ -24,8 +24,7 @@ export default function TripPlanRatings({ tripPlanId }) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          marginTop: '2em'
+          alignItems: 'center'
         }}>
         {detailedLocations.map(({ tripLocation, partnerLocation }, idx) => (
           <TripPlanRatingCard

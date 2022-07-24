@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
+import {
+  Grid,
+  Card,
+  CardActions,
+  CardContent,
+  Button,
+  Typography,
+  TextField,
+  Avatar
+} from '@mui/material';
 import StarRatings from 'react-star-ratings';
 import Spinner from './Spinner';
 import { updateRatingAndCommentOfTripLocation } from '../queries/trip-location-queries';
@@ -55,18 +58,18 @@ export default function TripPlanRatingCard({
   };
 
   return (
-    <Card sx={{ width: 350, marginBottom: '2em' }}>
-      <CardMedia
-        component="img"
-        alt="green iguana"
-        height="150"
-        image={partnerLocation.locationPicture}
-      />
+    <Card sx={{ width: '100%', marginBottom: '1em' }}>
+      <Grid container direction="row">
+        <Grid item>
+          <Avatar sx={{ width: '100px', height: '100px' }} src={partnerLocation.locationPicture} />
+        </Grid>
+        <Grid item>
+          <Typography gutterBottom variant="h5" component="div">
+            {ranking} - {partnerLocation.name}
+          </Typography>
+        </Grid>
+      </Grid>
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {ranking} - {partnerLocation.name}
-        </Typography>
-
         {loading ? (
           <Spinner marginTop="1.5em" />
         ) : (

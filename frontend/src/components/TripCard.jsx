@@ -11,7 +11,7 @@ function TripCard({ tripPlan }) {
           <Typography> {tripPlan.name} </Typography>
         </AccordionSummary>
 
-        <AccordionDetails>
+        <AccordionDetails sx={{ padding: 0, backgroundColor: '#eeeeee' }}>
           <TripPlanRatings tripPlanId={tripPlan._id} />
         </AccordionDetails>
       </Accordion>
