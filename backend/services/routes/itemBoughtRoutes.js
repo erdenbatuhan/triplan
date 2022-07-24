@@ -6,7 +6,7 @@ const itemBoughtController = require("./../controllers/itemBoughtController.js")
 /**
  * Adds a new item bought entry for a trip location.
  */
-router.post("/create-item-entry", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const itemBoughtCreated = await itemBoughtController.addNewItemBoughtEntry(
       req.body
@@ -24,7 +24,7 @@ router.post("/create-item-entry", async (req, res) => {
 /**
  * Updates an item bought entry
  */
-router.put("/update-item-entry/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const itemBoughtId = req.params.id;
     const query = req.query;
@@ -46,7 +46,7 @@ router.put("/update-item-entry/:id", async (req, res) => {
 /**
  * Deletes an existing item bought entry
  */
-router.delete("/delete-item-entry", async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     const itemBoughtId = req.query.id;
     const itemBoughtRemoved = await itemBoughtController.deleteItemBoughtEntry(
@@ -87,7 +87,7 @@ router.get("/", async (req, res) => {
 /**
  * Find items bought given a list of trip locations ids.
  */
-router.post("/", async (req, res) => {
+router.post("/locations", async (req, res) => {
   try {
     const itemsBought = itemBoughtController.getItemsBoughtByTripLocations(
       req.body
