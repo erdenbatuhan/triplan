@@ -11,7 +11,7 @@ import {
   Box,
   Modal
 } from '@mui/material';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import Spinner from '../components/Spinner';
 import TripCard from '../components/TripCard';
 import WalletPage from './WalletPage';
@@ -138,18 +138,18 @@ function UserProfilePage() {
           </Grid>
 
           <Grid item xs={3}>
-            <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'h6.fontSize' }}>
-              {user.username || '...'}
+            <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
+              {user.firstName} {user.lastName}
             </Typography>
           </Grid>
 
           <Grid item xs={3}>
             <Typography align="center">
               <IconButton sx={{ p: 0, display: 'inline' }}>
-                <LocationOnIcon fontSize="small" sx={{ color: '#f44336', fontStyle: 'italic' }} />
+                <AlternateEmailIcon fontSize="small" sx={{ fontStyle: 'italic' }} />
               </IconButton>
 
-              <Typography sx={{ display: 'inline' }}>Berlin</Typography>
+              <Typography sx={{ display: 'inline' }}>{user.username || '...'}</Typography>
             </Typography>
           </Grid>
 

@@ -27,7 +27,7 @@ export default function UserItemCard({
               <Grid item xs={6}>
                 <Typography variant="subtitle1">{user.username}</Typography>
 
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography variant="body5" color="text.secondary">
                   Has planned {numTripsPlannedByUser || 'no'} trips so far
                 </Typography>
               </Grid>
