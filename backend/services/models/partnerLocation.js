@@ -8,8 +8,8 @@ const { Wallet } = require("./wallet.js");
 const { extendSchema } = require("./../utils/mongooseUtils.js");
 const enums = require("./../utils/enums.js");
 
-const MIN_COUNT_FOR_VISILITY_RESTAURANT = 10;
-const MIN_COUNT_FOR_VISILITY_TOURIST_ATTRACTION = 10;
+const MIN_COUNT_FOR_VISIBILITY_RESTAURANT = 10;
+const MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION = 10;
 
 const PartnerLocationSchema = new Schema({
   name: { type: String, unique: true, required: true },
@@ -78,8 +78,8 @@ const TouristAttraction = mongoose.model(
 );
 
 module.exports = {
-  MIN_COUNT_FOR_VISILITY_RESTAURANT,
-  MIN_COUNT_FOR_VISILITY_TOURIST_ATTRACTION,
+  MIN_COUNT_FOR_VISIBILITY_RESTAURANT,
+  MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION,
   Restaurant,
   TouristAttraction
 };
