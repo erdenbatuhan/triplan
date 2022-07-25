@@ -339,22 +339,19 @@ const findPartnerLocationById = (partnerLocationId) => {
   ]) => restaurant || touristAttraction || null);
 };
 
-const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
-  return Restaurant.updateOne(
+const addTripLocationToRestaurant = (restaurantId, tripLocation, { session }) => {
+  return Restaurant.findOneAndUpdate(
     { _id: restaurantId },
     { $push: { associatedTripLocations: tripLocation } },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true, session }
   );
 };
 
-const addTripLocationToTouristAttraction = (
-  touristAttractionId,
-  tripLocation
-) => {
-  return TouristAttraction.updateOne(
+const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation, { session }) => {
+  return TouristAttraction.findOneAndUpdate(
     { _id: touristAttractionId },
     { $push: { associatedTripLocations: tripLocation } },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true, session }
   );
 };
 
