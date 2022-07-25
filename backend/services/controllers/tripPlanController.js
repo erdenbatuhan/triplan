@@ -97,7 +97,7 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
   ));
 };
 
-const createTripPlan = async (userId, { name, partnerLocations }) => {
+const createTripPlan = async (userId, { name, partnerLocations }) => { // TODO: TRANSACTIONAL
   const { tripLocationsCreated, partnerLocationsSorted } = await Promise.all([
     // Create as many trip lococations as there are restaurants with an increasing order
     Promise.all(partnerLocations.map((_, idx) => tripLocationController.create({ order: idx }))),

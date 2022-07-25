@@ -5,29 +5,37 @@ const walletController = require("./../controllers/walletController.js");
 
 /**
  * Creates a wallet under a user
- * 
- * @see ReqBody in "./../mock/requestBody_createUserWallet.json"
  */
-router.post("/", async (req, res) => {
+router.post("/user/:userId", async (req, res) => {
   try {
-    const walletCreated = await walletController.createUserWallet(req.body);
-  
+    const userId = req.params.userId;
+    const walletCreated = await walletController.createUserWallet(userId);
+
+    if (!walletCreated) {
+      return res.status(404).send(`No user found with ID=${userId}!`);
+    }
+
     res.status(200).send(walletCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating a wallet for a user! Error => ${message}`);
+    res.status(400).send(`An error occurred while creating a wallet for the user! Error => ${message}`);
   }
 });
 
 /**
  * Creates a wallet under a partner location
  */
-router.post("/partner-location", async (req, res) => {
+router.post("/partner-location/:partnerLocationId", async (req, res) => {
   try {
-    const walletCreated = await walletController.createPartnerLocationWallet(req.body);
-  
+    const partnerLocationId = req.params.partnerLocationId;
+    const walletCreated = await walletController.createPartnerLocationWallet(partnerLocationId);
+
+    if (!walletCreated) {
+      return res.status(404).send(`No partner location found with ID=${partnerLocationId}!`);
+    }
+
     res.status(200).send(walletCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating a wallet for a user! Error => ${message}`);
+    res.status(400).send(`An error occurred while creating a wallet for the partner location! Error => ${message}`);
   }
 });
 

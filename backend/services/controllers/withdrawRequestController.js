@@ -13,8 +13,7 @@ const sendWithdrawRequest = (withdrawRequest) => {
 };
 
 const removeWithdrawRequest = (id) => {
-  console.log(id);
   return WithdrawRequest.deleteOne({ _id: id });
 };
 
-module.exports ={find, sendWithdrawRequest, removeWithdrawRequest, findById}
+module.exports = { find, sendWithdrawRequest, removeWithdrawRequest, findById }

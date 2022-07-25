@@ -313,56 +313,29 @@ const findTouristAttractionByEmail = (email) => {
 };
 
 const createRestaurant = (restaurant) => {
-  return Restaurant.insertMany([
-    { ...restaurant, partnerType: PARTNER_TYPES[0] },
-  ]);
+  return Restaurant.create(restaurant);
 };
 
 const createTouristAttraction = (touristAttraction) => {
-  return TouristAttraction.insertMany([
-    { ...touristAttraction, partnerType: PARTNER_TYPES[1] },
-  ]);
+  return TouristAttraction.create(touristAttraction);
 };
 
-const updatePartnerLocationFields = async (id, fields) => {
-  const { partnerLocationType } = await findPartnerLocationById(id);
+const updatePartnerLocation = async (id, fields) => {
+  const { partnerType } = await findPartnerLocationById(id);
 
-  if (partnerLocationType === PARTNER_TYPES[0]) {
-    return Restaurant.updateOne({ _id: id }, fields, {
-      new: true,
-      runValidators: true,
-    });
-  } else {
-    return TouristAttraction.updateOne({ _id: id }, fields, {
-      new: true,
-      runValidators: true,
-    });
+  if (partnerType === PARTNER_TYPES[0]) {
+    return Restaurant.findOneAndUpdate({ _id: id }, fields, { new: true, runValidators: true });
   }
+
+  return TouristAttraction.findOneAndUpdate({ _id: id }, fields, { new: true, runValidators: true });
 };
 
 const findPartnerLocationById = (partnerLocationId) => {
-  return new Promise((resolve, reject) => {
-    const restaurantFound = findRestaurantById(partnerLocationId);
-    const touristAttractionFound = findTouristAttractionById(partnerLocationId);
-
-    Promise.all([restaurantFound, touristAttractionFound])
-      .then(([restaurant, touristAttraction]) => {
-        if (
-          (!restaurant && !touristAttraction) ||
-          (restaurant && touristAttraction)
-        ) {
-          return resolve(null);
-        } else if (restaurant) {
-          resolve({ restaurant, partnerLocationType: PARTNER_TYPES[0] });
-        } else {
-          resolve({
-            touristAttraction,
-            partnerLocationType: PARTNER_TYPES[1],
-          });
-        }
-      })
-      .catch((err) => reject(err));
-  });
+  return Promise.all([
+    findRestaurantById(partnerLocationId), findTouristAttractionById(partnerLocationId)
+  ]).then(([
+    restaurant, touristAttraction
+  ]) => restaurant || touristAttraction || null);
 };
 
 const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
@@ -406,7 +379,7 @@ module.exports = {
   signUpTouristAttraction,
   loginRestaurant,
   loginTouristAttraction,
-  updatePartnerLocationFields,
+  updatePartnerLocation,
   findPartnerLocationById,
   addTripLocationToRestaurant,
   addTripLocationToTouristAttraction,

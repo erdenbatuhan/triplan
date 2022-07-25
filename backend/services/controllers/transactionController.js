@@ -39,7 +39,7 @@ const updateFields = (id, fields) => {
   return Transaction.updateOne({ "_id": id }, fields, { new: true, runValidators: true });
 };
 
-const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
+const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => { // TODO: TRANSACTIONAL
   return new Promise((resolve, reject) => {
     const incomingWalletPromise = incomingWalletId ? walletController.findOne(incomingWalletId) : new Promise((resolve) => resolve(null));
     const outgoingWalletPromise = outgoingWalletId ? walletController.findOne(outgoingWalletId) : new Promise((resolve) => resolve(null));
