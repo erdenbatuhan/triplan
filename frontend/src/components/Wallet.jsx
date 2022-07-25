@@ -16,7 +16,7 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { green } from '@mui/material/colors';
-import PaypalCheckoutButtons from '../components/PaypalButtons';
+import PaypalCheckoutButtons from './PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
@@ -35,6 +35,7 @@ import {
   // generateRequestId,
   handleEmail
 } from '../queries/email-queries';
+import TransactionHistoryModal from './TransactionHistoryModal';
 
 const style = {
   position: 'absolute',
@@ -59,6 +60,7 @@ export default function WalletPage() {
   const [transactionType, setTransactionType] = useState('');
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
+  const [transitionModalShown, setTransitionModalShown] = useState(false);
 
   // Listening to the changes in authenticatedUser
   useEffect(() => {
@@ -159,7 +161,8 @@ export default function WalletPage() {
           width: '100%',
           textAlign: 'center',
           height: '100%',
-          boxShadow: 3
+          boxShadow: 3,
+          p: 2
         }}>
         <CardContent>
           <Box
@@ -177,30 +180,44 @@ export default function WalletPage() {
         </CardContent>
 
         <CardActions>
-          <Grid container direction="row">
-            <Grid item sx={6} m={1}>
-              <Button
-                color="success"
-                variant="outlined"
-                onClick={() => {
-                  setTransactionType(TRANSACTION_TYPE_DEPOSIT);
-                  setTransactionDialogShown(true);
-                }}>
-                Deposit
-              </Button>
-            </Grid>
+          <Grid container direction="column">
+            <Grid item sx={8}>
+              <Grid container direction="row" justify-content="center">
+                <Grid item sx={6} m={1}>
+                  <Button
+                    color="success"
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setTransactionType(TRANSACTION_TYPE_DEPOSIT);
+                      setTransactionDialogShown(true);
+                    }}>
+                    Deposit
+                  </Button>
+                </Grid>
 
-            <Grid item sx={6} m={1}>
-              <Button
-                color="error"
-                size="small"
-                variant="outlined"
-                onClick={() => {
-                  setTransactionType(TRANSACTION_TYPE_WITHDRAW);
-                  setTransactionDialogShown(true);
-                }}>
-                Withdraw
+                <Grid item sx={6} m={1}>
+                  <Button
+                    color="error"
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setTransactionType(TRANSACTION_TYPE_WITHDRAW);
+                      setTransactionDialogShown(true);
+                    }}>
+                    Withdraw
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={4} marginTop={4}>
+              <Button size="small" variant="outlined" onClick={() => setTransitionModalShown(true)}>
+                All Transactions
               </Button>
+              <TransactionHistoryModal
+                open={transitionModalShown}
+                onClose={() => setTransitionModalShown(false)}
+              />
             </Grid>
           </Grid>
         </CardActions>

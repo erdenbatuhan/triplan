@@ -9,14 +9,12 @@ import {
   Card,
   CardContent,
   Box,
-  Modal,
-  Button
+  Modal
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import Spinner from '../components/Spinner';
 import TripCard from '../components/TripCard';
-import TransactionHistoryModal from '../components/TransactionHistoryModal';
-import WalletPage from './WalletPage';
+import WalletPage from '../components/Wallet';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser } from '../queries/user-queries';
 import {
@@ -39,7 +37,6 @@ function UserProfilePage() {
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
   const [followersModalShown, setFollowersModalShown] = useState(false);
   const [followedModalShown, setFollowedModalShown] = useState(false);
-  const [transitionModalShown, setTransitionModalShown] = useState(false);
 
   const getFollowersOfUser = () => {
     return getFollowers(authenticatedUser.user.id).then((data) => {
@@ -157,11 +154,6 @@ function UserProfilePage() {
           </Grid>
 
           <Grid item xs={9} m={2}>
-            <Button onClick={() => setTransitionModalShown(true)}> All Transactions </Button>
-            <TransactionHistoryModal
-              open={transitionModalShown}
-              onClose={() => setTransitionModalShown(false)}
-            />
             <WalletPage />
           </Grid>
 
