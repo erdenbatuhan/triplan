@@ -11,9 +11,9 @@ import { SECONDARY_COLOR } from '../shared/constants';
 // import { AuthUserContext } from '../authentication/AuthUserContext';
 
 function SignUpAuthPage() {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('heralpkocas@gmail.com');
+  const [username, setUsername] = useState('Bregath');
+  const [password, setPassword] = useState('Eralp123');
   const [userType, setUserType] = useState('USER');
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
@@ -41,7 +41,7 @@ function SignUpAuthPage() {
 
   const handleOnSubmitClick = async () => {
     try {
-      const authData = { username, password, userType };
+      const authData = { username, password, email, userType };
       if (userType === 'USER') {
         navigate('/signup-user-profile', { state: { authData } });
       }

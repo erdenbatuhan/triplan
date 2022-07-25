@@ -7,6 +7,19 @@ const { Wallet } = require("./../models/wallet.js");
 /**
  * Creates a user or updates an existing one
  */
+const createNewUser = async (userData) => {
+  try {
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
+    return await save({ ...userData, wallet }); // returns new user
+  } catch (e) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+/**
+ * Creates a user or updates an existing one
+ */
 const signUp = async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -21,7 +34,7 @@ const signUp = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const wallet = await Wallet.create(new Wallet());  // Create an empty wallet
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
 
     const newUser = await save({
       ...req.body,
@@ -129,7 +142,7 @@ const exists = (id) => {
 };
 
 const save = (user) => {
-  return User.insertMany([user]);
+  return User.create(user);
 };
 
 const updateFields = (id, fields, session) => {
@@ -137,22 +150,25 @@ const updateFields = (id, fields, session) => {
     return new Promise((resolve) => resolve(null)); // User does not exist!
   }
 
-  return User.findOneAndUpdate(
-    { _id: id },
-    fields,
-    { new: true, runValidators: true, session }
-  );
+  return User.findOneAndUpdate({ _id: id }, fields, {
+    new: true,
+    runValidators: true,
+    session,
+  });
 };
 
 const findUserByWallet = (walletId, session) => {
-  return User.find({ wallet: walletId }).session(session).then(users => users[0]);
-}
+  return User.find({ wallet: walletId })
+    .session(session)
+    .then((users) => users[0]);
+};
 
 const findWalletsByWalletIds = (walletIds) => {
   return User.find({ wallet: { $in: walletIds } }).select("username wallet");
-}
+};
 
 module.exports = {
+  createNewUser,
   signUp,
   login,
   find,
@@ -164,5 +180,5 @@ module.exports = {
   save,
   updateFields,
   findUserByWallet,
-  findWalletsByWalletIds
+  findWalletsByWalletIds,
 };

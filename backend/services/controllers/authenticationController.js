@@ -21,11 +21,12 @@ const findByUsername = (username) => {
 const signUp = async (req, res) => {
   const { authData, userData } = req.body;
   const { username, password, userType } = authData;
+
   try {
     // check if the new entry already exists
     let userByUsername = await findByUsername(username);
 
-    if (!!userByUsername || userByUsername.length !== 0) {
+    if (!!!userByUsername || userByUsername.length !== 0) {
       return res.status(400).json({ msg: "User already exists" });
     }
 
@@ -41,10 +42,16 @@ const signUp = async (req, res) => {
     let newUser;
     switch (userType) {
       case USER_TYPES[0]:
-        newUser = await adminController.save(userData);
+        newUser = await adminController.save({
+          ...userData,
+          authentication: newAuthEntry._id,
+        });
         break;
       case USER_TYPES[1]:
-        newUser = await userController.save(userData);
+        newUser = await userController.createNewUser({
+          ...userData,
+          authentication: newAuthEntry._id,
+        });
         break;
       case USER_TYPES[2]:
         newUser = await partnerLocationController.createRestaurant(userData);
@@ -56,7 +63,7 @@ const signUp = async (req, res) => {
         break;
     }
 
-    if (!!newUser || newUser.length !== 0) {
+    if (!!!newUser) {
       return res.status(400).json({ msg: "Error in creating new user." });
     }
 

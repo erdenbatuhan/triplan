@@ -3,12 +3,13 @@ import { useLocation } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
 import { SECONDARY_COLOR } from '../shared/constants';
+import { signupNewUser } from '../queries/authentication-queries';
 
 function SignUpUserDataPage() {
-  const [firstName, setFirstName] = useState('Eralp');
-  const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [profilePicture, setProfilePicture] = useState('');
+  const [firstName, setFirstName] = useState('Halil Eralp');
+  const [lastName, setLastName] = useState('Kocas');
+  const [phoneNumber, setPhoneNumber] = useState('+49157');
+  const [profilePicture, setProfilePicture] = useState('qwe');
 
   const location = useLocation();
   const authData = location.state ? location.state.authData : null;
@@ -40,7 +41,9 @@ function SignUpUserDataPage() {
         console.error(`authentication data is missing ${authData}`);
       }
       const signupData = { authData, userData };
+      const newUser = await signupNewUser(signupData);
       console.log('signupData: ', signupData);
+      console.log('newUser: ', newUser);
     } catch (e) {
       console.error(`failed to create user ${e}`);
     }
