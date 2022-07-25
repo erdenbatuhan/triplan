@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
+import { Box, List } from '@mui/material';
 import TripPlanRatingCard from './TripPlanRatingCard';
 import { getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 
@@ -26,17 +26,29 @@ export default function TripPlanRatings({ tripPlanId }) {
           flexDirection: 'column',
           alignItems: 'center'
         }}>
-        {detailedLocations.map(({ tripLocation, partnerLocation }, idx) => (
-          <TripPlanRatingCard
-            key={tripLocation._id}
-            index={idx}
-            ranking={idx + 1}
-            tripLocation={tripLocation}
-            partnerLocation={partnerLocation}
-            onChangesSaved={onChangesSaved}
-            latestUpdate={tripLocation.updatedAt}
-          />
-        ))}
+        <List
+          sx={{
+            width: '100%',
+            bgcolor: 'background.paper',
+            position: 'relative',
+            overflow: 'auto',
+            minHeight: '1.5em',
+            maxHeight: '20em',
+            marginTop: '10px',
+            '& ul': { padding: 0 }
+          }}>
+          {detailedLocations.map(({ tripLocation, partnerLocation }, idx) => (
+            <TripPlanRatingCard
+              key={tripLocation._id}
+              index={idx}
+              ranking={idx + 1}
+              tripLocation={tripLocation}
+              partnerLocation={partnerLocation}
+              onChangesSaved={onChangesSaved}
+              latestUpdate={tripLocation.updatedAt}
+            />
+          ))}
+        </List>
       </Box>
     </div>
   );

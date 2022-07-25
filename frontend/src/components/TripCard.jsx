@@ -4,13 +4,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TripPlanRatings from './TripPlanRatings';
 
 function TripCard({ tripPlan }) {
-  const [accordionOpen, setAccordionOpen] = React.useState(false);
-
   return (
     <Card variant="outlined" sx={{ boxShadow: 2, height: '100%' }}>
-      <Accordion
-        sx={{ backgroundColor: accordionOpen ? '#e1f5fe' : '#ffffff' }}
-        onChange={() => setAccordionOpen((cur) => !cur)}>
+      <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="subtitle1" gutterBottom>
             {tripPlan.name}
