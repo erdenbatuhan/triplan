@@ -112,8 +112,8 @@ const findByIds = (ids) => {
   return User.find({ _id: { $in: ids } }).sort({ createdAt: "desc" }); // In descending order/newly created first
 };
 
-const findById = (id) => {
-  return User.findById(id);
+const findById = (id, session) => {
+  return User.findById(id).session(session);
 };
 
 const findByUsername = (username) => {
@@ -132,16 +132,20 @@ const save = (user) => {
   return User.insertMany([user]);
 };
 
-const updateFields = (id, fields) => {
+const updateFields = (id, fields, session) => {
   if (!exists(id)) {
     return new Promise((resolve) => resolve(null)); // User does not exist!
   }
 
-  return User.updateOne({ _id: id }, fields, { new: true, runValidators: true });
+  return User.findOneAndUpdate(
+    { _id: id },
+    fields,
+    { new: true, runValidators: true, session }
+  );
 };
 
-const findUserByWallet = (walletId) => {
-  return User.find({ wallet: walletId }).then(users => users[0]);
+const findUserByWallet = (walletId, session) => {
+  return User.find({ wallet: walletId }).session(session).then(users => users[0]);
 }
 
 const findWalletsByWalletIds = (walletIds) => {
