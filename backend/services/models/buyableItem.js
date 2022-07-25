@@ -12,7 +12,7 @@ const BuyableItemSchema = new Schema({
   description: { type: String, default: "", required: true },
   price: { type: Number, required: true },
   appliedDiscountRate: { type: Number, required: true },
-  image: { type: String, required: true },
+  image: { type: String, required: false },
   associatedItemBoughts: [
     {
       type: Schema.Types.ObjectId,

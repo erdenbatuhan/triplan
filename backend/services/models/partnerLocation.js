@@ -9,7 +9,7 @@ const { extendSchema } = require("./../utils/mongooseUtils.js");
 const enums = require("./../utils/enums.js");
 
 const PartnerLocationSchema = new Schema({
-  name: { type: String, required: true },
+  name: { type: String, runique: true, equired: true },
   email: { type: String, default: "", required: false },
   description: { type: String, default: "", required: false },
   city: { type: String, required: true },

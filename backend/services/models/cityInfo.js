@@ -5,7 +5,7 @@ const CityInfo = mongoose.model(
   "CityInfo",
   new Schema(
     {
-      name: { type: String, required: true },
+      name: { type: String, unique: true, required: true },
       latitude: { type: Number, required: true },
       longitude: { type: Number, required: true }
     },
