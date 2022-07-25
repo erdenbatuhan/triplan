@@ -64,8 +64,20 @@ const findByTripLocations = (tripLocationIds) => {
   }));
 };
 
-const findRestaurantById = (restaurantId) => {
-  return Restaurant.findById(restaurantId);
+const findPartnerLocationById = (partnerLocationId, session) => {
+  return Promise.all([
+    findRestaurantById(partnerLocationId, session), findTouristAttractionById(partnerLocationId, session)
+  ]).then(([
+    restaurant, touristAttraction
+  ]) => restaurant || touristAttraction || null);
+};
+
+const findRestaurantById = (restaurantId, session) => {
+  return Restaurant.findById(restaurantId).session(session);
+};
+
+const findTouristAttractionById = (touristAttractionId, session) => {
+  return TouristAttraction.findById(touristAttractionId).session(session);
 };
 
 const saveRestaurant = (restaurant) => {
@@ -74,10 +86,6 @@ const saveRestaurant = (restaurant) => {
     restaurant,
     { upsert: true, new: true, runValidators: true }
   );
-};
-
-const findTouristAttractionById = (touristAttractionId) => {
-  return TouristAttraction.findById(touristAttractionId);
 };
 
 const saveTouristAttraction = (touristAttraction) => {
@@ -313,74 +321,37 @@ const findTouristAttractionByEmail = (email) => {
 };
 
 const createRestaurant = (restaurant) => {
-  return Restaurant.insertMany([
-    { ...restaurant, partnerType: PARTNER_TYPES[0] },
-  ]);
+  return Restaurant.create(restaurant);
 };
 
 const createTouristAttraction = (touristAttraction) => {
-  return TouristAttraction.insertMany([
-    { ...touristAttraction, partnerType: PARTNER_TYPES[1] },
-  ]);
+  return TouristAttraction.create(touristAttraction);
 };
 
-const updatePartnerLocationFields = async (id, fields) => {
-  const { partnerLocationType } = await findPartnerLocationById(id);
+const updatePartnerLocation = async (id, fields, session) => {
+  const { partnerType } = await findPartnerLocationById(id);
+  const partnerLocation = partnerType === PARTNER_TYPES[0] ? Restaurant : TouristAttraction;
 
-  if (partnerLocationType === PARTNER_TYPES[0]) {
-    return Restaurant.updateOne({ _id: id }, fields, {
-      new: true,
-      runValidators: true,
-    });
-  } else {
-    return TouristAttraction.updateOne({ _id: id }, fields, {
-      new: true,
-      runValidators: true,
-    });
-  }
-};
-
-const findPartnerLocationById = (partnerLocationId) => {
-  return new Promise((resolve, reject) => {
-    const restaurantFound = findRestaurantById(partnerLocationId);
-    const touristAttractionFound = findTouristAttractionById(partnerLocationId);
-
-    Promise.all([restaurantFound, touristAttractionFound])
-      .then(([restaurant, touristAttraction]) => {
-        if (
-          (!restaurant && !touristAttraction) ||
-          (restaurant && touristAttraction)
-        ) {
-          return resolve(null);
-        } else if (restaurant) {
-          resolve({ restaurant, partnerLocationType: PARTNER_TYPES[0] });
-        } else {
-          resolve({
-            touristAttraction,
-            partnerLocationType: PARTNER_TYPES[1],
-          });
-        }
-      })
-      .catch((err) => reject(err));
-  });
-};
-
-const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
-  return Restaurant.updateOne(
-    { _id: restaurantId },
-    { $push: { associatedTripLocations: tripLocation } },
-    { new: true, runValidators: true }
+  return partnerLocation.findOneAndUpdate(
+    { _id: id },
+    fields,
+    { new: true, runValidators: true, session }
   );
 };
 
-const addTripLocationToTouristAttraction = (
-  touristAttractionId,
-  tripLocation
-) => {
-  return TouristAttraction.updateOne(
+const addTripLocationToRestaurant = (restaurantId, tripLocation, session) => {
+  return Restaurant.findOneAndUpdate(
+    { _id: restaurantId },
+    { $push: { associatedTripLocations: tripLocation } },
+    { new: true, runValidators: true, session }
+  );
+};
+
+const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation, session) => {
+  return TouristAttraction.findOneAndUpdate(
     { _id: touristAttractionId },
     { $push: { associatedTripLocations: tripLocation } },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true, session }
   );
 };
 
@@ -398,16 +369,16 @@ module.exports = {
   findDistinctCitiesWithEnoughPlaces,
   findFiltered,
   findByTripLocations,
+  findPartnerLocationById,
   findRestaurantById,
-  saveRestaurant,
   findTouristAttractionById,
+  saveRestaurant,
   saveTouristAttraction,
   signUpRestaurant,
   signUpTouristAttraction,
   loginRestaurant,
   loginTouristAttraction,
-  updatePartnerLocationFields,
-  findPartnerLocationById,
+  updatePartnerLocation,
   addTripLocationToRestaurant,
   addTripLocationToTouristAttraction,
   findRestaurantWalletsByWalletIds,
