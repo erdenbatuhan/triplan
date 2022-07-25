@@ -48,4 +48,3 @@ const deactivateCouponForUser = (userId, session) => {
 };
 
 module.exports = { createCouponForUser, findCouponForUser, deactivateCouponForUser }
-}
