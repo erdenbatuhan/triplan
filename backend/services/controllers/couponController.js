@@ -5,7 +5,7 @@ const userController = require("./userController.js");
 const createCouponForUser = (userId, session) => {
   // Create a new coupoin for the user
   return new Promise(async (resolve, reject) => {
-    if (!(await (userController.exists(userId)))) {
+    if (!(await (userController.exists(userId).session(session)))) {
       return resolve(null);
     }
 
@@ -13,7 +13,7 @@ const createCouponForUser = (userId, session) => {
       .then(([ couponCreated ]) => resolve(couponCreated))
       .catch(err => reject(err));
   });
-}; 
+};
 
 const findCouponForUser = (userId) => {
   // Finds the most outdated coupon the user has, if there is any, which is still valid and active
