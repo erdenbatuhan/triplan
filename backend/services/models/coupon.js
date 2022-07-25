@@ -25,4 +25,8 @@ const Coupon = mongoose.model(
   )
 );
 
-module.exports = { Coupon, MIN_AMOUNT_FOR_COUPON };
+module.exports = {
+  MIN_AMOUNT_FOR_COUPON,
+  DEFAULT_VALUE_OF_COUPON,
+  Coupon
+};
