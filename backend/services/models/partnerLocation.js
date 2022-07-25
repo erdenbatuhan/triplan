@@ -9,7 +9,7 @@ const { extendSchema } = require("./../utils/mongooseUtils.js");
 const enums = require("./../utils/enums.js");
 
 const PartnerLocationSchema = new Schema({
-  name: { type: String, runique: true, equired: true },
+  name: { type: String, unique: true, equired: true },
   email: { type: String, default: "", required: false },
   description: { type: String, default: "", required: false },
   city: { type: String, required: true },
@@ -17,6 +17,7 @@ const PartnerLocationSchema = new Schema({
   address: { type: String, default: "", required: false }, 
   phoneNumber: { type: String, default: "", required: false },
   locationPicture: { type: String, default: "", required: false },
+  confirmed: { type: String, enum: enums.CONFIRMATION_STATUS, required: true }, // TODO: Will be moved to Auth! 
   partnerType: {
     type: String,
     enum: enums.PARTNER_TYPES,

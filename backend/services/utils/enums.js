@@ -70,4 +70,10 @@ module.exports.CUISINES = [
 
 module.exports.TRANSACTION_TYPE = ["Deposit", "Withdraw", "Purchase"];
 
-module.exports.TRANSACTION_STATUS = ["Successful", "Rejected"];
+module.exports.TRANSACTION_STATUS = [
+  "Successful", "Rejected"
+];
+
+module.exports.CONFIRMATION_STATUS = [
+  "No Request", "Requested", "Approved"
+];
