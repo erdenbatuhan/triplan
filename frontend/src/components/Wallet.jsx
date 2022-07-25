@@ -49,7 +49,7 @@ const style = {
   borderRadius: '15px'
 };
 
-export default function WalletPage() {
+export default function Wallet() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [authenticatedUserData, setAuthenticatedUserData] = useState();
   const [wallet, setWallet] = useState(null);
@@ -155,14 +155,14 @@ export default function WalletPage() {
   };
 
   return (
-    <div sx={{ height: '100%', width: '100%' }}>
+    <div>
       <Card
         sx={{
           width: '100%',
           textAlign: 'center',
           height: '100%',
           boxShadow: 3,
-          p: 2
+          p: 1
         }}>
         <CardContent>
           <Box
@@ -180,37 +180,38 @@ export default function WalletPage() {
         </CardContent>
 
         <CardActions>
-          <Grid container direction="column">
-            <Grid item sx={8}>
-              <Grid container direction="row" justify-content="center">
-                <Grid item sx={6} m={1}>
-                  <Button
-                    color="success"
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      setTransactionType(TRANSACTION_TYPE_DEPOSIT);
-                      setTransactionDialogShown(true);
-                    }}>
-                    Deposit
-                  </Button>
-                </Grid>
+          <Grid container>
+            <Grid item xs={2} />
+            <Grid container direction="row" justifyContent="center">
+              <Grid item xs={4}>
+                <Button
+                  color="success"
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    setTransactionType(TRANSACTION_TYPE_DEPOSIT);
+                    setTransactionDialogShown(true);
+                  }}>
+                  Deposit
+                </Button>
+              </Grid>
 
-                <Grid item sx={6} m={1}>
-                  <Button
-                    color="error"
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      setTransactionType(TRANSACTION_TYPE_WITHDRAW);
-                      setTransactionDialogShown(true);
-                    }}>
-                    Withdraw
-                  </Button>
-                </Grid>
+              <Grid item xs={4}>
+                <Button
+                  color="error"
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    setTransactionType(TRANSACTION_TYPE_WITHDRAW);
+                    setTransactionDialogShown(true);
+                  }}>
+                  Withdraw
+                </Button>
               </Grid>
             </Grid>
-            <Grid item xs={4} marginTop={4}>
+            <Grid item xs={2} />
+
+            <Grid item xs={12} marginTop={4} marginBottom={2}>
               <Button size="small" variant="outlined" onClick={() => setTransitionModalShown(true)}>
                 All Transactions
               </Button>
