@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const {
+  MIN_COUNT_FOR_VISIBILITY_RESTAURANT,
+  MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION,
   Restaurant,
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
@@ -9,15 +11,20 @@ const { Wallet } = require("./../models/wallet.js");
 
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
-const findDistinctCities = () => {
+const findDistinctCitiesWithEnoughPlaces = () => {
   return Promise.all([
-    Restaurant.distinct("city", { city: { $nin: ["", null, undefined] } }),
-    TouristAttraction.distinct("city", {
-      city: { $nin: ["", null, undefined] },
-    }),
-  ]).then(([restaurantCities, touristAttractionCities]) => [
-    ...new Set([...restaurantCities, ...touristAttractionCities]),
-  ]);
+    Restaurant.aggregate([{ $group: { _id: "$city", count: { $sum: 1 } } }]),
+    TouristAttraction.aggregate([{ $group: { _id: "$city", count: { $sum: 1 } } }])
+  ]).then(([ restaurantCityCounts, touristAttractionCityCounts ]) => {
+    return [...new Set(
+      restaurantCityCounts
+        .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_RESTAURANT)
+        .map(({ _id }) => _id),
+      touristAttractionCityCounts
+        .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION)
+        .map(({ _id }) => _id)
+    )];
+  });
 };
 
 const findFiltered = (filterData) => {
@@ -388,7 +395,7 @@ const findTouristAttractionWalletsByWalletIds = (walletIds) => {
 };
 
 module.exports = {
-  findDistinctCities,
+  findDistinctCitiesWithEnoughPlaces,
   findFiltered,
   findByTripLocations,
   findRestaurantById,

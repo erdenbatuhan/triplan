@@ -7,11 +7,11 @@ const scoreController = require("./../controllers/scoreController.js");
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 /**
- * Gets the distinct cities
+ * Gets the distinct cities with enough places
  */
 router.get("/cities", async (req, res) => {
   try {
-    const distinctCities = await partnerLocationController.findDistinctCities();
+    const distinctCities = await partnerLocationController.findDistinctCitiesWithEnoughPlaces();
     res.status(200).send(distinctCities);
   } catch ({ message }) {
     res

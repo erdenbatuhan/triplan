@@ -5,9 +5,10 @@ const GoogleLocationInfo = mongoose.model(
   "GoogleLocationInfo",
   new Schema(
     {
-      googlePlaceId: { type: String, required: true },
-      googleMapUrl: { type: String, required: true },
+      googlePlaceId: { type: String, unique: true, required: true },
+      googleMapUrl: { type: String, unique: true, required: true },
       googleIconUrl: { type: String, default: '', required: false },
+      city: { type: String, required: true },
       rating: { type: Number, required: true },
       reviewCount: { type: Number, required: true },
       latitude: { type: Number, required: true },
