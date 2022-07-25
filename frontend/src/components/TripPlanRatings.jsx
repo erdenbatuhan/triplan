@@ -33,7 +33,7 @@ export default function TripPlanRatings({ tripPlanId }) {
             position: 'relative',
             overflow: 'auto',
             minHeight: '1.5em',
-            maxHeight: '20em',
+            maxHeight: '25em',
             marginTop: '10px',
             '& ul': { padding: 0 }
           }}>

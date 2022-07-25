@@ -25,7 +25,7 @@ import {
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
-import { followingCardParentCardStyle, avatarStyle, appBackgroundColor } from '../shared/styles';
+import { avatarStyle, appBackgroundColor, modalStyle } from '../shared/styles';
 
 function UserProfilePage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -185,7 +185,7 @@ function UserProfilePage() {
                         onClose={() => {
                           setFollowersModalShown(false);
                         }}>
-                        <Card sx={followingCardParentCardStyle}>
+                        <Card sx={modalStyle}>
                           <FollowingsCard
                             listName="Followers"
                             list={Object.values(followersData)}
@@ -217,7 +217,7 @@ function UserProfilePage() {
                         onClose={() => {
                           setFollowedModalShown(false);
                         }}>
-                        <Card sx={followingCardParentCardStyle}>
+                        <Card sx={modalStyle}>
                           <FollowingsCard
                             listName="Following"
                             list={Object.values(followedData)}
