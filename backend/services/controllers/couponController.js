@@ -1,4 +1,4 @@
-{const { Coupon } = require("../models/coupon.js");
+const { Coupon } = require("../models/coupon.js");
 
 const userController = require("./userController.js");
 
