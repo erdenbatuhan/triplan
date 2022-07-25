@@ -320,14 +320,15 @@ const createTouristAttraction = (touristAttraction) => {
   return TouristAttraction.create(touristAttraction);
 };
 
-const updatePartnerLocation = async (id, fields) => {
+const updatePartnerLocation = async (id, fields, { session }) => {
   const { partnerType } = await findPartnerLocationById(id);
+  const partnerLocation = partnerType === PARTNER_TYPES[0] ? Restaurant : TouristAttraction;
 
-  if (partnerType === PARTNER_TYPES[0]) {
-    return Restaurant.findOneAndUpdate({ _id: id }, fields, { new: true, runValidators: true });
-  }
-
-  return TouristAttraction.findOneAndUpdate({ _id: id }, fields, { new: true, runValidators: true });
+  return partnerLocation.findOneAndUpdate(
+    { _id: id },
+    fields,
+    { new: true, runValidators: true, session }
+  );
 };
 
 const findPartnerLocationById = (partnerLocationId) => {

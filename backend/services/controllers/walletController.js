@@ -45,16 +45,15 @@ const createWallet = async (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
   try {
       session.startTransaction();    
 
-      ownerUpdated = await ownerRetrivalFn([ ownerId ], { session }).then(async (owner) => {
+      ownerUpdated = await ownerRetrivalFn(ownerId).then((owner) => {
         if (!owner) {
           return null;
         }
 
-        // Create a new empty wallet
-        const walletCreated = await Wallet.create(new Wallet());
-
-        // Assign the wallet created to the owner
-        return await ownerUpdateFn(owner._id, { "wallet": walletCreated });
+        // Create a new empty wallet and assign it to the owner
+        return Wallet.create([{}], { session }).then(([ walletCreated ]) => {
+          return ownerUpdateFn(owner._id, { "wallet": walletCreated }, { session });
+        });
       });
 
       await session.commitTransaction();

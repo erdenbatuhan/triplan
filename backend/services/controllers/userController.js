@@ -132,12 +132,16 @@ const save = (user) => {
   return User.insertMany([user]);
 };
 
-const updateFields = (id, fields) => {
+const updateFields = (id, fields, { session }) => {
   if (!exists(id)) {
     return new Promise((resolve) => resolve(null)); // User does not exist!
   }
 
-  return User.findOneAndUpdate({ _id: id }, fields, { new: true, runValidators: true });
+  return User.findOneAndUpdate(
+    { _id: id },
+    fields,
+    { new: true, runValidators: true, session }
+  );
 };
 
 const findUserByWallet = (walletId) => {
