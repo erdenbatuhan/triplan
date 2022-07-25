@@ -12,7 +12,7 @@ const MIN_COUNT_FOR_VISILITY_RESTAURANT = 10;
 const MIN_COUNT_FOR_VISILITY_TOURIST_ATTRACTION = 10;
 
 const PartnerLocationSchema = new Schema({
-  name: { type: String, unique: true, equired: true },
+  name: { type: String, unique: true, required: true },
   email: { type: String, default: "", required: false },
   description: { type: String, default: "", required: false },
   city: { type: String, required: true },
