@@ -25,6 +25,14 @@ export class UserAuthHelper {
     return this.getStoredUser()?.username;
   }
 
+  static getUserAuthId() {
+    return this.getStoredUser()?.id;
+  }
+
+  static getUserType() {
+    return this.getStoredUser()?.userType;
+  }
+
   static logoutUser() {
     localStorage.removeItem(this.LOCAL_STORAGE_KEY);
   }

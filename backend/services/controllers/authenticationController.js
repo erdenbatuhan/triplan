@@ -104,6 +104,8 @@ const login = async (req, res) => {
       return res.status(400).json({ msg: "Username or password incorrect" });
     }
 
+    // TODO: get user from its own table using auth id. return it in payload.
+
     const payload = {
       user: {
         id: user[0]._id,
@@ -111,6 +113,7 @@ const login = async (req, res) => {
         userType,
       },
     };
+
     jwt.sign(
       payload,
       process.env["JWT_SECRET"],
