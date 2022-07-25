@@ -2,8 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const {
-  MIN_COUNT_FOR_VISILITY_RESTAURANT,
-  MIN_COUNT_FOR_VISILITY_TOURIST_ATTRACTION,
+  MIN_COUNT_FOR_VISIBILITY_RESTAURANT,
+  MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION,
   Restaurant,
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
@@ -18,10 +18,10 @@ const findDistinctCitiesWithEnoughPlaces = () => {
   ]).then(([ restaurantCityCounts, touristAttractionCityCounts ]) => {
     return [...new Set(
       restaurantCityCounts
-        .filter(({ count }) => count >= MIN_COUNT_FOR_VISILITY_RESTAURANT)
+        .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_RESTAURANT)
         .map(({ _id }) => _id),
       touristAttractionCityCounts
-        .filter(({ count }) => count >= MIN_COUNT_FOR_VISILITY_TOURIST_ATTRACTION)
+        .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION)
         .map(({ _id }) => _id)
     )];
   });
