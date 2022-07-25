@@ -129,6 +129,10 @@ const findById = (id, session) => {
   return User.findById(id).session(session);
 };
 
+const findByAuthId = (id) => {
+  return User.find({ authentication: { $eq: id } });
+};
+
 const findByUsername = (username) => {
   return User.find({ username: { $eq: username } });
 };
@@ -174,6 +178,7 @@ module.exports = {
   find,
   findByIds,
   findById,
+  findByAuthId,
   findByUsername,
   findByEmail,
   exists,

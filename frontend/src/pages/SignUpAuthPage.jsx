@@ -11,9 +11,9 @@ import { SECONDARY_COLOR } from '../shared/constants';
 // import { AuthUserContext } from '../authentication/AuthUserContext';
 
 function SignUpAuthPage() {
-  const [email, setEmail] = useState('heralpkocas@gmail.com');
-  const [username, setUsername] = useState('Bregath');
-  const [password, setPassword] = useState('Eralp123');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [userType, setUserType] = useState('USER');
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
@@ -42,6 +42,19 @@ function SignUpAuthPage() {
   const handleOnSubmitClick = async () => {
     try {
       const authData = { username, password, email, userType };
+      switch (userType) {
+        case 'USER':
+          navigate('/signup-user-profile', { state: { authData } });
+          break;
+        case 'RESTAURANT':
+          navigate('/signup-user-profile', { state: { authData } });
+          break;
+        case 'TOURIST_ATTRACTION':
+          navigate('/signup-user-profile', { state: { authData } });
+          break;
+        default:
+          console.error('Given user type is not known.');
+      }
       if (userType === 'USER') {
         navigate('/signup-user-profile', { state: { authData } });
       }

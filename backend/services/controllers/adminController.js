@@ -4,6 +4,18 @@ const bcrypt = require("bcryptjs");
 const { Admin } = require("../models/admin");
 
 /**
+ * Creates a user or updates an existing one
+ */
+const createNewAdmin = async (userData) => {
+  try {
+    return await save(userData); // returns new admin
+  } catch (e) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+/**
  * Creates a admin or updates an existing one
  */
 const signUp = async (req, res) => {
@@ -117,7 +129,7 @@ const exists = (id) => {
 };
 
 const save = (admin) => {
-  return Admin.insertMany([admin]);
+  return Admin.create(admin);
 };
 
 const updateFields = (id, fields) => {
@@ -129,6 +141,7 @@ const updateFields = (id, fields) => {
 };
 
 module.exports = {
+  createNewAdmin,
   signUp,
   login,
   findById,

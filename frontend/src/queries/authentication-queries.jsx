@@ -1,7 +1,6 @@
 import { HOST_AUTH, HEADERS } from './constants';
 
 export async function signupNewUser(userData) {
-  console.log(userData);
   return await fetch(`${HOST_AUTH}/signup`, {
     method: `POST`,
     mode: `cors`,

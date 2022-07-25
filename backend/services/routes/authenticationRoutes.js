@@ -9,7 +9,6 @@ const authenticationController = require("../controllers/authenticationControlle
  * Creates a new user and returns the related user id.
  */
 router.post("/signup", async (req, res) => {
-  console.log(req.body);
   try {
     await authenticationController.signUp(req, res);
   } catch ({ message }) {

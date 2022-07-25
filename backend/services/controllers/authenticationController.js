@@ -42,7 +42,7 @@ const signUp = async (req, res) => {
     let newUser;
     switch (userType) {
       case USER_TYPES[0]:
-        newUser = await adminController.save({
+        newUser = await adminController.createNewAdmin({
           ...userData,
           authentication: newAuthEntry._id,
         });
@@ -54,13 +54,21 @@ const signUp = async (req, res) => {
         });
         break;
       case USER_TYPES[2]:
-        newUser = await partnerLocationController.createRestaurant(userData);
+        newUser = await partnerLocationController.createRestaurant({
+          ...userData,
+          authentication: newAuthEntry._id,
+        });
         break;
       case USER_TYPES[3]:
-        newUser = await partnerLocationController.createTouristAttraction(
-          userData
-        );
+        newUser = await partnerLocationController.createTouristAttraction({
+          ...userData,
+          authentication: newAuthEntry._id,
+        });
         break;
+      default:
+        res
+          .status(400)
+          .json({ msg: `Given user type is not known: ${userType}` });
     }
 
     if (!!!newUser) {
@@ -96,26 +104,62 @@ const signUp = async (req, res) => {
  */
 const login = async (req, res) => {
   const { username, password, userType } = req.body;
+  console.log("req.body: ", req.body);
   try {
     // check if the user exists
-    let user = await findByUsername(username);
+    let authUser = await findByUsername(username);
+    console.log("user: ", authUser);
+    console.log("user.length: ", authUser.length);
+    console.log("!!user: ", !!authUser);
 
-    if (!!user || user.length === 0) {
+    if (!!!authUser || authUser.length === 0) {
       return res.status(400).json({ msg: "Username or password incorrect" });
     }
 
     // check is the encrypted password matches
-    const isMatch = await bcrypt.compare(password, user[0].password);
+    const isMatch = await bcrypt.compare(password, authUser[0].password);
 
     if (!isMatch) {
       return res.status(400).json({ msg: "Username or password incorrect" });
     }
 
-    // TODO: get user from its own table using auth id. return it in payload.
+    let newUser;
+    switch (userType) {
+      case USER_TYPES[0]:
+        newUser = await adminController.createNewAdmin({
+          ...userData,
+          authentication: newAuthEntry._id,
+        });
+        break;
+      case USER_TYPES[1]:
+        newUser = await userController.findByAuthId(authUser[0].authentication);
+        break;
+      case USER_TYPES[2]:
+        newUser = await partnerLocationController.createRestaurant({
+          ...userData,
+          authentication: newAuthEntry._id,
+        });
+        break;
+      case USER_TYPES[3]:
+        newUser = await partnerLocationController.createTouristAttraction({
+          ...userData,
+          authentication: newAuthEntry._id,
+        });
+        break;
+      default:
+        res
+          .status(400)
+          .json({ msg: `Given user type is not known: ${userType}` });
+    }
+    console.log("newUser: ", newUser);
+    console.log("!!!newUser: ", !!!newUser);
+    if (!!!newUser) {
+      return res.status(400).json({ msg: "Error in creating new user." });
+    }
 
     const payload = {
       user: {
-        id: user[0]._id,
+        id: newUser._id,
         username,
         userType,
       },
