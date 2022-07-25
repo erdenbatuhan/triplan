@@ -77,7 +77,7 @@ export default function TransactionHistoryModal({ open, onClose }) {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={{ ...modalStyle }}>
+      <Box sx={modalStyle}>
         <Grid sx={{ width: '100%' }} alignItems="stretch">
           <Typography
             sx={{ color: 'text.secondary', fontWeight: 'medium', fontSize: 25, pt: 2 }}

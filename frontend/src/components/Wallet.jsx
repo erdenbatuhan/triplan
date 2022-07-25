@@ -16,7 +16,7 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { green } from '@mui/material/colors';
-import PaypalCheckoutButtons from '../components/PaypalButtons';
+import PaypalCheckoutButtons from './PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
@@ -35,6 +35,7 @@ import {
   // generateRequestId,
   handleEmail
 } from '../queries/email-queries';
+import TransactionHistoryModal from './TransactionHistoryModal';
 
 const style = {
   position: 'absolute',
@@ -48,7 +49,7 @@ const style = {
   borderRadius: '15px'
 };
 
-export default function WalletPage() {
+export default function Wallet() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [authenticatedUserData, setAuthenticatedUserData] = useState();
   const [wallet, setWallet] = useState(null);
@@ -59,6 +60,7 @@ export default function WalletPage() {
   const [transactionType, setTransactionType] = useState('');
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
+  const [transitionModalShown, setTransitionModalShown] = useState(false);
 
   // Listening to the changes in authenticatedUser
   useEffect(() => {
@@ -153,13 +155,14 @@ export default function WalletPage() {
   };
 
   return (
-    <div sx={{ height: '100%', width: '100%' }}>
+    <div>
       <Card
         sx={{
           width: '100%',
           textAlign: 'center',
           height: '100%',
-          boxShadow: 3
+          boxShadow: 3,
+          p: 1
         }}>
         <CardContent>
           <Box
@@ -177,10 +180,13 @@ export default function WalletPage() {
         </CardContent>
 
         <CardActions>
-          <Grid container direction="row">
-            <Grid item sx={6} m={1}>
+          <Grid container>
+            <Grid item xs={2} />
+
+            <Grid item xs={4}>
               <Button
                 color="success"
+                size="small"
                 variant="outlined"
                 onClick={() => {
                   setTransactionType(TRANSACTION_TYPE_DEPOSIT);
@@ -190,7 +196,7 @@ export default function WalletPage() {
               </Button>
             </Grid>
 
-            <Grid item sx={6} m={1}>
+            <Grid item xs={4}>
               <Button
                 color="error"
                 size="small"
@@ -201,6 +207,19 @@ export default function WalletPage() {
                 }}>
                 Withdraw
               </Button>
+            </Grid>
+
+            <Grid item xs={2} />
+
+            <Grid item xs={12} marginTop={4} marginBottom={2}>
+              <Button size="small" variant="outlined" onClick={() => setTransitionModalShown(true)}>
+                All Transactions
+              </Button>
+
+              <TransactionHistoryModal
+                open={transitionModalShown}
+                onClose={() => setTransitionModalShown(false)}
+              />
             </Grid>
           </Grid>
         </CardActions>

@@ -20,8 +20,10 @@ export default function FollowingsCard({
       <List
         sx={{
           width: '100%',
+          minWidth: '30em',
           bgcolor: 'background.paper',
           overflow: 'auto',
+          height: '20em',
           '& ul': { padding: 0 }
         }}>
         {list

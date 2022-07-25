@@ -8,7 +8,6 @@ import TripPlanningPage from './pages/TripPlanningPage';
 import CheckoutPage from './pages/CheckoutPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import WalletPage from './pages/WalletPage';
 import AdminPage from './pages/AdminPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
@@ -61,7 +60,6 @@ export default function App() {
             element={isLoggedIn ? <CheckoutPage /> : <Navigate to="/" />}
           />
           {/* <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} /> */}
-          <Route path="/wallet" element={isLoggedIn ? <WalletPage /> : <Navigate to="/" />} />
           <Route
             path="/partner-profile/:partnerId"
             element={isLoggedIn ? <PartnerLocationProfilePage /> : <Navigate to="/" />}
