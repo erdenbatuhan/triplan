@@ -182,39 +182,40 @@ export default function Wallet() {
         <CardActions>
           <Grid container>
             <Grid item xs={2} />
-            <Grid container direction="row" justifyContent="center">
-              <Grid item xs={4}>
-                <Button
-                  color="success"
-                  size="small"
-                  variant="outlined"
-                  onClick={() => {
-                    setTransactionType(TRANSACTION_TYPE_DEPOSIT);
-                    setTransactionDialogShown(true);
-                  }}>
-                  Deposit
-                </Button>
-              </Grid>
 
-              <Grid item xs={4}>
-                <Button
-                  color="error"
-                  size="small"
-                  variant="outlined"
-                  onClick={() => {
-                    setTransactionType(TRANSACTION_TYPE_WITHDRAW);
-                    setTransactionDialogShown(true);
-                  }}>
-                  Withdraw
-                </Button>
-              </Grid>
+            <Grid item xs={4}>
+              <Button
+                color="success"
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setTransactionType(TRANSACTION_TYPE_DEPOSIT);
+                  setTransactionDialogShown(true);
+                }}>
+                Deposit
+              </Button>
             </Grid>
+
+            <Grid item xs={4}>
+              <Button
+                color="error"
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setTransactionType(TRANSACTION_TYPE_WITHDRAW);
+                  setTransactionDialogShown(true);
+                }}>
+                Withdraw
+              </Button>
+            </Grid>
+
             <Grid item xs={2} />
 
             <Grid item xs={12} marginTop={4} marginBottom={2}>
               <Button size="small" variant="outlined" onClick={() => setTransitionModalShown(true)}>
                 All Transactions
               </Button>
+
               <TransactionHistoryModal
                 open={transitionModalShown}
                 onClose={() => setTransitionModalShown(false)}

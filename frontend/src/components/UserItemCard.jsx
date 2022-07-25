@@ -31,8 +31,12 @@ export default function UserItemCard({
                   Has planned {numTripsPlannedByUser || 'no'} trips so far
                 </Typography>
               </Grid>
-              <Grid item xs={6} p={1}>
+
+              <Grid item xs={1} />
+
+              <Grid item xs={4} p={1}>
                 <Button
+                  sx={{ width: '100%' }}
                   size="small"
                   variant="contained"
                   color="primary"
@@ -40,6 +44,8 @@ export default function UserItemCard({
                   {followingsButtonText}
                 </Button>
               </Grid>
+
+              <Grid item xs={1} />
             </Grid>
           </CardContent>
         </CardActionArea>
