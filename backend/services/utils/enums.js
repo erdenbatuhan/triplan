@@ -1,6 +1,13 @@
+module.exports.USER_TYPES = [
+  "ADMIN",
+  "USER",
+  "RESTAURANT",
+  "TOURIST_ATTRACTION",
+];
+
 module.exports.PARTNER_TYPES = ["RESTAURANT", "TOURIST_ATTRACTION"];
 
-module.exports.ITEM_TYPES = ["MENU_ITEM", "TICKET"]
+module.exports.ITEM_TYPES = ["MENU_ITEM", "TICKET"];
 
 module.exports.FOOD_TYPES = ["Regular", "Vegetarian", "Vegan", "Gluten Free"];
 
@@ -70,10 +77,6 @@ module.exports.CUISINES = [
 
 module.exports.TRANSACTION_TYPE = ["Deposit", "Withdraw", "Purchase"];
 
-module.exports.TRANSACTION_STATUS = [
-  "Successful", "Rejected"
-];
+module.exports.TRANSACTION_STATUS = ["Successful", "Rejected"];
 
-module.exports.CONFIRMATION_STATUS = [
-  "No Request", "Requested", "Approved"
-];
+module.exports.CONFIRMATION_STATUS = ["No Request", "Requested", "Approved"];
