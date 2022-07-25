@@ -12,7 +12,7 @@ const save = (user) => {
 };
 
 const findByUsername = (username) => {
-  return Authentication.find({ username: { $eq: username } });
+  return Authentication.findOne({ username: { $eq: username } });
 };
 
 /**
@@ -26,7 +26,7 @@ const signUp = async (req, res) => {
     // check if the new entry already exists
     let userByUsername = await findByUsername(username);
 
-    if (!!!userByUsername || userByUsername.length !== 0) {
+    if (userByUsername) {
       return res.status(400).json({ msg: "User already exists" });
     }
 
@@ -104,20 +104,16 @@ const signUp = async (req, res) => {
  */
 const login = async (req, res) => {
   const { username, password, userType } = req.body;
-  console.log("req.body: ", req.body);
   try {
     // check if the user exists
     let authUser = await findByUsername(username);
-    console.log("user: ", authUser);
-    console.log("user.length: ", authUser.length);
-    console.log("!!user: ", !!authUser);
 
-    if (!!!authUser || authUser.length === 0) {
+    if (!!!authUser) {
       return res.status(400).json({ msg: "Username or password incorrect" });
     }
 
     // check is the encrypted password matches
-    const isMatch = await bcrypt.compare(password, authUser[0].password);
+    const isMatch = await bcrypt.compare(password, authUser.password);
 
     if (!isMatch) {
       return res.status(400).json({ msg: "Username or password incorrect" });
@@ -132,7 +128,7 @@ const login = async (req, res) => {
         });
         break;
       case USER_TYPES[1]:
-        newUser = await userController.findByAuthId(authUser[0].authentication);
+        newUser = await userController.findByAuthId(authUser._id);
         break;
       case USER_TYPES[2]:
         newUser = await partnerLocationController.createRestaurant({
@@ -151,10 +147,9 @@ const login = async (req, res) => {
           .status(400)
           .json({ msg: `Given user type is not known: ${userType}` });
     }
-    console.log("newUser: ", newUser);
-    console.log("!!!newUser: ", !!!newUser);
+
     if (!!!newUser) {
-      return res.status(400).json({ msg: "Error in creating new user." });
+      return res.status(400).json({ msg: "Error in getting user." });
     }
 
     const payload = {

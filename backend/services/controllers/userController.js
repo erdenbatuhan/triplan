@@ -10,9 +10,9 @@ const { Wallet } = require("./../models/wallet.js");
 const createNewUser = async (userData) => {
   try {
     const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
-    return await save({ ...userData, wallet }); // returns new user
-  } catch (e) {
-    console.error(err.message);
+    return await save({ ...userData, wallet: wallet }); // returns new user
+  } catch (err) {
+    console.error("Failed to create user: ", err.message);
     res.status(500).send("Server error");
   }
 };
@@ -130,7 +130,7 @@ const findById = (id, session) => {
 };
 
 const findByAuthId = (id) => {
-  return User.find({ authentication: { $eq: id } });
+  return User.findOne({ authentication: { $eq: id } });
 };
 
 const findByUsername = (username) => {

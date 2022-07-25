@@ -37,7 +37,7 @@ function SignUpUserDataPage() {
 
   const handleOnSubmitClick = async () => {
     try {
-      const userData = { firstName, lastName, phoneNumber };
+      const userData = { firstName, lastName, phoneNumber, profilePicture };
       if (!authData) {
         console.error(`authentication data is missing ${authData}`);
       }
