@@ -99,46 +99,49 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
   ));
 };
 
+/**
+ * Transactional
+ */
 const createTripPlan = async (userId, { name, partnerLocations }) => {
   const session = await mongoose.startSession();
   let tripPlanCreated = undefined;
 
   try {
-      session.startTransaction();
+    session.startTransaction();
 
-      const { tripLocationsCreated, partnerLocationsSorted } = await Promise.all([
-        // Create as many trip lococations as there are restaurants with an increasing order
-        Promise.all(partnerLocations.map((_, idx) => tripLocationController.create({ order: idx }, { session }))),
-        // Get the optimized route order from the optimization service
-        optimizationServiceQueries.calculateOptimizedOrder(partnerLocations)
-      ]).then(([ tripLocationsCreated, optimizedOrder ]) => ({
-        // Return the created trip locations as is
-        tripLocationsCreated,
-        // Sort the partner locations in "ascending" order based on the order returned from the optimization service
-        partnerLocationsSorted: partnerLocations.sort((a, b) => optimizedOrder[a["_id"]] - optimizedOrder[b["_id"]])
-      }));
+    const { tripLocationsCreated, partnerLocationsSorted } = await Promise.all([
+      // Create as many trip lococations as there are restaurants with an increasing order
+      Promise.all(partnerLocations.map((_, idx) => tripLocationController.create({ order: idx }, session))),
+      // Get the optimized route order from the optimization service
+      optimizationServiceQueries.calculateOptimizedOrder(partnerLocations)
+    ]).then(([ tripLocationsCreated, optimizedOrder ]) => ({
+      // Return the created trip locations as is
+      tripLocationsCreated,
+      // Sort the partner locations in "ascending" order based on the order returned from the optimization service
+      partnerLocationsSorted: partnerLocations.sort((a, b) => optimizedOrder[a["_id"]] - optimizedOrder[b["_id"]])
+    }));
 
-      tripPlanCreated = await Promise.all([
-        // Add the created trip locations to the partner locations
-        Promise.all(partnerLocationsSorted.map(({ _id, partnerType }, idx) => (
-          (partnerType === PARTNER_TYPES[0]
-            ? partnerLocationController.addTripLocationToRestaurant(_id, tripLocationsCreated[idx], { session })
-            : partnerLocationController.addTripLocationToTouristAttraction(_id, tripLocationsCreated[idx], { session })
-        )))),
-        // Create a new trip plan with the created trip locations
-        TripPlan.create([{ name, user: userId, tripLocations: tripLocationsCreated }], { session })
-      ]).then(([ partnerLocations, [ tripPlan ] ]) => {
-        if (partnerLocations.length !== tripLocationsCreated.length) {
-          throw new Error("Something went wrong while adding the created trip locations to some of the partner locations!");
-        }
+    tripPlanCreated = await Promise.all([
+      // Add the created trip locations to the partner locations
+      Promise.all(partnerLocationsSorted.map(({ _id, partnerType }, idx) => (
+        (partnerType === PARTNER_TYPES[0]
+          ? partnerLocationController.addTripLocationToRestaurant(_id, tripLocationsCreated[idx], session)
+          : partnerLocationController.addTripLocationToTouristAttraction(_id, tripLocationsCreated[idx], session)
+      )))),
+      // Create a new trip plan with the created trip locations
+      TripPlan.create([{ name, user: userId, tripLocations: tripLocationsCreated }], { session })
+    ]).then(([ partnerLocations, [ tripPlan ] ]) => {
+      if (partnerLocations.length !== tripLocationsCreated.length) {
+        throw new Error("Something went wrong while adding the created trip locations to some of the partner locations!");
+      }
 
-        return tripPlan;
-      });
+      return tripPlan;
+    });
 
-      await session.commitTransaction();
+    await session.commitTransaction();
   } catch (error) {
-      await session.abortTransaction();
-      throw error;
+    await session.abortTransaction();
+    throw error;
   }
 
   session.endSession();

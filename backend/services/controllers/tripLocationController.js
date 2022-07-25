@@ -1,6 +1,6 @@
 const { TripLocation } = require("../models/tripLocation.js");
 
-const create = (fields, { session }) => {
+const create = (fields, session) => {
   return TripLocation.create([ fields ], { session }).then(([ tripLocationCreated ]) => tripLocationCreated);
 };
 

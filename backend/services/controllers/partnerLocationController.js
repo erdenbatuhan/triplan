@@ -64,8 +64,20 @@ const findByTripLocations = (tripLocationIds) => {
   }));
 };
 
-const findRestaurantById = (restaurantId) => {
-  return Restaurant.findById(restaurantId);
+const findPartnerLocationById = (partnerLocationId, session) => {
+  return Promise.all([
+    findRestaurantById(partnerLocationId, session), findTouristAttractionById(partnerLocationId, session)
+  ]).then(([
+    restaurant, touristAttraction
+  ]) => restaurant || touristAttraction || null);
+};
+
+const findRestaurantById = (restaurantId, session) => {
+  return Restaurant.findById(restaurantId).session(session);
+};
+
+const findTouristAttractionById = (touristAttractionId, session) => {
+  return TouristAttraction.findById(touristAttractionId).session(session);
 };
 
 const saveRestaurant = (restaurant) => {
@@ -74,10 +86,6 @@ const saveRestaurant = (restaurant) => {
     restaurant,
     { upsert: true, new: true, runValidators: true }
   );
-};
-
-const findTouristAttractionById = (touristAttractionId) => {
-  return TouristAttraction.findById(touristAttractionId);
 };
 
 const saveTouristAttraction = (touristAttraction) => {
@@ -320,7 +328,7 @@ const createTouristAttraction = (touristAttraction) => {
   return TouristAttraction.create(touristAttraction);
 };
 
-const updatePartnerLocation = async (id, fields, { session }) => {
+const updatePartnerLocation = async (id, fields, session) => {
   const { partnerType } = await findPartnerLocationById(id);
   const partnerLocation = partnerType === PARTNER_TYPES[0] ? Restaurant : TouristAttraction;
 
@@ -331,15 +339,7 @@ const updatePartnerLocation = async (id, fields, { session }) => {
   );
 };
 
-const findPartnerLocationById = (partnerLocationId) => {
-  return Promise.all([
-    findRestaurantById(partnerLocationId), findTouristAttractionById(partnerLocationId)
-  ]).then(([
-    restaurant, touristAttraction
-  ]) => restaurant || touristAttraction || null);
-};
-
-const addTripLocationToRestaurant = (restaurantId, tripLocation, { session }) => {
+const addTripLocationToRestaurant = (restaurantId, tripLocation, session) => {
   return Restaurant.findOneAndUpdate(
     { _id: restaurantId },
     { $push: { associatedTripLocations: tripLocation } },
@@ -347,7 +347,7 @@ const addTripLocationToRestaurant = (restaurantId, tripLocation, { session }) =>
   );
 };
 
-const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation, { session }) => {
+const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation, session) => {
   return TouristAttraction.findOneAndUpdate(
     { _id: touristAttractionId },
     { $push: { associatedTripLocations: tripLocation } },
@@ -369,16 +369,16 @@ module.exports = {
   findDistinctCitiesWithEnoughPlaces,
   findFiltered,
   findByTripLocations,
+  findPartnerLocationById,
   findRestaurantById,
-  saveRestaurant,
   findTouristAttractionById,
+  saveRestaurant,
   saveTouristAttraction,
   signUpRestaurant,
   signUpTouristAttraction,
   loginRestaurant,
   loginTouristAttraction,
   updatePartnerLocation,
-  findPartnerLocationById,
   addTripLocationToRestaurant,
   addTripLocationToTouristAttraction,
   findRestaurantWalletsByWalletIds,
