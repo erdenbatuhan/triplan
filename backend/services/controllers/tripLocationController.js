@@ -1,7 +1,11 @@
 const { TripLocation } = require("../models/tripLocation.js");
 
-const create = (fields, session) => {
-  return TripLocation.create([ fields ], { session }).then(([ tripLocationCreated ]) => tripLocationCreated);
+const create = (fields) => {
+  return TripLocation.create(fields);
+};
+
+const createMany = (fieldsList, session) => {
+  return TripLocation.insertMany(fieldsList, { session });
 };
 
 const update = (id, fields) => {
@@ -24,4 +28,4 @@ const findByIds = (ids) => {
   return TripLocation.find({ _id: { $in: ids } }).sort({ order: "asc" }); // In ascending order
 };
 
-module.exports = { create, update, exists, findByIds };
+module.exports = { create, createMany, update, exists, findByIds };

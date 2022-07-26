@@ -11,6 +11,8 @@ docker build -t triplan-optimization:latest .
 docker run -p 6006:6006 -d triplan-optimization:latest
 ```
 
+**Note:** Please see the **Extras** section below if you are getting **"Port already in use."** error!
+
 Invoke the endpoint (*POST*) with the request body *events/partner_locations.json*:
 
 ```bash
@@ -48,5 +50,20 @@ Deploy the app to **AWS** via the **Serverless** framework:
 
 ```bash
 sls deploy --aws-profile triplan-cms-aws-user
+```
+
+### Extras
+
+Killing a running docker container:
+
+```bash
+docker ps
+docker kill <container_id>
+```
+
+Removing all the docker images:
+
+```bash
+docker rmi -f $(docker images -aq)
 ```
 
