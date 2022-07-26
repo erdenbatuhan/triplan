@@ -15,6 +15,7 @@ import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
 import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
 import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
+import LandingPage from './pages/LandingPage';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
@@ -36,6 +37,9 @@ export default function App() {
     UserAuthHelper.logoutUser();
     syncAuthUser();
   };
+  const { pathname } = window.location;
+
+  console.log(pathname);
 
   return (
     <AuthUserContext.Provider
@@ -43,10 +47,10 @@ export default function App() {
         return { authenticatedUser, loginUser, logoutUser };
       }, [authenticatedUser, loginUser, logoutUser])}>
       <BrowserRouter>
-        <NavigationBar />
+        {pathname !== '/' ? <NavigationBar /> : <div />}
 
         <Routes>
-          <Route path="/" element={isLoggedIn ? <MainPage /> : <LoginPage />} />
+          <Route path="/" element={<LandingPage />} />
           {/* <Route path="/login" element={isLoggedIn ? <HomePage /> : <LoginPage />} />
           <Route path="/signup" element={isLoggedIn ? <HomePage /> : <SignUpPage />} /> */}
           <Route path="/login" element={<LoginPage />} />
@@ -60,7 +64,7 @@ export default function App() {
             path="/trip-plan/:tripPlanId/checkout"
             element={isLoggedIn ? <CheckoutPage /> : <Navigate to="/" />}
           />
-          {/* <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} /> */}
+          <Route path="/main-page" element={isLoggedIn ? <MainPage /> : <Navigate to="/" />} />
           <Route path="/wallet" element={isLoggedIn ? <WalletPage /> : <Navigate to="/" />} />
           <Route
             path="/partner-profile/:partnerId"

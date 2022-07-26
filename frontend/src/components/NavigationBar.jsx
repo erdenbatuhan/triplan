@@ -114,7 +114,7 @@ export default function MenuAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar sx={{ bgcolor: PRIMARY_COLOR }} position="static">
+      <AppBar sx={{ bgcolor: PRIMARY_COLOR }} position="fixed">
         <Toolbar
           sx={{
             justifyContent: 'space-between'
