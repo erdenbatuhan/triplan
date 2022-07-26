@@ -103,7 +103,7 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
 /**
  * Transactional
  */
-const createTripPlan = async (userId, { name, partnerLocations }) => {
+const createTripPlan = (userId, { name, partnerLocations }) => {
   return mongoose.startSession().then(async (session) => {
     let newTripPlan = undefined;
 

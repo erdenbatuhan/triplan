@@ -41,7 +41,7 @@ const createPartnerLocationWallet = (partnerLocationId) => {
 /**
  * Transactional
  */
-const createWallet = async (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
+const createWallet = (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
   return mongoose.startSession().then(async (session) => {
     let ownerUpdated = undefined;
 
