@@ -1,8 +1,10 @@
 import { Grid, Card, Typography } from '@mui/material';
 import PersonCard from './PersonCard';
 
-const anilImg = require('../../assets/AK_photo.png');
+const anilImg = require('../../assets/anilImg.png');
 const batuhanImg = require('../../assets/batuhanImg.jpg');
+const cansuImg = require('../../assets/cansuImg.png');
+const eralpImg = require('../../assets/eralpImg.png');
 
 const cardStyle = {
   boxSizing: 'border-box',
@@ -46,21 +48,20 @@ export default function AboutUs() {
             <Grid item xs={6}>
               <Card style={cardStyle}>
                 <PersonCard
-                  name="Anil"
+                  name="Anil Kul"
                   image={anilImg}
-                  summary={[
-                    'TUM Informatik Master Student',
-                    'Koc Universiy Computer Engineering (Bachelor)'
-                  ]}
+                  summary={['TUM Informatik Master Student']}
+                  linkedInLink="https://www.linkedin.com/in/kulanil/"
                 />
               </Card>
             </Grid>
             <Grid item xs={6}>
               <Card style={cardStyle}>
                 <PersonCard
-                  name="Batuhan"
+                  name="Batuhan Erden"
                   image={batuhanImg}
                   summary={['TUM Informatik Master Student']}
+                  linkedInLink="https://linkedin.com/in/batuhan-erden"
                 />
               </Card>
             </Grid>
@@ -71,21 +72,20 @@ export default function AboutUs() {
             <Grid item xs={6}>
               <Card style={cardStyle}>
                 <PersonCard
-                  name="Batuhan"
-                  image={batuhanImg}
+                  name="Cansu Yildirim"
+                  image={cansuImg}
                   summary={['TUM Informatik Master Student']}
+                  linkedInLink="https://www.linkedin.com/in/cansuyyildirim/"
                 />
               </Card>
             </Grid>
             <Grid item xs={6}>
               <Card style={cardStyle}>
                 <PersonCard
-                  name="Anil"
-                  image={anilImg}
-                  summary={[
-                    'TUM Informatik Master Student',
-                    'Koc Universiy Computer Engineering (Bachelor)'
-                  ]}
+                  name="Halil Eralp Kocas"
+                  image={eralpImg}
+                  summary={['TUM Informatik Master Student']}
+                  linkedInLink="https://www.linkedin.com/in/halileralpkocas/"
                 />
               </Card>
             </Grid>

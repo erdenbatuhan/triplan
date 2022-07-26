@@ -16,6 +16,7 @@ import { AuthUserContext } from './authentication/AuthUserContext';
 import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
 import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 import LandingPage from './pages/LandingPage';
+import LandingPageBar from './components/landingPage/NavigationBarLandingPage';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
@@ -47,7 +48,7 @@ export default function App() {
         return { authenticatedUser, loginUser, logoutUser };
       }, [authenticatedUser, loginUser, logoutUser])}>
       <BrowserRouter>
-        {pathname !== '/' ? <NavigationBar /> : <div />}
+        {pathname !== '/' ? <NavigationBar /> : <LandingPageBar />}
 
         <Routes>
           <Route path="/" element={<LandingPage />} />

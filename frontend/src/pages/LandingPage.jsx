@@ -5,9 +5,11 @@ import '../App.css';
 import Fab from '@mui/material/Fab';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import landingBg from '../assets/landing-page-background.png';
-import LandingPageBar from '../components/landingPage/NavigationBarLandingPage';
+// import LandingPageBar from '../components/landingPage/NavigationBarLandingPage';
 import { SECONDARY_COLOR } from '../shared/constants';
 import AboutUs from '../components/landingPage/AboutUs';
+import WhyTriplan from '../components/landingPage/WhyTriplan';
+import ContactUs from '../components/landingPage/contactUs';
 
 function LandingPage() {
   const handleMainScroll = () => {
@@ -24,7 +26,6 @@ function LandingPage() {
           backgroundSize: 'cover',
           height: '100vh'
         }}>
-        <LandingPageBar />
         <div
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -82,12 +83,9 @@ function LandingPage() {
                             backgroundColor: blue[500],
                             width: '80%',
                             border: 1,
-                            // borderColor: grey[500],
                             borderRadius: 4,
                             height: '60px'
-                          }}
-                          // onClick={}
-                        >
+                          }}>
                           Explore World!
                         </Button>
                       </Grid>
@@ -98,12 +96,9 @@ function LandingPage() {
                             backgroundColor: green[500],
                             width: '80%',
                             border: 1,
-                            // borderColor: grey[500],
                             borderRadius: 4,
                             height: '60px'
-                          }}
-                          // onClick={}
-                        >
+                          }}>
                           Be Our Partner!
                         </Button>
                       </Grid>
@@ -130,6 +125,40 @@ function LandingPage() {
             height: '100%'
           }}>
           <AboutUs />
+        </div>
+      </div>
+      <div
+        style={{
+          backgroundColor: SECONDARY_COLOR,
+          backgroundSize: 'cover',
+          height: '100vh'
+        }}
+        id="whyTriplan">
+        <div
+          style={{
+            position: 'absolute',
+            boxSizing: 'border-box',
+            width: '100%',
+            height: '100%'
+          }}>
+          <WhyTriplan />
+        </div>
+      </div>
+      <div
+        style={{
+          backgroundColor: SECONDARY_COLOR,
+          backgroundSize: 'cover',
+          height: '100vh'
+        }}
+        id="contact">
+        <div
+          style={{
+            position: 'absolute',
+            boxSizing: 'border-box',
+            width: '100%',
+            height: '100%'
+          }}>
+          <ContactUs />
         </div>
       </div>
       <Fab

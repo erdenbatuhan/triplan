@@ -12,6 +12,15 @@ export default function LandingPageBar() {
     const anchor = document.querySelector('#team');
     anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
+  const handleWhyTriplanScrol = () => {
+    const anchor = document.querySelector('#whyTriplan');
+    anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const handleContactScrol = () => {
+    const anchor = document.querySelector('#contact');
+    anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -35,11 +44,11 @@ export default function LandingPageBar() {
             <IconButton color="inherit" size="small" onClick={handleTeamScrool}>
               About Us
             </IconButton>
-            <IconButton color="inherit" size="small">
+            <IconButton color="inherit" size="small" onClick={handleWhyTriplanScrol}>
               Why Triplan?
             </IconButton>
-            <IconButton color="inherit" size="small">
-              Contact
+            <IconButton color="inherit" size="small" onClick={handleContactScrol}>
+              Contact Us
             </IconButton>
           </div>
         </Toolbar>

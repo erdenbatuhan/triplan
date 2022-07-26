@@ -5,8 +5,12 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import ListItem from '@mui/material/ListItem';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import Link from '@mui/material/Link';
+import { Box } from '@mui/material';
 
-export default function PersonCard({ name, image, summary }) {
+export default function PersonCard({ name, image, summary, linkedInLink, githubLink }) {
   return (
     <Card
       sx={{
@@ -21,6 +25,7 @@ export default function PersonCard({ name, image, summary }) {
         direction="row"
         spacing={2}
         ml={2}
+        mt={2}
         style={{
           height: '%100'
         }}>
@@ -34,16 +39,28 @@ export default function PersonCard({ name, image, summary }) {
         </Grid>
         <Grid item xs={8}>
           <ListItem>
-            <CardContent>
-              <Typography gutterBottom variant="h4" color="text.primary">
-                {name}
-              </Typography>
-              {summary.map((sum) => (
-                <Typography key={sum} variant="body2" color="text.primary">
-                  - {sum}
+            <Grid container direction="row">
+              <CardContent>
+                <Typography gutterBottom variant="h4" color="text.primary">
+                  {name}
                 </Typography>
-              ))}
-            </CardContent>
+                {summary.map((sum) => (
+                  <Typography key={sum} variant="body2" color="text.primary">
+                    <li>{sum} </li>
+                  </Typography>
+                ))}
+              </CardContent>
+              <CardContent>
+                <Box style={{ textAlign: 'center' }}>
+                  <Link href={linkedInLink}>
+                    <LinkedInIcon fontSize="large" />
+                  </Link>
+                  <Link href={githubLink}>
+                    <GitHubIcon fontSize="large" />
+                  </Link>
+                </Box>
+              </CardContent>
+            </Grid>
           </ListItem>
         </Grid>
       </Grid>
