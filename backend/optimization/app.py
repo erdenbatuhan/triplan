@@ -13,7 +13,7 @@ with open("./constants.json") as file:
 app = Flask(__name__)
 
 
-@app.route("/", methods=["POST"])
+@app.route("/optimize", methods=["POST"])
 def optimize():
   partner_locations = json.loads(FlaskRequest.data)
   ordered_locations = optimization_service.optimize(partner_locations)
