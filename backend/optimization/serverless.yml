@@ -1,0 +1,32 @@
+service: triplan-optimization
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  stage: prod
+  runtime: python3.8
+  region: eu-central-1
+  deploymentBucket: triplan-optimization-deployment-bucket
+  ecr:
+    images:
+      triplan-optimization-image:
+        path: ./
+  timeout: 29
+  environment:
+    ["REGION"]: "self:provider.region"
+  
+package:
+  exclude:
+    - .venv/**
+    - __pycache__/**
+    - events/**
+
+functions:
+  optimize:
+    memorySize: 256
+    image:
+      name: triplan-optimization-image
+    events:
+      - httpApi:
+          path: /optimize
+          method: post
