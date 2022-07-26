@@ -15,7 +15,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use(cors()); // CORS
-app.use(bodyParser.json()); // Parses the text as JSON and exposes the resulting object on req.body
+app.use(bodyParser.json({ limit: "50mb" })); // Parses the text as JSON and exposes the resulting object on req.body
 
 app.listen(appProps["port"], () =>
   console.log(`Server Running on port: http://localhost:${appProps["port"]}`)
@@ -84,4 +84,8 @@ app.use("/coupon", couponRoutes);
 // Routes: Partner Signup Request
 const partnerSignupRequestRoutes = require("./routes/partnerSignupRequestRoutes.js");
 app.use("/partner-signup-request", partnerSignupRequestRoutes);
+
+// Routes: CMS (Another Service)
+const cmsRoutes = require("./routes/cmsRoutes.js");
+app.use("/out/cms", cmsRoutes);
 
