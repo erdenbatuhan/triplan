@@ -32,18 +32,21 @@ provider:
 
 functions:
   restore:
+    memorySize: 256
     handler: handler.restore
     events:
       - httpApi:
           path: /restore
           method: post
   upload:
+    memorySize: 256
     handler: handler.upload
     events:
       - httpApi:
           path: /upload
           method: post
   find:
+    memorySize: 256
     handler: handler.find
     events:
       - httpApi:
