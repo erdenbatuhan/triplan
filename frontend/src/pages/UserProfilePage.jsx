@@ -9,7 +9,8 @@ import {
   Card,
   CardContent,
   Box,
-  Modal
+  Modal,
+  Button
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import Spinner from '../components/Spinner';
@@ -26,6 +27,7 @@ import {
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
 import { avatarStyle, appBackgroundColor, modalStyle } from '../shared/styles';
+import EditUserProfileCard from '../components/EditUserProfileCard';
 
 function UserProfilePage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -37,6 +39,7 @@ function UserProfilePage() {
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
   const [followersModalShown, setFollowersModalShown] = useState(false);
   const [followedModalShown, setFollowedModalShown] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const getFollowersOfUser = () => {
     return getFollowers(authenticatedUser.user.id).then((data) => {
@@ -257,7 +260,20 @@ function UserProfilePage() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={2} />
+      <Grid item xs={2}>
+        <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
+          Edit Profile
+        </Button>
+        <Modal
+          open={isEditMode}
+          onClose={() => {
+            setIsEditMode(false);
+          }}>
+          <Card sx={{ minWidth: '500px', ...modalStyle }}>
+            <EditUserProfileCard user={user} />
+          </Card>
+        </Modal>
+      </Grid>
     </Grid>
   );
 }
