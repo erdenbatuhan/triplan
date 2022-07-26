@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Grid,
   Stack,
@@ -19,6 +20,7 @@ import Wallet from '../components/Wallet';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser } from '../queries/user-queries';
 import {
+  getFollowingRelationship,
   createFollowingRelationship,
   deleteFollowingRelationship,
   getFollowers,
@@ -30,6 +32,8 @@ import { avatarStyle, appBackgroundColor, modalStyle } from '../shared/styles';
 import EditUserProfileCard from '../components/EditUserProfileCard';
 
 function UserProfilePage() {
+  const { userId } = useParams();
+
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
@@ -41,15 +45,18 @@ function UserProfilePage() {
   const [followedModalShown, setFollowedModalShown] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
+  const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+
   const getFollowersOfUser = () => {
-    return getFollowers(authenticatedUser.user.id).then((data) => {
+    return getFollowers(userId).then((data) => {
       setFollowersData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
       return data;
     });
   };
 
   const getFollowedOfUser = () => {
-    return getFollowed(authenticatedUser.user.id).then((data) => {
+    return getFollowed(userId).then((data) => {
       setFollowedData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
       return data;
     });
@@ -75,18 +82,45 @@ function UserProfilePage() {
     );
   };
 
-  // Listening to the changes in authenticatedUser
+  const getCountTextForNonAuthenticatedUser = (count, onClick) => {
+    return (
+      <Box
+        onClick={onClick}
+        sx={{
+          color: 'text.primary',
+          fontSize: 34,
+          fontWeight: 'medium'
+        }}>
+        {count}
+      </Box>
+    );
+  };
+
+  // Listening to the changes in userId
   useEffect(() => {
-    if (!authenticatedUser) {
+    if (!userId) {
       return;
     }
 
+    const isAuthenticatedUser = userId === authenticatedUser.user.id;
+    setIsShownUserAuthenticated(isAuthenticatedUser);
+
     setLoading(true);
     Promise.all([
-      // Get the authenticated user
-      getUser(authenticatedUser.user.id).then((data) => setUser(data)),
+      // Check the following relationship if the current user is not the authenticated one
+      new Promise((resolve, reject) => {
+        if (isAuthenticatedUser) {
+          resolve();
+        } else {
+          getFollowingRelationship(authenticatedUser.user.id, userId)
+            .then((data) => setIsFollowing(!!data))
+            .catch((err) => reject(err));
+        }
+      }),
+      // Get the user
+      getUser(userId).then((data) => setUser(data)),
       // Fetch the trip plans of the user
-      getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTripPlans(data)),
+      getTripPlansOfUser(userId).then((data) => setTripPlans(data)),
       // Get followers and followed of the user, and then get the num trips planned by each of them
       Promise.all([getFollowersOfUser(), getFollowedOfUser()]).then(
         ([followersOfUser, followedOfUser]) => {
@@ -104,25 +138,25 @@ function UserProfilePage() {
         }
       )
     ]).finally(() => setLoading(false));
-  }, [authenticatedUser]);
+  }, [userId]);
 
-  const isFollowed = (userId) => !!followedData[userId];
+  const isFollowed = (id) => !!followedData[id];
 
-  const updateFollowingRelationship = (userId) => {
-    if (isFollowed(userId)) {
+  const updateFollowingRelationship = (id) => {
+    if (isFollowed(id)) {
       // User was being followed, now "unfollow" them
       setLoading(true);
-      deleteFollowingRelationship(authenticatedUser.user.id, userId)
+      deleteFollowingRelationship(authenticatedUser.user.id, id)
         .then(() => {
-          delete followedData[userId]; // Remove the user from the followed data object
+          delete followedData[id]; // Remove the user from the followed data object
         })
         .finally(() => setLoading(false));
     } else {
       // User was "not" being followed, now "follow" them
       setLoading(true);
-      createFollowingRelationship(authenticatedUser.user.id, userId)
+      createFollowingRelationship(authenticatedUser.user.id, id)
         .then(() => {
-          followedData[userId] = followersData[userId]; // Add the user to the followed data object
+          followedData[id] = followersData[id]; // Add the user to the followed data object
         })
         .finally(() => setLoading(false));
     }
@@ -159,9 +193,17 @@ function UserProfilePage() {
 
         <Card sx={{ border: 'none', boxShadow: 'none', backgroundColor: appBackgroundColor }}>
           <CardContent>
-            <Grid>
-              <Wallet />
-            </Grid>
+            {isShownUserAuthenticated ? (
+              <Grid>
+                <Wallet />
+              </Grid>
+            ) : (
+              <Grid justifyContent="center" display="flex">
+                <Button variant="contained" color="primary">
+                  {isFollowing ? 'Unfollow' : 'Follow'}
+                </Button>
+              </Grid>
+            )}
             <Grid pt={2}>
               <Card
                 sx={{
@@ -178,9 +220,11 @@ function UserProfilePage() {
                           pr: 2
                         }}>
                         <Box sx={{ color: 'text.secondary' }}> Followers </Box>
-                        {getCountText(Object.keys(followersData).length, () =>
-                          setFollowersModalShown(true)
-                        )}
+                        {isShownUserAuthenticated
+                          ? getCountText(Object.keys(followersData).length, () =>
+                              setFollowersModalShown(true)
+                            )
+                          : getCountTextForNonAuthenticatedUser(Object.keys(followersData).length)}
                       </Box>
 
                       <Modal
@@ -210,9 +254,11 @@ function UserProfilePage() {
                           pl: 2
                         }}>
                         <Box sx={{ color: 'text.secondary' }}> Following </Box>
-                        {getCountText(Object.keys(followedData).length, () =>
-                          setFollowedModalShown(true)
-                        )}
+                        {isShownUserAuthenticated
+                          ? getCountText(Object.keys(followedData).length, () =>
+                              setFollowedModalShown(true)
+                            )
+                          : getCountTextForNonAuthenticatedUser(Object.keys(followedData).length)}
                       </Box>
 
                       <Modal
@@ -260,20 +306,24 @@ function UserProfilePage() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={2}>
-        <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
-          Edit Profile
-        </Button>
-        <Modal
-          open={isEditMode}
-          onClose={() => {
-            setIsEditMode(false);
-          }}>
-          <Card sx={{ minWidth: '500px', ...modalStyle }}>
-            <EditUserProfileCard user={user} />
-          </Card>
-        </Modal>
-      </Grid>
+      {isShownUserAuthenticated ? (
+        <Grid item xs={2}>
+          <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
+            Edit Profile
+          </Button>
+          <Modal
+            open={isEditMode}
+            onClose={() => {
+              setIsEditMode(false);
+            }}>
+            <Card sx={{ minWidth: '500px', ...modalStyle }}>
+              <EditUserProfileCard user={user} />
+            </Card>
+          </Modal>
+        </Grid>
+      ) : (
+        <Grid item xs={2} />
+      )}
     </Grid>
   );
 }

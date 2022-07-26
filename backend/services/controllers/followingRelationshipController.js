@@ -2,6 +2,10 @@ const { FollowingRelationship } = require("./../models/followingRelationship.js"
 
 const userController = require("./userController.js");
 
+const getFollowingRelationship = async ({ followerId, followedId }) => {
+  return FollowingRelationship.findOne({ "follower": followerId, "followed": followedId });
+} 
+
 const createFollowingRelationship = ({ followerId, followedId }) => {
   return new Promise((resolve, reject) => {
     const followerPromise = userController.findById(followerId);
@@ -53,4 +57,10 @@ const getFollowers = async (userId) => { // Records where the given user is the 
   return users;
 };
 
-module.exports = { createFollowingRelationship, deleteFollowingRelationship, getFollowed, getFollowers };
+module.exports = { 
+  getFollowingRelationship,
+  createFollowingRelationship,
+  deleteFollowingRelationship,
+  getFollowed,
+  getFollowers
+};
