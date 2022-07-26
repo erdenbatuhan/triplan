@@ -107,6 +107,7 @@ export default function MenuAppBar() {
   // useEffect(() => {
   //   syncAuthUser();
   // }, [isLoggedIn]);
+  const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -185,6 +186,7 @@ export default function MenuAppBar() {
           )}
         </Toolbar>
       </AppBar>
+      <Offset />
     </Box>
   );
 }
