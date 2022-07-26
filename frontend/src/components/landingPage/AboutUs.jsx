@@ -50,8 +50,9 @@ export default function AboutUs() {
                 <PersonCard
                   name="Anil Kul"
                   image={anilImg}
-                  summary={['TUM Informatik Master Student']}
+                  summary={['Data Scientist at SAP', 'M.Sc. Informatics Student at TUM']}
                   linkedInLink="https://www.linkedin.com/in/kulanil/"
+                  githubLink="https://github.com/anilkul98"
                 />
               </Card>
             </Grid>
@@ -60,8 +61,9 @@ export default function AboutUs() {
                 <PersonCard
                   name="Batuhan Erden"
                   image={batuhanImg}
-                  summary={['TUM Informatik Master Student']}
+                  summary={['Software Engineer at Stryber', 'M.Sc. Informatics Student at TUM']}
                   linkedInLink="https://linkedin.com/in/batuhan-erden"
+                  githubLink="https://github.com/erdenbatuhan"
                 />
               </Card>
             </Grid>
@@ -74,8 +76,9 @@ export default function AboutUs() {
                 <PersonCard
                   name="Cansu Yildirim"
                   image={cansuImg}
-                  summary={['TUM Informatik Master Student']}
+                  summary={['Software Engineer at Check24', 'M.Sc. Informatics Student at TUM']}
                   linkedInLink="https://www.linkedin.com/in/cansuyyildirim/"
+                  githubLink="https://github.com/cansuyildirim"
                 />
               </Card>
             </Grid>
@@ -84,8 +87,9 @@ export default function AboutUs() {
                 <PersonCard
                   name="Halil Eralp Kocas"
                   image={eralpImg}
-                  summary={['TUM Informatik Master Student']}
+                  summary={['M.Sc. Informatics Student at TUM']}
                   linkedInLink="https://www.linkedin.com/in/halileralpkocas/"
+                  githubLink="https://github.com/EralpKocas"
                 />
               </Card>
             </Grid>
