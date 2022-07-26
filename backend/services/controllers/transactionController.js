@@ -44,7 +44,7 @@ module.exports.updateFields = (id, fields) => {
 /**
  * Transactional
  */
- module.exports.createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
+module.exports.createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
   return mongoose.startSession().then(async (session) => {
     let newTransaction = undefined;
 
