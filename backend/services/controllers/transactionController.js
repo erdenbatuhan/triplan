@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const { Transaction } = require("./../models/transaction.js");
 const { MIN_AMOUNT_FOR_COUPON } = require("./../models/coupon.js");
 
@@ -39,88 +41,100 @@ const updateFields = (id, fields) => {
   return Transaction.updateOne({ "_id": id }, fields, { new: true, runValidators: true });
 };
 
-const createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
-  return new Promise((resolve, reject) => {
-    const incomingWalletPromise = incomingWalletId ? walletController.findOne(incomingWalletId) : new Promise((resolve) => resolve(null));
-    const outgoingWalletPromise = outgoingWalletId ? walletController.findOne(outgoingWalletId) : new Promise((resolve) => resolve(null));
+/**
+ * Transactional
+ */
+const createTransaction = async ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
+  const session = await mongoose.startSession();
+  let tripPlanCreated = undefined;
 
-    Promise.all([incomingWalletPromise, outgoingWalletPromise]).then(async ([incomingWallet, outgoingWallet]) => {
-      if ((!incomingWallet && !outgoingWallet) || (incomingWalletId === outgoingWalletId)) {
-        return resolve(null);
-      }
+  try {
+    session.startTransaction();
 
-      // Check if the transaction is purchase but at least one of the wallets is missing
-      if (type == enums.TRANSACTION_TYPE[2] && !(incomingWallet && outgoingWallet)) {
+    tripPlanCreated = await Promise.all([
+      incomingWalletId && walletController.findOne(incomingWalletId, session), // Incoming Wallet
+      outgoingWalletId && walletController.findOne(outgoingWalletId, session) // Outgoing Wallet
+    ]).then(async ([incomingWallet, outgoingWallet]) => {
+      /**
+       * Wallet Validity Check:
+       * - Check if both of the wallets are missing or they are both the same
+       * - Check if the transaction is purchase but at least one of the wallets is missing
+       * - Check if the transaction is not deposit and the "outgoing" wallet has enough balance
+       */
+      if (!incomingWallet && !outgoingWallet || incomingWalletId === outgoingWalletId) {
+        return null;
+      } else if (type == enums.TRANSACTION_TYPE[2] && (!incomingWallet || !outgoingWallet)) {
         throw new Error("There must be an incoming and an outgoing wallet for the purchase transaction!");
-      }
-
-      // Check if the transaction is not deposit and the "outgoing" wallet has enough balance
-      if (type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
-        const transactionRejected = await Transaction.create({
+      } else if (type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
+        const [ transactionRejected ] = await Transaction.create([{
           amount, type,
           "incoming": incomingWallet, "outgoing": outgoingWallet,
           "status": enums.TRANSACTION_STATUS[1] // Rejected Transaction
-        });
+        }], { session });
 
-        return resolve({ "transaction": transactionRejected, "reason": "Not enough balance!" });
+        return { "transaction": transactionRejected, "reason": "Not enough balance!" };
       }
 
-      let updatedIncomingWalletPromise = new Promise((resolve) => resolve(null));
-      let updatedOutgoingWalletPromise = new Promise((resolve) => resolve(null));
-
       // In case of Deposit or Purchase, update the balance of "incoming" wallet
+      let updatedIncomingWalletPromise = undefined;
       if ((type == enums.TRANSACTION_TYPE[0] || type == enums.TRANSACTION_TYPE[2]) && incomingWallet) {
-        updatedIncomingWalletPromise = walletController.updateWalletBalance(incomingWallet, incomingWallet.balance + amount);
+        updatedIncomingWalletPromise = walletController.updateWalletBalance(incomingWallet, incomingWallet.balance + amount, session);
       }
 
       // In case of Withdraw or Purchase, update the balance of "outgoing" wallet
+      let updatedOutgoingWalletPromise = undefined;
       if ((type == enums.TRANSACTION_TYPE[1] || type == enums.TRANSACTION_TYPE[2]) && outgoingWallet) {
-        updatedOutgoingWalletPromise = walletController.updateWalletBalance(outgoingWallet, outgoingWallet.balance - amount);
+        updatedOutgoingWalletPromise = walletController.updateWalletBalance(outgoingWallet, outgoingWallet.balance - amount, session);
       }
 
       // Update the transaction when the wallets are updated "successfully"
-      Promise.all([
+      return await Promise.all([
         updatedIncomingWalletPromise, updatedOutgoingWalletPromise
-      ]).then(async ([
-        updatedIncomingWallet, updatedOutgoingWallet
-      ]) => {
-        let [couponConsumed, couponEarned] = [undefined, undefined]
-
+      ]).then(async ([ updatedIncomingWallet, updatedOutgoingWallet ]) => {
         if (!updatedIncomingWallet && !updatedOutgoingWallet) {
-          return resolve(null);
+          return null;
         }
 
         // If the transaction is a purchase and there is an outgoing wallet
+        let [couponConsumed, couponEarned] = [undefined, undefined];
         if (type == enums.TRANSACTION_TYPE[2] && !!outgoingWallet) {
-          const user = await userController.findUserByWallet(outgoingWallet._id);
+          const user = await userController.findUserByWallet(outgoingWallet._id, session);
 
           // Consume coupon if used. Otherwise, check for coupon eligibility
           if (couponUsed) {
-            couponConsumed = await couponController.deactivateCouponForUser(user._id);
+            couponConsumed = await couponController.deactivateCouponForUser(user._id, session);
           } else if (amount >= MIN_AMOUNT_FOR_COUPON) {
-            couponEarned = await couponController.createCouponForUser(user._id);
+            couponEarned = await couponController.createCouponForUser(user._id, session);
           }
         }
 
-        const transactionCreated = await Transaction.create({
+        const [ transactionCreated ] = await Transaction.create([{
           amount, type,
           "status": enums.TRANSACTION_STATUS[0], // Successfull Transaction
           couponEarned,
           "incoming": updatedIncomingWallet, "outgoing": updatedOutgoingWallet,
-        });
+        }], { session });
 
         /**
          * Add also the actual "updated" wallet objects with "new" balances
          * since "Transaction.create" function returns the IDs of "incoming" and "outgoing" wallets
          */
-        resolve({
+        return {
           "transaction": transactionCreated,
           ...{ "incomingWalletObject": updatedIncomingWallet, "outgoingWalletObject": updatedOutgoingWallet },
           ...{ couponConsumed, couponEarned }
-        });
-      })
-    }).catch(err => reject(err));
-  })
+        };
+      });
+    });
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  }
+
+  session.endSession();
+  return tripPlanCreated;
 };
 
 module.exports = { findTransactionsByUser, exists, updateFields, createTransaction };

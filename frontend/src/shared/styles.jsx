@@ -30,3 +30,5 @@ export const avatarStyle = {
   width: '200px',
   height: '200px'
 };
+
+export const appBackgroundColor = '#f5f5f5';

@@ -27,12 +27,16 @@ export default function UserItemCard({
               <Grid item xs={6}>
                 <Typography variant="subtitle1">{user.username}</Typography>
 
-                <Typography variant="subtitle2" color="text.secondary">
+                <Typography variant="body5" color="text.secondary">
                   Has planned {numTripsPlannedByUser || 'no'} trips so far
                 </Typography>
               </Grid>
-              <Grid item xs={6} p={1}>
+
+              <Grid item xs={1} />
+
+              <Grid item xs={4} p={1}>
                 <Button
+                  sx={{ width: '100%' }}
                   size="small"
                   variant="contained"
                   color="primary"
@@ -40,6 +44,8 @@ export default function UserItemCard({
                   {followingsButtonText}
                 </Button>
               </Grid>
+
+              <Grid item xs={1} />
             </Grid>
           </CardContent>
         </CardActionArea>

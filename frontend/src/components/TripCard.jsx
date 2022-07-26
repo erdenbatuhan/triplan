@@ -8,10 +8,12 @@ function TripCard({ tripPlan }) {
     <Card variant="outlined" sx={{ boxShadow: 2, height: '100%' }}>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography> {tripPlan.name} </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            {tripPlan.name}
+          </Typography>
         </AccordionSummary>
 
-        <AccordionDetails>
+        <AccordionDetails sx={{ padding: 0 }}>
           <TripPlanRatings tripPlanId={tripPlan._id} />
         </AccordionDetails>
       </Accordion>

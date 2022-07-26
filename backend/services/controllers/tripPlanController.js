@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const { TripPlan } = require("./../models/tripPlan.js");
 
 const tripLocationController = require("./tripLocationController.js");
@@ -97,35 +99,53 @@ const findTripLocationsPlannedByUsers = (userIds, tripLocationIds) => {
   ));
 };
 
+/**
+ * Transactional
+ */
 const createTripPlan = async (userId, { name, partnerLocations }) => {
-  const { tripLocationsCreated, partnerLocationsSorted } = await Promise.all([
-    // Create as many trip lococations as there are restaurants with an increasing order
-    Promise.all(partnerLocations.map((_, idx) => tripLocationController.create({ order: idx }))),
-    // Get the optimized route order from the optimization service
-    optimizationServiceQueries.calculateOptimizedOrder(partnerLocations)
-  ]).then(([ tripLocationsCreated, optimizedOrder ]) => ({
-    // Return the created trip locations as is
-    tripLocationsCreated,
-    // Sort the partner locations in "ascending" order based on the order returned from the optimization service
-    partnerLocationsSorted: partnerLocations.sort((a, b) => optimizedOrder[a["_id"]] - optimizedOrder[b["_id"]])
-  }));
+  const session = await mongoose.startSession();
+  let tripPlanCreated = undefined;
 
-  return Promise.all([
-    // Add the created trip locations to the partner locations
-    Promise.all(partnerLocationsSorted.map(({ _id, partnerType }, idx) => (
-      (partnerType === PARTNER_TYPES[0]
-        ? partnerLocationController.addTripLocationToRestaurant(_id, tripLocationsCreated[idx])
-        : partnerLocationController.addTripLocationToTouristAttraction(_id, tripLocationsCreated[idx])
-    )))),
-    // Create a new trip plan with the created trip locations
-    TripPlan.create({ name, user: userId, tripLocations: tripLocationsCreated })
-  ]).then(([ partnerLocationUpdates, tripPlan ]) => {
-    if (partnerLocationUpdates.length !== tripLocationsCreated.length) {
-      throw new Error("Something went wrong while adding the created trip locations to some of the partner locations!");
-    }
+  try {
+    session.startTransaction();
 
-    return tripPlan;
-  });
+    const { tripLocationsCreated, partnerLocationsSorted } = await Promise.all([
+      // Create as many trip lococations as there are restaurants with an increasing order
+      Promise.all(partnerLocations.map((_, idx) => tripLocationController.create({ order: idx }, session))),
+      // Get the optimized route order from the optimization service
+      optimizationServiceQueries.calculateOptimizedOrder(partnerLocations)
+    ]).then(([ tripLocationsCreated, optimizedOrder ]) => ({
+      // Return the created trip locations as is
+      tripLocationsCreated,
+      // Sort the partner locations in "ascending" order based on the order returned from the optimization service
+      partnerLocationsSorted: partnerLocations.sort((a, b) => optimizedOrder[a["_id"]] - optimizedOrder[b["_id"]])
+    }));
+
+    tripPlanCreated = await Promise.all([
+      // Add the created trip locations to the partner locations
+      Promise.all(partnerLocationsSorted.map(({ _id, partnerType }, idx) => (
+        (partnerType === PARTNER_TYPES[0]
+          ? partnerLocationController.addTripLocationToRestaurant(_id, tripLocationsCreated[idx], session)
+          : partnerLocationController.addTripLocationToTouristAttraction(_id, tripLocationsCreated[idx], session)
+      )))),
+      // Create a new trip plan with the created trip locations
+      TripPlan.create([{ name, user: userId, tripLocations: tripLocationsCreated }], { session })
+    ]).then(([ partnerLocations, [ tripPlan ] ]) => {
+      if (partnerLocations.length !== tripLocationsCreated.length) {
+        throw new Error("Something went wrong while adding the created trip locations to some of the partner locations!");
+      }
+
+      return tripPlan;
+    });
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  }
+
+  session.endSession();
+  return tripPlanCreated;
 };
 
 module.exports = {

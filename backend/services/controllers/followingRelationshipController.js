@@ -22,7 +22,7 @@ const createFollowingRelationship = ({ followerId, followedId }) => {
         }
 
         return resolve(result);
-      })
+      }).catch(err => reject(err));
     }).catch(err => reject(err));
   });
 };

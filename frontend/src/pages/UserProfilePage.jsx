@@ -11,10 +11,10 @@ import {
   Box,
   Modal
 } from '@mui/material';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import Spinner from '../components/Spinner';
 import TripCard from '../components/TripCard';
-import WalletPage from './WalletPage';
+import Wallet from '../components/Wallet';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser } from '../queries/user-queries';
 import {
@@ -25,7 +25,7 @@ import {
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
-import { followingCardParentCardStyle, avatarStyle } from '../shared/styles';
+import { avatarStyle, appBackgroundColor, modalStyle } from '../shared/styles';
 
 function UserProfilePage() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -35,8 +35,8 @@ function UserProfilePage() {
   const [followersData, setFollowersData] = useState({});
   const [followedData, setFollowedData] = useState({});
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
-  const [isFollowersShown, setIsFollowersShown] = useState(false);
-  const [isFollowedShown, setIsFollowedShown] = useState(false);
+  const [followersModalShown, setFollowersModalShown] = useState(false);
+  const [followedModalShown, setFollowedModalShown] = useState(false);
 
   const getFollowersOfUser = () => {
     return getFollowers(authenticatedUser.user.id).then((data) => {
@@ -138,98 +138,102 @@ function UserProfilePage() {
           </Grid>
 
           <Grid item xs={3}>
-            <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'h6.fontSize' }}>
-              {user.username || '...'}
+            <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
+              {user.firstName} {user.lastName}
             </Typography>
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={3} align-items="inherit">
             <Typography align="center">
               <IconButton sx={{ p: 0, display: 'inline' }}>
-                <LocationOnIcon fontSize="small" sx={{ color: '#f44336', fontStyle: 'italic' }} />
+                <AlternateEmailIcon fontSize="small" sx={{ fontStyle: 'italic' }} />
               </IconButton>
 
-              <Typography sx={{ display: 'inline' }}>Berlin</Typography>
+              <Typography sx={{ display: 'inline' }}>{user.username || '...'}</Typography>
             </Typography>
           </Grid>
-
-          <Grid item xs={9} m={2}>
-            <WalletPage />
-          </Grid>
-
-          <Grid item xs={9} m={2}>
-            <Card
-              sx={{
-                width: '100%',
-                textAlign: 'center',
-                boxShadow: 4
-              }}>
-              <CardContent>
-                <Grid container>
-                  <Grid item sx={4} alignItems="center">
-                    <Box
-                      sx={{
-                        p: 2
-                      }}>
-                      <Box sx={{ color: 'text.secondary' }}> Followers </Box>
-                      {getCountText(Object.keys(followersData).length, () =>
-                        setIsFollowersShown(true)
-                      )}
-                    </Box>
-
-                    <Modal
-                      open={isFollowersShown}
-                      onClose={() => {
-                        setIsFollowersShown(false);
-                      }}>
-                      <Card sx={followingCardParentCardStyle}>
-                        <FollowingsCard
-                          listName="Followers"
-                          list={Object.values(followersData)}
-                          numTripsPlannedByUsers={numTripsPlannedByUsers}
-                          isFollowed={isFollowed}
-                          onFollowingsButtonClick={updateFollowingRelationship}
-                        />
-                      </Card>
-                    </Modal>
-                  </Grid>
-
-                  <Grid item sx={4}>
-                    <Divider orientation="vertical" sx={{ fontWeight: 'bold' }} />
-                  </Grid>
-
-                  <Grid item sx={4} alignItems="center">
-                    <Box
-                      sx={{
-                        p: 2
-                      }}>
-                      <Box sx={{ color: 'text.secondary' }}> Following </Box>
-                      {getCountText(Object.keys(followedData).length, () =>
-                        setIsFollowedShown(true)
-                      )}
-                    </Box>
-
-                    <Modal
-                      open={isFollowedShown}
-                      onClose={() => {
-                        setIsFollowedShown(false);
-                      }}>
-                      <Card sx={followingCardParentCardStyle}>
-                        <FollowingsCard
-                          listName="Following"
-                          list={Object.values(followedData)}
-                          numTripsPlannedByUsers={numTripsPlannedByUsers}
-                          isFollowed={() => true}
-                          onFollowingsButtonClick={updateFollowingRelationship}
-                        />
-                      </Card>
-                    </Modal>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
         </Grid>
+
+        <Card sx={{ border: 'none', boxShadow: 'none', backgroundColor: appBackgroundColor }}>
+          <CardContent>
+            <Grid>
+              <Wallet />
+            </Grid>
+            <Grid pt={2}>
+              <Card
+                sx={{
+                  width: '100%',
+                  textAlign: 'center',
+                  boxShadow: 4,
+                  p: 1
+                }}>
+                <CardContent>
+                  <Grid container justifyContent="center">
+                    <Grid item sx={4} alignItems="center">
+                      <Box
+                        sx={{
+                          pr: 2
+                        }}>
+                        <Box sx={{ color: 'text.secondary' }}> Followers </Box>
+                        {getCountText(Object.keys(followersData).length, () =>
+                          setFollowersModalShown(true)
+                        )}
+                      </Box>
+
+                      <Modal
+                        open={followersModalShown}
+                        onClose={() => {
+                          setFollowersModalShown(false);
+                        }}>
+                        <Card sx={modalStyle}>
+                          <FollowingsCard
+                            listName="Followers"
+                            list={Object.values(followersData)}
+                            numTripsPlannedByUsers={numTripsPlannedByUsers}
+                            isFollowed={isFollowed}
+                            onFollowingsButtonClick={updateFollowingRelationship}
+                          />
+                        </Card>
+                      </Modal>
+                    </Grid>
+
+                    <Grid item sx={4}>
+                      <Divider orientation="vertical" sx={{ fontWeight: 'bold' }} />
+                    </Grid>
+
+                    <Grid item sx={4} alignItems="center">
+                      <Box
+                        sx={{
+                          pl: 2
+                        }}>
+                        <Box sx={{ color: 'text.secondary' }}> Following </Box>
+                        {getCountText(Object.keys(followedData).length, () =>
+                          setFollowedModalShown(true)
+                        )}
+                      </Box>
+
+                      <Modal
+                        open={followedModalShown}
+                        onClose={() => {
+                          setFollowedModalShown(false);
+                        }}>
+                        <Card sx={modalStyle}>
+                          <FollowingsCard
+                            listName="Following"
+                            list={Object.values(followedData)}
+                            numTripsPlannedByUsers={numTripsPlannedByUsers}
+                            isFollowed={() => true}
+                            onFollowingsButtonClick={updateFollowingRelationship}
+                          />
+                        </Card>
+                      </Modal>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+          </CardContent>
+        </Card>
       </Grid>
 
       <Grid item xs={1} />
@@ -237,16 +241,18 @@ function UserProfilePage() {
       <Grid item xs={6}>
         <Grid>
           <Typography align="left" variant="h6" color="text.secondary">
-            Trips: {tripPlans.length}
+            Trips: {tripPlans.length || 0}
           </Typography>
           <Divider />
         </Grid>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
           <Grid item xs={9} sx={{ width: '100%' }}>
             <Stack spacing={2} pt={4}>
-              {tripPlans.map((tripPlan) => {
-                return <TripCard key={tripPlan._id} tripPlan={tripPlan} />;
-              })}
+              {tripPlans
+                ? tripPlans.map((tripPlan) => {
+                    return <TripCard key={tripPlan._id} tripPlan={tripPlan} />;
+                  })
+                : []}
             </Stack>
           </Grid>
         </Grid>

@@ -92,10 +92,6 @@ export default function MenuAppBar() {
     navigate('/user');
   };
 
-  const navigateToWallet = () => {
-    navigate('/wallet');
-  };
-
   const navigateToMainPage = () => {
     navigate('/');
   };
@@ -174,7 +170,6 @@ export default function MenuAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}>
                 <MenuItem onClick={navigateToProfile}>Profile</MenuItem>
-                <MenuItem onClick={navigateToWallet}>Wallet</MenuItem>
                 <MenuItem onClick={handleLogOut}>Log out</MenuItem>
               </Menu>
             </div>

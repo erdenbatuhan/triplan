@@ -20,12 +20,7 @@ const PartnerLocationSchema = new Schema({
   address: { type: String, default: "", required: false }, 
   phoneNumber: { type: String, default: "", required: false },
   locationPicture: { type: String, default: "", required: false },
-  confirmed: { type: String, enum: enums.CONFIRMATION_STATUS, required: true }, // TODO: Will be moved to Auth! 
-  partnerType: {
-    type: String,
-    enum: enums.PARTNER_TYPES,
-    required: true,
-  },
+  confirmed: { type: String, enum: enums.CONFIRMATION_STATUS, required: true }, // TODO: Will be moved to Auth!
   googleLocationInfo: { type: GoogleLocationInfo.schema, required: false }, // One-to-One Relation using Embedded Documents
   associatedTripLocations: [
     {
@@ -40,6 +35,12 @@ const PartnerLocationSchema = new Schema({
 const Restaurant = mongoose.model(
   "Restaurant",
   extendSchema(PartnerLocationSchema, {
+    partnerType: {
+      type: String,
+      enum: enums.PARTNER_TYPES,
+      default: enums.PARTNER_TYPES[0],
+      required: true,
+    },
     cuisines: {
       type: [String],
       enum : enums.CUISINES,
@@ -68,6 +69,12 @@ const Restaurant = mongoose.model(
 const TouristAttraction = mongoose.model(
   "TouristAttraction",
   extendSchema(PartnerLocationSchema, {
+    partnerType: {
+      type: String,
+      enum: enums.PARTNER_TYPES,
+      default: enums.PARTNER_TYPES[1],
+      required: true,
+    },
     touristAttractionTypes: {
       type: [String],
       enum: enums.TOURIST_ATTRACTION_TYPES,

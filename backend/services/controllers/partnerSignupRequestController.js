@@ -13,7 +13,6 @@ const sendPartnerSignupRequest = (withdrawRequest) => {
 };
 
 const removePartnerSignupRequest = (id) => {
-  console.log(id);
   return PartnerSignupRequest.deleteOne({ _id: id });
 };
 
