@@ -32,7 +32,7 @@ const findFiltered = (filterData) => {
   return Promise.all([
     Restaurant.find({
       city: filterData["city"],
-      priceLevel: { $in: filterData["restaurantFilter"]["priceLevels"] },
+      priceLevels: { $in: filterData["restaurantFilter"]["priceLevels"] },
       cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
       foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
     }).sort({ priceLevel: "asc" }),

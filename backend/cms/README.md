@@ -25,10 +25,11 @@ region=eu-central-1
 
 ### Local Invocation
 
-Invoke the lambda function locally:
+Invoke the lambda functions locally:
 
 ```bash
-sls invoke local --aws-profile triplan-cms-aws-user -f upload -p events/test_image.json
+sls invoke local --aws-profile triplan-cms-aws-user -f upload -p events/upload_image.json
+sls invoke local --aws-profile triplan-cms-aws-user -f find -p events/find_images.json
 ```
 
 ### Deployment
