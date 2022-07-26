@@ -90,7 +90,11 @@ const signUp = async (req, res) => {
       { expiresIn: "1 days" },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        // return res.json({ token });
+        return res.status(200).json({
+          success: true,
+          token: token,
+        });
       }
     );
   } catch (err) {

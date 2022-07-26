@@ -47,16 +47,13 @@ function SignUpAuthPage() {
           navigate('/signup-user-profile', { state: { authData } });
           break;
         case 'RESTAURANT':
-          navigate('/signup-user-profile', { state: { authData } });
+          navigate('/signup-restaurant-profile', { state: { authData } });
           break;
         case 'TOURIST_ATTRACTION':
-          navigate('/signup-user-profile', { state: { authData } });
+          navigate('/signup-tourist-attraction-profile', { state: { authData } });
           break;
         default:
           console.error('Given user type is not known.');
-      }
-      if (userType === 'USER') {
-        navigate('/signup-user-profile', { state: { authData } });
       }
     } catch (e) {
       console.error(`failed to create user ${e}`);

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
 import { SECONDARY_COLOR } from '../shared/constants';
 import { signupNewUser } from '../queries/authentication-queries';
+import { AuthUserContext } from '../authentication/AuthUserContext';
 
 function SignUpUserDataPage() {
   const [firstName, setFirstName] = useState('');
@@ -11,6 +12,7 @@ function SignUpUserDataPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
 
+  const authContext = useContext(AuthUserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const authData = location.state ? location.state.authData : null;
@@ -42,9 +44,15 @@ function SignUpUserDataPage() {
         console.error(`authentication data is missing ${authData}`);
       }
       const signupData = { authData, userData };
-      const newUser = await signupNewUser(signupData);
-      if (newUser) {
-        navigate('/');
+      const message = await signupNewUser(signupData);
+      const { success, token } = message;
+      authContext.loginUser(token);
+      if (success && token) {
+        navigate('/', {
+          state: {
+            isLoggedIn: true
+          }
+        });
       }
     } catch (e) {
       console.error(`failed to create user ${e}`);
