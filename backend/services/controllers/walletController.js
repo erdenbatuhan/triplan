@@ -42,31 +42,25 @@ const createPartnerLocationWallet = (partnerLocationId) => {
  * Transactional
  */
 const createWallet = async (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
-  const session = await mongoose.startSession();
-  let ownerUpdated = undefined;
+  return mongoose.startSession().then(async (session) => {
+    let ownerUpdated = undefined;
 
-  try {
-    session.startTransaction();
-
-    ownerUpdated = await ownerRetrivalFn(ownerId).then((owner) => {
-      if (!owner) {
-        return null;
-      }
-
-      // Create a new empty wallet and assign it to the owner
-      return Wallet.create([{}], { session }).then(([ walletCreated ]) => {
-        return ownerUpdateFn(owner._id, { "wallet": walletCreated }, session);
+    await session.withTransaction(async () => {
+      ownerUpdated = await ownerRetrivalFn(ownerId).then((owner) => {
+        if (!owner) {
+          return null;
+        }
+  
+        // Create a new empty wallet and assign it to the owner
+        return Wallet.create([{}], { session }).then(([ walletCreated ]) => {
+          return ownerUpdateFn(owner._id, { "wallet": walletCreated }, session);
+        });
       });
     });
 
-    await session.commitTransaction();
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  }
-
-  session.endSession();
-  return ownerUpdated;
+    session.endSession();
+    return ownerUpdated;
+  });
 };
 
 const updateWalletBalance = (wallet, balance, session) => {
