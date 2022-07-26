@@ -16,4 +16,7 @@ const FollowingRelationship = mongoose.model(
   )
 );
 
+// Additional Indexes
+FollowingRelationship.index({ follower: 1, followed: 1 }, { unique: true })
+
 module.exports = { FollowingRelationship };

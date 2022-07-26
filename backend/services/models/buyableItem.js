@@ -22,26 +22,38 @@ const BuyableItemSchema = new Schema({
   ], // One-to-Many Relation using Reference
 });
 
-const Ticket = mongoose.model(
-  "Ticket",
+const MenuItem = mongoose.model(
+  "MenuItem",
   extendSchema(BuyableItemSchema, {
-    reservationDate: { type: Date, required: true },
-    expirationDate: { type: Date, required: true },
-    touristAttraction: {
+    itemType: {
+      type: String,
+      enum: enums.ITEM_TYPES,
+      default: enums.ITEM_TYPES[0],
+      required: true,
+    },
+    foodType: { type: String, enum: enums.FOOD_TYPES, required: true },
+    restaurant: {
       type: Schema.Types.ObjectId,
-      ref: TouristAttraction.name,
+      ref: Restaurant.name,
       required: true,
     }, // Many-To-One Relation using Reference
   })
 );
 
-const MenuItem = mongoose.model(
-  "MenuItem",
+const Ticket = mongoose.model(
+  "Ticket",
   extendSchema(BuyableItemSchema, {
-    type: { type: String, enum: enums.FOOD_TYPES, required: true },
-    restaurant: {
+    itemType: {
+      type: String,
+      enum: enums.ITEM_TYPES,
+      default: enums.ITEM_TYPES[1],
+      required: true,
+    },
+    reservationDate: { type: Date, required: true },
+    expirationDate: { type: Date, required: true },
+    touristAttraction: {
       type: Schema.Types.ObjectId,
-      ref: Restaurant.name,
+      ref: TouristAttraction.name,
       required: true,
     }, // Many-To-One Relation using Reference
   })
