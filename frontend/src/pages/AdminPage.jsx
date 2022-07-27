@@ -119,6 +119,7 @@ function AdminPage() {
   const [isApproved, setIsApproved] = useState(false);
   const [curPartner, setCurPartner] = useState(null);
   const [signupRows, setSignupRows] = useState([]);
+  // const [signupUniqueRows, setUniqueSignupRows] = useState([]);
 
   useEffect(() => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
@@ -130,9 +131,10 @@ function AdminPage() {
 
   useEffect(() => {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
-  }, [isOpen]);
+  }, []);
 
   useEffect(() => {
+    setSignupRows([]);
     Promise.all([
       allPartnerSignupRequests.map(async (request) => {
         const user = await getAuthData(request.authentication);
@@ -152,7 +154,7 @@ function AdminPage() {
         ]);
       })
     ]).then(() => console.log('Data is obtained'));
-  }, [allPartnerSignupRequests]);
+  }, [allPartnerSignupRequests.length]);
 
   const syncPartnerSignupRequests = () => {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
@@ -175,70 +177,91 @@ function AdminPage() {
   const handlePartnerSignupSelection = (ids) => {
     const selectedIDs = new Set(ids);
     const selectedRowData = signupRows.filter((row) => selectedIDs.has(row.id));
+    console.log();
     setPartnerSignupSelectedRows(selectedRowData);
   };
 
   const handleRejectPartnerSignupRequest = () => {
-    removeWithdrawRequest(partnerSignupSelectedRows[0].id).then(() =>
-      handleEmail(
-        {
-          subject: 'Your Partnership is Rejected!',
-          to_name: partnerSignupSelectedRows[0].username,
-          // to_email: partnerSignupSelectedRows[0].email,
-          to_email: 'anil.kults@gmail.com',
-          intro_message: `Your partnership is rejected.`,
-          final_message: 'You can contact us about the problem.'
-        },
-        'general'
-      ).then(() => {
-        syncWithdrawRequests();
-        setIsApproved(false);
-        setIsSuccessfull(true);
-        setIsOpen(true);
-      })
-    );
+    partnerSignupSelectedRows.forEach((partner) => {
+      const { id } = partner;
+      removePartnerSignupRequest(id).then(() =>
+        handleEmail(
+          {
+            subject: 'Your Partnership is Rejected!',
+            to_name: partner.username,
+            // to_email: partner.email,
+            to_email: 'anil.kults@gmail.com',
+            intro_message: `Your partnership is rejected.`,
+            final_message: 'You can contact us about the problem.'
+          },
+          'general'
+        ).then(() => {
+          syncPartnerSignupRequests();
+          setIsApproved(false);
+          setIsSuccessfull(true);
+          setIsOpen(true);
+        })
+      );
+    });
   };
 
   const handleApprovePartnerSignupRequest = () => {
     partnerSignupSelectedRows.forEach((partner) => {
-      const { googlePlaceId, partnerType } = partner;
+      const { googlePlaceId, partnerType, id } = partner;
       console.log(googlePlaceId);
       getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
-        console.log(!partnerData);
-        // if (partnerType === 'RESTAURANT') {
-        //   saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
-        //     console.log('Restaurant is approved successfully.');
-        //   });
-        // } else if (partnerType === 'TOURIST_ATTRACTION') {
-        //   saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
-        //     () => {
-        //       console.log('Tourist Attractions is approved successfully.');
-        //     }
-        //   );
-        // } else {
-        //   console.error('the selected partner type is not defined.');
-        // }
-
-        // handleEmail(
-        //   {
-        //     subject: 'Congratulations! Your Partnership is Approved!',
-        //     to_name: partner.username,
-        //     to_email: 'anil.kults@gmail.com', // partner.email
-        //     intro_message: `Your partnership is approved. Welcome to Triplan family.`,
-        //     final_message:
-        //       'You can complete your profile by logging in the system and start to meet with your customers.'
-        //   },
-        //   'general'
-        // ).then(() => {
-        //   setIsSuccessfull(true);
-        //   setIsOpen(true);
-        //   removePartnerSignupRequest(partnerSignupSelectedRows[0].id).then(() => {
-        //     syncPartnerSignupRequests();
-        //     setIsApproved(true);
-        //   });
-        // });
+        if (partnerData.partnerLocation) {
+          if (partnerType === 'RESTAURANT') {
+            saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
+              console.log(partner.username, ' is approved!');
+              handleEmail(
+                {
+                  subject: 'Congratulations! Your Partnership is Approved!',
+                  to_name: partner.username,
+                  to_email: 'anil.kults@gmail.com', // partner.email
+                  intro_message: `Your partnership is approved. Welcome to Triplan family.`,
+                  final_message:
+                    'You can complete your profile by logging in the system and start to meet with your customers.'
+                },
+                'general'
+              ).then(() => {
+                removePartnerSignupRequest(id).then(() => {
+                  syncPartnerSignupRequests();
+                });
+              });
+            });
+          } else if (partnerType === 'TOURIST_ATTRACTION') {
+            saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
+              () => {
+                console.log(partner.username, ' is approved!');
+                handleEmail(
+                  {
+                    subject: 'Congratulations! Your Partnership is Approved!',
+                    to_name: partner.username,
+                    to_email: 'anil.kults@gmail.com', // partner.email
+                    intro_message: `Your partnership is approved. Welcome to Triplan family.`,
+                    final_message:
+                      'You can complete your profile by logging in the system and start to meet with your customers.'
+                  },
+                  'general'
+                ).then(() => {
+                  removePartnerSignupRequest(id).then(() => {
+                    syncPartnerSignupRequests();
+                  });
+                });
+              }
+            );
+          } else {
+            console.error('the selected partner type is not defined.');
+          }
+        } else {
+          console.log('PlaceId is wrong!');
+        }
       });
     });
+    setIsSuccessfull(true);
+    setIsOpen(true);
+    setIsApproved(true);
   };
 
   const handleRejectWithdrawRequest = () => {
@@ -307,8 +330,6 @@ function AdminPage() {
       })
     );
   };
-
-  console.log(value === 1, value);
 
   return (
     <Box sx={{ width: '100%', typography: 'body1', padding: 1, height: '80vh' }}>
