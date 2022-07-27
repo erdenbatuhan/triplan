@@ -42,7 +42,6 @@ router.get("/get-user", async (req, res) => {
     const user = await authenticationController.getAuthDataWithoutPassword(
       authId
     );
-    console.log("user: ", user);
     res.status(200).send(user);
   } catch ({ message }) {
     res

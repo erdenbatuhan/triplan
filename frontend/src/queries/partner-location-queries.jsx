@@ -53,24 +53,6 @@ export async function saveTouristAttraction(touristAttraction) {
   }).then((response) => response.json());
 }
 
-export async function createNewPartnerLocation(partnerLocationData) {
-  return await fetch(`${HOST_PARTNER_LOCATION}/signup`, {
-    method: `POST`,
-    mode: `cors`,
-    headers: HEADERS,
-    body: JSON.stringify(partnerLocationData)
-  }).then((response) => response.json());
-}
-
-export async function loginPartnerLocation(partnerLocationData) {
-  return await fetch(`${HOST_PARTNER_LOCATION}/login`, {
-    method: `POST`,
-    mode: `cors`,
-    headers: HEADERS,
-    body: JSON.stringify(partnerLocationData)
-  }).then((response) => response.json());
-}
-
 export async function getPartnerLocationByGoogleId(partnerData) {
   return await fetch(`${HOST_PARTNER_LOCATION}/get-by-google-id`, {
     method: `POST`,

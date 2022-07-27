@@ -4,12 +4,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
-// import { createNewUser } from '../queries/user-queries';
-// import { createNewPartnerLocation } from '../queries/partner-location-queries';
 import { SECONDARY_COLOR } from '../shared/constants';
-// import { UserAuthHelper } from '../authentication/user-auth-helper';
-// import { AuthUserContext } from '../authentication/AuthUserContext';
-// import { signupNewUser } from '../queries/authentication-queries';
 
 function SignUpAuthPage() {
   const [email, setEmail] = useState('');
@@ -22,7 +17,6 @@ function SignUpAuthPage() {
   useEffect(() => {
     setWidth(ref.current.offsetWidth);
   }, []);
-  // const authContext = useContext(AuthUserContext);
 
   const handleChange = (event, newLoginType) => {
     setUserType(newLoginType);
@@ -61,44 +55,6 @@ function SignUpAuthPage() {
       console.error(`failed to create user ${e}`);
     }
   };
-
-  // const onSubmitClickedUser = async () => {
-  //   try {
-  //     const userData = {
-  //       username,
-  //       password,
-  //       email
-  //     };
-  //     const newUser = await createNewUser(userData);
-  //     if (newUser) {
-  //       navigate('/');
-  //     }
-  //   } catch (e) {
-  //     console.error(`failed to create user ${e}`);
-  //   }
-  // };
-  // const onSubmitClickedPartner = async () => {
-  //   try {
-  //     const partnerLocationData = {
-  //       username,
-  //       password,
-  //       email,
-  //       userType,
-  //       confirmed: 'No Request'
-  //     };
-  //     const newPartnerLocation = await createNewPartnerLocation(partnerLocationData);
-  //     const { token } = newPartnerLocation;
-  //     authContext.loginUser(token);
-  //     if (token) {
-  //       const partnerData = UserAuthHelper.getDataFromToken(token);
-  //       navigate(`/edit-partner-profile/${partnerData.partnerLocation.id}`, {
-  //         state: { userType: partnerData.partnerLocation.userType }
-  //       });
-  //     }
-  //   } catch (e) {
-  //     console.error(`failed to create partner location ${e}`);
-  //   }
-  // };
 
   return (
     <div
@@ -191,7 +147,6 @@ function SignUpAuthPage() {
                   borderRadius: 4,
                   height: '40px'
                 }}
-                // onClick={userType === 'user' ? onSubmitClickedUser : onSubmitClickedPartner}> handleOnSubmitClick
                 onClick={handleOnSubmitClick}>
                 Sign Up
               </Button>

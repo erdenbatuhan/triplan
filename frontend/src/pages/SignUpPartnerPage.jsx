@@ -5,9 +5,7 @@ import { green } from '@mui/material/colors';
 import { SECONDARY_COLOR } from '../shared/constants';
 import { signupNewUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-// import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { modalStyle } from '../shared/styles';
-// import { createNewPartnerSignupRequest } from '../queries/partner-signup-request-queries';
 import { handleEmail } from '../queries/email-queries';
 
 const style = {
@@ -17,54 +15,14 @@ const style = {
 };
 
 function SignUpPartnerDataPage() {
-  // const [partnerName, setPartnerName] = useState('');
-  // const [partnerDescription, setPartnerDescription] = useState('');
-  // const [partnerCity, setPartnerCity] = useState('');
-  // const [partnerCountry, setPartnerCountry] = useState('');
-  // const [partnerAddress, setPartnerAddress] = useState('');
-  // const [partnerPhoneNumber, setPartnerPhoneNumber] = useState('');
-  // const [partnerLocationPicture, setPartnerLocationPicture] = useState('');
-
   const [isConfirmed, setIsConfirmed] = useState('No Request');
   const [partnerName, setPartnerName] = useState('');
-  // const [partnerGoogleLink, setPartnerGoogleLink] = useState('');
   const [partnerGooglePlaceId, setPartnerGooglePlaceId] = useState('');
   const [partnerContactInfo, setPartnerContactInfo] = useState('');
 
   const authContext = useContext(AuthUserContext);
-  // const navigate = useNavigate();
   const location = useLocation();
   const authData = location.state ? location.state.authData : null;
-  // const { userType } = authData;
-
-  // const [width, setWidth] = useState(0);
-  // const ref = useRef(null);
-
-  // useEffect(() => {
-  //   setWidth(ref.current.offsetWidth);
-  // }, []);
-
-  // const onPartnerNameChange = (e) => {
-  //   setPartnerName(e.target.value);
-  // };
-  // const onPartnerDescriptionChange = (e) => {
-  //   setPartnerDescription(e.target.value);
-  // };
-  // const onPartnerCityChange = (e) => {
-  //   setPartnerCity(e.target.value);
-  // };
-  // const onPartnerCountryChange = (e) => {
-  //   setPartnerCountry(e.target.value);
-  // };
-  // const onPartnerAddressChange = (e) => {
-  //   setPartnerAddress(e.target.value);
-  // };
-  // const onPartnerPhoneNumberChange = (e) => {
-  //   setPartnerPhoneNumber(e.target.value);
-  // };
-  // const onPartnerLocationPictureChange = (e) => {
-  //   setPartnerLocationPicture(e.target.value);
-  // };
 
   const handleSendPartnerRequest = async () => {
     try {

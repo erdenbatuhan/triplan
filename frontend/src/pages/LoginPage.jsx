@@ -4,11 +4,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
-// import { loginUser } from '../queries/user-queries';
 import { loginUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-// import { UserAuthHelper } from '../authentication/user-auth-helper';
-// import { loginPartnerLocation } from '../queries/partner-location-queries';
 import { SECONDARY_COLOR } from '../shared/constants';
 // const logo = require('../assets/triplan_logo.png');
 
@@ -61,27 +58,6 @@ function LoginPage() {
       console.error(`failed to find user ${username}`);
     }
   };
-
-  // const onSubmitClickedPartner = async () => {
-  //   try {
-  //     const partnerLocationData = {
-  //       username,
-  //       password,
-  //       userType
-  //     };
-  //     const message = await loginPartnerLocation(partnerLocationData);
-  //     const { token } = message;
-  //     authContext.loginUser(token);
-  //     if (token) {
-  //       const partnerData = UserAuthHelper.getDataFromToken(token);
-  //       navigate(`/partner-profile/${partnerData.partnerLocation.id}`, {
-  //         state: { userType: partnerData.partnerLocation.userType }
-  //       });
-  //     }
-  //   } catch (e) {
-  //     console.error(`failed to create partner location ${e}`);
-  //   }
-  // };
 
   return (
     <div
@@ -164,7 +140,6 @@ function LoginPage() {
                   borderRadius: 4,
                   height: '40px'
                 }}
-                // onClick={userType === 'USER' ? onSubmitClickedUser : onSubmitClickedPartner}>
                 onClick={onSubmitClickedUser}>
                 Login
               </Button>

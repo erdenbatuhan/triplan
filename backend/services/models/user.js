@@ -22,7 +22,3 @@ const User = mongoose.model(
 );
 
 module.exports = { User };
-
-// gender: { type: String, required: true },
-// dateOfBirth: { type: Date, required: true },
-// nationality: { type: String, required: true },
