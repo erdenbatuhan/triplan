@@ -1,5 +1,9 @@
 const { ItemBought } = require("./../models/itemBought.js");
 
+const createMany = (fieldsList, session) => {
+  return ItemBought.insertMany(fieldsList, { ordered: true, session });
+};
+
 const addNewItemBoughtEntry = (newItemBought) => {
   return ItemBought.exists({
     associatedTripLocation: newItemBought.associatedTripLocation,
@@ -48,6 +52,7 @@ const getItemsBoughtByTripLocations = (tripLocationIdList) => {
 };
 
 module.exports = {
+  createMany,
   addNewItemBoughtEntry,
   updateItemBoughtEntry,
   deleteItemBoughtEntry,

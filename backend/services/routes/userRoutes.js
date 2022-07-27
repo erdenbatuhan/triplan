@@ -92,7 +92,7 @@ router.get("/:id", async (req, res) => {
 router.get("/:userId/wallet", async (req, res) => {
   try {
     const userId = req.params.userId;
-    const userWallet = await walletController.findByUserId(userId);
+    const userWallet = await walletController.findUserWallet(userId);
 
     if (!userWallet) {
       res.status(404).send(`No wallet found for the user with ID=${userId}!`);
