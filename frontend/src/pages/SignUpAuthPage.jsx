@@ -4,13 +4,18 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
-import { SECONDARY_COLOR } from '../shared/constants';
+import {
+  USER_TYPE_USER,
+  USER_TYPE_RESTAURANT,
+  USER_TYPE_TOURIST_ATTRACTION,
+  SECONDARY_COLOR
+} from '../shared/constants';
 
 function SignUpAuthPage() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState('USER');
+  const [userType, setUserType] = useState(USER_TYPE_USER);
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
 
@@ -38,14 +43,14 @@ function SignUpAuthPage() {
     try {
       const authData = { username, password, email, userType };
       switch (userType) {
-        case 'USER':
+        case USER_TYPE_USER:
           navigate('/signup-user-profile', { state: { authData } });
           break;
-        case 'RESTAURANT': {
+        case USER_TYPE_RESTAURANT: {
           navigate('/signup-partner-profile', { state: { authData } });
           break;
         }
-        case 'TOURIST_ATTRACTION':
+        case USER_TYPE_TOURIST_ATTRACTION:
           navigate('/signup-partner-profile', { state: { authData } });
           break;
         default:

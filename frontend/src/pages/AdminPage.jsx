@@ -25,6 +25,8 @@ import { createTransaction } from '../queries/transaction-queries';
 import { getUser } from '../queries/user-queries';
 import { handleEmail } from '../queries/email-queries';
 import {
+  PARTNER_TYPE_RESTAURANT,
+  PARTNER_TYPE_TOURIST_ATTRACTION,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
   TRANSACTION_STATUS_REJECTED
@@ -202,17 +204,20 @@ function AdminPage() {
   const handleApprovePartnerSignupRequest = () => {
     partnerSignupSelectedRows.forEach((partner) => {
       const { googlePlaceId, partnerType } = partner;
-      getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
-        if (partnerType === 'RESTAURANT') {
-          saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
-            console.log('Restaurant is approved successfully.');
-          });
-        } else if (partnerType === 'TOURIST_ATTRACTION') {
-          saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
+      getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then(({ partnerLocation }) => {
+        if (partnerType === PARTNER_TYPE_RESTAURANT) {
+          saveRestaurant({ ...partnerLocation, authentication: partner.authentication }).then(
             () => {
-              console.log('Tourist Attractions is approved successfully.');
+              console.log('Restaurant is approved successfully.');
             }
           );
+        } else if (partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+          saveTouristAttraction({
+            ...partnerLocation,
+            authentication: partner.authentication
+          }).then(() => {
+            console.log('Tourist Attractions is approved successfully.');
+          });
         } else {
           console.error('the selected partner type is not defined.');
         }

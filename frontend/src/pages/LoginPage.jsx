@@ -6,13 +6,12 @@ import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
 import { loginUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-import { SECONDARY_COLOR } from '../shared/constants';
-// const logo = require('../assets/triplan_logo.png');
+import { USER_TYPE_USER, SECONDARY_COLOR } from '../shared/constants';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState('USER');
+  const [userType, setUserType] = useState(USER_TYPE_USER);
   const authContext = useContext(AuthUserContext);
   const ref = useRef(null);
   const navigate = useNavigate();
