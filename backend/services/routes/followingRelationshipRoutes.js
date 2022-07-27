@@ -9,7 +9,7 @@ const followingRelationshipController = require("./../controllers/followingRelat
 router.get("/", async (req, res) => {
   try {
     const followingRelationship = await followingRelationshipController.getFollowingRelationship(req.query);
-    res.status(200).send(followingRelationship);
+    res.status(200).send({ followingRelationship });
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting the users following relationship from ${followerId} to ${followedId}! Error => ${message}`);
   }

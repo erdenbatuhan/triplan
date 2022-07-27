@@ -2,7 +2,7 @@ import { HOST_FOLLOWING_RELATIONSHIP, HEADERS } from './constants';
 
 export async function getFollowingRelationship(authenticatedUserId, userId) {
   return await fetch(
-    `${HOST_FOLLOWING_RELATIONSHIP}?follower=${authenticatedUserId}&followed=${userId}`,
+    `${HOST_FOLLOWING_RELATIONSHIP}?followerId=${authenticatedUserId}&followedId=${userId}`,
     {
       method: `GET`,
       mode: `cors`,

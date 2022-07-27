@@ -4,7 +4,7 @@ const userController = require("./userController.js");
 
 const getFollowingRelationship = async ({ followerId, followedId }) => {
   return FollowingRelationship.findOne({ "follower": followerId, "followed": followedId });
-} 
+}
 
 const createFollowingRelationship = ({ followerId, followedId }) => {
   return new Promise((resolve, reject) => {
