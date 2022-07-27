@@ -18,7 +18,7 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import emailjs from '@emailjs/browser';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
-import Header from '../components/Header';
+import Header from '../components/common/Header';
 import ContentModal from '../components/common/ContentModal';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';

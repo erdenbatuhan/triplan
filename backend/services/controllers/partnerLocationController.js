@@ -111,22 +111,6 @@ const findTouristAttractionByAuthId = (id) => {
   return TouristAttraction.findOne({ authentication: { $eq: id } });
 };
 
-const findRestaurantByUsername = (username) => {
-  return Restaurant.find({ username: { $eq: username } });
-};
-
-const findRestaurantByEmail = (email) => {
-  return Restaurant.find({ email: { $eq: email } });
-};
-
-const findTouristAttractionByUsername = (username) => {
-  return TouristAttraction.find({ username: { $eq: username } });
-};
-
-const findTouristAttractionByEmail = (email) => {
-  return TouristAttraction.find({ email: { $eq: email } });
-};
-
 const createRestaurant = (restaurant) => {
   return Restaurant.create(restaurant);
 };
