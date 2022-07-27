@@ -21,10 +21,9 @@ const findByUsername = (username) => {
  * Gets user data without the password.
  */
 const getAuthDataWithoutPassword = (id) => {
-  const user = Authentication.findOne({ _id: { $eq: id } }).select(
+  return Authentication.findOne({ _id: { $eq: id } }).select(
     "username email userType"
   );
-  return user;
 };
 
 /**

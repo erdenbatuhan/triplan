@@ -117,6 +117,7 @@ function AdminPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessfull, setIsSuccessfull] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+  const [openPartnerLocWarning, setOpenPartnerLocWarning] = useState(false);
   const [curPartner, setCurPartner] = useState(null);
   const [signupRows, setSignupRows] = useState([]);
   // const [signupUniqueRows, setUniqueSignupRows] = useState([]);
@@ -227,6 +228,9 @@ function AdminPage() {
               ).then(() => {
                 removePartnerSignupRequest(id).then(() => {
                   syncPartnerSignupRequests();
+                  setIsSuccessfull(true);
+                  setIsOpen(true);
+                  setIsApproved(true);
                 });
               });
             });
@@ -247,6 +251,9 @@ function AdminPage() {
                 ).then(() => {
                   removePartnerSignupRequest(id).then(() => {
                     syncPartnerSignupRequests();
+                    setIsSuccessfull(true);
+                    setIsOpen(true);
+                    setIsApproved(true);
                   });
                 });
               }
@@ -255,13 +262,10 @@ function AdminPage() {
             console.error('the selected partner type is not defined.');
           }
         } else {
-          console.log('PlaceId is wrong!');
+          setOpenPartnerLocWarning(true);
         }
       });
     });
-    setIsSuccessfull(true);
-    setIsOpen(true);
-    setIsApproved(true);
   };
 
   const handleRejectWithdrawRequest = () => {
@@ -446,6 +450,34 @@ function AdminPage() {
               onClick={() => {
                 setIsOpen(false);
                 setIsSuccessfull(false);
+              }}>
+              Continue
+            </Button>
+          </div>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={openPartnerLocWarning}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        style={{
+          display: 'flex',
+          justifyConent: 'center',
+          alignItems: 'center'
+        }}>
+        <Box sx={style}>
+          <div className="center">
+            <Alert severity="warning">
+              <AlertTitle>WARNING</AlertTitle>
+              The Google place id can not found in your database. Please add it before approve the
+              request.
+            </Alert>
+
+            <Button
+              alignItems="center"
+              onClick={() => {
+                setOpenPartnerLocWarning(false);
               }}>
               Continue
             </Button>

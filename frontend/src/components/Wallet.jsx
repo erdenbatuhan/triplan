@@ -21,6 +21,7 @@ import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
 import { createNewWithdrawRequest } from '../queries/withdraw-request-queries';
+import { getAuthData } from '../queries/authentication-queries';
 import {
   // CURRENCIES,
   TRANSACTION_TYPE_DEPOSIT,
@@ -61,6 +62,7 @@ export default function Wallet() {
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const [transitionModalShown, setTransitionModalShown] = useState(false);
+  const [authData, setAuthData] = useState();
 
   // Listening to the changes in authenticatedUser
   useEffect(() => {
@@ -77,6 +79,15 @@ export default function Wallet() {
     }
     getUser(authenticatedUser.user.id).then((data) => setAuthenticatedUserData(data));
   }, [authenticatedUser]);
+
+  useEffect(() => {
+    if (!authenticatedUser) {
+      return;
+    }
+    getAuthData(authenticatedUser.user.id).then((data) => setAuthData(data));
+  }, [authenticatedUser]);
+
+  console.log(authData, authenticatedUser.user);
 
   const handleTransaction = () => {
     if (transactionType === TRANSACTION_TYPE_DEPOSIT) {
@@ -96,12 +107,7 @@ export default function Wallet() {
     } else if (transactionType === TRANSACTION_TYPE_WITHDRAW) {
       const { _id } = authenticatedUserData;
       const { username } = authenticatedUserData;
-      const { email } = authenticatedUserData;
-      console.log(
-        authenticatedUserData.username,
-        authenticatedUserData.email,
-        authenticatedUserData._id
-      );
+      const { email } = authData;
       const newWithdrawRequest = {
         userId: _id,
         username,

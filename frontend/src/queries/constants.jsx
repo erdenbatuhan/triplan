@@ -15,6 +15,7 @@ export const HOST_BUYABLE_ITEM = `${HOST}/buyable-item`;
 export const HOST_WITHDRAW_REQUEST = `${HOST}/withdraw-request`;
 export const HOST_COUPON = `${HOST}/coupon`;
 export const HOST_PARTNER_SIGNUP_REQUEST = `${HOST}/partner-signup-request`;
+export const HOST_GOOGLE_DATA = `${HOST}/google-data`;
 
 export const HEADERS = {
   'Access-Control-Allow-Origin': `http://localhost:3000`,
