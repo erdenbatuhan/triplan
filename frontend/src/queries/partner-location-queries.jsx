@@ -54,7 +54,7 @@ export async function saveTouristAttraction(touristAttraction) {
 }
 
 export async function getPartnerLocationByGoogleId(partnerData) {
-  return await fetch(`${HOST_PARTNER_LOCATION}/get-by-google-id`, {
+  return await fetch(`${HOST_PARTNER_LOCATION}/google-id`, {
     method: `POST`,
     mode: `cors`,
     headers: HEADERS,
