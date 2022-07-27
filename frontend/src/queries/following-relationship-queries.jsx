@@ -1,5 +1,16 @@
 import { HOST_FOLLOWING_RELATIONSHIP, HEADERS } from './constants';
 
+export async function getFollowingRelationship(authenticatedUserId, userId) {
+  return await fetch(
+    `${HOST_FOLLOWING_RELATIONSHIP}?followerId=${authenticatedUserId}&followedId=${userId}`,
+    {
+      method: `GET`,
+      mode: `cors`,
+      headers: HEADERS
+    }
+  ).then((response) => response.json());
+}
+
 export async function createFollowingRelationship(followerId, followedId) {
   return await fetch(`${HOST_FOLLOWING_RELATIONSHIP}`, {
     method: `POST`,

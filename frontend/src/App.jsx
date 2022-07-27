@@ -59,7 +59,10 @@ export default function App() {
           <Route path="/signup" element={<SignUpAuthPage />} />
           <Route path="/signup-user-profile" element={<SignUpUserDataPage />} />
           <Route path="/signup-partner-profile" element={<SignUpPartnerDataPage />} />
-          <Route path="/user" element={isLoggedIn ? <UserProfilePage /> : <Navigate to="/" />} />
+          <Route
+            path="/user/:userId"
+            element={isLoggedIn ? <UserProfilePage /> : <Navigate to="/" />}
+          />
           <Route
             path="/trip-plan"
             element={isLoggedIn ? <TripPlanningPage /> : <Navigate to="/" />}

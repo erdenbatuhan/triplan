@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Grid,
   Stack,
@@ -9,7 +10,8 @@ import {
   Card,
   CardContent,
   Box,
-  Modal
+  Modal,
+  Button
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import Spinner from '../components/Spinner';
@@ -18,6 +20,7 @@ import Wallet from '../components/Wallet';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser } from '../queries/user-queries';
 import {
+  getFollowingRelationship,
   createFollowingRelationship,
   deleteFollowingRelationship,
   getFollowers,
@@ -26,31 +29,48 @@ import {
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
 import { avatarStyle, appBackgroundColor, modalStyle } from '../shared/styles';
+import EditUserProfileCard from '../components/EditUserProfileCard';
 
 function UserProfilePage() {
+  const { userId } = useParams();
+
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
   const [tripPlans, setTripPlans] = useState([]);
   const [followersData, setFollowersData] = useState({});
   const [followedData, setFollowedData] = useState({});
+  const [authenticatedUserFollowedData, setAuthenticatedUserFollowedData] = useState({});
+  // const [authenticatedUserFollowersData, setAuthenticatedUserFollowersData] = useState({});
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
   const [followersModalShown, setFollowersModalShown] = useState(false);
   const [followedModalShown, setFollowedModalShown] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  const getFollowersOfUser = () => {
-    return getFollowers(authenticatedUser.user.id).then((data) => {
+  const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  /* const getFollowersOfUser = () => {
+    return getFollowers(userId).then((data) => {
       setFollowersData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
       return data;
     });
-  };
+  }; 
 
   const getFollowedOfUser = () => {
-    return getFollowed(authenticatedUser.user.id).then((data) => {
+    return getFollowed(userId).then((data) => {
       setFollowedData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
       return data;
     });
-  };
+  }; */
+
+  /* const getFollowedOfAuthenticatedUser = () => {
+    return getFollowed(authenticatedUser.user.id).then((data) => {
+      setAuthenticatedUserFollowedData(
+        Object.assign({}, ...data.map((item) => ({ [item._id]: item })))
+      );
+    });
+  }; */
 
   const getCountText = (count, onClick) => {
     return (
@@ -72,22 +92,66 @@ function UserProfilePage() {
     );
   };
 
-  // Listening to the changes in authenticatedUser
-  useEffect(() => {
-    if (!authenticatedUser) {
-      return;
-    }
+  /* const getCountTextForNonAuthenticatedUser = (count, onClick) => {
+    return (
+      <Box
+        onClick={onClick}
+        sx={{
+          color: 'text.primary',
+          fontSize: 34,
+          fontWeight: 'medium'
+        }}>
+        {count}
+      </Box>
+    );
+  }; */
 
-    setLoading(true);
-    Promise.all([
-      // Get the authenticated user
-      getUser(authenticatedUser.user.id).then((data) => setUser(data)),
-      // Fetch the trip plans of the user
-      getTripPlansOfUser(authenticatedUser.user.id).then((data) => setTripPlans(data)),
-      // Get followers and followed of the user, and then get the num trips planned by each of them
-      Promise.all([getFollowersOfUser(), getFollowedOfUser()]).then(
-        ([followersOfUser, followedOfUser]) => {
-          const users = [...followersOfUser, ...followedOfUser];
+  const isGivenUserAuthenticatedUser = (givenUserId) => givenUserId === authenticatedUser.user.id;
+
+  const getFollowingRelationships = () => {
+    return Promise.all([
+      // Check the following relationship if the current user is not the authenticated one
+      new Promise((resolve, reject) => {
+        if (isGivenUserAuthenticatedUser(userId)) {
+          setIsFollowing(false);
+          resolve();
+        } else {
+          getFollowingRelationship(authenticatedUser.user.id, userId)
+            .then(({ followingRelationship }) => {
+              setIsFollowing(!!followingRelationship);
+              resolve();
+            })
+            .catch((err) => reject(err));
+        }
+      }),
+      Promise.all([
+        getFollowed(authenticatedUser.user.id),
+        /* getFollowers(authenticatedUser.user.id), */
+        getFollowed(userId),
+        getFollowers(userId)
+      ]).then(
+        ([
+          followedOfAuthenticatedUser,
+          /* followersOfAuthenticatedUser, */
+          followedOfUser,
+          followersOfUser
+        ]) => {
+          // Authenticated User's Following Data
+          setAuthenticatedUserFollowedData(
+            Object.assign({}, ...followedOfAuthenticatedUser.map((item) => ({ [item._id]: item })))
+          );
+          /* setAuthenticatedUserFollowersData(
+            Object.assign({}, ...followersOfAuthenticatedUser.map((item) => ({ [item._id]: item })))
+          ); */
+          // Shown User's Following Data
+          setFollowedData(
+            Object.assign({}, ...followedOfUser.map((item) => ({ [item._id]: item })))
+          );
+          setFollowersData(
+            Object.assign({}, ...followersOfUser.map((item) => ({ [item._id]: item })))
+          );
+
+          const users = [...followedOfUser, ...followersOfUser];
           const distinctUserIds = [...new Set(users.map(({ _id }) => _id))];
 
           return getNumTripsPlannedByUsers(distinctUserIds).then((data) => {
@@ -100,28 +164,56 @@ function UserProfilePage() {
           });
         }
       )
+    ]);
+  };
+
+  // Listening to the changes in userId
+  useEffect(() => {
+    // Reset the remaining state that is not reset below!
+    setFollowersModalShown(false);
+    setFollowedModalShown(false);
+    setIsEditMode(false);
+
+    if (!userId) {
+      return;
+    }
+
+    setIsShownUserAuthenticated(isGivenUserAuthenticatedUser(userId));
+
+    setLoading(true);
+    Promise.all([
+      // Get the user
+      getUser(userId).then((data) => setUser(data)),
+      // Fetch the trip plans of the user
+      getTripPlansOfUser(userId).then((data) => setTripPlans(data)),
+      // Get followers and followed of the user, and then get the num trips planned by each of them
+      getFollowingRelationships()
     ]).finally(() => setLoading(false));
-  }, [authenticatedUser]);
+  }, [userId]);
 
-  const isFollowed = (userId) => !!followedData[userId];
+  const unfollow = (userIdUnfollowed) => {
+    setLoading(true);
+    deleteFollowingRelationship(authenticatedUser.user.id, userIdUnfollowed)
+      .then(() => getFollowingRelationships()) // Re-fetch all the following relationships
+      .finally(() => setLoading(false));
+  };
 
-  const updateFollowingRelationship = (userId) => {
-    if (isFollowed(userId)) {
+  const follow = (userIdFollowed) => {
+    setLoading(true);
+    createFollowingRelationship(authenticatedUser.user.id, userIdFollowed)
+      .then(() => getFollowingRelationships()) // Re-fetch all the following relationships
+      .finally(() => setLoading(false));
+  };
+
+  const isFollowed = (id) => !!authenticatedUserFollowedData[id];
+
+  const updateFollowingRelationship = (otherUserId) => {
+    if (isFollowed(otherUserId)) {
       // User was being followed, now "unfollow" them
-      setLoading(true);
-      deleteFollowingRelationship(authenticatedUser.user.id, userId)
-        .then(() => {
-          delete followedData[userId]; // Remove the user from the followed data object
-        })
-        .finally(() => setLoading(false));
+      unfollow(otherUserId);
     } else {
       // User was "not" being followed, now "follow" them
-      setLoading(true);
-      createFollowingRelationship(authenticatedUser.user.id, userId)
-        .then(() => {
-          followedData[userId] = followersData[userId]; // Add the user to the followed data object
-        })
-        .finally(() => setLoading(false));
+      follow(otherUserId);
     }
   };
 
@@ -156,9 +248,20 @@ function UserProfilePage() {
 
         <Card sx={{ border: 'none', boxShadow: 'none', backgroundColor: appBackgroundColor }}>
           <CardContent>
-            <Grid>
-              <Wallet />
-            </Grid>
+            {isShownUserAuthenticated ? (
+              <Grid>
+                <Wallet />
+              </Grid>
+            ) : (
+              <Grid justifyContent="center" display="flex">
+                <Button
+                  onClick={() => updateFollowingRelationship(userId)}
+                  variant="contained"
+                  color="primary">
+                  {isFollowing ? 'Unfollow' : 'Follow'}
+                </Button>
+              </Grid>
+            )}
             <Grid pt={2}>
               <Card
                 sx={{
@@ -191,6 +294,7 @@ function UserProfilePage() {
                             list={Object.values(followersData)}
                             numTripsPlannedByUsers={numTripsPlannedByUsers}
                             isFollowed={isFollowed}
+                            isGivenUserAuthenticatedUser={isGivenUserAuthenticatedUser}
                             onFollowingsButtonClick={updateFollowingRelationship}
                           />
                         </Card>
@@ -222,7 +326,8 @@ function UserProfilePage() {
                             listName="Following"
                             list={Object.values(followedData)}
                             numTripsPlannedByUsers={numTripsPlannedByUsers}
-                            isFollowed={() => true}
+                            isFollowed={isFollowed}
+                            isGivenUserAuthenticatedUser={isGivenUserAuthenticatedUser}
                             onFollowingsButtonClick={updateFollowingRelationship}
                           />
                         </Card>
@@ -257,7 +362,24 @@ function UserProfilePage() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={2} />
+      {isShownUserAuthenticated ? (
+        <Grid item xs={2}>
+          <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
+            Edit Profile
+          </Button>
+          <Modal
+            open={isEditMode}
+            onClose={() => {
+              setIsEditMode(false);
+            }}>
+            <Card sx={{ minWidth: '500px', ...modalStyle }}>
+              <EditUserProfileCard user={user} />
+            </Card>
+          </Modal>
+        </Grid>
+      ) : (
+        <Grid item xs={2} />
+      )}
     </Grid>
   );
 }
