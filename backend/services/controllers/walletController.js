@@ -9,21 +9,29 @@ const findOne = (id, session) => {
   return Wallet.findById(id).session(session);
 };
 
-const findByUserId = (userId) => {
+const findUserWallet = (userId, session) => {
+  return findWalletForOwner(userController.findById, userId, session);
+}
+
+const findPartnerLocationWallet = (partnerLocationId, session) => {
+  return findWalletForOwner(partnerLocationController.findPartnerLocationById, partnerLocationId, session);
+}
+
+const findWalletForOwner = (ownerRetrivalFn, ownerId, session) => {
   return new Promise((resolve, reject) => {
-    userController.findById(userId).then(async (user) => {
-      if (!user.wallet) {
+    ownerRetrivalFn(ownerId, session).then(async (owner) => {
+      if (!owner.wallet) {
         return resolve(null);
       }
 
-      const walletFound = await Wallet.findOne({ "_id": user.wallet._id });
+      const walletFound = await Wallet.findOne({ "_id": owner.wallet._id });
       resolve(walletFound);
     }).catch(err => reject(err));
   });
 };
 
 const createUserWallet = (userId) => {
-  return createWallet(
+  return createWalletForOwner(
     userController.findById,
     userController.updateFields,
     userId
@@ -31,7 +39,7 @@ const createUserWallet = (userId) => {
 };
 
 const createPartnerLocationWallet = (partnerLocationId) => {
-  return createWallet(
+  return createWalletForOwner(
     partnerLocationController.findPartnerLocationById,
     partnerLocationController.updatePartnerLocation,
     partnerLocationId
@@ -41,32 +49,26 @@ const createPartnerLocationWallet = (partnerLocationId) => {
 /**
  * Transactional
  */
-const createWallet = async (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
-  const session = await mongoose.startSession();
-  let ownerUpdated = undefined;
+const createWalletForOwner = (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
+  return mongoose.startSession().then(async (session) => {
+    let ownerUpdated = undefined;
 
-  try {
-    session.startTransaction();
-
-    ownerUpdated = await ownerRetrivalFn(ownerId).then((owner) => {
-      if (!owner) {
-        return null;
-      }
-
-      // Create a new empty wallet and assign it to the owner
-      return Wallet.create([{}], { session }).then(([ walletCreated ]) => {
-        return ownerUpdateFn(owner._id, { "wallet": walletCreated }, session);
+    await session.withTransaction(async () => {
+      ownerUpdated = await ownerRetrivalFn(ownerId, session).then((owner) => {
+        if (!owner) {
+          return null;
+        }
+  
+        // Create a new empty wallet and assign it to the owner
+        return Wallet.create([{}], { session }).then(([ walletCreated ]) => {
+          return ownerUpdateFn(owner._id, { "wallet": walletCreated }, session);
+        });
       });
     });
 
-    await session.commitTransaction();
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  }
-
-  session.endSession();
-  return ownerUpdated;
+    session.endSession();
+    return ownerUpdated;
+  });
 };
 
 const updateWalletBalance = (wallet, balance, session) => {
@@ -93,4 +95,4 @@ const findOwnersByIds = (walletIds) => {
   })
 }
 
-module.exports = { findOne, findByUserId, createUserWallet, updateWalletBalance, createPartnerLocationWallet, findOwnersByIds };
+module.exports = { findOne, findUserWallet, findPartnerLocationWallet, createUserWallet, createPartnerLocationWallet, updateWalletBalance, findOwnersByIds };

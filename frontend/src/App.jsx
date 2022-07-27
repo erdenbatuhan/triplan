@@ -7,7 +7,9 @@ import MainPage from './pages/MainPage';
 import TripPlanningPage from './pages/TripPlanningPage';
 import CheckoutPage from './pages/CheckoutPage';
 import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
+import SignUpAuthPage from './pages/SignUpAuthPage';
+import SignUpUserDataPage from './pages/SignUpUserPage';
+import SignUpPartnerDataPage from './pages/SignUpPartnerPage';
 import AdminPage from './pages/AdminPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
@@ -54,7 +56,9 @@ export default function App() {
           {/* <Route path="/login" element={isLoggedIn ? <HomePage /> : <LoginPage />} />
           <Route path="/signup" element={isLoggedIn ? <HomePage /> : <SignUpPage />} /> */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/signup" element={<SignUpAuthPage />} />
+          <Route path="/signup-user-profile" element={<SignUpUserDataPage />} />
+          <Route path="/signup-partner-profile" element={<SignUpPartnerDataPage />} />
           <Route
             path="/user/:userId"
             element={isLoggedIn ? <UserProfilePage /> : <Navigate to="/" />}

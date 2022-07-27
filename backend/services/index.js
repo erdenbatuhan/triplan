@@ -25,6 +25,10 @@ app.listen(appProps["port"], () =>
 const healthCheckRoutes = require("./routes/healthCheckRoutes.js");
 app.use("/", healthCheckRoutes);
 
+// Routes: Authentication
+const authenticationRoutes = require("./routes/authenticationRoutes.js");
+app.use("/auth", authenticationRoutes);
+
 // Routes: City Info
 const cityInfoRoutes = require("./routes/cityInfoRoutes.js");
 app.use("/city-info", cityInfoRoutes);
@@ -88,4 +92,3 @@ app.use("/partner-signup-request", partnerSignupRequestRoutes);
 // Routes: CMS (Another Service)
 const cmsRoutes = require("./routes/cmsRoutes.js");
 app.use("/out/cms", cmsRoutes);
-
