@@ -2,6 +2,8 @@ const { Ticket, MenuItem } = require("./../models/buyableItem.js");
 
 const partnerLocationController = require("./partnerLocationController.js");
 
+const enums = require("./../utils/enums.js");
+
 const getTicket = async (ticketId) => {
   if (!(await Ticket.exists({ _id: ticketId }))) {
     return new Promise((resolve) => resolve(null));
@@ -97,6 +99,25 @@ const findTicketsAndMenuItems = ({ restaurantIds, touristAttractionIds }) => {
   });
 };
 
+// NOTE: The ordering of buyableItems and itemsBought must be the same!
+const addItemsBought = (buyableItems, itemsBoughtOrdered, session) => {
+  const getFindQueryParams = (_id, itemBought) => ([
+    { _id: _id },
+    { $push: { associatedItemBoughts: itemBought } },
+    { new: true, runValidators: true, session }
+  ]);
+
+  return Promise.all(buyableItems.map(({ _id, itemType }, idx) => {
+    const itemBought = itemsBoughtOrdered[idx];
+
+    if (itemType === enums.ITEM_TYPES[0]) { // MenuItem
+      return MenuItem.findOneAndUpdate(...getFindQueryParams(_id, itemBought));
+    } else { // Ticket
+      return Ticket.findOneAndUpdate(...getFindQueryParams(_id, itemBought));
+    }
+  }));
+}
+
 module.exports = {
   getTicket,
   getMenuItem,
@@ -109,4 +130,5 @@ module.exports = {
   deleteTicket,
   deleteMenuItem,
   findTicketsAndMenuItems,
+  addItemsBought,
 };
