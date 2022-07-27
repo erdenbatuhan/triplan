@@ -13,10 +13,7 @@ const FollowingRelationship = mongoose.model(
     {
       timestamps: true
     }
-  )
+  ).index({ follower: 1, followed: 1 }, { unique: true })
 );
-
-// Additional Indexes
-FollowingRelationship.index({ follower: 1, followed: 1 }, { unique: true })
 
 module.exports = { FollowingRelationship };
