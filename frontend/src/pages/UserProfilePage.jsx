@@ -18,7 +18,7 @@ import Spinner from '../components/Spinner';
 import TripCard from '../components/TripCard';
 import Wallet from '../components/Wallet';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { getUser } from '../queries/user-queries';
+import { getUser, updateUserFields } from '../queries/user-queries';
 import {
   getFollowingRelationship,
   createFollowingRelationship,
@@ -46,6 +46,7 @@ function UserProfilePage() {
   const [followersModalShown, setFollowersModalShown] = useState(false);
   const [followedModalShown, setFollowedModalShown] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isEditInProgress, setIsEditInProgress] = useState(false);
 
   const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -179,6 +180,14 @@ function UserProfilePage() {
       // User was "not" being followed, now "follow" them
       follow(otherUserId);
     }
+  };
+
+  // Authenticated User Fields Edit
+  const handleUserFieldsChangedClick = (params) => {
+    setIsEditInProgress(true);
+    updateUserFields(authenticatedUser.user.id, params)
+      .then(() => getUser(userId).then((data) => setUser(data)))
+      .finally(() => setIsEditInProgress(false));
   };
 
   if (loading) {
@@ -350,7 +359,11 @@ function UserProfilePage() {
               setIsEditMode(false);
             }}>
             <Card sx={{ minWidth: '500px', ...modalStyle }}>
-              <EditUserProfileCard user={user} />
+              <EditUserProfileCard
+                user={user}
+                isLoading={isEditInProgress}
+                handleUserFieldsChangedClick={handleUserFieldsChangedClick}
+              />
             </Card>
           </Modal>
         </Grid>
