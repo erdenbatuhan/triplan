@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Modal, Box, Stack, Typography, TextField, Button } from '@mui/material';
-import { modalStyle } from '../../shared/styles';
 
 function EditItemModal(props) {
   const { item, inAdd, itemEditAddMode, locationType, handleItemChangeCompletionClick } = props;
@@ -94,7 +93,7 @@ function EditItemModal(props) {
 
   return (
     <Modal open={itemEditAddMode}>
-      <Box sx={{ ...modalStyle, width: 400 }}>
+      <Box sx={{ width: 400 }}>
         <Stack spacing={2}>
           <Typography align="center">{buttonText}</Typography>
           <TextField

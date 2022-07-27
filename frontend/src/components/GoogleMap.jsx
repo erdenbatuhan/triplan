@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PlaceIcon from '@mui/icons-material/Place';
 import GoogleMapReact from 'google-map-react';
-import Spinner from './Spinner';
+import Spinner from './common/Spinner';
 import { getCityInfoByName } from '../queries/city-info-queries';
 
 function GoogleMap({ selectedCity, selectedPartnerLocations }) {

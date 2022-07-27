@@ -5,7 +5,6 @@ import { green } from '@mui/material/colors';
 import { SECONDARY_COLOR } from '../shared/constants';
 import { signupNewUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-import { modalStyle } from '../shared/styles';
 import { handleEmail } from '../queries/email-queries';
 
 const style = {
@@ -65,7 +64,6 @@ function SignUpPartnerDataPage() {
       }}>
       <Modal
         open={isConfirmed === 'No Request'}
-        style={modalStyle}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <Box style={style}>

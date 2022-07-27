@@ -8,6 +8,7 @@ import Background from '../assets/main-page-background.png';
 import DatePicker from '../components/DatePicker';
 import SearchBar from '../components/SearchBar';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
+import ImageUpload from '../components/ImageUpload';
 // import { getCityInfoByName } from '../queries/city-info-queries';
 import { getCities } from '../queries/partner-location-queries';
 
@@ -80,6 +81,10 @@ export default function MainPage() {
               />
             </Grid>
             <Grid item md={4}>
+              <ImageUpload
+                objectId="default_man"
+                image="https://triplan-cms-bucket.s3.eu-central-1.amazonaws.com/img/default_man.png"
+              />
               <DatePicker />
             </Grid>
           </CustomGrid>

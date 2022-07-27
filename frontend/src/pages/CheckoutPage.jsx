@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import { Button, Modal, CardActionArea, CardMedia, Typography } from '@mui/material';
+import { Button, CardActionArea, CardMedia, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -19,6 +19,7 @@ import emailjs from '@emailjs/browser';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
 import Header from '../components/Header';
+import ContentModal from '../components/common/ContentModal';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
@@ -38,7 +39,6 @@ import {
   MIN_AMOUNT_FOR_COUPON,
   DEFAULT_VALUE_OF_COUPON
 } from '../shared/constants';
-import { modalStyle as modalBoxStyle } from '../shared/styles';
 
 const walletImg = require('../assets/wallet-logo.png');
 const emailjsCredentials = require('../credentials/emailjs_credentials.json');
@@ -148,7 +148,11 @@ export default function CheckoutPage() {
 
     // Fetch all the partner locations of the trip plan
     getLocationsOfTripPlan(tripPlanId)
-      .then((data) => setPartnerLocations(data.map(({ partnerLocation }) => partnerLocation)))
+      .then((data) =>
+        setPartnerLocations(
+          data.map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
+        )
+      )
       .catch(() => navigate('/'));
   }, [tripPlanId]);
 
@@ -235,11 +239,17 @@ export default function CheckoutPage() {
 
       // Add the items for the current partner location if "at least one" item is selected
       if (itemsToBeBought.length > 0) {
-        updatedServicesToBeBought.push({ partnerLocation, itemsToBeBought });
+        updatedServicesToBeBought.push({
+          partnerLocation: { _id: partnerLocation._id, name: partnerLocation.name },
+          tripLocation: { _id: partnerLocation.tripLocation._id },
+          itemsToBeBought
+        });
       }
     });
 
     setServicesToBeBought(updatedServicesToBeBought);
+
+    console.log(updatedServicesToBeBought);
 
     // Calculate the total paid service price using the services to be bought
     const totalPrice = updatedServicesToBeBought.reduce(
@@ -570,32 +580,33 @@ export default function CheckoutPage() {
         <Grid item xs={1} />
       </Grid>
 
-      <Modal
+      <ContentModal
         open={isPaymentCompleted}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        style={{
+        onClose={() => false}
+        contentStyle={{
           display: 'flex',
           justifyConent: 'center',
           alignItems: 'center'
-        }}>
-        <Box sx={modalBoxStyle}>
-          <div className="center">
-            <Alert severity="success">
-              <AlertTitle>Success</AlertTitle>
-              Your payment is successfull! <strong>Enjoy your vacation!</strong>
-            </Alert>
+        }}
+        contentRendered={
+          <Box>
+            <div className="center">
+              <Alert severity="success">
+                <AlertTitle>Success</AlertTitle>
+                Your payment is successfull! <strong>Enjoy your vacation!</strong>
+              </Alert>
 
-            <Button
-              alignItems="center"
-              onClick={() => {
-                navigate('/main-page');
-              }}>
-              Continue
-            </Button>
-          </div>
-        </Box>
-      </Modal>
+              <Button
+                alignItems="center"
+                onClick={() => {
+                  navigate('/main-page');
+                }}>
+                Continue
+              </Button>
+            </div>
+          </Box>
+        }
+      />
     </div>
   );
 }
