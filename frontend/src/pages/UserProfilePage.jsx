@@ -13,6 +13,7 @@ import {
   Button
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
+import EditIcon from '@mui/icons-material/Edit';
 import Spinner from '../components/common/Spinner';
 import ContentModal from '../components/common/ContentModal';
 import TripCard from '../components/TripCard';
@@ -210,7 +211,7 @@ function UserProfilePage() {
             <Avatar sx={avatarStyle} src={user.profilePicture} loading="lazy" />
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={3} display="flex">
             <Typography
               component="div"
               align="center"
@@ -218,6 +219,29 @@ function UserProfilePage() {
               sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
               {user.firstName} {user.lastName}
             </Typography>
+
+            {isShownUserAuthenticated ? (
+              <IconButton onClick={() => setIsProfileEditMode(true)}>
+                <EditIcon />
+              </IconButton>
+            ) : (
+              []
+            )}
+            <ContentModal
+              open={isProfileEditMode}
+              onClose={() => {
+                setIsProfileEditMode(false);
+              }}
+              contentStyle={{ minWidth: '500px' }}
+              header="Edit Profile"
+              contentRendered={
+                <EditUserProfileCard
+                  user={user}
+                  isLoading={isEditInProgress}
+                  handleUserFieldsChange={saveProfile}
+                />
+              }
+            />
           </Grid>
 
           <Grid item xs={3} align-items="inherit">
@@ -356,31 +380,6 @@ function UserProfilePage() {
           </Grid>
         </Grid>
       </Grid>
-      {isShownUserAuthenticated ? (
-        <Grid item xs={2}>
-          <Button size="small" variant="outlined" onClick={() => setIsProfileEditMode(true)}>
-            Edit Profile
-          </Button>
-
-          <ContentModal
-            open={isProfileEditMode}
-            onClose={() => {
-              setIsProfileEditMode(false);
-            }}
-            contentStyle={{ minWidth: '500px' }}
-            header="Edit Profile"
-            contentRendered={
-              <EditUserProfileCard
-                user={user}
-                isLoading={isEditInProgress}
-                handleUserFieldsChange={saveProfile}
-              />
-            }
-          />
-        </Grid>
-      ) : (
-        <Grid item xs={2} />
-      )}
     </Grid>
   );
 }
