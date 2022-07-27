@@ -6,6 +6,8 @@ const { Coupon } = require("./coupon.js");
 
 const { TRANSACTION_TYPE, TRANSACTION_STATUS } = require("../utils/enums");
 
+const PARTNER_COMMISSION = 0.1;
+
 const Transaction = mongoose.model(
   "Transaction",
   new Schema(
@@ -28,4 +30,7 @@ const Transaction = mongoose.model(
   )
 );
 
-module.exports = { Transaction };
+module.exports = {
+  PARTNER_COMMISSION,
+  Transaction
+};

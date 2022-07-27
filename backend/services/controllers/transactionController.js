@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const { Transaction } = require("./../models/transaction.js");
+const { PARTNER_COMMISSION, Transaction } = require("./../models/transaction.js");
 const { MIN_AMOUNT_FOR_COUPON } = require("./../models/coupon.js");
 
 const walletController = require("./walletController.js");
@@ -74,7 +74,8 @@ module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
             type: enums.TRANSACTION_TYPE[2],
             incomingWalletId: partnerLocationWallet._id, 
             outgoingWalletId: userWallet._id,
-            couponUsed
+            couponUsed,
+            commission: PARTNER_COMMISSION
           }, session);
         })).then(transactionsCreated => {
           if (checkoutPayload.length !== transactionsCreated.length) {
@@ -109,33 +110,15 @@ module.exports.createTransaction = ({ amount, type, incomingWalletId, outgoingWa
   });
 };
 
-const createTransactionWithSession = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }, session) => {
+const createTransactionWithSession = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed, commission }, session) => {
   return Promise.all([
     incomingWalletId && walletController.findOne(incomingWalletId, session), // Incoming Wallet
     outgoingWalletId && walletController.findOne(outgoingWalletId, session) // Outgoing Wallet
   ]).then(async ([ incomingWallet, outgoingWallet ]) => {
-    /**
-     * Wallet Validity Check:
-     * - Check if both of the wallets are missing or the same
-     * - Check if the transaction is purchase but at least one of the wallets is missing
-     * - Check if the transaction is not deposit and the "outgoing" wallet has enough balance
-     */
-    if (!incomingWallet && !outgoingWallet || incomingWalletId === outgoingWalletId) {
-      throw new Error("Both of the wallets are missing or the same!");
-    } else if (type == enums.TRANSACTION_TYPE[2] && (!incomingWallet || !outgoingWallet)) {
-      throw new Error("There must be an incoming and an outgoing wallet for the purchase transaction!");
-    } else if (type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
-      const [ transactionRejected ] = await Transaction.create([{
-        amount, type,
-        "incoming": incomingWallet, "outgoing": outgoingWallet,
-        "status": enums.TRANSACTION_STATUS[1] // Rejected Transaction
-      }], { session });
-
-      return { "transaction": transactionRejected, "reason": "Not enough balance!" };
-    }
+    await checkWalletValidity(amount, type, incomingWallet, outgoingWallet, incomingWalletId, outgoingWalletId);
 
     return Promise.all([
-      updateWalletBalances(amount, type, incomingWallet, outgoingWallet, session),
+      updateWalletBalances(amount, type, incomingWallet, outgoingWallet, commission, session),
       getCouponsConsumedAndEarned(amount, type, outgoingWallet, couponUsed, session)
     ]).then(async ([
       [ updatedIncomingWallet, updatedOutgoingWallet ],
@@ -158,11 +141,35 @@ const createTransactionWithSession = ({ amount, type, incomingWalletId, outgoing
   });
 };
 
-const updateWalletBalances = async (amount, type, incomingWallet, outgoingWallet, session) => {
+const checkWalletValidity = async (amount, type, incomingWallet, outgoingWallet, incomingWalletId, outgoingWalletId) => {
+  /**
+   * Wallet Validity Check:
+   * - Check if both of the wallets are missing or the same
+   * - Check if the transaction is purchase but at least one of the wallets is missing
+   * - Check if the transaction is not deposit and the "outgoing" wallet has enough balance
+   */
+  if (!incomingWallet && !outgoingWallet || incomingWalletId === outgoingWalletId) {
+    throw new Error("Both of the wallets are missing or the same!");
+  } else if (type == enums.TRANSACTION_TYPE[2] && (!incomingWallet || !outgoingWallet)) {
+    throw new Error("There must be an incoming and an outgoing wallet for the purchase transaction!");
+  } else if (type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
+    // Reject the transaction (not in the session) and then throw error
+    await Transaction.create([{
+      amount, type,
+      "incoming": incomingWallet, "outgoing": outgoingWallet,
+      "status": enums.TRANSACTION_STATUS[1] // Rejected Transaction
+    }]);
+
+    throw new Error("Transaction rejected! Reason: Not enough balance!");
+  }
+}
+
+const updateWalletBalances = async (amount, type, incomingWallet, outgoingWallet, commission, session) => {
   // In case of Deposit or Purchase, update the balance of "incoming" wallet
   let updatedIncomingWalletPromise = undefined;
   if ((type == enums.TRANSACTION_TYPE[0] || type == enums.TRANSACTION_TYPE[2]) && incomingWallet) {
-    updatedIncomingWalletPromise = walletController.updateWalletBalance(incomingWallet, incomingWallet.balance + amount, session);
+    commissionedAmount = !commission ? amount : amount * (1 - commission); // Apply commission in case of purchase and if there is any
+    updatedIncomingWalletPromise = walletController.updateWalletBalance(incomingWallet, incomingWallet.balance + commissionedAmount, session);
   }
 
   // In case of Withdraw or Purchase, update the balance of "outgoing" wallet
