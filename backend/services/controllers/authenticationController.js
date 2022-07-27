@@ -21,7 +21,9 @@ const findByUsername = (username) => {
  * Gets user data without the password.
  */
 const getAuthDataWithoutPassword = (id) => {
-  const user = Authentication.findOne({ _id: { $eq: id } });
+  const user = Authentication.findOne({ _id: { $eq: id } }).select(
+    "username email userType"
+  );
   return user;
 };
 
@@ -149,16 +151,14 @@ const login = async (req, res) => {
         newUser = await userController.findByAuthId(authUser._id);
         break;
       case USER_TYPES[2]:
-        newUser = await partnerLocationController.createRestaurant({
-          ...userData,
-          authentication: newAuthEntry._id,
-        });
+        newUser = await partnerLocationController.findRestaurantByAuthId(
+          authUser._id
+        );
         break;
       case USER_TYPES[3]:
-        newUser = await partnerLocationController.createTouristAttraction({
-          ...userData,
-          authentication: newAuthEntry._id,
-        });
+        newUser = await partnerLocationController.findTouristAttractionByAuthId(
+          authUser._id
+        );
         break;
       default:
         res

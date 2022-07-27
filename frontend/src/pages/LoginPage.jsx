@@ -7,8 +7,8 @@ import { green, grey } from '@mui/material/colors';
 // import { loginUser } from '../queries/user-queries';
 import { loginUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { loginPartnerLocation } from '../queries/partner-location-queries';
+// import { UserAuthHelper } from '../authentication/user-auth-helper';
+// import { loginPartnerLocation } from '../queries/partner-location-queries';
 import { SECONDARY_COLOR } from '../shared/constants';
 // const logo = require('../assets/triplan_logo.png');
 
@@ -62,26 +62,26 @@ function LoginPage() {
     }
   };
 
-  const onSubmitClickedPartner = async () => {
-    try {
-      const partnerLocationData = {
-        username,
-        password,
-        userType
-      };
-      const message = await loginPartnerLocation(partnerLocationData);
-      const { token } = message;
-      authContext.loginUser(token);
-      if (token) {
-        const partnerData = UserAuthHelper.getDataFromToken(token);
-        navigate(`/partner-profile/${partnerData.partnerLocation.id}`, {
-          state: { userType: partnerData.partnerLocation.userType }
-        });
-      }
-    } catch (e) {
-      console.error(`failed to create partner location ${e}`);
-    }
-  };
+  // const onSubmitClickedPartner = async () => {
+  //   try {
+  //     const partnerLocationData = {
+  //       username,
+  //       password,
+  //       userType
+  //     };
+  //     const message = await loginPartnerLocation(partnerLocationData);
+  //     const { token } = message;
+  //     authContext.loginUser(token);
+  //     if (token) {
+  //       const partnerData = UserAuthHelper.getDataFromToken(token);
+  //       navigate(`/partner-profile/${partnerData.partnerLocation.id}`, {
+  //         state: { userType: partnerData.partnerLocation.userType }
+  //       });
+  //     }
+  //   } catch (e) {
+  //     console.error(`failed to create partner location ${e}`);
+  //   }
+  // };
 
   return (
     <div
@@ -164,7 +164,8 @@ function LoginPage() {
                   borderRadius: 4,
                   height: '40px'
                 }}
-                onClick={userType === 'USER' ? onSubmitClickedUser : onSubmitClickedPartner}>
+                // onClick={userType === 'USER' ? onSubmitClickedUser : onSubmitClickedPartner}>
+                onClick={onSubmitClickedUser}>
                 Login
               </Button>
             </Grid>

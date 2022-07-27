@@ -20,102 +20,102 @@ const createNewUser = async (userData) => {
 /**
  * Creates a user or updates an existing one
  */
-const signUp = async (req, res) => {
-  const { username, email, password } = req.body;
-  try {
-    // check if the user already exists
-    userByUsername = await findByUsername(username);
-    userByEmail = await findByEmail(email);
+// const signUp = async (req, res) => {
+//   const { username, email, password } = req.body;
+//   try {
+//     // check if the user already exists
+//     userByUsername = await findByUsername(username);
+//     userByEmail = await findByEmail(email);
 
-    if (userByEmail.length !== 0 || userByUsername.length !== 0) {
-      return res.status(400).json({ msg: "User already exists" });
-    }
-    // hash user password
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
+//     if (userByEmail.length !== 0 || userByUsername.length !== 0) {
+//       return res.status(400).json({ msg: "User already exists" });
+//     }
+//     // hash user password
+//     const salt = await bcrypt.genSalt(10);
+//     const hash = await bcrypt.hash(password, salt);
 
-    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
+//     const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
 
-    const newUser = await save({
-      ...req.body,
-      wallet,
-      password: hash,
-    });
+//     const newUser = await save({
+//       ...req.body,
+//       wallet,
+//       password: hash,
+//     });
 
-    // return jwt
-    const payload = {
-      user: {
-        id: newUser._id,
-        username: newUser.username,
-      },
-    };
+//     // return jwt
+//     const payload = {
+//       user: {
+//         id: newUser._id,
+//         username: newUser.username,
+//       },
+//     };
 
-    jwt.sign(
-      payload,
-      process.env["JWT_SECRET"],
-      { expiresIn: "7 days" },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-};
+//     jwt.sign(
+//       payload,
+//       process.env["JWT_SECRET"],
+//       { expiresIn: "7 days" },
+//       (err, token) => {
+//         if (err) throw err;
+//         res.json({ token });
+//       }
+//     );
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send("Server error");
+//   }
+// };
 
-/**
- * Checks credentials
- */
-const login = async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    // check if the user exists
-    let user = await findByUsername(username);
+// /**
+//  * Checks credentials
+//  */
+// const login = async (req, res) => {
+//   const { username, password } = req.body;
+//   try {
+//     // check if the user exists
+//     let user = await findByUsername(username);
 
-    if (user.length === 0) {
-      return res.status(400).json({ msg: "Username or password incorrect" });
-    }
+//     if (user.length === 0) {
+//       return res.status(400).json({ msg: "Username or password incorrect" });
+//     }
 
-    // check is the encrypted password matches
-    const isMatch = await bcrypt.compare(password, user[0].password);
+//     // check is the encrypted password matches
+//     const isMatch = await bcrypt.compare(password, user[0].password);
 
-    if (!isMatch) {
-      return res.status(400).json({ msg: "Username or password incorrect" });
-    }
+//     if (!isMatch) {
+//       return res.status(400).json({ msg: "Username or password incorrect" });
+//     }
 
-    const payload = {
-      user: {
-        id: user[0]._id,
-        username,
-      },
-    };
-    jwt.sign(
-      payload,
-      process.env["JWT_SECRET"],
-      { expiresIn: "30 days" },
-      (err, token) => {
-        if (err) throw err;
-        jwt.verify(token, process.env["JWT_SECRET"], (error, decoded) => {
-          if (error) {
-            return res.status(401).json({ msg: "Token is not valid" });
-          } else {
-            return res.status(200).json({
-              success: true,
-              token: token,
-              message: decoded,
-            });
-          }
-        });
-        // res.json(token);
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-};
+//     const payload = {
+//       user: {
+//         id: user[0]._id,
+//         username,
+//       },
+//     };
+//     jwt.sign(
+//       payload,
+//       process.env["JWT_SECRET"],
+//       { expiresIn: "30 days" },
+//       (err, token) => {
+//         if (err) throw err;
+//         jwt.verify(token, process.env["JWT_SECRET"], (error, decoded) => {
+//           if (error) {
+//             return res.status(401).json({ msg: "Token is not valid" });
+//           } else {
+//             return res.status(200).json({
+//               success: true,
+//               token: token,
+//               message: decoded,
+//             });
+//           }
+//         });
+//         // res.json(token);
+//       }
+//     );
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send("Server error");
+//   }
+// };
 
 const find = () => {
   return User.find().sort({ createdAt: "desc" }); // In descending order/newly created first
@@ -173,8 +173,6 @@ const findWalletsByWalletIds = (walletIds) => {
 
 module.exports = {
   createNewUser,
-  signUp,
-  login,
   find,
   findByIds,
   findById,

@@ -133,40 +133,40 @@ router.post("/tourist-attraction", async (req, res) => {
   }
 });
 
-/**x
- * Creates a partner location or updates an existing one
- */
-router.post("/signup", async (req, res) => {
-  try {
-    if (req.body.partnerType === PARTNER_TYPES[0]) {
-      await partnerLocationController.signUpRestaurant(req, res);
-    } else {
-      await partnerLocationController.signUpTouristAttraction(req, res);
-    }
-  } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the partner locations! Error => ${message}`
-      );
-  }
-});
+// /**x
+//  * Creates a partner location or updates an existing one
+//  */
+// router.post("/signup", async (req, res) => {
+//   try {
+//     if (req.body.partnerType === PARTNER_TYPES[0]) {
+//       await partnerLocationController.signUpRestaurant(req, res);
+//     } else {
+//       await partnerLocationController.signUpTouristAttraction(req, res);
+//     }
+//   } catch ({ message }) {
+//     res
+//       .status(400)
+//       .send(
+//         `An error occurred while getting all the partner locations! Error => ${message}`
+//       );
+//   }
+// });
 
-router.post("/login", async (req, res) => {
-  try {
-    if (req.body.partnerType === PARTNER_TYPES[0]) {
-      await partnerLocationController.loginRestaurant(req, res);
-    } else {
-      await partnerLocationController.loginTouristAttraction(req, res);
-    }
-  } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the partner locations! Error => ${message}`
-      );
-  }
-});
+// router.post("/login", async (req, res) => {
+//   try {
+//     if (req.body.partnerType === PARTNER_TYPES[0]) {
+//       await partnerLocationController.loginRestaurant(req, res);
+//     } else {
+//       await partnerLocationController.loginTouristAttraction(req, res);
+//     }
+//   } catch ({ message }) {
+//     res
+//       .status(400)
+//       .send(
+//         `An error occurred while getting all the partner locations! Error => ${message}`
+//       );
+//   }
+// });
 
 router.post("/get-by-google-id", async (req, res) => {
   try {

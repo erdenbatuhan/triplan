@@ -22,15 +22,15 @@ export class UserAuthHelper {
   }
 
   static getUserUsername() {
-    return this.getStoredUser()?.username;
+    return this.getStoredUser()?.user?.username;
   }
 
   static getUserAuthId() {
-    return this.getStoredUser()?.id;
+    return this.getStoredUser()?.user?.id;
   }
 
   static getUserType() {
-    return this.getStoredUser()?.userType;
+    return this.getStoredUser()?.user?.userType;
   }
 
   static logoutUser() {

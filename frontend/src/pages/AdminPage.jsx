@@ -201,10 +201,8 @@ function AdminPage() {
 
   const handleApprovePartnerSignupRequest = () => {
     partnerSignupSelectedRows.forEach((partner) => {
-      console.log('partner: ', partner);
       const { googlePlaceId, partnerType } = partner;
       getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
-        console.log('partnerData: ', partnerData);
         if (partnerType === 'RESTAURANT') {
           saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
             console.log('Restaurant is approved successfully.');

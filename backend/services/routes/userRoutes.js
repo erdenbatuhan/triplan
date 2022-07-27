@@ -10,33 +10,33 @@ require("dotenv").config();
 const userController = require("../controllers/userController.js");
 const walletController = require("./../controllers/walletController.js");
 
-/**
- * Creates a user or updates an existing one
- */
-router.post("/signup", async (req, res) => {
-  try {
-    await userController.signUp(req, res);
-    // res.status(200).send(await userController.signUp(req, res));
-  } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the users! Error => ${message}`
-      );
-  }
-});
+// /**
+//  * Creates a user or updates an existing one
+//  */
+// router.post("/signup", async (req, res) => {
+//   try {
+//     await userController.signUp(req, res);
+//     // res.status(200).send(await userController.signUp(req, res));
+//   } catch ({ message }) {
+//     res
+//       .status(400)
+//       .send(
+//         `An error occurred while getting all the users! Error => ${message}`
+//       );
+//   }
+// });
 
-router.post("/login", async (req, res) => {
-  try {
-    await userController.login(req, res);
-  } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the users! Error => ${message}`
-      );
-  }
-});
+// router.post("/login", async (req, res) => {
+//   try {
+//     await userController.login(req, res);
+//   } catch ({ message }) {
+//     res
+//       .status(400)
+//       .send(
+//         `An error occurred while getting all the users! Error => ${message}`
+//       );
+//   }
+// });
 
 /**
  * Gets all the users

@@ -40,9 +40,9 @@ router.get("/get-user", async (req, res) => {
   try {
     const authId = req.query.id;
     const user = await authenticationController.getAuthDataWithoutPassword(
-      // TODO: find a way to remove password from returned object.
       authId
     );
+    console.log("user: ", user);
     res.status(200).send(user);
   } catch ({ message }) {
     res

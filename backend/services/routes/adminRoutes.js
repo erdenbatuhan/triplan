@@ -34,7 +34,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 /**
  * Gets the admin with given ID
  */
