@@ -7,8 +7,7 @@ const { Wallet } = require("./../models/wallet.js");
 const createNewUser = async (userData) => {
   try {
     const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
-    console.log(userData, wallet)
-    return await save({ ...userData, wallet: wallet }); // returns new user
+    return User.create({ ...userData, wallet: wallet }); // returns new user
   } catch (err) {
     console.error("Failed to create user: ", err.message);
     res.status(500).send("Server error");
@@ -56,9 +55,7 @@ const updateFields = (id, fields, session) => {
 };
 
 const findUserByWallet = (walletId, session) => {
-  return User.find({ wallet: walletId })
-    .session(session)
-    .then((users) => users[0]);
+  return User.findOne({ wallet: walletId }).session(session);
 };
 
 const findWalletsByWalletIds = (walletIds) => {
