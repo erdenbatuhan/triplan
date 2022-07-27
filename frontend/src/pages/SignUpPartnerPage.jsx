@@ -27,7 +27,8 @@ function SignUpPartnerDataPage() {
 
   const [isConfirmed, setIsConfirmed] = useState('No Request');
   const [partnerName, setPartnerName] = useState('');
-  const [partnerGoogleLink, setPartnerGoogleLink] = useState('');
+  // const [partnerGoogleLink, setPartnerGoogleLink] = useState('');
+  const [partnerGooglePlaceId, setPartnerGooglePlaceId] = useState('');
   const [partnerContactInfo, setPartnerContactInfo] = useState('');
 
   const authContext = useContext(AuthUserContext);
@@ -68,14 +69,16 @@ function SignUpPartnerDataPage() {
   const handleSendPartnerRequest = async () => {
     try {
       const userData = {
-        googleLocationLink: partnerGoogleLink,
+        googlePlaceId: partnerGooglePlaceId,
         partnerLocationName: partnerName,
-        partnerLocationContact: partnerContactInfo
+        partnerLocationContact: partnerContactInfo,
+        confirmed: 'Requested'
       };
       if (!authData) {
         console.error(`authentication data is missing ${authData}`);
       }
       const signupData = { authData, userData };
+      console.log('signupData: ', signupData);
       const message = await signupNewUser(signupData);
       const { success, token } = message;
       authContext.loginUser(token);
@@ -122,10 +125,10 @@ function SignUpPartnerDataPage() {
             <Grid item>
               <TextField
                 id="standard-basic"
-                label="Please enter the Google Maps Link of the location"
+                label="Please enter the Google Place ID of the location"
                 variant="standard"
-                value={partnerGoogleLink}
-                onChange={(event) => setPartnerGoogleLink(event.target.value)}
+                value={partnerGooglePlaceId}
+                onChange={(event) => setPartnerGooglePlaceId(event.target.value)}
               />
             </Grid>
             <Grid item>

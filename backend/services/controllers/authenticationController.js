@@ -18,6 +18,14 @@ const findByUsername = (username) => {
 };
 
 /**
+ * Gets user data without the password.
+ */
+const getAuthDataWithoutPassword = (id) => {
+  const user = Authentication.findOne({ _id: { $eq: id } });
+  return user;
+};
+
+/**
  * Creates a new entry for registered user in Authentication model.
  */
 const signUp = async (req, res) => {
@@ -198,4 +206,5 @@ const login = async (req, res) => {
 module.exports = {
   signUp,
   login,
+  getAuthDataWithoutPassword,
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Button, Modal, Grid } from '@mui/material';
@@ -13,7 +14,8 @@ import {
   getRestaurant,
   saveRestaurant,
   getTouristAttraction,
-  saveTouristAttraction
+  saveTouristAttraction,
+  getPartnerLocationByGoogleId
 } from '../queries/partner-location-queries';
 import {
   getAllPartnerSignupRequests,
@@ -27,6 +29,7 @@ import {
   TRANSACTION_STATUS_SUCCESSFUL,
   TRANSACTION_STATUS_REJECTED
 } from '../shared/constants';
+import { getAuthData } from '../queries/authentication-queries';
 
 function getWithdrawRequestRows(allWithdrawRequests) {
   const rows = [];
@@ -57,18 +60,20 @@ const withdrawRequestColumns = [
 function getPartnerSignupRequestRows(allPartnerSignupRequests) {
   const rows = [];
   for (let i = 0; i < allPartnerSignupRequests.length; i += 1) {
-    rows.push({
-      id: allPartnerSignupRequests[i]._id,
-      username: allPartnerSignupRequests[i].username,
-      userId: allPartnerSignupRequests[i].userId,
-      email: allPartnerSignupRequests[i].email,
-      googleLocationLink: allPartnerSignupRequests[i].googleLocationLink,
-      partnerLocationName: allPartnerSignupRequests[i].partnerLocationName,
-      partnerLocationContact: allPartnerSignupRequests[i].partnerLocationContact,
-      partnerType: allPartnerSignupRequests[i].partnerType,
-      createdAt: new Date(allPartnerSignupRequests[i].createdAt).toString()
-    });
+    getAuthData(allPartnerSignupRequests[i].authentication).then((authData) =>
+      rows.push({
+        id: allPartnerSignupRequests[i]._id,
+        username: authData.username,
+        email: authData.email,
+        googleLocationLink: allPartnerSignupRequests[i].googleLocationLink,
+        partnerLocationName: allPartnerSignupRequests[i].partnerLocationName,
+        partnerLocationContact: allPartnerSignupRequests[i].partnerLocationContact,
+        partnerType: authData.userType,
+        createdAt: new Date(allPartnerSignupRequests[i].createdAt).toString()
+      })
+    );
   }
+  console.log('rows: ', rows);
   return rows;
 }
 
@@ -77,7 +82,7 @@ const partnerSignupRequestColumns = [
   { field: 'username', headerName: 'User Name', width: 210 },
   { field: 'userId', headerName: 'User ID', width: 210 },
   { field: 'email', headerName: 'User Email', width: 210 },
-  { field: 'googleLocationLink', headerName: 'Google Maps Link', width: 210 },
+  { field: 'googlePlaceId', headerName: 'Google Place ID', width: 210 },
   { field: 'partnerLocationName', headerName: 'Partner Name', width: 210 },
   { field: 'partnerLocationContact', headerName: 'Contact', width: 210 },
   { field: 'partnerType', headerName: 'Partner Type', width: 210 },
@@ -106,10 +111,12 @@ function AdminPage() {
   const [value, setValue] = useState(1);
   const [allWithdrawRequests, setAllWithdrawRequests] = useState([]);
   const [allPartnerSignupRequests, setAllPartnerSignupRequests] = useState([]);
+  // const [allPartnerSignupRequestsAuthData, setAllPartnerSignupRequestsAuthData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessfull, setIsSuccessfull] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
   const [curPartner, setCurPartner] = useState(null);
+  const [signupRows, setSignupRows] = useState([]);
 
   useEffect(() => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
@@ -124,6 +131,28 @@ function AdminPage() {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
   }, [isOpen]);
   // console.log(allWithdrawRequests);
+
+  useEffect(() => {
+    Promise.all([
+      allPartnerSignupRequests.map(async (request) => {
+        const user = await getAuthData(request.authentication);
+        setSignupRows((signRows) => [
+          ...signRows,
+          {
+            id: request._id,
+            username: user.username,
+            email: user.email,
+            googlePlaceId: request.googlePlaceId,
+            partnerLocationName: request.partnerLocationName,
+            partnerLocationContact: request.partnerLocationContact,
+            partnerType: user.userType,
+            authentication: request.authentication,
+            createdAt: new Date(request.createdAt).toString()
+          }
+        ]);
+      })
+    ]).then(() => console.log('Data is obtained'));
+  }, [allPartnerSignupRequests]);
 
   const syncPartnerSignupRequests = () => {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
@@ -145,11 +174,7 @@ function AdminPage() {
 
   const handlePartnerSignupSelection = (ids) => {
     const selectedIDs = new Set(ids);
-
-    const selectedRowData = getPartnerSignupRequestRows(allPartnerSignupRequests).filter((row) =>
-      selectedIDs.has(row.id)
-    );
-
+    const selectedRowData = signupRows.filter((row) => selectedIDs.has(row.id));
     setPartnerSignupSelectedRows(selectedRowData);
   };
 
@@ -175,59 +200,44 @@ function AdminPage() {
   };
 
   const handleApprovePartnerSignupRequest = () => {
-    if (partnerSignupSelectedRows[0].partnerType === 'restaurant') {
-      getRestaurant(partnerSignupSelectedRows[0].userId).then((data) => {
-        setCurPartner(data);
-        curPartner.confirmed = 'Approved';
-        saveRestaurant(curPartner).then(() =>
-          handleEmail(
-            {
-              subject: 'Congratulations! Your Partnership is Approved!',
-              to_name: partnerSignupSelectedRows[0].username,
-              // to_email: partnerSignupSelectedRows[0].email,
-              to_email: 'anil.kults@gmail.com',
-              intro_message: `Your partnership is approved. Welcome to Triplan family.`,
-              final_message:
-                'You can complete your profile by logging in the system and start to meet with your customers.'
-            },
-            'general'
-          ).then(() => {
-            setIsSuccessfull(true);
-            setIsOpen(true);
-            removePartnerSignupRequest(partnerSignupSelectedRows[0].id).then(() => {
-              syncPartnerSignupRequests();
-              setIsApproved(true);
-            });
-          })
-        );
+    partnerSignupSelectedRows.forEach((partner) => {
+      console.log('partner: ', partner);
+      const { googlePlaceId, partnerType } = partner;
+      getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
+        console.log('partnerData: ', partnerData);
+        if (partnerType === 'RESTAURANT') {
+          saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
+            console.log('Restaurant is approved successfully.');
+          });
+        } else if (partnerType === 'TOURIST_ATTRACTION') {
+          saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
+            () => {
+              console.log('Tourist Attractions is approved successfully.');
+            }
+          );
+        } else {
+          console.error('the selected partner type is not defined.');
+        }
+        // handleEmail(
+        //   {
+        //     subject: 'Congratulations! Your Partnership is Approved!',
+        //     to_name: partner.username,
+        //     to_email: 'anil.kults@gmail.com', // partner.email
+        //     intro_message: `Your partnership is approved. Welcome to Triplan family.`,
+        //     final_message:
+        //       'You can complete your profile by logging in the system and start to meet with your customers.'
+        //   },
+        //   'general'
+        // ).then(() => {
+        //   setIsSuccessfull(true);
+        //   setIsOpen(true);
+        //   removePartnerSignupRequest(partnerSignupSelectedRows[0].id).then(() => {
+        //     syncPartnerSignupRequests();
+        //     setIsApproved(true);
+        //   });
+        // });
       });
-    } else {
-      getTouristAttraction(partnerSignupSelectedRows[0].userId).then((data) => {
-        setCurPartner(data);
-        curPartner.confirmed = 'Approved';
-        saveTouristAttraction(curPartner).then(() =>
-          handleEmail(
-            {
-              subject: 'Congratulations! Your Partnership is Approved!',
-              to_name: partnerSignupSelectedRows[0].username,
-              // to_email: partnerSignupSelectedRows[0].email,
-              to_email: 'anil.kults@gmail.com',
-              intro_message: `Your partnership is approved. Welcome to Triplan family.`,
-              final_message:
-                'You can complete your profile by logging in the system and start to meet with your customers.'
-            },
-            'general'
-          ).then(() => {
-            setIsSuccessfull(true);
-            setIsOpen(true);
-            removePartnerSignupRequest(partnerSignupSelectedRows[0].id).then(() => {
-              syncPartnerSignupRequests();
-              setIsApproved(true);
-            });
-          })
-        );
-      });
-    }
+    });
   };
 
   const handleRejectWithdrawRequest = () => {
@@ -337,7 +347,8 @@ function AdminPage() {
               padding: 2
             }}>
             <DataGrid
-              rows={getPartnerSignupRequestRows(allPartnerSignupRequests)}
+              // rows={getPartnerSignupRequestRows(allPartnerSignupRequests)}
+              rows={signupRows}
               columns={partnerSignupRequestColumns}
               checkboxSelection
               onSelectionModelChange={(ids) => {

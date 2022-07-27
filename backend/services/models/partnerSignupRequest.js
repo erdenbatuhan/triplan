@@ -11,9 +11,15 @@ const PartnerSignupRequest = mongoose.model(
       // userId: { type: String, required: true },
       // username: { type: String, required: true },
       // email: { type: String, required: true },
-      googleLocationLink: { type: String, required: true, unique: true },
+      // googleLocationLink: { type: String, required: true, unique: true },
+      googlePlaceId: { type: String, required: true, unique: true },
       partnerLocationName: { type: String, required: true },
       partnerLocationContact: { type: String, required: true },
+      confirmed: {
+        type: String,
+        enum: enums.CONFIRMATION_STATUS,
+        required: true,
+      },
       authentication: { type: Schema.Types.ObjectId, ref: Authentication.name }, // One-to-One Relation using Reference
       // partnerType: {
       //   type: String,

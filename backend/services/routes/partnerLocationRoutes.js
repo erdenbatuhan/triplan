@@ -11,7 +11,8 @@ const { PARTNER_TYPES } = require("./../utils/enums.js");
  */
 router.get("/cities", async (req, res) => {
   try {
-    const distinctCities = await partnerLocationController.findDistinctCitiesWithEnoughPlaces();
+    const distinctCities =
+      await partnerLocationController.findDistinctCitiesWithEnoughPlaces();
     res.status(200).send(distinctCities);
   } catch ({ message }) {
     res
@@ -27,8 +28,12 @@ router.get("/cities", async (req, res) => {
  */
 router.post("/filtered", async (req, res) => {
   try {
-    const partnerLocationsFiltered = await partnerLocationController.findFiltered(req.body["filterData"]);
-    const partnerLocationsSorted = await scoreController.sortLocations(req.query["user"], partnerLocationsFiltered);
+    const partnerLocationsFiltered =
+      await partnerLocationController.findFiltered(req.body["filterData"]);
+    const partnerLocationsSorted = await scoreController.sortLocations(
+      req.query["user"],
+      partnerLocationsFiltered
+    );
 
     res.status(200).send(partnerLocationsSorted);
   } catch ({ message }) {
@@ -159,6 +164,22 @@ router.post("/login", async (req, res) => {
       .status(400)
       .send(
         `An error occurred while getting all the partner locations! Error => ${message}`
+      );
+  }
+});
+
+router.post("/get-by-google-id", async (req, res) => {
+  try {
+    const partner = await partnerLocationController.findByGoogleId(
+      req.body.googlePlaceId,
+      req.body.partnerType
+    );
+    res.status(200).send(partner);
+  } catch ({ message }) {
+    res
+      .status(400)
+      .send(
+        `An error occurred while getting the partner location! Error => ${message}`
       );
   }
 });

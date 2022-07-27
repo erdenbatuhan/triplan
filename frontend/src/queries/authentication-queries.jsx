@@ -17,3 +17,11 @@ export async function loginUser(userData) {
     body: JSON.stringify(userData)
   }).then((response) => response.json());
 }
+
+export async function getAuthData(userData) {
+  return await fetch(`${HOST_AUTH}/get-user?id=${userData}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}

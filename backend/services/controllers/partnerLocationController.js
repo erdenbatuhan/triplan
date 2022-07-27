@@ -395,6 +395,29 @@ const createNewPartner = async (userData) => {
   }
 };
 
+/**
+ *
+ * @param {Place ID recorded in Google Maps} id
+ * @param {Type of partner: restaurant or tourist attraction} partnerType
+ * @returns Data object based on given query
+ */
+const findByGoogleId = async (id, partnerType) => {
+  try {
+    if (partnerType === USER_TYPES[2]) {
+      return Restaurant.findOne({
+        "googleLocationInfo.googlePlaceId": { $eq: id },
+      });
+    } else if (partnerType === USER_TYPES[3]) {
+      return TouristAttraction.findOne({
+        "googleLocationInfo.googlePlaceId": { $eq: id },
+      });
+    }
+  } catch (err) {
+    console.error("Failed to find partner: ", err.message);
+    res.status(500).send("Server error");
+  }
+};
+
 module.exports = {
   findDistinctCitiesWithEnoughPlaces,
   findFiltered,
@@ -414,4 +437,5 @@ module.exports = {
   addTripLocationToTouristAttraction,
   findRestaurantWalletsByWalletIds,
   findTouristAttractionWalletsByWalletIds,
+  findByGoogleId,
 };

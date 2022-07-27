@@ -70,3 +70,12 @@ export async function loginPartnerLocation(partnerLocationData) {
     body: JSON.stringify(partnerLocationData)
   }).then((response) => response.json());
 }
+
+export async function getPartnerLocationByGoogleId(partnerData) {
+  return await fetch(`${HOST_PARTNER_LOCATION}/get-by-google-id`, {
+    method: `POST`,
+    mode: `cors`,
+    headers: HEADERS,
+    body: JSON.stringify(partnerData)
+  }).then((response) => response.json());
+}

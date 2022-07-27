@@ -33,4 +33,22 @@ router.post("/login", async (req, res) => {
   }
 });
 
+/**
+ * Log in a user and get the related user id.
+ */
+router.get("/get-user", async (req, res) => {
+  try {
+    const authId = req.query.id;
+    const user = await authenticationController.getAuthDataWithoutPassword(
+      // TODO: find a way to remove password from returned object.
+      authId
+    );
+    res.status(200).send(user);
+  } catch ({ message }) {
+    res
+      .status(400)
+      .send(`An error occurred while getting the user! Error => ${message}`);
+  }
+});
+
 module.exports = router;
