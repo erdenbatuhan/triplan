@@ -14,7 +14,6 @@ import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/R
 import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 import InfoCard from '../components/InfoCard';
-import { modalStyle } from '../shared/styles';
 import { createNewPartnerSignupRequest } from '../queries/partner-signup-request-queries';
 import { handleEmail } from '../queries/email-queries';
 
@@ -147,7 +146,6 @@ export default function PartnerLocationProfilePage() {
 
       <Modal
         open={isConfirmed === 'No Request'}
-        style={modalStyle}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <Box style={style}>

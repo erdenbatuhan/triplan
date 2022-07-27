@@ -10,11 +10,11 @@ import {
   Card,
   CardContent,
   Box,
-  Modal,
   Button
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
-import Spinner from '../components/Spinner';
+import Spinner from '../components/common/Spinner';
+import ContentModal from '../components/common/ContentModal';
 import TripCard from '../components/TripCard';
 import Wallet from '../components/Wallet';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
@@ -28,8 +28,12 @@ import {
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
-import { avatarStyle, modalStyle } from '../shared/styles';
 import EditUserProfileCard from '../components/EditUserProfileCard';
+
+const avatarStyle = {
+  width: '200px',
+  height: '200px'
+};
 
 function UserProfilePage() {
   const { userId } = useParams();
@@ -259,12 +263,12 @@ function UserProfilePage() {
                         )}
                       </Box>
 
-                      <Modal
+                      <ContentModal
                         open={followersModalShown}
                         onClose={() => {
                           setFollowersModalShown(false);
-                        }}>
-                        <Card sx={modalStyle}>
+                        }}
+                        contentRendered={
                           <FollowingsCard
                             listName="Followers"
                             list={Object.values(followersData)}
@@ -273,8 +277,8 @@ function UserProfilePage() {
                             isGivenUserAuthenticatedUser={isGivenUserAuthenticatedUser}
                             onFollowingsButtonClick={updateFollowingRelationship}
                           />
-                        </Card>
-                      </Modal>
+                        }
+                      />
                     </Grid>
 
                     <Grid item xs={4}>
@@ -296,12 +300,12 @@ function UserProfilePage() {
                         )}
                       </Box>
 
-                      <Modal
+                      <ContentModal
                         open={followedModalShown}
                         onClose={() => {
                           setFollowedModalShown(false);
-                        }}>
-                        <Card sx={modalStyle}>
+                        }}
+                        contentRendered={
                           <FollowingsCard
                             listName="Following"
                             list={Object.values(followedData)}
@@ -310,8 +314,8 @@ function UserProfilePage() {
                             isGivenUserAuthenticatedUser={isGivenUserAuthenticatedUser}
                             onFollowingsButtonClick={updateFollowingRelationship}
                           />
-                        </Card>
-                      </Modal>
+                        }
+                      />
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -353,19 +357,21 @@ function UserProfilePage() {
           <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
             Edit Profile
           </Button>
-          <Modal
+
+          <ContentModal
             open={isEditMode}
             onClose={() => {
               setIsEditMode(false);
-            }}>
-            <Card sx={{ minWidth: '500px', ...modalStyle }}>
+            }}
+            contentStyle={{ minWidth: '500px' }}
+            contentRendered={
               <EditUserProfileCard
                 user={user}
                 isLoading={isEditInProgress}
                 handleUserFieldsChangedClick={handleUserFieldsChangedClick}
               />
-            </Card>
-          </Modal>
+            }
+          />
         </Grid>
       ) : (
         <Grid item xs={2} />

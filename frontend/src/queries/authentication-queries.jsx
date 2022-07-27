@@ -19,7 +19,7 @@ export async function loginUser(userData) {
 }
 
 export async function getAuthData(userData) {
-  return await fetch(`${HOST_AUTH}/get-user?id=${userData}`, {
+  return await fetch(`${HOST_AUTH}/user?id=${userData}`, {
     method: `GET`,
     mode: `cors`,
     headers: HEADERS

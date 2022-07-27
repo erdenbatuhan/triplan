@@ -30,7 +30,12 @@ module.exports.restore = async (event) => {
     VersionId: versionId
   }).promise().then(({ Body }) => Body.toString("base64"));
 
-  return await this.upload({ owner, image: imageRestored, extension }).finally(() => {
+  return await this.upload({ owner, image: imageRestored, extension }).then(({ body }) => {
+    return {
+      statusCode: 200,
+      body: `${body}?versionId=${versionId}`
+    }
+  }).finally(() => {
     console.log(`Restore operation of the image (version=${versionId}) assigned to ${owner} has finished!`);
   })
 };

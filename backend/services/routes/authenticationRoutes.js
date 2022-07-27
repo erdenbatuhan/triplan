@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
 /**
  * Log in a user and get the related user id.
  */
-router.get("/get-user", async (req, res) => {
+router.get("/user", async (req, res) => {
   try {
     const authId = req.query.id;
     const user = await authenticationController.getAuthDataWithoutPassword(

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Grid, List, ListSubheader, Typography, Tooltip } from '@mui/material';
+import { Grid, List, ListSubheader, Typography, Tooltip } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-import Spinner from './Spinner';
+import Spinner from './common/Spinner';
+import ContentModal from './common/ContentModal';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getPreviousTransactions } from '../queries/transaction-queries';
 import { getOwnersOfWallets } from '../queries/wallet-queries';
 import { getReadableDate, getReadableMonthYearFromTimestamp } from '../shared/date-utils';
 import { TRANSACTION_STATUS_SUCCESSFUL, TRANSACTION_STATUS_REJECTED } from '../shared/constants';
-import { modalStyle } from '../shared/styles';
 
 export default function TransactionHistoryModal({ open, onClose }) {
-  const [authenticatedUser] = useState({
-    user: { id: '62c430e748c4994b2c42af0f' }
-  }); // TODO: Replace with UserAuthHelper.getStoredUser()
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser()); // TODO: Replace with UserAuthHelper.getStoredUser()
   const [loading, setLoading] = useState(false);
   const [walletId, setWalletId] = useState(null);
   const [previousTransactions, setPreviousTransactions] = useState([]);
@@ -64,8 +63,8 @@ export default function TransactionHistoryModal({ open, onClose }) {
   const createTableRow = (id, items) => {
     return (
       <Grid container spacing={0}>
-        {items.map(({ content, size, style, icon }) => (
-          <Grid key={`${id}-${content}`} sx={{ pt: !icon ? 1 : '0.35em' }} item xs={size}>
+        {items.map(({ content, size, style, icon }, idx) => (
+          <Grid key={`${id}-${idx}-${content}`} sx={{ pt: !icon ? 1 : '0.35em' }} item xs={size}>
             <Typography sx={{ color: 'text.primary', ...style }} variant="body2" align="center">
               {content}
             </Typography>
@@ -76,16 +75,14 @@ export default function TransactionHistoryModal({ open, onClose }) {
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box sx={modalStyle}>
-        <Grid sx={{ width: '100%' }} alignItems="stretch">
-          <Typography
-            sx={{ color: 'text.secondary', fontWeight: 'medium', fontSize: 25, pt: 2 }}
-            align="center">
-            Transaction History
-          </Typography>
-
-          <Grid sx={{ pt: 2 }} container spacing={0}>
+    <ContentModal
+      open={open}
+      onClose={onClose}
+      contentStyle={{ width: '100%' }}
+      header="Transaction History"
+      contentRendered={
+        <>
+          <Grid container spacing={0}>
             {createTableRow('TransactionHistory-TableHeader', [
               { content: 'From', size: 2 },
               { content: 'To', size: 2 },
@@ -118,7 +115,7 @@ export default function TransactionHistoryModal({ open, onClose }) {
                     <ListSubheader sx={{ fontWeight: 500 }}>{month}</ListSubheader>
 
                     {walletOwnerData[walletId]
-                      ? previousTransactions[month].map((transaction) => {
+                      ? previousTransactions[month].map((transaction, idx) => {
                           return (
                             <Grid
                               key={`TransactionHistory-${month}-${transaction._id}`}
@@ -127,7 +124,7 @@ export default function TransactionHistoryModal({ open, onClose }) {
                               spacing={0}
                               alignItems="stretch">
                               {createTableRow(
-                                `TransactionHistory-${month}-${transaction._id}-TableRow`,
+                                `TransactionHistory-${month}-${transaction._id}-TableRow-${idx}`,
                                 [
                                   {
                                     content: walletOwnerData[transaction.outgoing] || '-',
@@ -200,8 +197,8 @@ export default function TransactionHistoryModal({ open, onClose }) {
               ))
             )}
           </List>
-        </Grid>
-      </Box>
-    </Modal>
+        </>
+      }
+    />
   );
 }
