@@ -9,7 +9,7 @@ const {
 } = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
-const { USER_TYPES, PARTNER_TYPES } = require("./../utils/enums.js");
+const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findDistinctCitiesWithEnoughPlaces = () => {
   return Promise.all([
@@ -184,9 +184,9 @@ const createNewPartner = async (userData) => {
   try {
     const { partnerType } = userData;
     const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
-    if (partnerType === USER_TYPES[2]) {
+    if (partnerType === PARTNER_TYPES[0]) {
       return await createRestaurant({ ...userData, wallet: wallet }); // returns new restaurant
-    } else if (partnerType === USER_TYPES[3]) {
+    } else if (partnerType === PARTNER_TYPES[1]) {
       return await createTouristAttraction({ ...userData, wallet: wallet }); // returns new tourist attraction
     }
   } catch (err) {
@@ -203,11 +203,11 @@ const createNewPartner = async (userData) => {
  */
 const findByGoogleId = async (id, partnerType) => {
   try {
-    if (partnerType === USER_TYPES[2]) {
+    if (partnerType === PARTNER_TYPES[0]) {
       return Restaurant.findOne({
         "googleLocationInfo.googlePlaceId": { $eq: id },
       });
-    } else if (partnerType === USER_TYPES[3]) {
+    } else if (partnerType === PARTNER_TYPES[1]) {
       return TouristAttraction.findOne({
         "googleLocationInfo.googlePlaceId": { $eq: id },
       });
