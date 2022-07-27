@@ -49,7 +49,7 @@ function UserProfilePage() {
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
   const [followersModalShown, setFollowersModalShown] = useState(false);
   const [followedModalShown, setFollowedModalShown] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isProfileEditMode, setIsProfileEditMode] = useState(false);
   const [isEditInProgress, setIsEditInProgress] = useState(false);
 
   const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
@@ -141,7 +141,8 @@ function UserProfilePage() {
     // Reset the remaining state that is not reset below!
     setFollowersModalShown(false);
     setFollowedModalShown(false);
-    setIsEditMode(false);
+    setIsProfileEditMode(false);
+    setIsEditInProgress(false);
 
     if (!userId) {
       return;
@@ -187,11 +188,14 @@ function UserProfilePage() {
   };
 
   // Authenticated User Fields Edit
-  const handleUserFieldsChangedClick = (params) => {
+  const saveProfile = (params) => {
     setIsEditInProgress(true);
     updateUserFields(authenticatedUser.user.id, params)
       .then(() => getUser(userId).then((data) => setUser(data)))
-      .finally(() => setIsEditInProgress(false));
+      .finally(() => {
+        setIsEditInProgress(false);
+        setIsProfileEditMode(false);
+      });
   };
 
   if (loading) {
@@ -354,21 +358,22 @@ function UserProfilePage() {
       </Grid>
       {isShownUserAuthenticated ? (
         <Grid item xs={2}>
-          <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
+          <Button size="small" variant="outlined" onClick={() => setIsProfileEditMode(true)}>
             Edit Profile
           </Button>
 
           <ContentModal
-            open={isEditMode}
+            open={isProfileEditMode}
             onClose={() => {
-              setIsEditMode(false);
+              setIsProfileEditMode(false);
             }}
             contentStyle={{ minWidth: '500px' }}
+            header="Edit Profile"
             contentRendered={
               <EditUserProfileCard
                 user={user}
                 isLoading={isEditInProgress}
-                handleUserFieldsChangedClick={handleUserFieldsChangedClick}
+                handleUserFieldsChange={saveProfile}
               />
             }
           />
