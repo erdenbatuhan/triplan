@@ -1,6 +1,3 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-
 const { User } = require("../models/user.js");
 const { Wallet } = require("./../models/wallet.js");
 
@@ -45,10 +42,6 @@ const exists = (id) => {
   return User.exists({ _id: id });
 };
 
-const save = (user) => {
-  return User.create(user);
-};
-
 const updateFields = (id, fields, session) => {
   if (!exists(id)) {
     return new Promise((resolve) => resolve(null)); // User does not exist!
@@ -80,7 +73,6 @@ module.exports = {
   findByUsername,
   findByEmail,
   exists,
-  save,
   updateFields,
   findUserByWallet,
   findWalletsByWalletIds,

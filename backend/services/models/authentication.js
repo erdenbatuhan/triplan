@@ -7,9 +7,9 @@ const Authentication = mongoose.model(
   "Authentication",
   new Schema(
     {
-      username: { type: String, required: true, unique: true },
+      username: { type: String, unique: true, required: true },
       password: { type: String, required: true },
-      email: { type: String, required: true, unique: true },
+      email: { type: String, unique: true, required: true },
       userType: { type: String, enum: USER_TYPES, required: true },
     },
     {
