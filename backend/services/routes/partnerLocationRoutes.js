@@ -133,13 +133,10 @@ router.post("/tourist-attraction", async (req, res) => {
   }
 });
 
-router.post("/get-by-google-id", async (req, res) => {
+router.post("/google-id", async (req, res) => {
   try {
-    const partner = await partnerLocationController.findByGoogleId(
-      req.body.googlePlaceId,
-      req.body.partnerType
-    );
-    res.status(200).send(partner);
+    const partnerLocation = await partnerLocationController.findByGoogleId(req.body);
+    res.status(200).send({ partnerLocation });
   } catch ({ message }) {
     res
       .status(400)

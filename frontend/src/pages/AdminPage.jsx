@@ -25,6 +25,8 @@ import { createTransaction } from '../queries/transaction-queries';
 import { getUser } from '../queries/user-queries';
 import { handleEmail } from '../queries/email-queries';
 import {
+  PARTNER_TYPE_RESTAURANT,
+  PARTNER_TYPE_TOURIST_ATTRACTION,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
   TRANSACTION_STATUS_REJECTED
