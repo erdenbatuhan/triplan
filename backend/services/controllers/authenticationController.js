@@ -21,9 +21,7 @@ const findByUsername = (username) => {
  * Gets user data without the password.
  */
 const getAuthDataWithoutPassword = (id) => {
-  return Authentication.findOne({ _id: { $eq: id } }).select(
-    "username email userType"
-  );
+  return Authentication.findOne({ _id: { $eq: id } }).select("username email userType");
 };
 
 /**
@@ -61,6 +59,7 @@ const signUp = async (req, res) => {
       case USER_TYPES[1]:
         newUser = await userController.createNewUser({
           ...userData,
+          username: username,
           authentication: newAuthEntry._id,
         });
         break;
@@ -86,14 +85,14 @@ const signUp = async (req, res) => {
           .json({ msg: `Given user type is not known: ${userType}` });
     }
 
-    if (!!!newUser) {
+    if (!newUser) {
       return res.status(400).json({ msg: "Error in creating new user." });
     }
 
     // return jwt
     const payload = {
       user: {
-        id: newAuthEntry._id,
+        id: newUser._id,
         username: newAuthEntry.username,
         userType,
       },
@@ -203,7 +202,8 @@ const login = async (req, res) => {
 };
 
 module.exports = {
+  getAuthDataWithoutPassword,
+  getEmailById,
   signUp,
   login,
-  getAuthDataWithoutPassword,
 };

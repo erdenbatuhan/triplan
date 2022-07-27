@@ -59,7 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function MenuAppBar() {
-  // const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -89,7 +89,7 @@ export default function MenuAppBar() {
   };
 
   const navigateToProfile = () => {
-    navigate('/user');
+    navigate(`/user/${authenticatedUser.user.id}`);
   };
 
   const navigateToMainPage = () => {
