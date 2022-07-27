@@ -28,7 +28,7 @@ import {
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
 import FollowingsCard from '../components/FollowingsCard';
-import { avatarStyle, appBackgroundColor, modalStyle } from '../shared/styles';
+import { avatarStyle, modalStyle } from '../shared/styles';
 import EditUserProfileCard from '../components/EditUserProfileCard';
 
 function UserProfilePage() {
@@ -50,28 +50,6 @@ function UserProfilePage() {
   const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
 
-  /* const getFollowersOfUser = () => {
-    return getFollowers(userId).then((data) => {
-      setFollowersData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
-      return data;
-    });
-  }; 
-
-  const getFollowedOfUser = () => {
-    return getFollowed(userId).then((data) => {
-      setFollowedData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
-      return data;
-    });
-  }; */
-
-  /* const getFollowedOfAuthenticatedUser = () => {
-    return getFollowed(authenticatedUser.user.id).then((data) => {
-      setAuthenticatedUserFollowedData(
-        Object.assign({}, ...data.map((item) => ({ [item._id]: item })))
-      );
-    });
-  }; */
-
   const getCountText = (count, onClick) => {
     return (
       <Box
@@ -91,20 +69,6 @@ function UserProfilePage() {
       </Box>
     );
   };
-
-  /* const getCountTextForNonAuthenticatedUser = (count, onClick) => {
-    return (
-      <Box
-        onClick={onClick}
-        sx={{
-          color: 'text.primary',
-          fontSize: 34,
-          fontWeight: 'medium'
-        }}>
-        {count}
-      </Box>
-    );
-  }; */
 
   const isGivenUserAuthenticatedUser = (givenUserId) => givenUserId === authenticatedUser.user.id;
 
@@ -246,7 +210,7 @@ function UserProfilePage() {
           </Grid>
         </Grid>
 
-        <Card sx={{ border: 'none', boxShadow: 'none', backgroundColor: appBackgroundColor }}>
+        <Card sx={{ border: 'none', boxShadow: 'none', background: 'transparent' }}>
           <CardContent>
             {isShownUserAuthenticated ? (
               <Grid>
@@ -355,7 +319,13 @@ function UserProfilePage() {
             <Stack spacing={2} pt={4}>
               {tripPlans
                 ? tripPlans.map((tripPlan) => {
-                    return <TripCard key={tripPlan._id} tripPlan={tripPlan} />;
+                    return (
+                      <TripCard
+                        key={tripPlan._id}
+                        tripPlan={tripPlan}
+                        viewMode={!isShownUserAuthenticated}
+                      />
+                    );
                   })
                 : []}
             </Stack>

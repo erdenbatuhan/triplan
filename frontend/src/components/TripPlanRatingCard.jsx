@@ -19,7 +19,8 @@ export default function TripPlanRatingCard({
   tripLocation,
   partnerLocation,
   onChangesSaved,
-  latestUpdate
+  latestUpdate,
+  viewMode
 }) {
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -137,27 +138,31 @@ export default function TripPlanRatingCard({
                 )}
               </CardContent>
             </Grid>
-            <Grid item xs={4}>
-              {!loading ? (
-                <CardActions>
-                  <Button size="small" onClick={() => setEditMode(!editMode)}>
-                    {editMode ? `Stop Editing` : `Edit Rating & Comment`}
-                  </Button>
-
-                  {changesMade ? (
-                    <Button size="small" onClick={editMode ? saveChanges : removeChanges}>
-                      {editMode ? `Save Changes` : `Remove Changes`}
+            {!viewMode ? (
+              <Grid item xs={4}>
+                {!loading ? (
+                  <CardActions>
+                    <Button size="small" onClick={() => setEditMode(!editMode)}>
+                      {editMode ? `Stop Editing` : `Edit Rating & Comment`}
                     </Button>
-                  ) : (
-                    <div />
-                  )}
-                </CardActions>
-              ) : (
-                <div>
-                  <br />
-                </div>
-              )}
-            </Grid>
+
+                    {changesMade ? (
+                      <Button size="small" onClick={editMode ? saveChanges : removeChanges}>
+                        {editMode ? `Save Changes` : `Remove Changes`}
+                      </Button>
+                    ) : (
+                      <div />
+                    )}
+                  </CardActions>
+                ) : (
+                  <div>
+                    <br />
+                  </div>
+                )}
+              </Grid>
+            ) : (
+              <Grid item xs={4} />
+            )}
           </Grid>
         </Grid>
       </Grid>
