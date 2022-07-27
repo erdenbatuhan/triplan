@@ -56,18 +56,18 @@ export default function PartnerLocationProfilePage() {
   const handleSendPartnerRequest = () => {
     const newRequest = {
       userId: partnerId,
-      username: partner.username,
-      email: partner.email,
+      // username: partner.username,
+      // email: partner.email,
       googleLocationLink: partnerGoogleLink,
       partnerLocationName: partnerName,
-      partnerLocationContact: partnerContactInfo,
-      partnerType: partner.partnerType
+      partnerLocationContact: partnerContactInfo
+      // partnerType: partner.partnerType
     };
     console.log(newRequest);
     createNewPartnerSignupRequest(newRequest).then(() => {
       setIsConfirmed('Requested');
       handleEmail({
-        to_name: partner.username,
+        to_name: partner.username, // auth.username
         to_email: 'anil.kults@gmail.com',
         intro_message: `Your sign up request is processing. We will get in touch with you as soon as possible.`,
         request_id: 'New partner location sign up request'
