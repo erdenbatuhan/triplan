@@ -194,18 +194,24 @@ function UserProfilePage() {
           </Grid>
 
           <Grid item xs={3}>
-            <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
+            <Typography
+              component="div"
+              align="center"
+              m={1}
+              sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
               {user.firstName} {user.lastName}
             </Typography>
           </Grid>
 
           <Grid item xs={3} align-items="inherit">
-            <Typography align="center">
+            <Typography component="div" align="center">
               <IconButton sx={{ p: 0, display: 'inline' }}>
                 <AlternateEmailIcon fontSize="small" sx={{ fontStyle: 'italic' }} />
               </IconButton>
 
-              <Typography sx={{ display: 'inline' }}>{user.username || '...'}</Typography>
+              <Typography component="div" sx={{ display: 'inline' }}>
+                {user.username || '...'}
+              </Typography>
             </Typography>
           </Grid>
         </Grid>
@@ -236,11 +242,8 @@ function UserProfilePage() {
                 }}>
                 <CardContent>
                   <Grid container justifyContent="center">
-                    <Grid item sx={4} alignItems="center">
-                      <Box
-                        sx={{
-                          pr: 2
-                        }}>
+                    <Grid item xs={4} alignItems="center">
+                      <Box sx={{ pl: 4 }}>
                         <Box sx={{ color: 'text.secondary' }}> Followers </Box>
                         {getCountText(Object.keys(followersData).length, () =>
                           setFollowersModalShown(true)
@@ -265,15 +268,19 @@ function UserProfilePage() {
                       </Modal>
                     </Grid>
 
-                    <Grid item sx={4}>
-                      <Divider orientation="vertical" sx={{ fontWeight: 'bold' }} />
+                    <Grid item xs={4}>
+                      <Divider
+                        orientation="vertical"
+                        sx={{
+                          fontWeight: 'bold',
+                          display: 'inline-block',
+                          justifyContent: 'center'
+                        }}
+                      />
                     </Grid>
 
-                    <Grid item sx={4} alignItems="center">
-                      <Box
-                        sx={{
-                          pl: 2
-                        }}>
+                    <Grid item xs={4} alignItems="center">
+                      <Box sx={{ pr: 4 }}>
                         <Box sx={{ color: 'text.secondary' }}> Following </Box>
                         {getCountText(Object.keys(followedData).length, () =>
                           setFollowedModalShown(true)
@@ -309,7 +316,7 @@ function UserProfilePage() {
 
       <Grid item xs={6}>
         <Grid>
-          <Typography align="left" variant="h6" color="text.secondary">
+          <Typography component="div" align="left" variant="h6" color="text.secondary">
             Trips: {tripPlans.length || 0}
           </Typography>
           <Divider />

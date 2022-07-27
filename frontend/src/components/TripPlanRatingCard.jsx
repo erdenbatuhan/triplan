@@ -80,7 +80,11 @@ export default function TripPlanRatingCard({
               {editMode ? (
                 <div>
                   <br />
-                  <Typography textAlign="center" variant="caption" color="text.secondary">
+                  <Typography
+                    display="contents"
+                    textAlign="center"
+                    variant="caption"
+                    color="text.secondary">
                     {partnerLocation.description}
                   </Typography>
                 </div>
