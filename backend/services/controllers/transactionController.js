@@ -46,27 +46,48 @@ module.exports.updateFields = (id, fields) => {
 /**
  * Transactional
  */
-module.exports.buyItems = ({ user, checkoutPayload }) => {
+module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
   return mongoose.startSession().then(async (session) => {
-    let newTransaction = undefined;
+    let newTransactions = undefined;
 
     await session.withTransaction(async () => {
-      // Connect the BuyableItems with the TripLocations through the ItemBought collection
-      await Promise.all(checkoutPayload.map(async ({ partnerLocation, tripLocation, itemsToBeBought }) => {
-        const buyableItems = itemsToBeBought.map(({ _id, itemType }) => ({ _id, itemType }));
-        const itemsBought = itemsToBeBought.map(({ count, itemType }) => ({
-          amount: count, associatedTripLocation: tripLocation._id, itemType
-        }));
+      const userWallet = await walletController.findUserWallet(user._id, session);
 
-        const itemsBoughtCreated = await itemBoughtController.createMany(itemsBought, session);
-        const buyableItemsUpdated = await buyableItemController.addItemsBought(buyableItems, itemsBoughtCreated, session);
-      }));
+      await Promise.all([
+        // Connect the BuyableItems with the TripLocations through the ItemBought collection
+        await Promise.all(checkoutPayload.map(async ({ tripLocation, itemsToBeBought }) => {
+          const buyableItems = itemsToBeBought.map(({ _id, itemType }) => ({ _id, itemType }));
+          const itemsBought = itemsToBeBought.map(({ count, itemType }) => ({
+            amount: count, associatedTripLocation: tripLocation._id, itemType
+          }));
+  
+          const itemsBoughtCreated = await itemBoughtController.createMany(itemsBought, session);
+          return await buyableItemController.addItemsBought(buyableItems, itemsBoughtCreated, session);
+        })),
+        // Pay the PartnerLocations the amount of each item bought
+        await Promise.all(checkoutPayload.map(async ({ partnerLocation, itemsToBeBought }) => {
+          const totalPrice = itemsToBeBought.reduce((total, { finalPrice }) => total + finalPrice, 0);
 
-      throw new Error("stop here!");
+          const partnerLocationWallet = await walletController.findPartnerLocationWallet(partnerLocation._id, session);
+          return await createTransactionWithSession({
+            amount: totalPrice,
+            type: enums.TRANSACTION_TYPE[2],
+            incomingWalletId: partnerLocationWallet._id, 
+            outgoingWalletId: userWallet._id,
+            couponUsed
+          }, session);
+        })).then(transactionsCreated => {
+          if (checkoutPayload.length !== transactionsCreated.length) {
+            throw new Error("Somewent went wrong during one of the transactions!");
+          }
+
+          newTransactions = transactionsCreated.map(({ transaction, couponEarned }) => ({ transaction, couponEarned }));
+        })
+      ]);
     });
 
     session.endSession();
-    return newTransaction;
+    return newTransactions;
   });
 }
 
@@ -95,12 +116,12 @@ const createTransactionWithSession = ({ amount, type, incomingWalletId, outgoing
   ]).then(async ([ incomingWallet, outgoingWallet ]) => {
     /**
      * Wallet Validity Check:
-     * - Check if both of the wallets are missing or they are both the same
+     * - Check if both of the wallets are missing or the same
      * - Check if the transaction is purchase but at least one of the wallets is missing
      * - Check if the transaction is not deposit and the "outgoing" wallet has enough balance
      */
     if (!incomingWallet && !outgoingWallet || incomingWalletId === outgoingWalletId) {
-      return null;
+      throw new Error("Both of the wallets are missing or the same!");
     } else if (type == enums.TRANSACTION_TYPE[2] && (!incomingWallet || !outgoingWallet)) {
       throw new Error("There must be an incoming and an outgoing wallet for the purchase transaction!");
     } else if (type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
