@@ -9,6 +9,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import LoginPage from './pages/LoginPage';
 import SignUpAuthPage from './pages/SignUpAuthPage';
 import SignUpUserDataPage from './pages/SignUpUserPage';
+import SignUpPartnerDataPage from './pages/SignUpPartnerPage';
 import AdminPage from './pages/AdminPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpAuthPage />} />
           <Route path="/signup-user-profile" element={<SignUpUserDataPage />} />
+          <Route path="/signup-partner-profile" element={<SignUpPartnerDataPage />} />
           <Route path="/user" element={isLoggedIn ? <UserProfilePage /> : <Navigate to="/" />} />
           <Route
             path="/trip-plan"

@@ -9,6 +9,7 @@ import { green, grey } from '@mui/material/colors';
 import { SECONDARY_COLOR } from '../shared/constants';
 // import { UserAuthHelper } from '../authentication/user-auth-helper';
 // import { AuthUserContext } from '../authentication/AuthUserContext';
+// import { signupNewUser } from '../queries/authentication-queries';
 
 function SignUpAuthPage() {
   const [email, setEmail] = useState('');
@@ -46,11 +47,12 @@ function SignUpAuthPage() {
         case 'USER':
           navigate('/signup-user-profile', { state: { authData } });
           break;
-        case 'RESTAURANT':
-          navigate('/signup-restaurant-profile', { state: { authData } });
+        case 'RESTAURANT': {
+          navigate('/signup-partner-profile', { state: { authData } });
           break;
+        }
         case 'TOURIST_ATTRACTION':
-          navigate('/signup-tourist-attraction-profile', { state: { authData } });
+          navigate('/signup-partner-profile', { state: { authData } });
           break;
         default:
           console.error('Given user type is not known.');

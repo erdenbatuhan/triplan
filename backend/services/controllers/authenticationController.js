@@ -5,6 +5,8 @@ const { Authentication } = require("../models/authentication");
 const adminController = require("./adminController.js");
 const userController = require("./userController.js");
 const partnerLocationController = require("./partnerLocationController.js");
+const partnerSignupRequestController = require("./partnerSignupRequestController.js");
+
 const { USER_TYPES } = require("../utils/enums");
 
 const save = (user) => {
@@ -54,16 +56,20 @@ const signUp = async (req, res) => {
         });
         break;
       case USER_TYPES[2]:
-        newUser = await partnerLocationController.createRestaurant({
-          ...userData,
-          authentication: newAuthEntry._id,
-        });
+        newUser =
+          await partnerSignupRequestController.createPartnerSignupRequest({
+            ...userData,
+            // partnerType: userType,
+            authentication: newAuthEntry._id,
+          });
         break;
       case USER_TYPES[3]:
-        newUser = await partnerLocationController.createTouristAttraction({
-          ...userData,
-          authentication: newAuthEntry._id,
-        });
+        newUser =
+          await partnerSignupRequestController.createPartnerSignupRequest({
+            ...userData,
+            // partnerType: userType,
+            authentication: newAuthEntry._id,
+          });
         break;
       default:
         res

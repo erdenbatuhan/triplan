@@ -14,7 +14,7 @@ const MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION = 10;
 
 const PartnerLocationSchema = new Schema({
   name: { type: String, unique: true, required: true },
-  email: { type: String, default: "", required: false, unique: true },
+  // email: { type: String, default: "", required: false, unique: true },
   description: { type: String, default: "", required: false },
   city: { type: String, default: "", required: false },
   country: { type: String, default: "", required: false },

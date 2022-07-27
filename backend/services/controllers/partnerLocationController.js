@@ -9,21 +9,27 @@ const {
 } = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
-const { PARTNER_TYPES } = require("./../utils/enums.js");
+const { USER_TYPES, PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findDistinctCitiesWithEnoughPlaces = () => {
   return Promise.all([
     Restaurant.aggregate([{ $group: { _id: "$city", count: { $sum: 1 } } }]),
-    TouristAttraction.aggregate([{ $group: { _id: "$city", count: { $sum: 1 } } }])
-  ]).then(([ restaurantCityCounts, touristAttractionCityCounts ]) => {
-    return [...new Set(
-      restaurantCityCounts
-        .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_RESTAURANT)
-        .map(({ _id }) => _id),
-      touristAttractionCityCounts
-        .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION)
-        .map(({ _id }) => _id)
-    )];
+    TouristAttraction.aggregate([
+      { $group: { _id: "$city", count: { $sum: 1 } } },
+    ]),
+  ]).then(([restaurantCityCounts, touristAttractionCityCounts]) => {
+    return [
+      ...new Set(
+        restaurantCityCounts
+          .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_RESTAURANT)
+          .map(({ _id }) => _id),
+        touristAttractionCityCounts
+          .filter(
+            ({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION
+          )
+          .map(({ _id }) => _id)
+      ),
+    ];
   });
 };
 
@@ -66,10 +72,11 @@ const findByTripLocations = (tripLocationIds) => {
 
 const findPartnerLocationById = (partnerLocationId, session) => {
   return Promise.all([
-    findRestaurantById(partnerLocationId, session), findTouristAttractionById(partnerLocationId, session)
-  ]).then(([
-    restaurant, touristAttraction
-  ]) => restaurant || touristAttraction || null);
+    findRestaurantById(partnerLocationId, session),
+    findTouristAttractionById(partnerLocationId, session),
+  ]).then(
+    ([restaurant, touristAttraction]) => restaurant || touristAttraction || null
+  );
 };
 
 const findRestaurantById = (restaurantId, session) => {
@@ -330,13 +337,14 @@ const createTouristAttraction = (touristAttraction) => {
 
 const updatePartnerLocation = async (id, fields, session) => {
   const { partnerType } = await findPartnerLocationById(id);
-  const partnerLocation = partnerType === PARTNER_TYPES[0] ? Restaurant : TouristAttraction;
+  const partnerLocation =
+    partnerType === PARTNER_TYPES[0] ? Restaurant : TouristAttraction;
 
-  return partnerLocation.findOneAndUpdate(
-    { _id: id },
-    fields,
-    { new: true, runValidators: true, session }
-  );
+  return partnerLocation.findOneAndUpdate({ _id: id }, fields, {
+    new: true,
+    runValidators: true,
+    session,
+  });
 };
 
 const addTripLocationToRestaurant = (restaurantId, tripLocation, session) => {
@@ -347,7 +355,11 @@ const addTripLocationToRestaurant = (restaurantId, tripLocation, session) => {
   );
 };
 
-const addTripLocationToTouristAttraction = (touristAttractionId, tripLocation, session) => {
+const addTripLocationToTouristAttraction = (
+  touristAttractionId,
+  tripLocation,
+  session
+) => {
   return TouristAttraction.findOneAndUpdate(
     { _id: touristAttractionId },
     { $push: { associatedTripLocations: tripLocation } },
@@ -365,6 +377,24 @@ const findTouristAttractionWalletsByWalletIds = (walletIds) => {
   );
 };
 
+/**
+ * Creates a user or updates an existing one
+ */
+const createNewPartner = async (userData) => {
+  try {
+    const { partnerType } = userData;
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
+    if (partnerType === USER_TYPES[2]) {
+      return await createRestaurant({ ...userData, wallet: wallet }); // returns new restaurant
+    } else if (partnerType === USER_TYPES[3]) {
+      return await createTouristAttraction({ ...userData, wallet: wallet }); // returns new tourist attraction
+    }
+  } catch (err) {
+    console.error("Failed to create user: ", err.message);
+    res.status(500).send("Server error");
+  }
+};
+
 module.exports = {
   findDistinctCitiesWithEnoughPlaces,
   findFiltered,
@@ -372,6 +402,7 @@ module.exports = {
   findPartnerLocationById,
   findRestaurantById,
   findTouristAttractionById,
+  createNewPartner,
   saveRestaurant,
   saveTouristAttraction,
   signUpRestaurant,
