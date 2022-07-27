@@ -3,7 +3,7 @@ module.exports.PARTNER_TYPES = ["RESTAURANT", "TOURIST_ATTRACTION"];
 module.exports.USER_TYPES = [
   "ADMIN",
   "USER",
-  ...PARTNER_TYPES
+  ...this.PARTNER_TYPES
 ];
 
 module.exports.ITEM_TYPES = ["MENU_ITEM", "TICKET"];

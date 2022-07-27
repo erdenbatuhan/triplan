@@ -201,7 +201,7 @@ const createNewPartner = async (userData) => {
  * @param {Type of partner: restaurant or tourist attraction} partnerType
  * @returns Data object based on given query
  */
-const findByGoogleId = async (id, partnerType) => {
+const findByGoogleId = async ({ id, partnerType }) => {
   try {
     if (partnerType === PARTNER_TYPES[0]) {
       return Restaurant.findOne({
