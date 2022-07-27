@@ -203,7 +203,6 @@ const login = async (req, res) => {
 
 module.exports = {
   getAuthDataWithoutPassword,
-  getEmailById,
   signUp,
   login,
 };

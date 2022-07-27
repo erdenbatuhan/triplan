@@ -63,10 +63,10 @@ export default function Wallet() {
     if (!authenticatedUser) {
       return;
     }
-    getAuthData(authenticatedUser.user.id).then((data) => setAuthData(data));
+    getAuthData(authenticatedUserData.authentication).then((data) => setAuthData(data));
   }, [authenticatedUser]);
 
-  console.log(authData, authenticatedUser.user);
+  console.log(authenticatedUserData);
 
   const handleTransaction = () => {
     if (transactionType === TRANSACTION_TYPE_DEPOSIT) {
@@ -92,7 +92,8 @@ export default function Wallet() {
         username,
         email,
         paypalEmail,
-        amount: transactionAmount
+        amount: transactionAmount,
+        walletId: ''
       };
 
       createNewWithdrawRequest(newWithdrawRequest).then((response) => {
@@ -102,10 +103,13 @@ export default function Wallet() {
             to_name: username,
             to_email: email,
             intro_message: generateIntroMessage('create'),
-            paypal_email: generatePaypalEmail(paypalEmail),
-            amount: generatePaypalWithdrawAmount(transactionAmount)
+            details_message: 'Request Details:',
+            details_1: generatePaypalEmail(paypalEmail),
+            details_2: generatePaypalWithdrawAmount(transactionAmount),
+            final_message:
+              'Thanks a lot for being part of Triplan family. Please do not hasitate to contact with us in case of any problem.'
           },
-          'withdrawRequest'
+          'general'
         ).then(() => {
           setIsPaymentSuccessfull(true);
           // if (response === 200) {

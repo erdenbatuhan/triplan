@@ -10,6 +10,7 @@ const WithdrawRequest = mongoose.model(
       email: { type: String, required: true },
       paypalEmail: { type: String, required: true },
       amount: { type: Number, required: true },
+      walletId: { type: String, required: true },
     },
     {
       timestamps: true

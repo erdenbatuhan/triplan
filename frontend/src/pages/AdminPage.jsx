@@ -120,6 +120,7 @@ function AdminPage() {
   const [openPartnerLocWarning, setOpenPartnerLocWarning] = useState(false);
   const [curPartner, setCurPartner] = useState(null);
   const [signupRows, setSignupRows] = useState([]);
+  const [withdrawRows, setWithdrawRows] = useState([]);
   // const [signupUniqueRows, setUniqueSignupRows] = useState([]);
 
   useEffect(() => {
@@ -156,6 +157,27 @@ function AdminPage() {
       })
     ]).then(() => console.log('Data is obtained'));
   }, [allPartnerSignupRequests.length]);
+
+  useEffect(() => {
+    setWithdrawRows([]);
+    Promise.all([
+      allWithdrawRequests.map(async (request) => {
+        const user = await getAuthData(request.authentication);
+        setSignupRows((signRows) => [
+          ...signRows,
+          {
+            id: request._id,
+            username: user.username,
+            email: user.email,
+            paypalEmail: request.paypalEmail,
+            amount: request.amount,
+            wallet: request.walletId,
+            createdAt: new Date(request.createdAt).toString()
+          }
+        ]);
+      })
+    ]).then(() => console.log('Data is obtained'));
+  }, [allWithdrawRequests]);
 
   const syncPartnerSignupRequests = () => {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
