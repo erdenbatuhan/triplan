@@ -10,6 +10,7 @@ provider:
   timeout: 20
   environment:
     ["REGION"]: "self:provider.region"
+    ["DEFAULT_EXTENSION"]: "png"
     ["CMS_STORAGE_BUCKET_NAME"]: "triplan-cms-bucket"
     ["CMS_STORAGE_BUCKET_DIRECTORY_IMG"]: "img"
     ["CMS_STORAGE_BUCKET_URL"]: "https://triplan-cms-bucket.s3.eu-central-1.amazonaws.com"
@@ -18,16 +19,37 @@ provider:
       statements:
         - Effect: "Allow"
           Action:
+            - "s3:ListBucketVersions"
+          Resource:
+            - "arn:aws:s3:::${self:provider.environment.CMS_STORAGE_BUCKET_NAME}"
+        - Effect: "Allow"
+          Action:
             - "s3:GetObject"
+            - "s3:GetObjectVersion"
             - "s3:PutObject"
           Resource:
             - "arn:aws:s3:::${self:provider.environment.CMS_STORAGE_BUCKET_NAME}/*"
 
 functions:
+  restore:
+    memorySize: 256
+    handler: handler.restore
+    events:
+      - httpApi:
+          path: /restore
+          method: post
   upload:
+    memorySize: 256
     handler: handler.upload
     events:
       - httpApi:
-          path: /
+          path: /upload
           method: post
+  find:
+    memorySize: 256
+    handler: handler.find
+    events:
+      - httpApi:
+          path: /
+          method: get
 

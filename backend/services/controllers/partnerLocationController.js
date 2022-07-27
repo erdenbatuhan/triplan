@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const {
+  MIN_COUNT_FOR_VISIBILITY_RESTAURANT,
+  MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION,
   Restaurant,
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
@@ -9,28 +11,41 @@ const { Wallet } = require("./../models/wallet.js");
 
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
-const findDistinctCities = () => {
+const findDistinctCitiesWithEnoughPlaces = () => {
   return Promise.all([
-    Restaurant.distinct("city", { city: { $nin: ["", null, undefined] } }),
-    TouristAttraction.distinct("city", {
-      city: { $nin: ["", null, undefined] },
-    }),
-  ]).then(([restaurantCities, touristAttractionCities]) => [
-    ...new Set([...restaurantCities, ...touristAttractionCities]),
-  ]);
+    Restaurant.aggregate([{ $group: { _id: "$city", count: { $sum: 1 } } }]),
+    TouristAttraction.aggregate([
+      { $group: { _id: "$city", count: { $sum: 1 } } },
+    ]),
+  ]).then(([restaurantCityCounts, touristAttractionCityCounts]) => {
+    return [
+      ...new Set(
+        restaurantCityCounts
+          .filter(({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_RESTAURANT)
+          .map(({ _id }) => _id),
+        touristAttractionCityCounts
+          .filter(
+            ({ count }) => count >= MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION
+          )
+          .map(({ _id }) => _id)
+      ),
+    ];
+  });
 };
 
 const findFiltered = (filterData) => {
   // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
   return Promise.all([
     Restaurant.find({
-      priceLevel: { $lte: filterData["restaurantFilter"]["priceLevel"] },
+      city: filterData["city"],
+      priceLevels: { $in: filterData["restaurantFilter"]["priceLevels"] },
       cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
       foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
     }).sort({ priceLevel: "asc" }),
     TouristAttraction.find({
+      city: filterData["city"],
       touristAttractionTypes: {
-        $in: filterData["touristAttractionFilter"]["types"][1] // TODO: Do we need 1 here?
+        $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
       },
     }),
   ]).then(([restaurants, touristAttractions]) => ({
@@ -55,8 +70,21 @@ const findByTripLocations = (tripLocationIds) => {
   }));
 };
 
-const findRestaurantById = (restaurantId) => {
-  return Restaurant.findById(restaurantId);
+const findPartnerLocationById = (partnerLocationId, session) => {
+  return Promise.all([
+    findRestaurantById(partnerLocationId, session),
+    findTouristAttractionById(partnerLocationId, session),
+  ]).then(
+    ([restaurant, touristAttraction]) => restaurant || touristAttraction || null
+  );
+};
+
+const findRestaurantById = (restaurantId, session) => {
+  return Restaurant.findById(restaurantId).session(session);
+};
+
+const findTouristAttractionById = (touristAttractionId, session) => {
+  return TouristAttraction.findById(touristAttractionId).session(session);
 };
 
 const saveRestaurant = (restaurant) => {
@@ -67,10 +95,6 @@ const saveRestaurant = (restaurant) => {
   );
 };
 
-const findTouristAttractionById = (touristAttractionId) => {
-  return TouristAttraction.findById(touristAttractionId);
-};
-
 const saveTouristAttraction = (touristAttraction) => {
   return TouristAttraction.findOneAndUpdate(
     touristAttraction._id ? { _id: touristAttraction._id } : null,
@@ -79,212 +103,12 @@ const saveTouristAttraction = (touristAttraction) => {
   );
 };
 
-/**
- * Creates a partner location or updates an existing one
- */
-
-const signUpRestaurant = async (req, res) => {
-  const { username, email, password, partnerLocationType } = req.body;
-  try {
-    // check if the partner location already exists
-    RestaurantByUsername = await findRestaurantByUsername(username);
-    RestaurantByEmail = await findRestaurantByEmail(email);
-
-    if (RestaurantByUsername.length !== 0 || RestaurantByEmail.length !== 0) {
-      return res.status(400).json({ msg: "Partner Location already exists" });
-    }
-    // hash partner location password
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
-
-    const newPartnerLocation = await createRestaurant({
-      ...req.body,
-      wallet,
-      password: hash,
-    });
-
-    // return jwt
-    const payload = {
-      partnerLocation: {
-        id: newPartnerLocation[0]._id,
-        username: newPartnerLocation[0].username,
-        partnerType: newPartnerLocation[0].partnerType,
-      },
-    };
-
-    jwt.sign(
-      payload,
-      process.env["JWT_SECRET"],
-      { expiresIn: "7 days" },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
+const findRestaurantByAuthId = (id) => {
+  return Restaurant.findOne({ authentication: { $eq: id } });
 };
 
-const signUpTouristAttraction = async (req, res) => {
-  const { username, email, password, partnerLocationType } = req.body;
-  try {
-    // check if the partner location already exists
-
-    TouristAttractionByUsername = await findTouristAttractionByUsername(
-      username
-    );
-    TouristAttractionByEmail = await findTouristAttractionByEmail(email);
-
-    if (
-      TouristAttractionByUsername.length !== 0 ||
-      TouristAttractionByEmail.length !== 0
-    ) {
-      return res.status(400).json({ msg: "Partner Location already exists" });
-    }
-    // hash partner location password
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
-
-    const newPartnerLocation = await createTouristAttraction({
-      ...req.body,
-      wallet,
-      password: hash,
-    });
-
-    // return jwt
-    const payload = {
-      partnerLocation: {
-        id: newPartnerLocation[0]._id,
-        username: newPartnerLocation[0].username,
-        partnerType: newPartnerLocation[0].partnerType,
-      },
-    };
-
-    jwt.sign(
-      payload,
-      process.env["JWT_SECRET"],
-      { expiresIn: "7 days" },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-};
-
-/**
- * Checks credentials
- */
-const loginRestaurant = async (req, res) => {
-  const { username, password, partnerLocationType } = req.body;
-  try {
-    // check if the user exists
-    let restaurant = await findRestaurantByUsername(username);
-
-    if (restaurant.length === 0) {
-      return res.status(400).json({ msg: "Username or password incorrect" });
-    }
-
-    // check is the encrypted password matches
-    const isMatch = await bcrypt.compare(password, restaurant[0].password);
-
-    if (!isMatch) {
-      return res.status(400).json({ msg: "Username or password incorrect" });
-    }
-
-    const payload = {
-      partnerLocation: {
-        id: restaurant[0]._id,
-        username,
-        partnerType: restaurant[0].partnerType,
-      },
-    };
-    jwt.sign(
-      payload,
-      process.env["JWT_SECRET"],
-      { expiresIn: "30 days" },
-      (err, token) => {
-        if (err) throw err;
-        jwt.verify(token, process.env["JWT_SECRET"], (error, decoded) => {
-          if (error) {
-            return res.status(401).json({ msg: "Token is not valid" });
-          } else {
-            return res.status(200).json({
-              success: true,
-              token: token,
-              message: decoded,
-            });
-          }
-        });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-};
-
-const loginTouristAttraction = async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    // check if the user exists
-    let touristAttraction = await findTouristAttractionByUsername(username);
-    // let touristAttraction = await findTouristAttractionByUsername(username);
-    // let loginObject = null
-
-    if (touristAttraction.length === 0) {
-      return res.status(400).json({ msg: "Username or password incorrect" });
-    }
-
-    // check is the encrypted password matches
-    const isMatch = await bcrypt.compare(
-      password,
-      touristAttraction[0].password
-    );
-
-    if (!isMatch) {
-      return res.status(400).json({ msg: "Username or password incorrect" });
-    }
-
-    const payload = {
-      partnerLocation: {
-        id: touristAttraction[0]._id,
-        username,
-        partnerType: touristAttraction[0].partnerType,
-      },
-    };
-    jwt.sign(
-      payload,
-      process.env["JWT_SECRET"],
-      { expiresIn: "30 days" },
-      (err, token) => {
-        if (err) throw err;
-        jwt.verify(token, process.env["JWT_SECRET"], (error, decoded) => {
-          if (error) {
-            return res.status(401).json({ msg: "Token is not valid" });
-          } else {
-            return res.status(200).json({
-              success: true,
-              token: token,
-              message: decoded,
-            });
-          }
-        });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
+const findTouristAttractionByAuthId = (id) => {
+  return TouristAttraction.findOne({ authentication: { $eq: id } });
 };
 
 const findRestaurantByUsername = (username) => {
@@ -304,101 +128,112 @@ const findTouristAttractionByEmail = (email) => {
 };
 
 const createRestaurant = (restaurant) => {
-  return Restaurant.insertMany([
-    { ...restaurant, partnerType: PARTNER_TYPES[0] },
-  ]);
+  return Restaurant.create(restaurant);
 };
 
 const createTouristAttraction = (touristAttraction) => {
-  return TouristAttraction.insertMany([
-    { ...touristAttraction, partnerType: PARTNER_TYPES[1] },
-  ]);
+  return TouristAttraction.create(touristAttraction);
 };
 
-const updatePartnerLocationFields = async (id, fields) => {
-  const { partnerLocationType } = await findPartnerLocationById(id);
+const updatePartnerLocation = async (id, fields, session) => {
+  const { partnerType } = await findPartnerLocationById(id);
+  const partnerLocation =
+    partnerType === PARTNER_TYPES[0] ? Restaurant : TouristAttraction;
 
-  if (partnerLocationType === PARTNER_TYPES[0]) {
-    return Restaurant.updateOne({ _id: id }, fields, {
-      new: true,
-      runValidators: true,
-    });
-  } else {
-    return TouristAttraction.updateOne({ _id: id }, fields, {
-      new: true,
-      runValidators: true,
-    });
-  }
-};
-
-const findPartnerLocationById = (partnerLocationId) => {
-  return new Promise((resolve, reject) => {
-    const restaurantFound = findRestaurantById(partnerLocationId);
-    const touristAttractionFound = findTouristAttractionById(partnerLocationId);
-
-    Promise.all([restaurantFound, touristAttractionFound])
-      .then(([restaurant, touristAttraction]) => {
-        if (
-          (!restaurant && !touristAttraction) ||
-          (restaurant && touristAttraction)
-        ) {
-          return resolve(null);
-        } else if (restaurant) {
-          resolve({ restaurant, partnerLocationType: "restaurant" });
-        } else {
-          resolve({
-            touristAttraction,
-            partnerLocationType: "tourist-attraction",
-          });
-        }
-      })
-      .catch((err) => reject(err));
+  return partnerLocation.findOneAndUpdate({ _id: id }, fields, {
+    new: true,
+    runValidators: true,
+    session,
   });
 };
 
-const addTripLocationToRestaurant = (restaurantId, tripLocation) => {
-  return Restaurant.updateOne(
+const addTripLocationToRestaurant = (restaurantId, tripLocation, session) => {
+  return Restaurant.findOneAndUpdate(
     { _id: restaurantId },
     { $push: { associatedTripLocations: tripLocation } },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true, session }
   );
 };
 
 const addTripLocationToTouristAttraction = (
   touristAttractionId,
-  tripLocation
+  tripLocation,
+  session
 ) => {
-  return TouristAttraction.updateOne(
+  return TouristAttraction.findOneAndUpdate(
     { _id: touristAttractionId },
     { $push: { associatedTripLocations: tripLocation } },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true, session }
   );
 };
 
 const findRestaurantWalletsByWalletIds = (walletIds) => {
-  return Restaurant.find({ wallet: { $in: walletIds} }).select("name wallet");
-}
+  return Restaurant.find({ wallet: { $in: walletIds } }).select("name wallet");
+};
 
 const findTouristAttractionWalletsByWalletIds = (walletIds) => {
-  return TouristAttraction.find({ wallet: { $in: walletIds} }).select("name wallet");
-}
+  return TouristAttraction.find({ wallet: { $in: walletIds } }).select(
+    "name wallet"
+  );
+};
+
+/**
+ * Creates a user or updates an existing one
+ */
+const createNewPartner = async (userData) => {
+  try {
+    const { partnerType } = userData;
+    const wallet = await Wallet.create(new Wallet()); // Create an empty wallet
+    if (partnerType === PARTNER_TYPES[0]) {
+      return await createRestaurant({ ...userData, wallet: wallet }); // returns new restaurant
+    } else if (partnerType === PARTNER_TYPES[1]) {
+      return await createTouristAttraction({ ...userData, wallet: wallet }); // returns new tourist attraction
+    }
+  } catch (err) {
+    console.error("Failed to create user: ", err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+/**
+ *
+ * @param {Place ID recorded in Google Maps} id
+ * @param {Type of partner: restaurant or tourist attraction} partnerType
+ * @returns Data object based on given query
+ */
+const findByGoogleId = async ({ googlePlaceId, partnerType }) => {
+  try {
+    if (partnerType === PARTNER_TYPES[0]) {
+      return Restaurant.findOne({
+        "googleLocationInfo.googlePlaceId": { $eq: googlePlaceId },
+      });
+    } else if (partnerType === PARTNER_TYPES[1]) {
+      return TouristAttraction.findOne({
+        "googleLocationInfo.googlePlaceId": { $eq: googlePlaceId },
+      });
+    }
+  } catch (err) {
+    console.error("Failed to find partner: ", err.message);
+    res.status(500).send("Server error");
+  }
+};
 
 module.exports = {
-  findDistinctCities,
+  findRestaurantByAuthId,
+  findTouristAttractionByAuthId,
+  findDistinctCitiesWithEnoughPlaces,
   findFiltered,
   findByTripLocations,
-  findRestaurantById,
-  saveRestaurant,
-  findTouristAttractionById,
-  saveTouristAttraction,
-  signUpRestaurant,
-  signUpTouristAttraction,
-  loginRestaurant,
-  loginTouristAttraction,
-  updatePartnerLocationFields,
   findPartnerLocationById,
+  findRestaurantById,
+  findTouristAttractionById,
+  createNewPartner,
+  saveRestaurant,
+  saveTouristAttraction,
+  updatePartnerLocation,
   addTripLocationToRestaurant,
   addTripLocationToTouristAttraction,
   findRestaurantWalletsByWalletIds,
-  findTouristAttractionWalletsByWalletIds
+  findTouristAttractionWalletsByWalletIds,
+  findByGoogleId,
 };

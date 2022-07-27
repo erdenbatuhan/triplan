@@ -155,8 +155,13 @@ export const touristAttractions = [
   'meal_takeaway'
 ];
 
-export const PARTNER_TYPE_RESTAURANT = 'restaurant';
-export const PARTNER_TYPE_TOURIST_ATTRACTION = 'tourist-attraction';
+export const PARTNER_TYPE_RESTAURANT = 'RESTAURANT';
+export const PARTNER_TYPE_TOURIST_ATTRACTION = 'TOURIST_ATTRACTION';
+
+export const USER_TYPE_ADMIN = 'ADMIN';
+export const USER_TYPE_USER = 'USER';
+export const USER_TYPE_RESTAURANT = PARTNER_TYPE_RESTAURANT;
+export const USER_TYPE_TOURIST_ATTRACTION = PARTNER_TYPE_TOURIST_ATTRACTION;
 
 export const TRANSACTION_TYPE_DEPOSIT = 'Deposit';
 export const TRANSACTION_TYPE_WITHDRAW = 'Withdraw';
@@ -178,3 +183,6 @@ export const CURRENCIES = [
 
 export const PRIMARY_COLOR = '#15A4FF';
 export const SECONDARY_COLOR = '#FFF7E3';
+
+export const MIN_AMOUNT_FOR_COUPON = 100;
+export const DEFAULT_VALUE_OF_COUPON = 5;

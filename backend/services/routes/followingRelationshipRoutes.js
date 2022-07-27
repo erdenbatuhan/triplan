@@ -4,6 +4,18 @@ const router = express.Router();
 const followingRelationshipController = require("./../controllers/followingRelationshipController.js");
 
 /**
+ * Gets the following relationship between two users
+ */
+router.get("/", async (req, res) => {
+  try {
+    const followingRelationship = await followingRelationshipController.getFollowingRelationship(req.query);
+    res.status(200).send({ followingRelationship });
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while getting the users following relationship from ${followerId} to ${followedId}! Error => ${message}`);
+  }
+});
+
+/**
  * Creates a following relationship between two users
  */
 router.post("/", async (req, res) => {

@@ -4,17 +4,14 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
-import { loginUser } from '../queries/user-queries';
+import { loginUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { loginPartnerLocation } from '../queries/partner-location-queries';
-import { SECONDARY_COLOR } from '../shared/constants';
-// const logo = require('../assets/triplan_logo.png');
+import { USER_TYPE_USER, SECONDARY_COLOR } from '../shared/constants';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [partnerType, setPartnerType] = useState('user');
+  const [userType, setUserType] = useState(USER_TYPE_USER);
   const authContext = useContext(AuthUserContext);
   const ref = useRef(null);
   const navigate = useNavigate();
@@ -28,7 +25,7 @@ function LoginPage() {
   }, []);
 
   const handleChange = (event, newLoginType) => {
-    setPartnerType(newLoginType);
+    setUserType(newLoginType);
   };
 
   const onUsernameChanged = (e) => {
@@ -43,7 +40,8 @@ function LoginPage() {
     try {
       const userData = {
         username,
-        password
+        password,
+        userType
       };
       const message = await loginUser(userData);
       const { token } = message;
@@ -57,27 +55,6 @@ function LoginPage() {
       }
     } catch (e) {
       console.error(`failed to find user ${username}`);
-    }
-  };
-
-  const onSubmitClickedPartner = async () => {
-    try {
-      const partnerLocationData = {
-        username,
-        password,
-        partnerType
-      };
-      const message = await loginPartnerLocation(partnerLocationData);
-      const { token } = message;
-      authContext.loginUser(token);
-      if (token) {
-        const partnerData = UserAuthHelper.getDataFromToken(token);
-        navigate(`/partner-profile/${partnerData.partnerLocation.id}`, {
-          state: { partnerType: partnerData.partnerLocation.partnerType }
-        });
-      }
-    } catch (e) {
-      console.error(`failed to create partner location ${e}`);
     }
   };
 
@@ -116,14 +93,10 @@ function LoginPage() {
               justifyContent: 'center',
               margin: 5
             }}>
-            <ToggleButtonGroup
-              color="primary"
-              value={partnerType}
-              exclusive
-              onChange={handleChange}>
-              <ToggleButton value="user">User</ToggleButton>
-              <ToggleButton value="restaurant">Restaurant</ToggleButton>
-              <ToggleButton value="tourist-attraction">Tourist Attraction</ToggleButton>
+            <ToggleButtonGroup color="primary" value={userType} exclusive onChange={handleChange}>
+              <ToggleButton value="USER">User</ToggleButton>
+              <ToggleButton value="RESTAURANT">Restaurant</ToggleButton>
+              <ToggleButton value="TOURIST_ATTRACTION">Tourist Attraction</ToggleButton>
             </ToggleButtonGroup>
           </div>
 
@@ -166,7 +139,7 @@ function LoginPage() {
                   borderRadius: 4,
                   height: '40px'
                 }}
-                onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedPartner}>
+                onClick={onSubmitClickedUser}>
                 Login
               </Button>
             </Grid>

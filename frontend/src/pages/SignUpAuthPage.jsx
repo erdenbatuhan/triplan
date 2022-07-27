@@ -1,30 +1,30 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // useContext
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
-import { createNewUser } from '../queries/user-queries';
-import { createNewPartnerLocation } from '../queries/partner-location-queries';
-import { SECONDARY_COLOR } from '../shared/constants';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { AuthUserContext } from '../authentication/AuthUserContext';
+import {
+  USER_TYPE_USER,
+  USER_TYPE_RESTAURANT,
+  USER_TYPE_TOURIST_ATTRACTION,
+  SECONDARY_COLOR
+} from '../shared/constants';
 
-function SignUpPage() {
+function SignUpAuthPage() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [partnerType, setPartnerType] = useState('user');
+  const [userType, setUserType] = useState(USER_TYPE_USER);
   const ref = useRef(null);
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
     setWidth(ref.current.offsetWidth);
   }, []);
-  const authContext = useContext(AuthUserContext);
 
   const handleChange = (event, newLoginType) => {
-    setPartnerType(newLoginType);
+    setUserType(newLoginType);
   };
 
   const navigate = useNavigate();
@@ -39,40 +39,25 @@ function SignUpPage() {
     setPassword(e.target.value);
   };
 
-  const onSubmitClickedUser = async () => {
+  const handleOnSubmitClick = async () => {
     try {
-      const userData = {
-        username,
-        password,
-        email
-      };
-      const newUser = await createNewUser(userData);
-      if (newUser) {
-        navigate('/');
+      const authData = { username, password, email, userType };
+      switch (userType) {
+        case USER_TYPE_USER:
+          navigate('/signup-user-profile', { state: { authData } });
+          break;
+        case USER_TYPE_RESTAURANT: {
+          navigate('/signup-partner-profile', { state: { authData } });
+          break;
+        }
+        case USER_TYPE_TOURIST_ATTRACTION:
+          navigate('/signup-partner-profile', { state: { authData } });
+          break;
+        default:
+          console.error('Given user type is not known.');
       }
     } catch (e) {
       console.error(`failed to create user ${e}`);
-    }
-  };
-  const onSubmitClickedPartner = async () => {
-    try {
-      const partnerLocationData = {
-        username,
-        password,
-        email,
-        partnerType
-      };
-      const newPartnerLocation = await createNewPartnerLocation(partnerLocationData);
-      const { token } = newPartnerLocation;
-      authContext.loginUser(token);
-      if (token) {
-        const partnerData = UserAuthHelper.getDataFromToken(token);
-        navigate(`/edit-partner-profile/${partnerData.partnerLocation.id}`, {
-          state: { partnerType: partnerData.partnerLocation.partnerType }
-        });
-      }
-    } catch (e) {
-      console.error(`failed to create partner location ${e}`);
     }
   };
 
@@ -111,14 +96,10 @@ function SignUpPage() {
               justifyContent: 'center',
               margin: 5
             }}>
-            <ToggleButtonGroup
-              color="primary"
-              value={partnerType}
-              exclusive
-              onChange={handleChange}>
-              <ToggleButton value="user">User</ToggleButton>
-              <ToggleButton value="restaurant">Restaurant</ToggleButton>
-              <ToggleButton value="tourist-attraction">Tourist Attraction</ToggleButton>
+            <ToggleButtonGroup color="primary" value={userType} exclusive onChange={handleChange}>
+              <ToggleButton value="USER">User</ToggleButton>
+              <ToggleButton value="RESTAURANT">Restaurant</ToggleButton>
+              <ToggleButton value="TOURIST_ATTRACTION">Tourist Attraction</ToggleButton>
             </ToggleButtonGroup>
           </div>
           <Grid
@@ -171,7 +152,7 @@ function SignUpPage() {
                   borderRadius: 4,
                   height: '40px'
                 }}
-                onClick={partnerType === 'user' ? onSubmitClickedUser : onSubmitClickedPartner}>
+                onClick={handleOnSubmitClick}>
                 Sign Up
               </Button>
             </Grid>
@@ -187,4 +168,4 @@ function SignUpPage() {
   );
 }
 
-export default SignUpPage;
+export default SignUpAuthPage;

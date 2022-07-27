@@ -1,5 +1,6 @@
 export const HOST = `http://localhost:8008`;
 
+export const HOST_AUTH = `${HOST}/auth`;
 export const HOST_CITY_INFO = `${HOST}/city-info`;
 export const HOST_USER = `${HOST}/user`;
 export const HOST_ADMIN = `${HOST}/admin`;
@@ -12,6 +13,9 @@ export const HOST_WALLET = `${HOST}/wallet`;
 export const HOST_TRANSACTION = `${HOST}/transaction`;
 export const HOST_BUYABLE_ITEM = `${HOST}/buyable-item`;
 export const HOST_WITHDRAW_REQUEST = `${HOST}/withdraw-request`;
+export const HOST_COUPON = `${HOST}/coupon`;
+export const HOST_PARTNER_SIGNUP_REQUEST = `${HOST}/partner-signup-request`;
+export const HOST_CMS = `${HOST}/out/cms`;
 
 export const HEADERS = {
   'Access-Control-Allow-Origin': `http://localhost:3000`,

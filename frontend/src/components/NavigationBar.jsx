@@ -59,7 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function MenuAppBar() {
-  // const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -89,11 +89,7 @@ export default function MenuAppBar() {
   };
 
   const navigateToProfile = () => {
-    navigate('/user');
-  };
-
-  const navigateToWallet = () => {
-    navigate('/wallet');
+    navigate(`/user/${authenticatedUser.user.id}`);
   };
 
   const navigateToMainPage = () => {
@@ -111,10 +107,11 @@ export default function MenuAppBar() {
   // useEffect(() => {
   //   syncAuthUser();
   // }, [isLoggedIn]);
+  const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar sx={{ bgcolor: PRIMARY_COLOR }} position="static">
+      <AppBar sx={{ bgcolor: PRIMARY_COLOR }} position="fixed">
         <Toolbar
           sx={{
             justifyContent: 'space-between'
@@ -174,7 +171,6 @@ export default function MenuAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}>
                 <MenuItem onClick={navigateToProfile}>Profile</MenuItem>
-                <MenuItem onClick={navigateToWallet}>Wallet</MenuItem>
                 <MenuItem onClick={handleLogOut}>Log out</MenuItem>
               </Menu>
             </div>
@@ -190,6 +186,7 @@ export default function MenuAppBar() {
           )}
         </Toolbar>
       </AppBar>
+      <Offset />
     </Box>
   );
 }

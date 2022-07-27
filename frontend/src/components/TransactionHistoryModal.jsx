@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Grid, List, ListSubheader, Typography, Tooltip } from '@mui/material';
+import { Grid, List, ListSubheader, Typography, Tooltip } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import Spinner from './Spinner';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import Spinner from './common/Spinner';
+import ContentModal from './common/ContentModal';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getPreviousTransactions } from '../queries/transaction-queries';
 import { getOwnersOfWallets } from '../queries/wallet-queries';
 import { getReadableDate, getReadableMonthYearFromTimestamp } from '../shared/date-utils';
 import { TRANSACTION_STATUS_SUCCESSFUL, TRANSACTION_STATUS_REJECTED } from '../shared/constants';
-import { modalStyle } from '../shared/styles';
 
 export default function TransactionHistoryModal({ open, onClose }) {
-  const [authenticatedUser] = useState({
-    user: { id: '62c430e748c4994b2c42af0f' }
-  }); // TODO: Replace with UserAuthHelper.getStoredUser()
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser()); // TODO: Replace with UserAuthHelper.getStoredUser()
   const [loading, setLoading] = useState(false);
   const [walletId, setWalletId] = useState(null);
   const [previousTransactions, setPreviousTransactions] = useState([]);
@@ -43,7 +43,7 @@ export default function TransactionHistoryModal({ open, onClose }) {
         setPreviousTransactions(previousTransactionsByMonth);
 
         // Also fetch the owners of the wallets seen in the transactions
-        const distinctWalletIds = [
+        let distinctWalletIds = [
           ...new Set(
             [].concat.apply(
               [],
@@ -51,6 +51,7 @@ export default function TransactionHistoryModal({ open, onClose }) {
             )
           )
         ];
+        distinctWalletIds = distinctWalletIds.filter((id) => !!id); // Remove empty IDs
 
         await getOwnersOfWallets(distinctWalletIds).then((walletOwnersResponse) =>
           setWaletOwnerData(walletOwnersResponse)
@@ -62,8 +63,8 @@ export default function TransactionHistoryModal({ open, onClose }) {
   const createTableRow = (id, items) => {
     return (
       <Grid container spacing={0}>
-        {items.map(({ content, size, style, icon }) => (
-          <Grid key={`${id}-${content}`} sx={{ pt: !icon ? 1 : '0.35em' }} item xs={size}>
+        {items.map(({ content, size, style, icon }, idx) => (
+          <Grid key={`${id}-${idx}-${content}`} sx={{ pt: !icon ? 1 : '0.35em' }} item xs={size}>
             <Typography sx={{ color: 'text.primary', ...style }} variant="body2" align="center">
               {content}
             </Typography>
@@ -74,16 +75,14 @@ export default function TransactionHistoryModal({ open, onClose }) {
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box sx={{ ...modalStyle }}>
-        <Grid sx={{ width: '100%' }} alignItems="stretch">
-          <Typography
-            sx={{ color: 'text.secondary', fontWeight: 'medium', fontSize: 25, pt: 2 }}
-            align="center">
-            Transaction History
-          </Typography>
-
-          <Grid sx={{ pt: 2 }} container spacing={0}>
+    <ContentModal
+      open={open}
+      onClose={onClose}
+      contentStyle={{ width: '100%' }}
+      header="Transaction History"
+      contentRendered={
+        <>
+          <Grid container spacing={0}>
             {createTableRow('TransactionHistory-TableHeader', [
               { content: 'From', size: 2 },
               { content: 'To', size: 2 },
@@ -115,80 +114,91 @@ export default function TransactionHistoryModal({ open, onClose }) {
                   <ul>
                     <ListSubheader sx={{ fontWeight: 500 }}>{month}</ListSubheader>
 
-                    {previousTransactions[month].map((transaction) => {
-                      return (
-                        <Grid
-                          key={`TransactionHistory-${month}-${transaction._id}`}
-                          sx={{ width: '100%', pt: 0 }}
-                          container
-                          spacing={0}
-                          alignItems="stretch">
-                          {createTableRow(
-                            `TransactionHistory-${month}-${transaction._id}-TableRow`,
-                            [
-                              {
-                                content: walletOwnerData[transaction.incoming] || '-',
-                                size: 2,
-                                style: {
-                                  fontWeight: walletId === transaction.incoming ? 'bold' : ''
-                                }
-                              },
-                              {
-                                content: walletOwnerData[transaction.outgoing] || '-',
-                                size: 2,
-                                style: {
-                                  fontWeight: walletId === transaction.outgoing ? 'bold' : ''
-                                }
-                              },
-                              {
-                                content: getReadableDate(transaction.createdAt),
-                                size: 3
-                              },
-                              {
-                                content: `${walletId === transaction.outgoing ? '+' : '-'} ${
-                                  transaction.amount
-                                } €`,
-                                size: 2,
-                                style: {
-                                  color:
-                                    walletId === transaction.outgoing
-                                      ? 'success.main'
-                                      : 'error.main'
-                                }
-                              },
-                              { content: transaction.type, size: 2 },
-                              {
-                                content:
-                                  transaction.status === TRANSACTION_STATUS_SUCCESSFUL ? (
-                                    <Tooltip title={TRANSACTION_STATUS_SUCCESSFUL}>
-                                      <CheckCircleOutlineIcon />
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip title={TRANSACTION_STATUS_REJECTED}>
-                                      <ErrorOutlineIcon />
-                                    </Tooltip>
-                                  ),
-                                size: 1,
-                                style: {
-                                  color:
-                                    transaction.status === TRANSACTION_STATUS_SUCCESSFUL
-                                      ? 'success.main'
-                                      : 'error.main'
-                                },
-                                icon: true
-                              }
-                            ]
-                          )}
-                        </Grid>
-                      );
-                    })}
+                    {walletOwnerData[walletId]
+                      ? previousTransactions[month].map((transaction, idx) => {
+                          return (
+                            <Grid
+                              key={`TransactionHistory-${month}-${transaction._id}`}
+                              sx={{ width: '100%', pt: 0 }}
+                              container
+                              spacing={0}
+                              alignItems="stretch">
+                              {createTableRow(
+                                `TransactionHistory-${month}-${transaction._id}-TableRow-${idx}`,
+                                [
+                                  {
+                                    content: walletOwnerData[transaction.outgoing] || '-',
+                                    size: 2,
+                                    style: {
+                                      fontWeight: walletId === transaction.outgoing ? 'bold' : ''
+                                    }
+                                  },
+                                  {
+                                    content: walletOwnerData[transaction.incoming] || '-',
+                                    size: 2,
+                                    style: {
+                                      fontWeight: walletId === transaction.incoming ? 'bold' : ''
+                                    }
+                                  },
+                                  {
+                                    content: getReadableDate(transaction.createdAt),
+                                    size: 3
+                                  },
+                                  {
+                                    content: `${walletId === transaction.incoming ? '+' : '-'} ${
+                                      transaction.amount
+                                    } €`,
+                                    size: 2,
+                                    style: {
+                                      color:
+                                        walletId === transaction.incoming
+                                          ? 'success.main'
+                                          : 'error.main'
+                                    }
+                                  },
+                                  { content: transaction.type, size: 2 },
+                                  {
+                                    content:
+                                      transaction.status === TRANSACTION_STATUS_SUCCESSFUL ? (
+                                        <span>
+                                          <Tooltip title={TRANSACTION_STATUS_SUCCESSFUL}>
+                                            <CheckCircleOutlineIcon color="success" />
+                                          </Tooltip>
+                                          {transaction.couponEarned ? (
+                                            <Tooltip title="Congratulations! You've earned a coupon from this transaction.">
+                                              <InsertEmoticonIcon color="primary" />
+                                            </Tooltip>
+                                          ) : (
+                                            []
+                                          )}
+                                        </span>
+                                      ) : (
+                                        <Tooltip title={TRANSACTION_STATUS_REJECTED}>
+                                          <ErrorOutlineIcon color="error" />
+                                        </Tooltip>
+                                      ),
+                                    size: 1,
+                                    style: {
+                                      color:
+                                        transaction.status === TRANSACTION_STATUS_SUCCESSFUL
+                                          ? 'success.main'
+                                          : 'error.main'
+                                    },
+                                    icon: true
+                                  }
+                                ]
+                              )}
+                            </Grid>
+                          );
+                        })
+                      : []}
                   </ul>
                 </li>
               ))
             )}
           </List>
-        </Grid>
-      </Box>
-    </Modal>
+        </>
+      }
+    />
   );
 }

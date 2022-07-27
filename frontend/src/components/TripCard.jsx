@@ -3,16 +3,18 @@ import { Card, Typography, Accordion, AccordionSummary, AccordionDetails } from 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TripPlanRatings from './TripPlanRatings';
 
-function TripCard({ tripPlan }) {
+function TripCard({ tripPlan, viewMode }) {
   return (
     <Card variant="outlined" sx={{ boxShadow: 2, height: '100%' }}>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography> {tripPlan.name} </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            {tripPlan.name}
+          </Typography>
         </AccordionSummary>
 
-        <AccordionDetails>
-          <TripPlanRatings tripPlanId={tripPlan._id} />
+        <AccordionDetails sx={{ padding: 0 }}>
+          <TripPlanRatings tripPlanId={tripPlan._id} viewMode={viewMode} />
         </AccordionDetails>
       </Accordion>
     </Card>

@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
-import {
-  Button,
-  Box,
-  Modal,
-  TextField,
-  // MenuItem,
-  Card,
-  CardContent,
-  CardActions,
-  Grid
-} from '@mui/material';
+import { Button, Box, TextField, Card, CardContent, CardActions, Grid } from '@mui/material';
 import EuroIcon from '@mui/icons-material/Euro';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { green } from '@mui/material/colors';
-import PaypalCheckoutButtons from '../components/PaypalButtons';
+import ContentModal from './common/ContentModal';
+import PaypalCheckoutButtons from './PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { createTransaction } from '../queries/transaction-queries';
@@ -35,20 +26,9 @@ import {
   // generateRequestId,
   handleEmail
 } from '../queries/email-queries';
+import TransactionHistoryModal from './TransactionHistoryModal';
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 500,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 6,
-  borderRadius: '15px'
-};
-
-export default function WalletPage() {
+export default function Wallet() {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [authenticatedUserData, setAuthenticatedUserData] = useState();
   const [wallet, setWallet] = useState(null);
@@ -59,6 +39,7 @@ export default function WalletPage() {
   const [transactionType, setTransactionType] = useState('');
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
+  const [transitionModalShown, setTransitionModalShown] = useState(false);
 
   // Listening to the changes in authenticatedUser
   useEffect(() => {
@@ -153,13 +134,14 @@ export default function WalletPage() {
   };
 
   return (
-    <div sx={{ height: '100%', width: '100%' }}>
+    <div>
       <Card
         sx={{
           width: '100%',
           textAlign: 'center',
           height: '100%',
-          boxShadow: 3
+          boxShadow: 3,
+          p: 1
         }}>
         <CardContent>
           <Box
@@ -177,10 +159,13 @@ export default function WalletPage() {
         </CardContent>
 
         <CardActions>
-          <Grid container direction="row">
-            <Grid item sx={6} m={1}>
+          <Grid container>
+            <Grid item xs={2} />
+
+            <Grid item xs={4}>
               <Button
                 color="success"
+                size="small"
                 variant="outlined"
                 onClick={() => {
                   setTransactionType(TRANSACTION_TYPE_DEPOSIT);
@@ -190,7 +175,7 @@ export default function WalletPage() {
               </Button>
             </Grid>
 
-            <Grid item sx={6} m={1}>
+            <Grid item xs={4}>
               <Button
                 color="error"
                 size="small"
@@ -202,134 +187,128 @@ export default function WalletPage() {
                 Withdraw
               </Button>
             </Grid>
+
+            <Grid item xs={2} />
+
+            <Grid item xs={12} marginTop={4} marginBottom={2}>
+              <Button size="small" variant="outlined" onClick={() => setTransitionModalShown(true)}>
+                All Transactions
+              </Button>
+
+              <TransactionHistoryModal
+                open={transitionModalShown}
+                onClose={() => setTransitionModalShown(false)}
+              />
+            </Grid>
           </Grid>
         </CardActions>
 
-        <Modal open={transactionDialogShown} onClose={() => setTransactionDialogShown(false)}>
-          <Box sx={style}>
-            <Typography variant="h6" component="h2" color="text.secondary">
-              How much money would you like to {transactionType} ?
-            </Typography>
+        <ContentModal
+          open={transactionDialogShown}
+          onClose={() => setTransactionDialogShown(false)}
+          contentRendered={
+            <>
+              <Typography variant="h6" component="h2" color="text.secondary">
+                How much money would you like to {transactionType} ?
+              </Typography>
 
-            <Grid>
-              <Grid
-                container
-                item
-                md={4}
-                spacing={0}
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  '& .MuiTextField-root': { m: 2, width: '25ch' }
-                }}
-                p={2}>
-                <Grid item xs={9} pr="4">
-                  <TextField
-                    id="standard-basic"
-                    label="Please enter the amount"
-                    variant="standard"
-                    value={transactionAmount}
-                    onChange={(event) => setTransactionAmount(event.target.value)}
-                  />
-                </Grid>
-
-                <Grid item xs={3}>
-                  <EuroIcon sx={{ pt: 2, pl: 20 }} />
-                </Grid>
-              </Grid>
-
-              <Grid
-                container
-                item
-                md={4}
-                spacing={0}
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  '& .MuiTextField-root': { m: 2, width: '25ch' }
-                }}
-                p={2}>
-                {transactionType === TRANSACTION_TYPE_WITHDRAW ? (
+              <Grid>
+                <Grid
+                  container
+                  item
+                  md={4}
+                  spacing={0}
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{
+                    '& .MuiTextField-root': { m: 2, width: '25ch' }
+                  }}
+                  p={2}>
                   <Grid item xs={9} pr="4">
                     <TextField
                       id="standard-basic"
-                      label="Please enter Paypal email address"
+                      label="Please enter the amount"
                       variant="standard"
-                      value={paypalEmail}
-                      onChange={(event) => setPaypalEmail(event.target.value)}
+                      value={transactionAmount}
+                      onChange={(event) => setTransactionAmount(event.target.value)}
                     />
                   </Grid>
-                ) : (
-                  <div />
-                )}
+
+                  <Grid item xs={3}>
+                    <EuroIcon sx={{ pt: 2, pl: 20 }} />
+                  </Grid>
+                </Grid>
+
+                <Grid
+                  container
+                  item
+                  md={4}
+                  spacing={0}
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{
+                    '& .MuiTextField-root': { m: 2, width: '25ch' }
+                  }}
+                  p={2}>
+                  {transactionType === TRANSACTION_TYPE_WITHDRAW ? (
+                    <Grid item xs={9} pr="4">
+                      <TextField
+                        id="standard-basic"
+                        label="Please enter Paypal email address"
+                        variant="standard"
+                        value={paypalEmail}
+                        onChange={(event) => setPaypalEmail(event.target.value)}
+                      />
+                    </Grid>
+                  ) : (
+                    <div />
+                  )}
+                </Grid>
               </Grid>
 
-              {/* <TextField
-              id="outlined-select-currency"
-              select
-              label="currency"
-              value={currency}
-              onChange={(event) => setCurrency(event.target.value)}>
-              {CURRENCIES.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-              </TextField> */}
-            </Grid>
-            {transactionType === TRANSACTION_TYPE_DEPOSIT ? (
-              <PayPalScriptProvider
-                options={{
-                  'client-id':
-                    'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
-                  components: 'buttons',
-                  currency: 'EUR'
-                }}>
-                <PaypalCheckoutButtons
-                  currency="EUR"
-                  amount={transactionAmount}
-                  onPaymentComplete={handleCompletePayment}
-                  showSpinner
-                />
-              </PayPalScriptProvider>
-            ) : (
-              <Button
-                style={{
-                  color: '#FFFFFF',
-                  backgroundColor: green[500],
-                  width: '100%',
-                  border: 1,
-                  // borderColor: grey[500],
-                  borderRadius: 4,
-                  height: '60px'
-                }}
-                onClick={handleTransaction}>
-                Send Withdraw Request
-              </Button>
-            )}
+              {transactionType === TRANSACTION_TYPE_DEPOSIT ? (
+                <PayPalScriptProvider
+                  options={{
+                    'client-id':
+                      'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
+                    components: 'buttons',
+                    currency: 'EUR'
+                  }}>
+                  <PaypalCheckoutButtons
+                    currency="EUR"
+                    amount={transactionAmount}
+                    onPaymentComplete={handleCompletePayment}
+                    showSpinner
+                  />
+                </PayPalScriptProvider>
+              ) : (
+                <Button
+                  style={{
+                    color: '#FFFFFF',
+                    backgroundColor: green[500],
+                    width: '100%',
+                    border: 1,
+                    // borderColor: grey[500],
+                    borderRadius: 4,
+                    height: '60px'
+                  }}
+                  onClick={handleTransaction}>
+                  Send Withdraw Request
+                </Button>
+              )}
+            </>
+          }
+        />
 
-            {/* <Button
-              alignItems="right"
-              onClick={() => {
-                handleTransaction();
-                setTransactionDialogShown(false);
-                setTransactionAmount(0);
-              }}>
-              Confirm
-            </Button> */}
-          </Box>
-        </Modal>
-
-        <Modal
+        <ContentModal
           open={isPaymentCompleted}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-          style={{
+          onClose={() => false}
+          contentStyle={{
             display: 'flex',
             justifyConent: 'center',
             alignItems: 'center'
-          }}>
-          <Box sx={style}>
+          }}
+          contentRendered={
             <div className="center">
               <Alert severity={isPaymentSuccessfull ? 'success' : 'error'}>
                 <AlertTitle>{isPaymentSuccessfull ? 'Success' : 'Error'}</AlertTitle>
@@ -347,8 +326,8 @@ export default function WalletPage() {
                 Continue
               </Button>
             </div>
-          </Box>
-        </Modal>
+          }
+        />
       </Card>
     </div>
   );

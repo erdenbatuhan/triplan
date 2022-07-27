@@ -5,18 +5,15 @@ const GoogleLocationInfo = mongoose.model(
   "GoogleLocationInfo",
   new Schema(
     {
-      name: { type: String, required: true },
+      googlePlaceId: { type: String, unique: true, required: true },
+      googleMapUrl: { type: String, unique: true, required: true },
+      googleIconUrl: { type: String, default: '', required: false },
       city: { type: String, required: true },
-      address: { type: String, required: true },
-      google_place_id: { type: String, required: true },
+      rating: { type: Number, required: true },
+      reviewCount: { type: Number, required: true },
       latitude: { type: Number, required: true },
       longitude: { type: Number, required: true },
-      rating: { type: Number, required: true },
-      review_count: { type: Number, required: true },
-      types: { type: Array, required: true },
-      google_map_url: { type: String, required: true },
-      google_icon_url: { type: String, required: false },
-      place_description: { type: String, required: false }
+      distanceToCityCenter: { type: Number, default: 0, required: false }
     },
     {
       timestamps: true

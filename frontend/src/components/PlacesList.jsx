@@ -46,7 +46,7 @@ export default function PlacesList({
               key={partnerLocation._id}
               id={partnerLocation._id}
               title={partnerLocation.name}
-              content={partnerLocation.place_description || ''}
+              content={partnerLocation.description || ''}
               locationPicture={partnerLocation.locationPicture}
               cardSelected={isSelected(partnerLocation._id)}
               onPlaceCardSelect={selectPartnerLocation}

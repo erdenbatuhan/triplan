@@ -1,57 +1,81 @@
+const mongoose = require("mongoose");
+
 const { Wallet } = require("./../models/wallet.js");
 
 const userController = require("./userController.js");
 const partnerLocationController = require("./partnerLocationController.js");
 
-const findOne = (id) => {
-  return Wallet.findById(id);
+const findOne = (id, session) => {
+  return Wallet.findById(id).session(session);
 };
 
-const findByUserId = (userId) => {
+const findUserWallet = (userId, session) => {
+  return findWalletForOwner(userController.findById, userId, session);
+}
+
+const findPartnerLocationWallet = (partnerLocationId, session) => {
+  return findWalletForOwner(partnerLocationController.findPartnerLocationById, partnerLocationId, session);
+}
+
+const findWalletForOwner = (ownerRetrivalFn, ownerId, session) => {
   return new Promise((resolve, reject) => {
-    userController.findById(userId).then(async (user) => {
-      if (!user.wallet) {
+    ownerRetrivalFn(ownerId, session).then(async (owner) => {
+      if (!owner.wallet) {
         return resolve(null);
       }
 
-      const walletFound = await Wallet.findOne({ "_id": user.wallet._id });
+      const walletFound = await Wallet.findOne({ "_id": owner.wallet._id });
       resolve(walletFound);
     }).catch(err => reject(err));
   });
 };
 
-const createUserWallet = ({ userId }) => {
-  return new Promise((resolve, reject) => {
-    userController.findById(userId).then(async (user) => {
-      // Create a new empty wallet
-      const walletCreated = await Wallet.create(new Wallet());
+const createUserWallet = (userId) => {
+  return createWalletForOwner(
+    userController.findById,
+    userController.updateFields,
+    userId
+  );
+};
 
-      // Assign the wallet created to the user (returns null if the user does not exist!)
-      const userUpdated = await userController.updateFields(user._id, { "wallet": walletCreated });
-      resolve(userUpdated);
-    }).catch(err => reject(err));
+const createPartnerLocationWallet = (partnerLocationId) => {
+  return createWalletForOwner(
+    partnerLocationController.findPartnerLocationById,
+    partnerLocationController.updatePartnerLocation,
+    partnerLocationId
+  );
+};
+
+/**
+ * Transactional
+ */
+const createWalletForOwner = (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
+  return mongoose.startSession().then(async (session) => {
+    let ownerUpdated = undefined;
+
+    await session.withTransaction(async () => {
+      ownerUpdated = await ownerRetrivalFn(ownerId, session).then((owner) => {
+        if (!owner) {
+          return null;
+        }
+  
+        // Create a new empty wallet and assign it to the owner
+        return Wallet.create([{}], { session }).then(([ walletCreated ]) => {
+          return ownerUpdateFn(owner._id, { "wallet": walletCreated }, session);
+        });
+      });
+    });
+
+    session.endSession();
+    return ownerUpdated;
   });
 };
 
-const createPartnerLocationWallet = ({ partnerLocationId }) => {
-  return new Promise((resolve, reject) => {
-    partnerLocationController.findPartnerLocationById(partnerLocationId).then(async (partnerLocation) => {
-      // Create a new empty wallet
-      const walletCreated = await Wallet.create(new Wallet());
-      // Assign the wallet created to the partner location
-      const partnerLocationUpdated = await partnerLocationController
-      .updatePartnerLocationFields(partnerLocationId, { "wallet": walletCreated });
-
-      resolve(partnerLocationUpdated);
-    }).catch(err => reject(err));
-  });
-};
-
-const updateWalletBalance = (wallet, balance) => {
+const updateWalletBalance = (wallet, balance, session) => {
   return Wallet.findOneAndUpdate(
     { "_id": wallet._id },
     { balance },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true, session }
   );
 };
 
@@ -71,4 +95,4 @@ const findOwnersByIds = (walletIds) => {
   })
 }
 
-module.exports = { findOne, findByUserId, createUserWallet, updateWalletBalance, createPartnerLocationWallet, findOwnersByIds };
+module.exports = { findOne, findUserWallet, findPartnerLocationWallet, createUserWallet, createPartnerLocationWallet, updateWalletBalance, findOwnersByIds };

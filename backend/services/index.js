@@ -12,10 +12,10 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("Connected to DB!"))
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
 app.use(cors()); // CORS
-app.use(bodyParser.json()); // Parses the text as JSON and exposes the resulting object on req.body
+app.use(bodyParser.json({ limit: "50mb" })); // Parses the text as JSON and exposes the resulting object on req.body
 
 app.listen(appProps["port"], () =>
   console.log(`Server Running on port: http://localhost:${appProps["port"]}`)
@@ -24,6 +24,10 @@ app.listen(appProps["port"], () =>
 // Routes: Health Check
 const healthCheckRoutes = require("./routes/healthCheckRoutes.js");
 app.use("/", healthCheckRoutes);
+
+// Routes: Authentication
+const authenticationRoutes = require("./routes/authenticationRoutes.js");
+app.use("/auth", authenticationRoutes);
 
 // Routes: City Info
 const cityInfoRoutes = require("./routes/cityInfoRoutes.js");
@@ -65,6 +69,10 @@ app.use("/transaction", transactionRoutes);
 const buyableItemRoutes = require("./routes/buyableItemRoutes.js");
 app.use("/buyable-item", buyableItemRoutes);
 
+// Routes: Item Bought
+const itemBoughtRoutes = require("./routes/itemBoughtRoutes.js");
+app.use("/item-bought", itemBoughtRoutes);
+
 // Routes: Withdraw Request
 const withdrawRequestRoutes = require("./routes/withdrawRequestRoutes.js");
 app.use("/withdraw-request", withdrawRequestRoutes);
@@ -72,3 +80,15 @@ app.use("/withdraw-request", withdrawRequestRoutes);
 // Routes: Admin
 const adminRoutes = require("./routes/adminRoutes.js");
 app.use("/admin", adminRoutes);
+
+// Routes: Coupon
+const couponRoutes = require("./routes/couponRoutes.js");
+app.use("/coupon", couponRoutes);
+
+// Routes: Partner Signup Request
+const partnerSignupRequestRoutes = require("./routes/partnerSignupRequestRoutes.js");
+app.use("/partner-signup-request", partnerSignupRequestRoutes);
+
+// Routes: CMS (Another Service)
+const cmsRoutes = require("./routes/cmsRoutes.js");
+app.use("/out/cms", cmsRoutes);

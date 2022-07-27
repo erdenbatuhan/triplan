@@ -3,20 +3,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import { Button, Modal, CardActionArea, CardMedia, Typography } from '@mui/material';
+import { Button, CardActionArea, CardMedia, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import Tooltip from '@mui/material/Tooltip';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import emailjs from '@emailjs/browser';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
 import Header from '../components/Header';
+import ContentModal from '../components/common/ContentModal';
 import CheckoutItemCard from '../components/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
@@ -24,15 +27,18 @@ import { findUserWallet, getUser } from '../queries/user-queries';
 import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
 import { createTransaction } from '../queries/transaction-queries';
+import { findCouponForUser } from '../queries/coupon-queries';
 import {
   PARTNER_TYPE_RESTAURANT,
   PARTNER_TYPE_TOURIST_ATTRACTION,
   // CURRENCIES,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
-  TRANSACTION_STATUS_REJECTED
+  TRANSACTION_STATUS_REJECTED,
+  // COUPON CONSTANTS
+  MIN_AMOUNT_FOR_COUPON,
+  DEFAULT_VALUE_OF_COUPON
 } from '../shared/constants';
-import { modalStyle as modalBoxStyle } from '../shared/styles';
 
 const walletImg = require('../assets/wallet-logo.png');
 const emailjsCredentials = require('../credentials/emailjs_credentials.json');
@@ -71,7 +77,7 @@ export default function CheckoutPage() {
   const { tripPlanId } = useParams();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [wallet, setWallet] = useState(null);
   const [tripPlan, setTripPlan] = useState({});
@@ -81,6 +87,7 @@ export default function CheckoutPage() {
   const [latestSelectionUpdateDate, setLatestSelectionUpdateDate] = useState(new Date()); // Used for easier force-rendering
   const [servicesToBeBought, setServicesToBeBought] = useState([]);
   const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
+  const [coupon, setCoupon] = useState(null);
   const [user, setUser] = useState(null);
   const [emailContent] = useState({});
   const [itemList, setItemList] = useState([]);
@@ -111,19 +118,22 @@ export default function CheckoutPage() {
   };
 
   const handleWalletPayment = () => {
+    setLoading(true);
     createTransaction({
       amount: Number(totalPaidServicePrice),
       type: TRANSACTION_TYPE_WITHDRAW,
       incomingWalletId: null,
       outgoingWalletId: wallet._id
-    }).then(({ transaction, outgoingWalletObject }) => {
-      if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
-        setWallet(outgoingWalletObject);
-        setPaymentCompleted(true);
-      } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
-        alert('Opps, something went wrong!');
-      }
-    });
+    })
+      .then(({ transaction, outgoingWalletObject }) => {
+        if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
+          setWallet(outgoingWalletObject);
+          setPaymentCompleted(true);
+        } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
+          alert('Opps, something went wrong!');
+        }
+      })
+      .finally(() => setLoading(false));
   };
 
   // Update the trip plan data for every change in trip plan ID
@@ -138,7 +148,11 @@ export default function CheckoutPage() {
 
     // Fetch all the partner locations of the trip plan
     getLocationsOfTripPlan(tripPlanId)
-      .then((data) => setPartnerLocations(data.map(({ partnerLocation }) => partnerLocation)))
+      .then((data) =>
+        setPartnerLocations(
+          data.map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
+        )
+      )
       .catch(() => navigate('/'));
   }, [tripPlanId]);
 
@@ -150,6 +164,7 @@ export default function CheckoutPage() {
 
     getUser(authenticatedUser.user.id).then((data) => setUser(data));
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
+    findCouponForUser(authenticatedUser.user.id).then((data) => setCoupon(data));
   }, [authenticatedUser]);
 
   // Listening to the changes in partnerLocations
@@ -224,11 +239,17 @@ export default function CheckoutPage() {
 
       // Add the items for the current partner location if "at least one" item is selected
       if (itemsToBeBought.length > 0) {
-        updatedServicesToBeBought.push({ partnerLocation, itemsToBeBought });
+        updatedServicesToBeBought.push({
+          partnerLocation: { _id: partnerLocation._id, name: partnerLocation.name },
+          tripLocation: { _id: partnerLocation.tripLocation._id },
+          itemsToBeBought
+        });
       }
     });
 
     setServicesToBeBought(updatedServicesToBeBought);
+
+    console.log(updatedServicesToBeBought);
 
     // Calculate the total paid service price using the services to be bought
     const totalPrice = updatedServicesToBeBought.reduce(
@@ -240,8 +261,9 @@ export default function CheckoutPage() {
         ),
       0 // Initial value
     );
-    setTotalPaidServicePrice(totalPrice);
-  }, [buyableItemSelections]);
+
+    setTotalPaidServicePrice(Math.max(0, totalPrice - (coupon ? coupon.value : 0)));
+  }, [buyableItemSelections, coupon]);
 
   // Listening to the changes in user
   useEffect(() => {
@@ -376,36 +398,120 @@ export default function CheckoutPage() {
                           p: 2,
                           minWidth: 300
                         }}>
-                        <Box sx={{ color: 'text.secondary' }}> Total </Box>
+                        <Grid container spacing={0}>
+                          <Grid item xs={8}>
+                            <Box sx={{ color: 'text.secondary' }}> Total </Box>
 
-                        <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
-                          {totalPaidServicePrice} €
-                        </Box>
-
-                        {wallet && wallet.balance ? (
-                          <div>
                             <Box
                               sx={{
-                                color: `${
-                                  totalPaidServicePrice <= wallet.balance ? 'success' : 'error'
-                                }.dark`,
+                                color: 'text.primary',
                                 display: 'inline',
-                                fontWeight: 'bold',
-                                mx: 0.5,
-                                fontSize: 14
+                                fontSize: 34,
+                                fontWeight: 'medium'
                               }}>
-                              {Number(
-                                ((totalPaidServicePrice / wallet.balance) * 100).toPrecision(4)
-                              )}
-                              %
+                              {totalPaidServicePrice +
+                                (coupon && totalPaidServicePrice > 0 ? coupon.value : 0)}
+                              {' €'}
                             </Box>
-                            <Box sx={{ color: 'text.secondary', display: 'inline', fontSize: 14 }}>
-                              of your wallet balance
-                            </Box>
-                          </div>
-                        ) : (
-                          []
-                        )}
+
+                            {coupon && totalPaidServicePrice > 0 ? (
+                              <Box
+                                sx={{
+                                  color: 'primary.main',
+                                  display: 'inline',
+                                  fontSize: 26,
+                                  fontWeight: 'medium'
+                                }}>
+                                {` - ${coupon.value} € = ${totalPaidServicePrice} €`}
+                              </Box>
+                            ) : (
+                              []
+                            )}
+
+                            {wallet && wallet.balance ? (
+                              <div>
+                                <Box
+                                  sx={{
+                                    color: `${
+                                      totalPaidServicePrice <= wallet.balance ? 'success' : 'error'
+                                    }.dark`,
+                                    display: 'inline',
+                                    fontWeight: 'bold',
+                                    mx: 0.5,
+                                    fontSize: 14
+                                  }}>
+                                  {Number(
+                                    ((totalPaidServicePrice / wallet.balance) * 100).toPrecision(4)
+                                  )}
+                                  %
+                                </Box>
+                                <Box
+                                  sx={{ color: 'text.secondary', display: 'inline', fontSize: 14 }}>
+                                  of your wallet balance
+                                </Box>
+                              </div>
+                            ) : (
+                              []
+                            )}
+
+                            {!coupon && totalPaidServicePrice < MIN_AMOUNT_FOR_COUPON ? (
+                              <div>
+                                <hr />
+
+                                <Box
+                                  sx={{ color: 'text.secondary', display: 'inline', fontSize: 14 }}>
+                                  Spend
+                                </Box>
+
+                                <Box
+                                  sx={{
+                                    color: `primary.main`,
+                                    display: 'inline',
+                                    fontWeight: 'bold',
+                                    mx: 0.5,
+                                    fontSize: 14
+                                  }}>
+                                  {MIN_AMOUNT_FOR_COUPON - totalPaidServicePrice} €
+                                </Box>
+
+                                <Box
+                                  sx={{ color: 'text.secondary', display: 'inline', fontSize: 14 }}>
+                                  more to secure your coupon!
+                                </Box>
+                              </div>
+                            ) : (
+                              []
+                            )}
+                          </Grid>
+
+                          {coupon || totalPaidServicePrice >= MIN_AMOUNT_FOR_COUPON ? (
+                            <Grid item xs={4}>
+                              <Box>
+                                {coupon ? (
+                                  <Tooltip
+                                    title={`The coupon you have secured in your previous trip is applied to this one! (Value: ${coupon.value} €)`}>
+                                    <InsertEmoticonIcon color="primary" />
+                                  </Tooltip>
+                                ) : (
+                                  <InsertEmoticonIcon color="primary" />
+                                )}
+
+                                <Box sx={{ color: 'text.secondary', fontSize: 14 }}>
+                                  {coupon ? (
+                                    `Coupon Applied!`
+                                  ) : (
+                                    <div>
+                                      A <b>{DEFAULT_VALUE_OF_COUPON} €</b> coupon is ready for your
+                                      next trip!
+                                    </div>
+                                  )}
+                                </Box>
+                              </Box>
+                            </Grid>
+                          ) : (
+                            <Grid item xs={2} />
+                          )}
+                        </Grid>
                       </Box>
                     </CardContent>
                   </Box>
@@ -474,32 +580,33 @@ export default function CheckoutPage() {
         <Grid item xs={1} />
       </Grid>
 
-      <Modal
+      <ContentModal
         open={isPaymentCompleted}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        style={{
+        onClose={() => false}
+        contentStyle={{
           display: 'flex',
           justifyConent: 'center',
           alignItems: 'center'
-        }}>
-        <Box sx={modalBoxStyle}>
-          <div className="center">
-            <Alert severity="success">
-              <AlertTitle>Success</AlertTitle>
-              Your payment is successfull! <strong>Enjoy your vacation!</strong>
-            </Alert>
+        }}
+        contentRendered={
+          <Box>
+            <div className="center">
+              <Alert severity="success">
+                <AlertTitle>Success</AlertTitle>
+                Your payment is successfull! <strong>Enjoy your vacation!</strong>
+              </Alert>
 
-            <Button
-              alignItems="center"
-              onClick={() => {
-                navigate('/main-page');
-              }}>
-              Continue
-            </Button>
-          </div>
-        </Box>
-      </Modal>
+              <Button
+                alignItems="center"
+                onClick={() => {
+                  navigate('/main-page');
+                }}>
+                Continue
+              </Button>
+            </div>
+          </Box>
+        }
+      />
     </div>
   );
 }

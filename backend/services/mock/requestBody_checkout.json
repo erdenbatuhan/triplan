@@ -1,0 +1,149 @@
+{
+    "user": {
+        "_id": "62c430e748c4994b2c42af0f"
+    },
+    "checkoutPayload": [
+        {
+            "partnerLocation": {
+                "_id": "62d198b7fda6931f82955a91",
+                "name": "Drunken Cow"
+            },
+            "tripLocation": {
+                "_id": "62dd8deb69d10a918d37ffa4"
+            },
+            "itemsToBeBought": [
+                {
+                    "associatedItemBoughts": [],
+                    "_id": "62d62af0d161eecf935d1ada",
+                    "name": "Ghost Burger Menu",
+                    "description": "Do not eat what you cannot see",
+                    "price": 4,
+                    "appliedDiscountRate": 0,
+                    "restaurant": "62d198b7fda6931f82955a91",
+                    "createdAt": "2022-07-17T03:26:41.764Z",
+                    "updatedAt": "2022-07-20T18:00:59.241Z",
+                    "__v": 0,
+                    "image": "",
+                    "foodType": "Vegan",
+                    "itemType": "MENU_ITEM",
+                    "count": 2,
+                    "finalPrice": 8
+                },
+                {
+                    "associatedItemBoughts": [],
+                    "_id": "62d842dbbff00e841a63c3a9",
+                    "name": "Chicken Wings",
+                    "description": "chicken",
+                    "price": 10,
+                    "appliedDiscountRate": 0,
+                    "image": "qwe",
+                    "restaurant": "62d198b7fda6931f82955a91",
+                    "__v": 0,
+                    "createdAt": "2022-07-20T18:00:59.244Z",
+                    "updatedAt": "2022-07-23T15:31:58.393Z",
+                    "foodType": "Regular",
+                    "itemType": "MENU_ITEM",
+                    "count": 4,
+                    "finalPrice": 40
+                },
+                {
+                    "associatedItemBoughts": [],
+                    "_id": "62d5e4d8e0e9cfcdba0b712b",
+                    "name": "Small Burger Menu",
+                    "description": "Mini Burger 150g, Soft Drink, Fries",
+                    "price": 15,
+                    "appliedDiscountRate": 0,
+                    "restaurant": "62d198b7fda6931f82955a91",
+                    "createdAt": "2022-07-17T03:26:41.764Z",
+                    "updatedAt": "2022-07-23T15:29:31.231Z",
+                    "__v": 0,
+                    "image": "https://bigburger.ch/zuerich-langstrasse/wp-content/uploads/sites/16/2017/05/classic-big-burger-1-300x200.jpg",
+                    "foodType": "Vegetarian",
+                    "itemType": "MENU_ITEM",
+                    "count": 6,
+                    "finalPrice": 90
+                }
+            ]
+        },
+        {
+            "partnerLocation": {
+                "_id": "62dd6c89f5bcd02d7c7a52eb",
+                "name": "Hellabrunn Zoo"
+            },
+            "tripLocation": {
+                "_id": "62dd8deb69d10a918d37ffb1"
+            },
+            "itemsToBeBought": [
+                {
+                    "associatedItemBoughts": [],
+                    "_id": "62d34edfb5f1723f198ad385",
+                    "name": "ticket 1",
+                    "description": "ticket1 description",
+                    "price": 45,
+                    "appliedDiscountRate": 0,
+                    "reservationDate": "2022-07-16T22:30:04.986Z",
+                    "expirationDate": "2022-07-16T22:30:04.986Z",
+                    "touristAttraction": "62dd6c89f5bcd02d7c7a52eb",
+                    "createdAt": "2022-07-16T23:50:55.598Z",
+                    "updatedAt": "2022-07-23T15:54:07.314Z",
+                    "__v": 0,
+                    "itemType": "TICKET",
+                    "count": 1,
+                    "finalPrice": 45
+                },
+                {
+                    "associatedItemBoughts": [],
+                    "_id": "62d3519db5f1723f198ad388",
+                    "name": "ticket3",
+                    "description": "ticket3 description",
+                    "price": 45,
+                    "appliedDiscountRate": 0,
+                    "reservationDate": "2022-07-16T22:30:04.986Z",
+                    "expirationDate": "2022-07-16T22:30:04.986Z",
+                    "touristAttraction": "62dd6c89f5bcd02d7c7a52eb",
+                    "createdAt": "2022-07-17T00:02:37.893Z",
+                    "updatedAt": "2022-07-23T15:54:07.315Z",
+                    "__v": 0,
+                    "itemType": "TICKET",
+                    "count": 2,
+                    "finalPrice": 90
+                },
+                {
+                    "associatedItemBoughts": [],
+                    "_id": "62d37aff5017ef53fdc64e31",
+                    "name": "tick",
+                    "description": "tick description",
+                    "price": 60,
+                    "appliedDiscountRate": 0,
+                    "reservationDate": "2022-07-16T22:30:04.986Z",
+                    "expirationDate": "2022-07-16T22:30:04.986Z",
+                    "touristAttraction": "62dd6c89f5bcd02d7c7a52eb",
+                    "createdAt": "2022-07-17T02:59:11.152Z",
+                    "updatedAt": "2022-07-23T15:54:07.324Z",
+                    "__v": 0,
+                    "itemType": "TICKET",
+                    "count": 1,
+                    "finalPrice": 60
+                },
+                {
+                    "associatedItemBoughts": [],
+                    "_id": "62d37c2c0ac948291f9ca8aa",
+                    "name": "tick22",
+                    "description": "tick22 description",
+                    "price": 65,
+                    "appliedDiscountRate": 0,
+                    "reservationDate": "2022-07-16T22:30:04.986Z",
+                    "expirationDate": "2022-07-16T22:30:04.986Z",
+                    "touristAttraction": "62dd6c89f5bcd02d7c7a52eb",
+                    "createdAt": "2022-07-17T03:04:12.337Z",
+                    "updatedAt": "2022-07-23T15:54:07.325Z",
+                    "__v": 0,
+                    "itemType": "TICKET",
+                    "count": 1,
+                    "finalPrice": 65
+                }
+            ]
+        }
+    ],
+    "couponUsed": false
+}

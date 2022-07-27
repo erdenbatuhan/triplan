@@ -26,18 +26,24 @@ export default function MainPage() {
   }, []);
 
   const navigate = useNavigate();
-  const handleButtonClick = (filterData) => {
+  const handleButtonClick = ({ filterData }) => {
     if (!selectedCity || selectedCity === '') {
       console.log('city selection is mandatory'); // error log
     } else if (
-      filterData.filterData.restaurantFilter.cuisines.length === 0 &&
-      filterData.filterData.restaurantFilter.foodTypes.length === 0 &&
-      filterData.filterData.restaurantFilter.priceLevel.length === 0 &&
-      filterData.filterData.touristAttractionFilter.types[0].length === 0
+      filterData.restaurantFilter.cuisines.length === 0 &&
+      filterData.restaurantFilter.foodTypes.length === 0 &&
+      filterData.restaurantFilter.priceLevel.length === 0 &&
+      filterData.touristAttractionFilter.types[0].length === 0
     ) {
       console.log('choosing filter is mandatory');
     } else {
-      navigate('/trip-plan', { state: { selectedCity, filterData, isRestaurantEnabled } });
+      navigate('/trip-plan', {
+        state: {
+          selectedCity,
+          filterData: { filterData: { ...filterData, city: selectedCity } },
+          isRestaurantEnabled
+        }
+      });
     }
   };
 

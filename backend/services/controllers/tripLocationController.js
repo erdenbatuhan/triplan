@@ -4,6 +4,10 @@ const create = (fields) => {
   return TripLocation.create(fields);
 };
 
+const createMany = (fieldsList, session) => {
+  return TripLocation.insertMany(fieldsList, { session });
+};
+
 const update = (id, fields) => {
   if (!exists(id)) {
     return new Promise((resolve) => resolve(null)); // Trip Location does not exist!
@@ -24,4 +28,4 @@ const findByIds = (ids) => {
   return TripLocation.find({ _id: { $in: ids } }).sort({ order: "asc" }); // In ascending order
 };
 
-module.exports = { create, update, exists, findByIds };
+module.exports = { create, createMany, update, exists, findByIds };

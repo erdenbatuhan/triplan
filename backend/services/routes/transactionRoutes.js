@@ -22,6 +22,20 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 /**
+ * Buys items from partner locations for a user
+ * 
+ * @see ReqBody in "./../mock/requestBody_checkout.json"
+ */
+ router.post("/checkout", async (req, res) => {
+  try {
+    const transactionsCreated = await transactionController.buyItems(req.body);
+    res.status(200).send(transactionsCreated);
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while buying items from partner locations for a user! Error => ${message}`);
+  }
+});
+
+/**
  * Creates a transaction between given wallet ids with the given amount and transaction type
  * 
  * @see ReqBody in "./../mock/requestBody_createTransaction.json"
@@ -29,11 +43,6 @@ router.get("/user/:userId", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const transactionCreated = await transactionController.createTransaction(req.body);
-
-    if (!transactionCreated) {
-      return res.status(404).send(`A problem occurred while creating the transaction! Check the transaction type and its required fields!`);
-    }
-  
     res.status(200).send(transactionCreated);
   } catch ({ message }) {
     res.status(400).send(`An error occurred while creating a transaction between wallets! Error => ${message}`);
