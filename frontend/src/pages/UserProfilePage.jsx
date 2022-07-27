@@ -13,6 +13,7 @@ import {
   Button
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
+import EditIcon from '@mui/icons-material/Edit';
 import Spinner from '../components/common/Spinner';
 import ContentModal from '../components/common/ContentModal';
 import TripCard from '../components/TripCard';
@@ -206,7 +207,7 @@ function UserProfilePage() {
             <Avatar sx={avatarStyle} src={user.profilePicture} loading="lazy" />
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={3} display="flex">
             <Typography
               component="div"
               align="center"
@@ -214,6 +215,27 @@ function UserProfilePage() {
               sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
               {user.firstName} {user.lastName}
             </Typography>
+            {isShownUserAuthenticated ? (
+              <IconButton onClick={() => setIsEditMode(true)}>
+                <EditIcon />
+              </IconButton>
+            ) : (
+              []
+            )}
+            <ContentModal
+              open={isEditMode}
+              onClose={() => {
+                setIsEditMode(false);
+              }}
+              contentStyle={{ minWidth: '500px' }}
+              contentRendered={
+                <EditUserProfileCard
+                  user={user}
+                  isLoading={isEditInProgress}
+                  handleUserFieldsChangedClick={handleUserFieldsChangedClick}
+                />
+              }
+            />
           </Grid>
 
           <Grid item xs={3} align-items="inherit">
@@ -352,30 +374,6 @@ function UserProfilePage() {
           </Grid>
         </Grid>
       </Grid>
-      {isShownUserAuthenticated ? (
-        <Grid item xs={2}>
-          <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
-            Edit Profile
-          </Button>
-
-          <ContentModal
-            open={isEditMode}
-            onClose={() => {
-              setIsEditMode(false);
-            }}
-            contentStyle={{ minWidth: '500px' }}
-            contentRendered={
-              <EditUserProfileCard
-                user={user}
-                isLoading={isEditInProgress}
-                handleUserFieldsChangedClick={handleUserFieldsChangedClick}
-              />
-            }
-          />
-        </Grid>
-      ) : (
-        <Grid item xs={2} />
-      )}
     </Grid>
   );
 }
