@@ -80,12 +80,12 @@ function getPartnerSignupRequestRows(allPartnerSignupRequests) {
 const partnerSignupRequestColumns = [
   { field: 'id', headerName: 'Request ID', width: 210 },
   { field: 'username', headerName: 'User Name', width: 210 },
-  { field: 'userId', headerName: 'User ID', width: 210 },
   { field: 'email', headerName: 'User Email', width: 210 },
   { field: 'googlePlaceId', headerName: 'Google Place ID', width: 210 },
   { field: 'partnerLocationName', headerName: 'Partner Name', width: 210 },
   { field: 'partnerLocationContact', headerName: 'Contact', width: 210 },
   { field: 'partnerType', headerName: 'Partner Type', width: 210 },
+  { field: 'authentication', headerName: 'Authentication ID', width: 210 },
   { field: 'createdAt', headerName: 'Request Date', type: 'date', width: 600 }
 ];
 
@@ -121,7 +121,6 @@ function AdminPage() {
   useEffect(() => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
   }, [isOpen]);
-  // console.log(allWithdrawRequests);
 
   const syncWithdrawRequests = () => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
@@ -130,7 +129,6 @@ function AdminPage() {
   useEffect(() => {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
   }, [isOpen]);
-  // console.log(allWithdrawRequests);
 
   useEffect(() => {
     Promise.all([
@@ -202,20 +200,23 @@ function AdminPage() {
   const handleApprovePartnerSignupRequest = () => {
     partnerSignupSelectedRows.forEach((partner) => {
       const { googlePlaceId, partnerType } = partner;
+      console.log(googlePlaceId);
       getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
-        if (partnerType === 'RESTAURANT') {
-          saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
-            console.log('Restaurant is approved successfully.');
-          });
-        } else if (partnerType === 'TOURIST_ATTRACTION') {
-          saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
-            () => {
-              console.log('Tourist Attractions is approved successfully.');
-            }
-          );
-        } else {
-          console.error('the selected partner type is not defined.');
-        }
+        console.log(!partnerData);
+        // if (partnerType === 'RESTAURANT') {
+        //   saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
+        //     console.log('Restaurant is approved successfully.');
+        //   });
+        // } else if (partnerType === 'TOURIST_ATTRACTION') {
+        //   saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
+        //     () => {
+        //       console.log('Tourist Attractions is approved successfully.');
+        //     }
+        //   );
+        // } else {
+        //   console.error('the selected partner type is not defined.');
+        // }
+
         // handleEmail(
         //   {
         //     subject: 'Congratulations! Your Partnership is Approved!',
