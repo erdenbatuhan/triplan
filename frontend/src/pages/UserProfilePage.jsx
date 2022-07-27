@@ -18,7 +18,7 @@ import ContentModal from '../components/common/ContentModal';
 import TripCard from '../components/TripCard';
 import Wallet from '../components/Wallet';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { getUser } from '../queries/user-queries';
+import { getUser, updateUserFields } from '../queries/user-queries';
 import {
   getFollowingRelationship,
   createFollowingRelationship,
@@ -50,31 +50,10 @@ function UserProfilePage() {
   const [followersModalShown, setFollowersModalShown] = useState(false);
   const [followedModalShown, setFollowedModalShown] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isEditInProgress, setIsEditInProgress] = useState(false);
 
   const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-
-  /* const getFollowersOfUser = () => {
-    return getFollowers(userId).then((data) => {
-      setFollowersData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
-      return data;
-    });
-  }; 
-
-  const getFollowedOfUser = () => {
-    return getFollowed(userId).then((data) => {
-      setFollowedData(Object.assign({}, ...data.map((item) => ({ [item._id]: item }))));
-      return data;
-    });
-  }; */
-
-  /* const getFollowedOfAuthenticatedUser = () => {
-    return getFollowed(authenticatedUser.user.id).then((data) => {
-      setAuthenticatedUserFollowedData(
-        Object.assign({}, ...data.map((item) => ({ [item._id]: item })))
-      );
-    });
-  }; */
 
   const getCountText = (count, onClick) => {
     return (
@@ -95,20 +74,6 @@ function UserProfilePage() {
       </Box>
     );
   };
-
-  /* const getCountTextForNonAuthenticatedUser = (count, onClick) => {
-    return (
-      <Box
-        onClick={onClick}
-        sx={{
-          color: 'text.primary',
-          fontSize: 34,
-          fontWeight: 'medium'
-        }}>
-        {count}
-      </Box>
-    );
-  }; */
 
   const isGivenUserAuthenticatedUser = (givenUserId) => givenUserId === authenticatedUser.user.id;
 
@@ -221,6 +186,14 @@ function UserProfilePage() {
     }
   };
 
+  // Authenticated User Fields Edit
+  const handleUserFieldsChangedClick = (params) => {
+    setIsEditInProgress(true);
+    updateUserFields(authenticatedUser.user.id, params)
+      .then(() => getUser(userId).then((data) => setUser(data)))
+      .finally(() => setIsEditInProgress(false));
+  };
+
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
@@ -234,23 +207,29 @@ function UserProfilePage() {
           </Grid>
 
           <Grid item xs={3}>
-            <Typography align="center" m={1} sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
+            <Typography
+              component="div"
+              align="center"
+              m={1}
+              sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
               {user.firstName} {user.lastName}
             </Typography>
           </Grid>
 
           <Grid item xs={3} align-items="inherit">
-            <Typography align="center">
+            <Typography component="div" align="center">
               <IconButton sx={{ p: 0, display: 'inline' }}>
                 <AlternateEmailIcon fontSize="small" sx={{ fontStyle: 'italic' }} />
               </IconButton>
 
-              <Typography sx={{ display: 'inline' }}>{user.username || '...'}</Typography>
+              <Typography component="div" sx={{ display: 'inline' }}>
+                {user.username || '...'}
+              </Typography>
             </Typography>
           </Grid>
         </Grid>
 
-        <Card sx={{ border: 'none', boxShadow: 'none', backgroundColor: 'transparent' }}>
+        <Card sx={{ border: 'none', boxShadow: 'none', background: 'transparent' }}>
           <CardContent>
             {isShownUserAuthenticated ? (
               <Grid>
@@ -276,11 +255,8 @@ function UserProfilePage() {
                 }}>
                 <CardContent>
                   <Grid container justifyContent="center">
-                    <Grid item sx={4} alignItems="center">
-                      <Box
-                        sx={{
-                          pr: 2
-                        }}>
+                    <Grid item xs={4} alignItems="center">
+                      <Box sx={{ pl: 4 }}>
                         <Box sx={{ color: 'text.secondary' }}> Followers </Box>
                         {getCountText(Object.keys(followersData).length, () =>
                           setFollowersModalShown(true)
@@ -305,15 +281,19 @@ function UserProfilePage() {
                       />
                     </Grid>
 
-                    <Grid item sx={4}>
-                      <Divider orientation="vertical" sx={{ fontWeight: 'bold' }} />
+                    <Grid item xs={4}>
+                      <Divider
+                        orientation="vertical"
+                        sx={{
+                          fontWeight: 'bold',
+                          display: 'inline-block',
+                          justifyContent: 'center'
+                        }}
+                      />
                     </Grid>
 
-                    <Grid item sx={4} alignItems="center">
-                      <Box
-                        sx={{
-                          pl: 2
-                        }}>
+                    <Grid item xs={4} alignItems="center">
+                      <Box sx={{ pr: 4 }}>
                         <Box sx={{ color: 'text.secondary' }}> Following </Box>
                         {getCountText(Object.keys(followedData).length, () =>
                           setFollowedModalShown(true)
@@ -349,7 +329,7 @@ function UserProfilePage() {
 
       <Grid item xs={6}>
         <Grid>
-          <Typography align="left" variant="h6" color="text.secondary">
+          <Typography component="div" align="left" variant="h6" color="text.secondary">
             Trips: {tripPlans.length || 0}
           </Typography>
           <Divider />
@@ -359,7 +339,13 @@ function UserProfilePage() {
             <Stack spacing={2} pt={4}>
               {tripPlans
                 ? tripPlans.map((tripPlan) => {
-                    return <TripCard key={tripPlan._id} tripPlan={tripPlan} />;
+                    return (
+                      <TripCard
+                        key={tripPlan._id}
+                        tripPlan={tripPlan}
+                        viewMode={!isShownUserAuthenticated}
+                      />
+                    );
                   })
                 : []}
             </Stack>
@@ -378,7 +364,13 @@ function UserProfilePage() {
               setIsEditMode(false);
             }}
             contentStyle={{ minWidth: '500px' }}
-            contentRendered={<EditUserProfileCard user={user} />}
+            contentRendered={
+              <EditUserProfileCard
+                user={user}
+                isLoading={isEditInProgress}
+                handleUserFieldsChangedClick={handleUserFieldsChangedClick}
+              />
+            }
           />
         </Grid>
       ) : (

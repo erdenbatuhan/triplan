@@ -3,7 +3,7 @@ import { Box, List } from '@mui/material';
 import TripPlanRatingCard from './TripPlanRatingCard';
 import { getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 
-export default function TripPlanRatings({ tripPlanId }) {
+export default function TripPlanRatings({ tripPlanId, viewMode }) {
   const [detailedLocations, setDetailedLocations] = useState([]);
 
   // Listening to the change in tripPlanId
@@ -46,6 +46,7 @@ export default function TripPlanRatings({ tripPlanId }) {
               partnerLocation={partnerLocation}
               onChangesSaved={onChangesSaved}
               latestUpdate={tripLocation.updatedAt}
+              viewMode={viewMode}
             />
           ))}
         </List>

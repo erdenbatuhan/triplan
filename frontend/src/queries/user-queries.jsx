@@ -32,3 +32,12 @@ export async function getUser(id) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function updateUserFields(userId, updatedFields) {
+  return await fetch(`${HOST_USER}/${userId}`, {
+    method: `POST`,
+    mode: `cors`,
+    headers: HEADERS,
+    body: JSON.stringify(updatedFields)
+  }).then((response) => response.json());
+}

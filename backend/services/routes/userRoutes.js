@@ -64,4 +64,22 @@ router.get("/:userId/wallet", async (req, res) => {
   }
 });
 
+/**
+ * Updates the user fields
+ */
+ router.post("/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const userUpdated = await userController.updateFields(userId, req.body);
+
+    res.status(200).send(userUpdated);
+  } catch ({ message }) {
+    res
+      .status(400)
+      .send(
+        `An error occurred while updating the user given! Error => ${message}`
+      );
+  }
+});
+
 module.exports = router;
