@@ -55,9 +55,7 @@ const updateFields = (id, fields, session) => {
 };
 
 const findUserByWallet = (walletId, session) => {
-  return User.find({ wallet: walletId })
-    .session(session)
-    .then((users) => users[0]);
+  return User.findOne({ wallet: walletId }).session(session);
 };
 
 const findWalletsByWalletIds = (walletIds) => {
