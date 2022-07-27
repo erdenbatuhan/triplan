@@ -1,7 +1,9 @@
 const { axios, HOST_CMS, HEADERS } = require("./constants.js");
 
 module.exports.findAllImages = (owner) => {
-  return axios.get(`${HOST_CMS}?owner=${owner}`, { HEADERS }).then(({ data }) => data);
+  return axios.get(`${HOST_CMS}?owner=${owner}`, { HEADERS })
+    .then(({ data }) => data)
+    .catch(() => []);
 };
 
 module.exports.uploadImage = (owner, payload) => {
