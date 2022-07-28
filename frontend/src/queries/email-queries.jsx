@@ -6,6 +6,10 @@ export function generateEmailRoute(partnerLocations) {
   return partnerLocations.map(({ name }) => name).join('  ->  ');
 }
 
+export function generateGoogleMapsLink(partnerLocations) {
+  return partnerLocations.map(({ name }) => name.replaceAll(' ', '+')).join('/');
+}
+
 export function generateEmailPaidServices(servicesToBeBought) {
   if (servicesToBeBought.length === 0) {
     return 'You do not have any prepaid services!';

@@ -15,7 +15,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
-import emailjs from '@emailjs/browser';
+// import emailjs from '@emailjs/browser';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
@@ -29,6 +29,7 @@ import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-querie
 import { getBuyableItems } from '../queries/buyable-item-queries';
 import { createTransaction } from '../queries/transaction-queries';
 import { findCouponForUser } from '../queries/coupon-queries';
+import { handleEmail } from '../queries/email-queries';
 import {
   PARTNER_TYPE_RESTAURANT,
   PARTNER_TYPE_TOURIST_ATTRACTION,
@@ -43,37 +44,37 @@ import {
 } from '../shared/constants';
 
 const walletImg = require('../assets/wallet-logo.png');
-const emailjsCredentials = require('../credentials/emailjs_credentials.json');
+// const emailjsCredentials = require('../credentials/emailjs_credentials.json');
 
-function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
-  let message =
-    'Your optimized route plan is consist of following places. You can also click the link below to see the route on google maps.\r\n';
-  let googleMapsLink = 'https://www.google.com/maps/dir/';
-  for (let index = 0; index < partnerLocationList.length; index += 1) {
-    const loc = partnerLocationList[index];
-    message = message.concat('\r\n- ', loc.name);
-    googleMapsLink = googleMapsLink.concat(loc.name.replaceAll(' ', '+'), '/');
-  }
-  if (servicesToBeBought.length > 0) {
-    message = message.concat('\r\nYour Paid Services:\r\n');
-    for (let index = 0; index < servicesToBeBought.length; index += 1) {
-      const item = servicesToBeBought[index];
-      message = message.concat('\r\n- ', item.partnerLocation.name);
-      for (let j = 0; j < item.itemsToBeBought.length; j += 1) {
-        message = message.concat(
-          '\r\n\r\t- ',
-          `${item.itemsToBeBought[j].name} (${item.itemsToBeBought[j].price} €) x ${item.itemsToBeBought[j].count} = ${item.itemsToBeBought[j].finalPrice} €`
-        );
-      }
-      googleMapsLink = googleMapsLink.concat(item.partnerLocation.name.replaceAll(' ', '+'), '/');
-    }
-    message = message.concat('\r\n- Total paid amount : ', amount, '€');
-  }
+// function generateEmailMessage(partnerLocationList, servicesToBeBought, amount) {
+//   let message =
+//     'Your optimized route plan is consist of following places. You can also click the link below to see the route on google maps.\r\n';
+//   let googleMapsLink = 'https://www.google.com/maps/dir/';
+//   for (let index = 0; index < partnerLocationList.length; index += 1) {
+//     const loc = partnerLocationList[index];
+//     message = message.concat('\r\n- ', loc.name);
+//     googleMapsLink = googleMapsLink.concat(loc.name.replaceAll(' ', '+'), '/');
+//   }
+//   if (servicesToBeBought.length > 0) {
+//     message = message.concat('\r\nYour Paid Services:\r\n');
+//     for (let index = 0; index < servicesToBeBought.length; index += 1) {
+//       const item = servicesToBeBought[index];
+//       message = message.concat('\r\n- ', item.partnerLocation.name);
+//       for (let j = 0; j < item.itemsToBeBought.length; j += 1) {
+//         message = message.concat(
+//           '\r\n\r\t- ',
+//           `${item.itemsToBeBought[j].name} (${item.itemsToBeBought[j].price} €) x ${item.itemsToBeBought[j].count} = ${item.itemsToBeBought[j].finalPrice} €`
+//         );
+//       }
+//       googleMapsLink = googleMapsLink.concat(item.partnerLocation.name.replaceAll(' ', '+'), '/');
+//     }
+//     message = message.concat('\r\n- Total paid amount : ', amount, '€');
+//   }
 
-  message = message.concat('\r\n\r\nGoogle Maps Link:\r\n');
-  message = message.concat(googleMapsLink);
-  return message;
-}
+//   message = message.concat('\r\n\r\nGoogle Maps Link:\r\n');
+//   message = message.concat(googleMapsLink);
+//   return message;
+// }
 
 export default function CheckoutPage() {
   const { tripPlanId } = useParams();
@@ -92,32 +93,33 @@ export default function CheckoutPage() {
   const [coupon, setCoupon] = useState(null);
   const [user, setUser] = useState(null);
   const [emailContent] = useState({});
-  const [itemList, setItemList] = useState([]);
+  // const [itemList, setItemList] = useState([]);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
 
+  console.log(authenticatedUser);
   const handleCompletePayment = (bool) => {
     setPaymentCompleted(bool);
   };
 
-  const handleEmail = () => {
-    emailjs.init(emailjsCredentials.publicKey);
-    // e.preventDefault(); // Prevents default refresh by the browser
-    emailjs
-      .send(
-        emailjsCredentials.userId,
-        emailjsCredentials.templeteId,
-        emailContent
-        // emailjs.publicKey
-      )
-      .then(
-        (result) => {
-          console.log('Message Sent, We will get back to you shortly', result.text);
-        },
-        (error) => {
-          console.log('An error occurred, Please try again', error.text);
-        }
-      );
-  };
+  // const handleEmail = () => {
+  //   emailjs.init(emailjsCredentials.publicKey);
+  //   // e.preventDefault(); // Prevents default refresh by the browser
+  //   emailjs
+  //     .send(
+  //       emailjsCredentials.userId,
+  //       emailjsCredentials.templeteId,
+  //       emailContent
+  //       // emailjs.publicKey
+  //     )
+  //     .then(
+  //       (result) => {
+  //         console.log('Message Sent, We will get back to you shortly', result.text);
+  //       },
+  //       (error) => {
+  //         console.log('An error occurred, Please try again', error.text);
+  //       }
+  //     );
+  // };
 
   const handleWalletPayment = () => {
     setLoading(true);
@@ -290,20 +292,30 @@ export default function CheckoutPage() {
     emailContent.to_email = user.email;
   }, [user]);
 
-  // Listening to the changes in partnerLocations, servicesToBeBought, totalPaidServicePrice
-  useEffect(() => {
-    if (!partnerLocations) {
-      return;
-    }
+  // // Listening to the changes in partnerLocations, servicesToBeBought, totalPaidServicePrice
+  // useEffect(() => {
+  //   if (!partnerLocations) {
+  //     return;
+  //   }
 
-    setItemList(servicesToBeBought);
-    emailContent.message = generateEmailMessage(partnerLocations, itemList, totalPaidServicePrice);
-  }, [partnerLocations, servicesToBeBought, totalPaidServicePrice]);
+  //   setItemList(servicesToBeBought);
+  //   emailContent.message = generateEmailMessage(partnerLocations, itemList, totalPaidServicePrice);
+  // }, [partnerLocations, servicesToBeBought, totalPaidServicePrice]);
 
   // Listening to the changes in isPaymentCompleted
   useEffect(() => {
     if (isPaymentCompleted) {
-      handleEmail();
+      handleEmail(
+        {
+          to_email: '',
+          to_name: '',
+          route: '',
+          paid_services: '',
+          total_amount: '',
+          google_maps_link: ''
+        },
+        'checkout'
+      );
     }
   }, [isPaymentCompleted]);
 
