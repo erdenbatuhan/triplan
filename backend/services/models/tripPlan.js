@@ -10,6 +10,7 @@ const TripPlan = mongoose.model(
     {
       name: { type: String, required: true },
       user: { type: Schema.Types.ObjectId, ref: User.name, required: true }, // Many-To-One Relation using Reference
+      paid: { type: Boolean, default: false, required: true },
       tripLocations: [{
         type: Schema.Types.ObjectId,
         ref: TripLocation.name,

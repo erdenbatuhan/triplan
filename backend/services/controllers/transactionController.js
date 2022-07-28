@@ -8,6 +8,7 @@ const userController = require("./userController.js");
 const couponController = require("./couponController.js");
 const buyableItemController = require("./buyableItemController.js");
 const itemBoughtController = require("./itemBoughtController.js");
+const tripPlanController = require("./tripPlanController.js");
 
 const enums = require("./../utils/enums.js");
 
@@ -52,10 +53,13 @@ module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
 
     await session.withTransaction(async () => {
       const userWallet = await walletController.findUserWallet(user._id, session);
+      const firstTripLocation = checkoutPayload[0].tripLocation;
 
       await Promise.all([
+        // Set paid to "true" in the trip plan so that the checkout process can only occur once
+        tripPlanController.setPaidByTripLocation(firstTripLocation, session),
         // Connect the BuyableItems with the TripLocations through the ItemBought collection
-        await Promise.all(checkoutPayload.map(async ({ tripLocation, itemsToBeBought }) => {
+        Promise.all(checkoutPayload.map(async ({ tripLocation, itemsToBeBought }) => {
           const buyableItems = itemsToBeBought.map(({ _id, itemType }) => ({ _id, itemType }));
           const itemsBought = itemsToBeBought.map(({ count, itemType }) => ({
             amount: count, associatedTripLocation: tripLocation._id, itemType
@@ -65,7 +69,7 @@ module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
           return await buyableItemController.addItemsBought(buyableItems, itemsBoughtCreated, session);
         })),
         // Pay the PartnerLocations the amount of each item bought
-        await Promise.all(checkoutPayload.map(async ({ partnerLocation, itemsToBeBought }) => {
+        Promise.all(checkoutPayload.map(async ({ partnerLocation, itemsToBeBought }) => {
           const totalPrice = itemsToBeBought.reduce((total, { finalPrice }) => total + finalPrice, 0);
 
           const partnerLocationWallet = await walletController.findPartnerLocationWallet(partnerLocation._id, session);
