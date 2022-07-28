@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Modal, Box, Stack, Typography, TextField, Button } from '@mui/material';
+import { Box, Stack, TextField, Button } from '@mui/material';
+import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
+import ImageUpload from '../common/ImageUpload';
 
 function EditItemModal(props) {
-  const { item, inAdd, itemEditAddMode, locationType, handleItemChangeCompletionClick } = props;
+  const { item, locationType, handleItemChangeCompletionClick, itemInAdd } = props;
   const { partnerId } = useParams();
 
   // const { name, description, price, type, image } = item; // reservationDate
@@ -15,31 +17,32 @@ function EditItemModal(props) {
 
   // const [itemReservationDate, setItemReservationDate] = useState(reservationDate);
 
-  const [type, setItemFoodType] = useState('');
-  const [image, setItemPicture] = useState('');
+  const [foodType, setItemFoodType] = useState('');
+  const [image, setItemImage] = useState('');
 
-  const buttonItemNameText = locationType === 'restaurant' ? 'Menu' : 'Ticket';
-  const buttonText = inAdd
-    ? `Create New ${buttonItemNameText}!`
-    : `Complete ${buttonItemNameText} update!`;
-  const nameLabel = locationType === 'restaurant' ? 'Menu Name' : 'Ticket Name';
+  const buttonItemNameText = locationType === PARTNER_TYPE_RESTAURANT ? 'Menu' : 'Ticket';
+  const buttonText = itemInAdd
+    ? `Create New ${buttonItemNameText}`
+    : `Save ${buttonItemNameText} changes`;
+  const nameLabel = locationType === PARTNER_TYPE_RESTAURANT ? 'Menu Name' : 'Ticket Name';
   const descriptionLabel =
-    locationType === 'restaurant' ? 'Menu Description' : 'Ticket Description';
-  const priceLabel = locationType === 'restaurant' ? 'Menu Price' : 'Ticket Price';
+    locationType === PARTNER_TYPE_RESTAURANT ? 'Menu Description' : 'Ticket Description';
+  const priceLabel =
+    locationType === PARTNER_TYPE_RESTAURANT ? 'Menu Price in € ' : 'Ticket Price in €';
 
   // const menuType = 'Event Date';
 
   const menuTypeLabel = 'Menu Food Type';
-  const pictureLabel = locationType === 'restaurant' ? 'Menu Picture' : 'Ticket Picture';
+  // const pictureLabel = locationType === PARTNER_TYPE_RESTAURANT ? 'Menu Picture' : 'Ticket Picture';
 
   useEffect(() => {
-    setItemId(!inAdd ? item._id : '');
-    setItemName(!inAdd ? item.name : '');
-    setItemDescription(!inAdd ? item.description : '');
-    setItemPrice(!inAdd ? item.price : '');
-    setItemPicture(!inAdd ? item.image : '');
-    if (locationType === 'restaurant') {
-      setItemFoodType(!inAdd ? item.type : '');
+    setItemId(!itemInAdd ? item._id : '');
+    setItemName(!itemInAdd ? item.name : '');
+    setItemDescription(!itemInAdd ? item.description : '');
+    setItemPrice(!itemInAdd ? item.price : '');
+    setItemImage(!itemInAdd ? item.image : '');
+    if (locationType === PARTNER_TYPE_RESTAURANT) {
+      setItemFoodType(!itemInAdd ? item.foodType : '');
     }
   }, [item]);
 
@@ -60,19 +63,18 @@ function EditItemModal(props) {
   const onItemFoodTypeChange = (e) => {
     setItemFoodType(e.target.value);
   };
-  const onItemPictureChange = (e) => {
-    setItemPicture(e.target.value);
+  const onItemImageChange = (imageUpdated) => {
+    setItemImage(imageUpdated);
   };
 
   const getChangedItemObject = () => {
     let itemObject =
-      locationType === 'restaurant'
+      locationType === PARTNER_TYPE_RESTAURANT
         ? {
             name,
             description,
             price,
-            type,
-            // type,
+            foodType,
             appliedDiscountRate: 0,
             restaurant: partnerId,
             image
@@ -87,71 +89,72 @@ function EditItemModal(props) {
             touristAttraction: partnerId,
             image
           };
-    itemObject = !inAdd ? { ...itemObject, _id } : itemObject;
+    itemObject = !itemInAdd ? { ...itemObject, _id } : itemObject;
     return itemObject;
   };
 
   return (
-    <Modal open={itemEditAddMode}>
-      <Box sx={{ width: 400 }}>
-        <Stack spacing={2}>
-          <Typography align="center">{buttonText}</Typography>
+    <Box sx={{ width: 400 }}>
+      <Stack spacing={2}>
+        <ImageUpload objectId={item._id} image={image} onSaveSuccess={onItemImageChange} />
+
+        <TextField
+          required
+          id="outlined-required"
+          label={nameLabel}
+          value={name}
+          onChange={(e) => onItemNameChange(e)}
+        />
+
+        <TextField
+          required
+          id="outlined-required"
+          label={descriptionLabel}
+          value={description}
+          onChange={(e) => onItemDescriptionChange(e)}
+        />
+
+        <TextField
+          required
+          id="outlined-required"
+          label={priceLabel}
+          value={price}
+          onChange={(e) => onItemPriceChange(e)}
+        />
+        {/* <TextField
+          required
+          id="outlined-required"
+          label={pictureLabel}
+          value={image}
+          onChange={(e) => onItemPictureChange(e)}
+  /> */}
+        {locationType === PARTNER_TYPE_RESTAURANT ? (
           <TextField
             required
             id="outlined-required"
-            label={nameLabel}
-            value={name}
-            onChange={(e) => onItemNameChange(e)}
+            label={menuTypeLabel}
+            value={foodType}
+            onChange={(e) => onItemFoodTypeChange(e)}
           />
-          <TextField
-            required
-            id="outlined-required"
-            label={descriptionLabel}
-            value={description}
-            onChange={(e) => onItemDescriptionChange(e)}
-          />
-          <TextField
-            required
-            id="outlined-required"
-            label={priceLabel}
-            value={price}
-            onChange={(e) => onItemPriceChange(e)}
-          />
-          <TextField
-            required
-            id="outlined-required"
-            label={pictureLabel}
-            value={image}
-            onChange={(e) => onItemPictureChange(e)}
-          />
-          {locationType === 'restaurant' ? (
-            <TextField
-              required
-              id="outlined-required"
-              label={menuTypeLabel}
-              value={type}
-              onChange={(e) => onItemFoodTypeChange(e)}
-            />
-          ) : (
-            // <TextField
-            //   required
-            //   id="outlined-required"
-            //   label={pictureLabel}
-            //   value={itemReservationDate}
-            //   onChange={(e) => onItemReservationDateChange(e)}
-            // />
-            // eslint-disable-next-line react/jsx-no-useless-fragment
-            <></>
-          )}
-          <Button
-            onClick={(e) => {
-              handleItemChangeCompletionClick(e, getChangedItemObject());
-            }}>
-            {buttonText}
-          </Button>
-        </Stack>
-      </Box>
-    </Modal>
+        ) : (
+          // <TextField
+          //   required
+          //   id="outlined-required"
+          //   label={pictureLabel}
+          //   value={itemReservationDate}
+          //   onChange={(e) => onItemReservationDateChange(e)}
+          // />
+          // eslint-disable-next-line react/jsx-no-useless-fragment
+          <></>
+        )}
+        <Button
+          onClick={(e) => {
+            handleItemChangeCompletionClick(e, getChangedItemObject());
+          }}>
+          {buttonText}
+        </Button>
+      </Stack>
+    </Box>
   );
 }
 

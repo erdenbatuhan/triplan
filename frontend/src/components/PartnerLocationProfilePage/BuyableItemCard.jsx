@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 // import ListItem from '@mui/material/ListItem';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { Button, Avatar } from '@mui/material';
 
 export default function BuyableItemCard(props) {
@@ -16,8 +16,8 @@ export default function BuyableItemCard(props) {
     content,
     price,
     image,
-    handleEditClick,
-    handleDeleteClick /* , inEdit */
+    handleBuyableItemEditClick,
+    handleBuyableItemDeleteClick /* , inEdit */
   } = props;
   // const navigate = useNavigate();
   // const { partnerId } = useParams();
@@ -68,11 +68,11 @@ export default function BuyableItemCard(props) {
             </Grid>
 
             <Grid item xs={4}>
-              <Button value={itemIdx} onClick={handleEditClick}>
+              <Button value={itemIdx} onClick={handleBuyableItemEditClick}>
                 Edit
               </Button>
 
-              <Button value={itemIdx} onClick={handleDeleteClick}>
+              <Button value={itemIdx} onClick={handleBuyableItemDeleteClick}>
                 Delete
               </Button>
             </Grid>
@@ -134,7 +134,7 @@ export default function BuyableItemCard(props) {
   ); */
 }
 
-BuyableItemCard.propTypes = {
+/* BuyableItemCard.propTypes = {
   itemIdx: PropTypes.number,
   name: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
@@ -146,4 +146,4 @@ BuyableItemCard.propTypes = {
 BuyableItemCard.defaultProps = {
   itemIdx: -1
   // inEdit: false
-};
+}; */

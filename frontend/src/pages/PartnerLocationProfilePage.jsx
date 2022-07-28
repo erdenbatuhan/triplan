@@ -11,7 +11,8 @@ import {
   IconButton,
   Divider,
   Paper,
-  List
+  List,
+  Tooltip
 } from '@mui/material';
 import { green } from '@mui/material/colors';
 import Alert from '@mui/material/Alert';
@@ -22,6 +23,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 // import ItemListDisplay from '../components/PartnerLocationProfilePage/ItemListDisplay';
 // import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/RestaurantCuisineDisplay';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
 import {
   getRestaurant,
@@ -30,7 +32,16 @@ import {
   saveTouristAttraction,
   getPartnerLocationById
 } from '../queries/partner-location-queries';
-import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
+import {
+  getMenuItems,
+  getTickets,
+  updateMenuItem,
+  updateTicket,
+  addMenuItem,
+  addTicket,
+  deleteMenuItem,
+  deleteTicket
+} from '../queries/buyable-item-queries';
 // import InfoCard from '../components/InfoCard';
 import { createNewPartnerSignupRequest } from '../queries/partner-signup-request-queries';
 import { handleEmail } from '../queries/email-queries';
@@ -40,7 +51,7 @@ import Spinner from '../components/common/Spinner';
 // import { modalStyle } from '../shared/styles';
 // import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
 import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
-// import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
+import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
 import EditPartnerLocationCard from '../components/EditPartnerLocationCard';
 
 const style = {
@@ -72,7 +83,15 @@ export default function PartnerLocationProfilePage() {
 
   const [isPartnerLocationEditMode, setIsPartnerLocationEditMode] = useState(false);
 
-  const handleEditClick = () => {
+  const [menuItemInEdit, setMenuItemInEdit] = useState([]);
+  // const [menuItemInDelete, setMenuItemInDelete] = useState([]);
+  const [ticketInEdit, setTicketInEdit] = useState([]);
+  // const [ticketInDelete, setTicketInDelete] = useState([]);
+
+  const [itemEditAddMode, setItemEditAddMode] = useState(false);
+  const [itemInAdd, setItemInAdd] = useState(false);
+
+  const handleProfileEditClick = () => {
     // navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
     setIsPartnerLocationEditMode(true);
   };
@@ -141,6 +160,116 @@ export default function PartnerLocationProfilePage() {
       saveTouristAttraction(updatedLocation)
         .then(() => getTouristAttraction(partnerId).then((data) => setPartner(data)))
         .finally(() => setLoading(false));
+    }
+  };
+
+  const handleBuyableItemEditClick = (event) => {
+    const editItemId = event.target.value;
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      const editItem = menuList.filter((_, idx) => idx.toString() === editItemId)[0];
+      setMenuItemInEdit(editItem);
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      const editItem = ticketList.filter((_, idx) => idx.toString() === editItemId)[0];
+      setTicketInEdit(editItem);
+    }
+
+    setItemEditAddMode(true);
+  };
+
+  const handleEditCompletionClick = (_, updateParams) => {
+    setLoading(true);
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      updateMenuItem(updateParams)
+        .then(() =>
+          getMenuItems(partnerId).then((data) => {
+            setMenuList(data);
+          })
+        )
+        .finally(() => {
+          setLoading(false);
+          setItemEditAddMode(false);
+        });
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      updateTicket(updateParams)
+        .then(() =>
+          getTickets(partnerId).then((data) => {
+            setTicketList(data);
+          })
+        )
+        .finally(() => {
+          setLoading(false);
+          setItemEditAddMode(false);
+        });
+    }
+  };
+
+  const handleAddCompletionClick = async (_, newItem) => {
+    setLoading(true);
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      addMenuItem(newItem)
+        .then((menuItemCreated) => {
+          setMenuList([menuItemCreated, ...menuList]);
+        })
+        .finally(() => {
+          setLoading(false);
+          setItemEditAddMode(false);
+          setItemInAdd(false);
+        });
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      addTicket(newItem)
+        .then((ticketCreated) => {
+          setTicketList([ticketCreated, ...ticketList]);
+        })
+        .finally(() => {
+          setLoading(false);
+          setItemEditAddMode(false);
+          setItemInAdd(false);
+        });
+    }
+  };
+
+  const handleItemChangeCompletionClick = async (event, params) => {
+    if (!itemInAdd) {
+      handleEditCompletionClick(event, params);
+    } else {
+      handleAddCompletionClick(event, params);
+    }
+  };
+
+  const handleAddMenuItem = async () => {
+    setItemEditAddMode(true);
+    setItemInAdd(true);
+  };
+
+  const handleBuyableItemDeleteClick = (event) => {
+    const deleteItemId = event.target.value;
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      const deleteItem = menuList.filter((_, idx) => idx.toString() === deleteItemId)[0];
+      deleteMenuItem(deleteItem._id)
+        .then(() =>
+          getMenuItems(partnerId).then((data) => {
+            setMenuList(data);
+          })
+        )
+        .finally(() => {
+          setLoading(false);
+        });
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      const deleteItem = ticketList.filter((_, idx) => idx.toString() === deleteItemId)[0];
+
+      deleteTicket(deleteItem._id)
+        .then(() =>
+          getTickets(partnerId).then((data) => {
+            setTicketList(data);
+          })
+        )
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 
@@ -218,7 +347,7 @@ export default function PartnerLocationProfilePage() {
         </Grid>
 
         <Grid item display="grid" sx={{ m: 2 }}>
-          <Button variant="contained" onClick={handleEditClick}>
+          <Button variant="contained" onClick={handleProfileEditClick}>
             Edit Profile
           </Button>
         </Grid>
@@ -243,9 +372,26 @@ export default function PartnerLocationProfilePage() {
 
       <Grid item xs={6}>
         <Grid>
-          <Typography variant="h2" component="div" align="left" color="text.secondary">
-            {partner.name}
-          </Typography>
+          <Grid container direction="row">
+            <Grid item>
+              <Typography variant="h2" component="div" align="left" color="text.secondary">
+                {partner.name}
+              </Typography>
+            </Grid>
+
+            <Grid item>
+              <Tooltip
+                title={
+                  partner.partnerType === PARTNER_TYPE_RESTAURANT
+                    ? 'Add new menu'
+                    : 'Add new ticket'
+                }>
+                <IconButton sx={{ m: 2 }} onClick={handleAddMenuItem}>
+                  <AddCircleOutlineIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
 
           <Divider sx={{ mb: 2 }} />
         </Grid>
@@ -278,14 +424,39 @@ export default function PartnerLocationProfilePage() {
                       content={item.description}
                       price={item.price.toString()}
                       image={item.image}
-                      handleEditClick={handleEditClick}
-                      // handleDeleteClick={handleDeleteClick}
-                      inEdit
+                      handleBuyableItemEditClick={handleBuyableItemEditClick}
+                      handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
+                      // inEdit
                     />
                   );
                 })}
               </List>
             </Paper>
+
+            <ContentModal
+              open={itemEditAddMode}
+              onClose={() => {
+                setItemEditAddMode(false);
+              }}
+              header={`${itemInAdd ? 'Create New' : 'Edit'} ${
+                partner.partnerType === PARTNER_TYPE_RESTAURANT ? 'Menu' : 'Ticket'
+              }`}
+              contentRendered={
+                <EditItemModal
+                  key={
+                    partner.partnerType === PARTNER_TYPE_RESTAURANT
+                      ? menuItemInEdit._id
+                      : ticketInEdit._id
+                  }
+                  item={
+                    partner.partnerType === PARTNER_TYPE_RESTAURANT ? menuItemInEdit : ticketInEdit
+                  }
+                  locationType={partner.partnerType}
+                  handleItemChangeCompletionClick={handleItemChangeCompletionClick}
+                  itemInAdd={itemInAdd}
+                />
+              }
+            />
           </Grid>
         </Grid>
       </Grid>

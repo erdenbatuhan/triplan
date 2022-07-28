@@ -42,44 +42,34 @@ const getMenuItem = async (menuItemId) => {
   return MenuItem.findById(menuItemId);
 };
 
-const getTicketsByPartnerLocation = async (partnerId) => {
-  return new Promise((resolve, reject) => {
-    partnerLocationController
-      .findTouristAttractionById(partnerId)
-      .then(async (partner) => {
-        if (!partner) {
-          return resolve(null);
-        }
-        resolve(await Ticket.find({ touristAttraction: { $eq: partnerId } }));
-      })
-      .catch((err) => reject(err));
-  });
+const getTicketsByPartnerLocation = (partnerLocationId) => {
+  return partnerLocationController.findTouristAttractionById(partnerLocationId).then(partnerLocation => {
+    if (!partnerLocation) {
+      return null;
+    }
+
+    return Ticket.find({ touristAttraction: { $eq: partnerLocationId } }).sort({ createdAt: -1 });
+  })
 };
 
-const getMenuItemsByPartnerLocation = async (partnerId) => {
-  return new Promise((resolve, reject) => {
-    partnerLocationController
-      .findRestaurantById(partnerId)
-      .then(async (partner) => {
-        if (!partner) {
-          return resolve(null);
-        }
-        resolve(await MenuItem.find({ restaurant: { $eq: partnerId } }));
-      })
-      .catch((err) => reject(err));
+const getMenuItemsByPartnerLocation = async (partnerLocationId) => {
+  return partnerLocationController.findRestaurantById(partnerLocationId).then(partnerLocation => {
+    if (!partnerLocation) {
+      return null;
+    }
+
+    return MenuItem.find({ restaurant: { $eq: partnerLocationId } }).sort({ createdAt: -1 });
   });
 };
 
 const addTicket = (ticket) => {
   return TouristAttraction.exists({ _id: ticket.touristAttraction })
-    .then(() => new Promise(Ticket.insertMany([ticket])))
-    .catch(() => new Promise((resolve) => resolve(null)));
+    .then(() => Ticket.create(ticket));
 };
 
 const addMenuItem = (menuItem) => {
   return Restaurant.exists({ _id: menuItem.restaurant })
-    .then(() => new Promise(MenuItem.insertMany([menuItem])))
-    .catch(() => new Promise((resolve) => resolve(null)));
+    .then(() => MenuItem.create(menuItem));
 };
 
 const updateTicket = async (ticketId, fields) => {
@@ -87,10 +77,11 @@ const updateTicket = async (ticketId, fields) => {
     return new Promise((resolve) => resolve(null));
   }
 
-  return Ticket.updateOne({ _id: ticketId }, fields, {
-    new: true,
-    runValidators: true,
-  });
+  return Ticket.findOneAndUpdate(
+    { _id: ticketId },
+    fields,
+    { new: true, runValidators: true }
+  );
 };
 
 const updateMenuItem = async (menuItemId, fields) => {
@@ -98,10 +89,11 @@ const updateMenuItem = async (menuItemId, fields) => {
     return new Promise((resolve) => resolve(null));
   }
 
-  return MenuItem.updateOne({ _id: menuItemId }, fields, {
-    new: true,
-    runValidators: true,
-  });
+  return MenuItem.findOneAndUpdate(
+    { _id: menuItemId },
+    fields,
+    { new: true, runValidators: true }
+  );
 };
 
 const deleteTicket = (ticketId) => {
