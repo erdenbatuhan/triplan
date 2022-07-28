@@ -147,7 +147,7 @@ export default function CheckoutPage() {
 
     // Fetch the trip plan itself
     getTripPlan(tripPlanId).then((data) => {
-      if (!data || !data.paid) {
+      if (data.paid) {
         alert(
           'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
         );
