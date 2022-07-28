@@ -12,6 +12,7 @@ import { UserAuthHelper } from '../../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../../queries/user-queries';
 import { createTransaction } from '../../queries/transaction-queries';
 import { createNewWithdrawRequest } from '../../queries/withdraw-request-queries';
+import { getAuthData } from '../../queries/authentication-queries';
 import {
   // CURRENCIES,
   TRANSACTION_TYPE_DEPOSIT,
@@ -40,6 +41,7 @@ export default function Wallet() {
   const [transactionDialogShown, setTransactionDialogShown] = useState(false);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const [transitionModalShown, setTransitionModalShown] = useState(false);
+  const [authData, setAuthData] = useState();
 
   // Listening to the changes in authenticatedUser
   useEffect(() => {
@@ -54,7 +56,12 @@ export default function Wallet() {
     if (!authenticatedUser) {
       return;
     }
-    getUser(authenticatedUser.user.id).then((data) => setAuthenticatedUserData(data));
+    getUser(authenticatedUser.user.id).then((data) =>
+      getAuthData(data.authentication).then((response) => {
+        setAuthenticatedUserData(data);
+        setAuthData(response);
+      })
+    );
   }, [authenticatedUser]);
 
   const handleTransaction = () => {
@@ -75,31 +82,30 @@ export default function Wallet() {
     } else if (transactionType === TRANSACTION_TYPE_WITHDRAW) {
       const { _id } = authenticatedUserData;
       const { username } = authenticatedUserData;
-      const { email } = authenticatedUserData;
-      console.log(
-        authenticatedUserData.username,
-        authenticatedUserData.email,
-        authenticatedUserData._id
-      );
+      const { email } = authData;
       const newWithdrawRequest = {
         userId: _id,
         username,
         email,
         paypalEmail,
-        amount: transactionAmount
+        amount: transactionAmount,
+        walletId: authenticatedUserData.wallet
       };
 
-      createNewWithdrawRequest(newWithdrawRequest).then((response) => {
-        console.log(response);
+      createNewWithdrawRequest(newWithdrawRequest).then(() => {
         handleEmail(
           {
+            subject: 'About Your Withdraw Request',
             to_name: username,
             to_email: email,
             intro_message: generateIntroMessage('create'),
-            paypal_email: generatePaypalEmail(paypalEmail),
-            amount: generatePaypalWithdrawAmount(transactionAmount)
+            details_message: 'Request Details:',
+            details_1: generatePaypalEmail(paypalEmail),
+            details_2: generatePaypalWithdrawAmount(transactionAmount),
+            final_message:
+              'Thanks a lot for being part of Triplan family. Please do not hasitate to contact with us in case of any problem.'
           },
-          'withdrawRequest'
+          'general'
         ).then(() => {
           setIsPaymentSuccessfull(true);
           // if (response === 200) {

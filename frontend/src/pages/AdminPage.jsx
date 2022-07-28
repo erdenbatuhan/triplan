@@ -33,61 +33,61 @@ import {
 } from '../shared/constants';
 import { getAuthData } from '../queries/authentication-queries';
 
-function getWithdrawRequestRows(allWithdrawRequests) {
-  const rows = [];
-  for (let i = 0; i < allWithdrawRequests.length; i += 1) {
-    rows.push({
-      id: allWithdrawRequests[i]._id,
-      username: allWithdrawRequests[i].username,
-      userId: allWithdrawRequests[i].userId,
-      email: allWithdrawRequests[i].email,
-      paypalEmail: allWithdrawRequests[i].paypalEmail,
-      amount: allWithdrawRequests[i].amount,
-      createdAt: new Date(allWithdrawRequests[i].createdAt).toString()
-    });
-  }
-  return rows;
-}
+// function getWithdrawRequestRows(allWithdrawRequests) {
+//   const rows = [];
+//   for (let i = 0; i < allWithdrawRequests.length; i += 1) {
+//     rows.push({
+//       id: allWithdrawRequests[i]._id,
+//       username: allWithdrawRequests[i].username,
+//       userId: allWithdrawRequests[i].userId,
+//       email: allWithdrawRequests[i].email,
+//       paypalEmail: allWithdrawRequests[i].paypalEmail,
+//       amount: allWithdrawRequests[i].amount,
+//       createdAt: new Date(allWithdrawRequests[i].createdAt).toString()
+//     });
+//   }
+//   return rows;
+// }
 
 const withdrawRequestColumns = [
   { field: 'id', headerName: 'Request ID', width: 210 },
   { field: 'username', headerName: 'User Name', width: 210 },
-  { field: 'userId', headerName: 'User ID', width: 210 },
   { field: 'email', headerName: 'User Email', width: 210 },
   { field: 'paypalEmail', headerName: 'Paypal Account', width: 210 },
   { field: 'amount', headerName: 'Transaction Amount', type: 'number', width: 140 },
+  { field: 'wallet', headerName: 'Wallet Id', type: 'number', width: 210 },
   { field: 'createdAt', headerName: 'Request Date', type: 'date', width: 600 }
 ];
 
-function getPartnerSignupRequestRows(allPartnerSignupRequests) {
-  const rows = [];
-  for (let i = 0; i < allPartnerSignupRequests.length; i += 1) {
-    getAuthData(allPartnerSignupRequests[i].authentication).then((authData) =>
-      rows.push({
-        id: allPartnerSignupRequests[i]._id,
-        username: authData.username,
-        email: authData.email,
-        googleLocationLink: allPartnerSignupRequests[i].googleLocationLink,
-        partnerLocationName: allPartnerSignupRequests[i].partnerLocationName,
-        partnerLocationContact: allPartnerSignupRequests[i].partnerLocationContact,
-        partnerType: authData.userType,
-        createdAt: new Date(allPartnerSignupRequests[i].createdAt).toString()
-      })
-    );
-  }
-  console.log('rows: ', rows);
-  return rows;
-}
+// function getPartnerSignupRequestRows(allPartnerSignupRequests) {
+//   const rows = [];
+//   for (let i = 0; i < allPartnerSignupRequests.length; i += 1) {
+//     getAuthData(allPartnerSignupRequests[i].authentication).then((authData) =>
+//       rows.push({
+//         id: allPartnerSignupRequests[i]._id,
+//         username: authData.username,
+//         email: authData.email,
+//         googleLocationLink: allPartnerSignupRequests[i].googleLocationLink,
+//         partnerLocationName: allPartnerSignupRequests[i].partnerLocationName,
+//         partnerLocationContact: allPartnerSignupRequests[i].partnerLocationContact,
+//         partnerType: authData.userType,
+//         createdAt: new Date(allPartnerSignupRequests[i].createdAt).toString()
+//       })
+//     );
+//   }
+//   console.log('rows: ', rows);
+//   return rows;
+// }
 
 const partnerSignupRequestColumns = [
   { field: 'id', headerName: 'Request ID', width: 210 },
   { field: 'username', headerName: 'User Name', width: 210 },
-  { field: 'userId', headerName: 'User ID', width: 210 },
   { field: 'email', headerName: 'User Email', width: 210 },
   { field: 'googlePlaceId', headerName: 'Google Place ID', width: 210 },
   { field: 'partnerLocationName', headerName: 'Partner Name', width: 210 },
   { field: 'partnerLocationContact', headerName: 'Contact', width: 210 },
   { field: 'partnerType', headerName: 'Partner Type', width: 210 },
+  { field: 'authentication', headerName: 'Authentication ID', width: 210 },
   { field: 'createdAt', headerName: 'Request Date', type: 'date', width: 600 }
 ];
 
@@ -103,27 +103,23 @@ const style = {
   borderRadius: '15px'
 };
 
-// const username = 'admin';
-// const password = 'admin123';
-// const email = 'seba.tum2022@gmail.com';
-
 function AdminPage() {
   const [withdrawSelectedRows, setWithdrawSelectedRows] = useState();
   const [partnerSignupSelectedRows, setPartnerSignupSelectedRows] = useState();
   const [value, setValue] = useState(1);
   const [allWithdrawRequests, setAllWithdrawRequests] = useState([]);
   const [allPartnerSignupRequests, setAllPartnerSignupRequests] = useState([]);
-  // const [allPartnerSignupRequestsAuthData, setAllPartnerSignupRequestsAuthData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessfull, setIsSuccessfull] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+  const [openPartnerLocWarning, setOpenPartnerLocWarning] = useState(false);
   const [curPartner, setCurPartner] = useState(null);
   const [signupRows, setSignupRows] = useState([]);
+  const [withdrawRows, setWithdrawRows] = useState([]);
 
   useEffect(() => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
   }, [isOpen]);
-  // console.log(allWithdrawRequests);
 
   const syncWithdrawRequests = () => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
@@ -131,10 +127,10 @@ function AdminPage() {
 
   useEffect(() => {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
-  }, [isOpen]);
-  // console.log(allWithdrawRequests);
+  }, []);
 
   useEffect(() => {
+    setSignupRows([]);
     Promise.all([
       allPartnerSignupRequests.map(async (request) => {
         const user = await getAuthData(request.authentication);
@@ -154,7 +150,27 @@ function AdminPage() {
         ]);
       })
     ]).then(() => console.log('Data is obtained'));
-  }, [allPartnerSignupRequests]);
+  }, [allPartnerSignupRequests.length]);
+
+  useEffect(() => {
+    setWithdrawRows([]);
+    Promise.all([
+      allWithdrawRequests.map(async (request) => {
+        setWithdrawRows((signRows) => [
+          ...signRows,
+          {
+            id: request._id,
+            username: request.username,
+            email: request.email,
+            paypalEmail: request.paypalEmail,
+            amount: request.amount,
+            wallet: request.walletId,
+            createdAt: new Date(request.createdAt).toString()
+          }
+        ]);
+      })
+    ]).then(() => console.log('Data is obtained'));
+  }, [allWithdrawRequests]);
 
   const syncPartnerSignupRequests = () => {
     getAllPartnerSignupRequests().then((data) => setAllPartnerSignupRequests(data));
@@ -166,11 +182,7 @@ function AdminPage() {
 
   const handleWithdrawSelection = (ids) => {
     const selectedIDs = new Set(ids);
-
-    const selectedRowData = getWithdrawRequestRows(allWithdrawRequests).filter((row) =>
-      selectedIDs.has(row.id)
-    );
-
+    const selectedRowData = withdrawRows.filter((row) => selectedIDs.has(row.id));
     setWithdrawSelectedRows(selectedRowData);
   };
 
@@ -181,123 +193,147 @@ function AdminPage() {
   };
 
   const handleRejectPartnerSignupRequest = () => {
-    removeWithdrawRequest(partnerSignupSelectedRows[0].id).then(() =>
-      handleEmail(
-        {
-          subject: 'Your Partnership is Rejected!',
-          to_name: partnerSignupSelectedRows[0].username,
-          // to_email: partnerSignupSelectedRows[0].email,
-          to_email: 'anil.kults@gmail.com',
-          intro_message: `Your partnership is rejected.`,
-          final_message: 'You can contact us about the problem.'
-        },
-        'general'
-      ).then(() => {
-        syncWithdrawRequests();
-        setIsApproved(false);
-        setIsSuccessfull(true);
-        setIsOpen(true);
-      })
-    );
+    partnerSignupSelectedRows.forEach((partner) => {
+      const { id } = partner;
+      removePartnerSignupRequest(id).then(() =>
+        handleEmail(
+          {
+            subject: 'Your Partnership is Rejected!',
+            to_name: partner.username,
+            // to_email: partner.email,
+            to_email: 'anil.kults@gmail.com',
+            intro_message: `Your partnership is rejected.`,
+            final_message: 'You can contact us about the problem.'
+          },
+          'general'
+        ).then(() => {
+          syncPartnerSignupRequests();
+          setIsApproved(false);
+          setIsSuccessfull(true);
+          setIsOpen(true);
+        })
+      );
+    });
   };
 
   const handleApprovePartnerSignupRequest = () => {
     partnerSignupSelectedRows.forEach((partner) => {
-      const { googlePlaceId, partnerType } = partner;
-      getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then(({ partnerLocation }) => {
-        if (partnerType === PARTNER_TYPE_RESTAURANT) {
-          saveRestaurant({ ...partnerLocation, authentication: partner.authentication }).then(
-            () => {
-              console.log('Restaurant is approved successfully.');
-            }
-          );
-        } else if (partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
-          saveTouristAttraction({
-            ...partnerLocation,
-            authentication: partner.authentication
-          }).then(() => {
-            console.log('Tourist Attractions is approved successfully.');
-          });
+      const { googlePlaceId, partnerType, id } = partner;
+      console.log(googlePlaceId);
+      getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
+        if (partnerData.partnerLocation) {
+          if (partnerType === 'RESTAURANT') {
+            saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
+              console.log(partner.username, ' is approved!');
+              handleEmail(
+                {
+                  subject: 'Congratulations! Your Partnership is Approved!',
+                  to_name: partner.username,
+                  to_email: 'anil.kults@gmail.com', // partner.email
+                  intro_message: `Your partnership is approved. Welcome to Triplan family.`,
+                  final_message:
+                    'You can complete your profile by logging in the system and start to meet with your customers.'
+                },
+                'general'
+              ).then(() => {
+                removePartnerSignupRequest(id).then(() => {
+                  syncPartnerSignupRequests();
+                  setIsSuccessfull(true);
+                  setIsOpen(true);
+                  setIsApproved(true);
+                });
+              });
+            });
+          } else if (partnerType === 'TOURIST_ATTRACTION') {
+            saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
+              () => {
+                console.log(partner.username, ' is approved!');
+                handleEmail(
+                  {
+                    subject: 'Congratulations! Your Partnership is Approved!',
+                    to_name: partner.username,
+                    to_email: 'anil.kults@gmail.com', // partner.email
+                    intro_message: `Your partnership is approved. Welcome to Triplan family.`,
+                    final_message:
+                      'You can complete your profile by logging in the system and start to meet with your customers.'
+                  },
+                  'general'
+                ).then(() => {
+                  removePartnerSignupRequest(id).then(() => {
+                    syncPartnerSignupRequests();
+                    setIsSuccessfull(true);
+                    setIsOpen(true);
+                    setIsApproved(true);
+                  });
+                });
+              }
+            );
+          } else {
+            console.error('the selected partner type is not defined.');
+          }
         } else {
-          console.error('the selected partner type is not defined.');
+          setOpenPartnerLocWarning(true);
         }
-        // handleEmail(
-        //   {
-        //     subject: 'Congratulations! Your Partnership is Approved!',
-        //     to_name: partner.username,
-        //     to_email: 'anil.kults@gmail.com', // partner.email
-        //     intro_message: `Your partnership is approved. Welcome to Triplan family.`,
-        //     final_message:
-        //       'You can complete your profile by logging in the system and start to meet with your customers.'
-        //   },
-        //   'general'
-        // ).then(() => {
-        //   setIsSuccessfull(true);
-        //   setIsOpen(true);
-        //   removePartnerSignupRequest(partnerSignupSelectedRows[0].id).then(() => {
-        //     syncPartnerSignupRequests();
-        //     setIsApproved(true);
-        //   });
-        // });
       });
     });
   };
 
   const handleRejectWithdrawRequest = () => {
-    removeWithdrawRequest(withdrawSelectedRows[0].id).then(() =>
-      handleEmail(
-        {
-          subject: 'Your Withdraw Request is Rejected!',
-          to_name: withdrawSelectedRows[0].username,
-          to_email: withdrawSelectedRows[0].email,
-          intro_message: `Your withdraw request is rejected.`,
-          final_message: 'Please do not hesitate to contact about the problem.',
-          details_message: 'Request Details',
-          details_1: `Paypal Account: ${withdrawSelectedRows[0].paypalEmail}`,
-          details_2: `Amount: ${withdrawSelectedRows[0].amount} €`,
-          details_3: `Request Id: ${withdrawSelectedRows[0].id}`
-        },
-        'general'
-      ).then(() => {
-        syncWithdrawRequests();
-        setIsApproved(false);
-        setIsSuccessfull(true);
-        setIsOpen(true);
-      })
-    );
+    withdrawSelectedRows.forEach((withdrawReq) => {
+      removeWithdrawRequest(withdrawReq.id).then(() =>
+        handleEmail(
+          {
+            subject: 'Your Withdraw Request is Rejected!',
+            to_name: withdrawReq.username,
+            to_email: withdrawReq.email,
+            intro_message: `Your withdraw request is rejected.`,
+            final_message: 'Please do not hesitate to contact about the problem.',
+            details_message: 'Request Details',
+            details_1: `Paypal Account: ${withdrawReq.paypalEmail}`,
+            details_2: `Amount: ${withdrawReq.amount} €`,
+            details_3: `Request Id: ${withdrawReq.id}`
+          },
+          'general'
+        ).then(() => {
+          syncWithdrawRequests();
+          setIsApproved(false);
+          setIsSuccessfull(true);
+          setIsOpen(true);
+        })
+      );
+    });
   };
 
   const handleApproveWithdrawRequest = () => {
-    getUser(withdrawSelectedRows[0].userId).then((data) =>
+    withdrawSelectedRows.forEach((withdrawReq) => {
       createTransaction({
-        amount: Number(withdrawSelectedRows[0].amount),
+        amount: withdrawReq.amount,
         type: TRANSACTION_TYPE_WITHDRAW,
         incomingWalletId: null,
-        outgoingWalletId: data.wallet
+        outgoingWalletId: withdrawReq.wallet
       }).then(({ transaction, outgoingWalletObject }) => {
         if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
-          setIsSuccessfull(true);
-          setIsOpen(true);
           console.log(outgoingWalletObject);
-          removeWithdrawRequest(withdrawSelectedRows[0].id).then(() => {
-            syncWithdrawRequests().then(() => {
-              handleEmail(
-                {
-                  subject: 'Your Withdraw Request is Approved!',
-                  to_name: withdrawSelectedRows[0].username,
-                  to_email: withdrawSelectedRows[0].email,
-                  intro_message: `Your withdraw request is approved.`,
-                  final_message:
-                    'Thanks for being part of our family. Please do not hesitate to contact with us in case of any problem.',
-                  details_message: 'Request Details',
-                  details_1: `Paypal Account: ${withdrawSelectedRows[0].paypalEmail}`,
-                  details_2: `Amount: ${withdrawSelectedRows[0].amount} €`,
-                  details_3: `Request Id: ${withdrawSelectedRows[0].id}`
-                },
-                'general'
-              ).then(() => {
-                setIsApproved(true);
-              });
+          removeWithdrawRequest(withdrawReq.id).then(() => {
+            handleEmail(
+              {
+                subject: 'Your Withdraw Request is Approved!',
+                to_name: withdrawReq.username,
+                to_email: withdrawReq.email,
+                intro_message: `Your withdraw request is approved.`,
+                final_message:
+                  'Thanks for being part of our family. Please do not hesitate to contact with us in case of any problem.',
+                details_message: 'Request Details',
+                details_1: `Paypal Account: ${withdrawReq.paypalEmail}`,
+                details_2: `Amount: ${withdrawReq.amount} €`,
+                details_3: `Request Id: ${withdrawReq.id}`
+              },
+              'general'
+            ).then(() => {
+              syncWithdrawRequests();
+              setIsApproved(true);
+              setIsSuccessfull(true);
+              setIsOpen(true);
             });
           });
         } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
@@ -306,11 +342,9 @@ function AdminPage() {
           setIsApproved(true);
           alert('Opps, something went wrong!');
         }
-      })
-    );
+      });
+    });
   };
-
-  console.log(value === 1, value);
 
   return (
     <Box sx={{ width: '100%', typography: 'body1', padding: 1, height: '80vh' }}>
@@ -331,7 +365,7 @@ function AdminPage() {
               padding: 2
             }}>
             <DataGrid
-              rows={getWithdrawRequestRows(allWithdrawRequests)}
+              rows={withdrawRows}
               columns={withdrawRequestColumns}
               checkboxSelection
               onSelectionModelChange={(ids) => {
@@ -427,6 +461,34 @@ function AdminPage() {
               onClick={() => {
                 setIsOpen(false);
                 setIsSuccessfull(false);
+              }}>
+              Continue
+            </Button>
+          </div>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={openPartnerLocWarning}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        style={{
+          display: 'flex',
+          justifyConent: 'center',
+          alignItems: 'center'
+        }}>
+        <Box sx={style}>
+          <div className="center">
+            <Alert severity="warning">
+              <AlertTitle>WARNING</AlertTitle>
+              The Google place id can not found in your database. Please add it before approve the
+              request.
+            </Alert>
+
+            <Button
+              alignItems="center"
+              onClick={() => {
+                setOpenPartnerLocWarning(false);
               }}>
               Continue
             </Button>
