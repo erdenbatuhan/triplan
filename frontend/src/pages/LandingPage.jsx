@@ -1,6 +1,4 @@
 import { Typography, Grid, Box, Button } from '@mui/material';
-import { blue, green } from '@mui/material/colors';
-import React from 'react';
 import '../App.css';
 import Fab from '@mui/material/Fab';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -9,7 +7,7 @@ import landingBg from '../assets/landing-page-background.png';
 import { SECONDARY_COLOR } from '../shared/constants';
 import AboutUs from '../components/landingPage/AboutUs';
 import WhyTriplan from '../components/landingPage/WhyTriplan';
-import ContactUs from '../components/landingPage/contactUs';
+import ContactUs from '../components/landingPage/ContactUs';
 
 function LandingPage() {
   const handleMainScroll = () => {
@@ -64,7 +62,8 @@ function LandingPage() {
                     sx={{
                       fontFamily: 'sans-serif',
                       fontWeight: 'medium',
-                      fontSize: 22
+                      fontSize: 22,
+                      textAlign: 'justify'
                     }}>
                     Triplan is a smart travel planning platform to help travelers avoid the stress
                     and hassle of trip planning by not only saving them time, but also getting them
@@ -76,32 +75,33 @@ function LandingPage() {
                   <br />
                   <Box textAlign="center">
                     <Grid container direction="row" spacing={4}>
-                      <Grid item xs={6}>
+                      <Grid item xs={2} />
+
+                      <Grid item xs={4}>
                         <Button
-                          style={{
-                            color: '#FFFFFF',
-                            backgroundColor: blue[500],
-                            width: '80%',
-                            border: 1,
-                            borderRadius: 4,
+                          sx={{
+                            width: '100%',
                             height: '60px'
-                          }}>
+                          }}
+                          variant="contained"
+                          color="primary">
                           Explore World!
                         </Button>
                       </Grid>
-                      <Grid item xs={6}>
+
+                      <Grid item xs={4}>
                         <Button
-                          style={{
-                            color: '#FFFFFF',
-                            backgroundColor: green[500],
-                            width: '80%',
-                            border: 1,
-                            borderRadius: 4,
+                          sx={{
+                            width: '100%',
                             height: '60px'
-                          }}>
+                          }}
+                          variant="contained"
+                          color="success">
                           Be Our Partner!
                         </Button>
                       </Grid>
+
+                      <Grid item xs={2} />
                     </Grid>
                   </Box>
                 </Grid>
@@ -164,7 +164,7 @@ function LandingPage() {
       <Fab
         variant="circular"
         style={{ position: 'fixed', bottom: 16, right: 16 }}
-        color="info"
+        color="primary"
         onClick={handleMainScroll}>
         <ArrowUpwardIcon />
       </Fab>

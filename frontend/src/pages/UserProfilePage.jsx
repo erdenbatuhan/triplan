@@ -17,7 +17,7 @@ import Spinner from '../components/common/Spinner';
 import ContentModal from '../components/common/ContentModal';
 import TripCard from '../components/TripCard';
 import Wallet from '../components/Wallet';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
+// import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser, updateUserFields } from '../queries/user-queries';
 import {
   getFollowingRelationship,
@@ -38,7 +38,7 @@ const avatarStyle = {
 function UserProfilePage() {
   const { userId } = useParams();
 
-  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [authenticatedUser] = useState({ user: { id: '62c56ce1ec52b6643190e167' } });
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
   const [tripPlans, setTripPlans] = useState([]);
