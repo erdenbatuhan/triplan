@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Grid, Box, FormGroup, FormControlLabel, Checkbox, Typography } from '@mui/material';
 import {
   Grid,
   FormControl,
@@ -12,13 +11,10 @@ import {
 } from '@mui/material';
 import * as constants from '../../shared/constants';
 
-function EditRestaurantCuisineBox({ handleCuisineChange } /* props */) {
-  // const { selectedItems, handleChange } = props;
-  const [selectedCuisines, setSelectedCuisines] = React.useState([]);
-
+function EditRestaurantCuisineBox({ selectedCuisines, handleCuisineChange }) {
   const handleChange = (event) => {
     const val = event.target.value;
-    setSelectedCuisines(val);
+
     handleCuisineChange(val);
   };
 
@@ -44,30 +40,6 @@ function EditRestaurantCuisineBox({ handleCuisineChange } /* props */) {
       </FormControl>
     </Grid>
   );
-
-  /* return (
-    <Box sx={{ p: 2, borderColor: 'black', border: 1, borderTop: 1 }}>
-      <Typography align="left">Select Type of Cuisines(s)</Typography>
-      <FormGroup>
-        <Grid container spacing={2}>
-          {constants.cuisines.map((cuisine, idx) => {
-            const checked = selectedItems.includes(cuisine);
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <Grid item key={idx} xs={4}>
-                <FormControlLabel
-                  control={<Checkbox checked={checked} />}
-                  value={cuisine}
-                  label={cuisine}
-                  onChange={handleChange}
-                />
-              </Grid>
-            );
-          })}
-        </Grid>
-      </FormGroup>
-    </Box>
-  ); */
 }
 
 export default EditRestaurantCuisineBox;

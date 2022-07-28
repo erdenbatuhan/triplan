@@ -15,7 +15,7 @@ export default function EditPartnerLocationCard({
   const [partnerPhoneNumber, setPartnerPhoneNumber] = useState(partner.phoneNumber);
   const [partnerLocationPicture, setPartnerLocationPicture] = useState(partner.locationPicture);
 
-  const [restaurantCuisines, setRestaurantCuisines] = useState([]);
+  const [restaurantCuisines, setRestaurantCuisines] = useState(partner.cuisines);
 
   const LABEL_PREFIX =
     partner.partnerType === PARTNER_TYPE_RESTAURANT ? 'Restaurant' : 'Tourist Attraction';
@@ -125,7 +125,10 @@ export default function EditPartnerLocationCard({
 
               {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
                 <Grid item xs={8}>
-                  <EditRestaurantCuisineBox handleCuisineChange={handleCuisineChange} />
+                  <EditRestaurantCuisineBox
+                    selectedCuisines={restaurantCuisines}
+                    handleCuisineChange={handleCuisineChange}
+                  />
                 </Grid>
               ) : (
                 <Grid item xs={8} />
