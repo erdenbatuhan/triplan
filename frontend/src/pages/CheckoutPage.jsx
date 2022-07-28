@@ -18,6 +18,7 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import emailjs from '@emailjs/browser';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
+import { grey } from '@mui/material/colors';
 import Header from '../components/common/Header';
 import ContentModal from '../components/common/ContentModal';
 import CheckoutItemCard from '../components/CheckoutItemCard';
@@ -314,6 +315,7 @@ export default function CheckoutPage() {
               bgcolor: 'background.paper',
               position: 'relative',
               overflow: 'auto',
+              minHeight: '30em',
               height: '50em',
               '& ul': { padding: 0 }
             }}>
@@ -345,7 +347,6 @@ export default function CheckoutPage() {
               bgcolor: 'background.paper',
               position: 'relative',
               overflow: 'auto',
-              height: '50em',
               '& ul': { padding: 0 }
             }}>
             <li>
@@ -359,7 +360,8 @@ export default function CheckoutPage() {
                           bgcolor: 'background.paper',
                           position: 'relative',
                           overflow: 'auto',
-                          height: '30em',
+                          minHeight: '10em',
+                          height: '25em',
                           '& ul': { padding: 0 }
                         }}
                         subheader={<li />}>
@@ -519,21 +521,21 @@ export default function CheckoutPage() {
               </ul>
             </li>
           </List>
-
-          <Card sx={{ width: '%100' }}>
+          <br />
+          <Card sx={{ width: '%100' }} style={{ backgroundColor: grey[300], height: '4em' }}>
             <CardActionArea onClick={handleWalletPayment}>
-              <Grid container spacing={2} direction="row">
+              <Grid container spacing={2}>
                 <Grid item xs={2}>
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      height: '8vh'
+                      height: '4em'
                     }}>
                     <CardMedia
                       component="img"
-                      sx={{ width: '5vh', height: '5vh' }}
+                      sx={{ width: '2em', height: '2em' }}
                       image={walletImg}
                       alt="wallet_icon"
                     />
@@ -542,17 +544,9 @@ export default function CheckoutPage() {
 
                 <Grid item xs={10}>
                   <CardContent>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: '8vh'
-                      }}>
-                      <Typography gutterBottom variant="h6" component="div">
-                        Pay with Triplan Wallet
-                      </Typography>
-                    </div>
+                    <Typography gutterBottom variant="h6" component="div">
+                      Pay with Triplan Wallet
+                    </Typography>
                   </CardContent>
                 </Grid>
               </Grid>
