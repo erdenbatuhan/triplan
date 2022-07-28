@@ -51,7 +51,7 @@ import Spinner from '../components/common/Spinner';
 // import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
 import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
 import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
-import EditPartnerLocationCard from '../components/EditPartnerLocationCard';
+import EditPartnerLocationCard from '../components/PartnerLocationProfilePage/EditPartnerLocationCard';
 
 const style = {
   display: 'flex',
@@ -316,7 +316,9 @@ export default function PartnerLocationProfilePage() {
               <IconButton
                 disabled
                 sx={{
-                  ml: 1,
+                  ml: 4,
+                  pr: 0,
+                  mt: 1,
                   '&.MuiButtonBase-root:hover': {
                     bgcolor: 'transparent'
                   }
@@ -324,7 +326,7 @@ export default function PartnerLocationProfilePage() {
                 <PlaceIcon />
               </IconButton>
 
-              <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
+              <Typography component="div" align="center" mt={2} sx={{ fontSize: 'subtitle1' }}>
                 {partner.address}
               </Typography>
             </Grid>
@@ -367,18 +369,18 @@ export default function PartnerLocationProfilePage() {
             []
           ) */}
 
-          <Grid item xs={3} display="flex">
-            <Typography component="div" align="center" m={1} sx={{ fontSize: 'h6' }}>
-              {priceLevels.join('\n')}
-            </Typography>
-          </Grid>
-
           <Grid item display="grid">
             <RestaurantCuisineDisplay displayList={cuisineList} isCuisine />
           </Grid>
 
           <Grid item display="grid">
             <RestaurantCuisineDisplay displayList={foodTypeList} isCuisine={false} />
+          </Grid>
+
+          <Grid item xs={3} display="flex">
+            <Typography component="div" align="center" m={1} sx={{ fontSize: 'h6' }}>
+              {priceLevels.join(' | ')}
+            </Typography>
           </Grid>
         </Grid>
 
@@ -581,161 +583,4 @@ export default function PartnerLocationProfilePage() {
       </Modal>
     </Grid>
   );
-
-  /* 
-   const location = useLocation();
-   const navigate = useNavigate();
-   const partnerLocationType = location.state ? location.state.partnerType : PARTNER_TYPE_RESTAURANT; // tourist-attraction // restaurant
-
-   useEffect(() => {
-    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
-      getRestaurant(partnerId).then((data) => {
-        setPartner(data);
-        console.log(data);
-        setCuisineList(data.cuisines);
-        setIsConfirmed(data.confirmed);
-      });
-      getMenuItems(partnerId).then((data) => {
-        setMenuList(data);
-      });
-    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
-      getTouristAttraction(partnerId).then((data) => {
-        setPartner(data);
-        setIsConfirmed(data.confirmed);
-      });
-      getTickets(partnerId).then((data) => {
-        setTicketList(data);
-      });
-    }
-  }, [partnerId]);
-  
-  
-  
-  return (
-    <Box
-      component="form"
-      noValidate
-      sx={{
-        mt: 4,
-        marginLeft: 5,
-        marginRight: 5,
-        marginBottom: 5,
-        minWidth: 400
-      }}>
-      <Grid container direction="row" spacing={8}>
-        <Grid item xs={3}>
-          <Stack spacing={4}>
-            <img
-              src={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              alt={mockImgData.title}
-              loading="lazy"
-              width={250}
-              height={250}
-            />
-            <InfoCard title="Address" value={partner.address} />
-            <InfoCard title="Phone Number" value={partner.phoneNumber} />
-            <Button variant="contained" onClick={handleEditClick}>
-              Edit Profile
-            </Button>
-          </Stack>
-        </Grid>
-        <Grid item xs={9}>
-          <Stack>
-            <Typography variant="h1" component="div" align="center">
-              {partner.name}
-            </Typography>
-            {partnerLocationType === 'restaurant' ? (
-              <Stack>
-                <RestaurantCuisineDisplay cuisineList={cuisineList} />
-                <ItemListDisplay itemList={menuList} inEdit={false} />
-              </Stack>
-            ) : (
-              <ItemListDisplay itemList={ticketList} inEdit={false} />
-            )}
-          </Stack>
-        </Grid>
-      </Grid> 
-
-      <Modal
-        open={isConfirmed === 'No Request'}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
-        <Box style={style}>
-          <Grid
-            container
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-            spacing={2}
-            minWidth="60ch">
-            <Typography variant="h6" component="h2" color="text.secondary">
-              Please Send Confirmation Request!
-            </Typography>
-
-            <Grid item>
-              <TextField
-                id="standard-basic"
-                label="Please enter the Google Maps Link of the location"
-                variant="standard"
-                value={partnerGoogleLink}
-                onChange={(event) => setPartnerGoogleLink(event.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="standard-basic"
-                label="Please enter the name of your business."
-                variant="standard"
-                value={partnerName}
-                onChange={(event) => setPartnerName(event.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="standard-basic"
-                label="Please enter a contact number."
-                variant="standard"
-                value={partnerContactInfo}
-                onChange={(event) => setPartnerContactInfo(event.target.value)}
-              />
-            </Grid>
-            <br />
-            <Button
-              style={{
-                color: '#FFFFFF',
-                backgroundColor: green[500],
-                width: '60%',
-                border: 1,
-                // borderColor: grey[500],
-                borderRadius: 4,
-                height: '60px'
-              }}
-              onClick={handleSendPartnerRequest}>
-              Send Withdraw Request
-            </Button>
-          </Grid>
-        </Box>
-      </Modal>
-      <Modal
-        open={isConfirmed === 'Requested'}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        style={{
-          display: 'flex',
-          justifyConent: 'center',
-          alignItems: 'center'
-        }}>
-        <Box sx={style}>
-          <div className="center">
-            <Alert severity="info">
-              <AlertTitle>Your request is processing!</AlertTitle>
-              Your request is still under investigation. We will get in touch with you as soon as
-              possible.
-            </Alert>
-          </div>
-        </Box>
-      </Modal>
-    </Box>
-  ); */
 }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, TextField, Button } from '@mui/material';
-import Spinner from './common/Spinner';
-import ImageUpload from './common/ImageUpload';
-import { PARTNER_TYPE_RESTAURANT } from '../shared/constants';
-import EditRestaurantCuisineBox from './PartnerLocationProfilePage/EditRestaurantCuisineBox';
+import Spinner from '../common/Spinner';
+import ImageUpload from '../common/ImageUpload';
+import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
+import EditRestaurantCuisineBox from './EditRestaurantCuisineBox';
 
 export default function EditPartnerLocationCard({
   partner,
