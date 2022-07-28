@@ -4,11 +4,6 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-// import LinkedInIcon from '@mui/icons-material/LinkedIn';
-// import GitHubIcon from '@mui/icons-material/GitHub';
-// import Link from '@mui/material/Link';
-// import { Box } from '@mui/material';
-// import { SECONDARY_COLOR } from '../../shared/constants';
 
 export default function WhyTriplanCard({ title, image, summary }) {
   return (

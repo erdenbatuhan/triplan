@@ -33,17 +33,17 @@ const findDistinctCitiesWithEnoughPlaces = () => {
   });
 };
 
-const findFiltered = (filterData) => {
+const findFiltered = ({ filterData }) => {
   // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
   return Promise.all([
     Restaurant.find({
-      city: filterData["city"],
-      priceLevels: { $in: filterData["restaurantFilter"]["priceLevels"] },
+      [filterData["city"] ? "city" : ""]: filterData["city"],
       cuisines: { $in: filterData["restaurantFilter"]["cuisines"] },
+      priceLevels: { $in: filterData["restaurantFilter"]["priceLevels"] },
       foodTypes: { $in: filterData["restaurantFilter"]["foodTypes"] },
     }).sort({ priceLevel: "asc" }),
     TouristAttraction.find({
-      city: filterData["city"],
+      [filterData["city"] ? "city" : ""]: filterData["city"],
       touristAttractionTypes: {
         $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
       },

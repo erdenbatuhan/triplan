@@ -16,7 +16,7 @@ function PlaceFilter(props) {
   } = props; // filterState,
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [selectedCuisine, setSelectedCuisine] = useState([]);
-  const [selectedPriceLevel, setSelectedPriceLevel] = useState([]);
+  const [selectedPriceLevels, setSelectedPriceLevels] = useState([]);
   const [selectedFoodTypes, setSelectedFoodTypes] = useState([]);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ function PlaceFilter(props) {
       setSelectedPlaces(filterState.filterData.touristAttractionFilter.types[0]);
       setSelectedCuisine(filterState.filterData.restaurantFilter.cuisines);
       setSelectedFoodTypes(filterState.filterData.restaurantFilter.foodTypes);
-      setSelectedPriceLevel(filterState.filterData.restaurantFilter.priceLevel);
+      setSelectedPriceLevels(filterState.filterData.restaurantFilter.priceLevels);
     }
   }, [filterState]);
 
@@ -50,12 +50,12 @@ function PlaceFilter(props) {
     }
   };
 
-  const handlePriceLevelChangeCheckbox = (event) => {
+  const handlePriceLevelsChangeCheckbox = (event) => {
     const { value, checked } = event.target;
     if (checked) {
-      setSelectedPriceLevel((priceLevels) => [...priceLevels, value]);
+      setSelectedPriceLevels((priceLevels) => [...priceLevels, value]);
     } else {
-      setSelectedPriceLevel((priceLevels) => {
+      setSelectedPriceLevels((priceLevels) => {
         return priceLevels.filter((priceLevel) => priceLevel !== value);
       });
     }
@@ -75,7 +75,7 @@ function PlaceFilter(props) {
   const handleButtonClick = () => {
     let taTypes = [];
     let restCuisines = [];
-    let restPriceLevel = [];
+    let restPriceLevels = [];
     let restFoodTypes = [];
 
     if (selectedPlaces.includes('all')) {
@@ -86,9 +86,9 @@ function PlaceFilter(props) {
     }
     if (isRestaurantEnabled) {
       restCuisines = selectedCuisine.includes('all') ? constants.cuisines : selectedCuisine;
-      restPriceLevel = selectedPriceLevel.includes('all')
+      restPriceLevels = selectedPriceLevels.includes('all')
         ? constants.priceLevels
-        : selectedPriceLevel;
+        : selectedPriceLevels;
       restFoodTypes = selectedFoodTypes.includes('all') ? constants.foodTypes : selectedFoodTypes;
     }
 
@@ -96,7 +96,7 @@ function PlaceFilter(props) {
       filterData: {
         restaurantFilter: {
           cuisines: restCuisines,
-          priceLevel: restPriceLevel,
+          priceLevels: restPriceLevels,
           foodTypes: restFoodTypes
         },
         touristAttractionFilter: {
@@ -144,8 +144,8 @@ function PlaceFilter(props) {
               filteredItemType="cuisines"
             />
             <FilterSelectionMenu
-              selectedItems={selectedPriceLevel}
-              handleSelectionChange={handlePriceLevelChangeCheckbox}
+              selectedItems={selectedPriceLevels}
+              handleSelectionChange={handlePriceLevelsChangeCheckbox}
               filteredItemType="priceLevels"
             />
             <FilterSelectionMenu

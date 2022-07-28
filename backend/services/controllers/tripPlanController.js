@@ -4,6 +4,7 @@ const { TripPlan } = require("./../models/tripPlan.js");
 
 const tripLocationController = require("./tripLocationController.js");
 const followingRelationshipController = require("./followingRelationshipController.js");
+const userController = require("./userController.js");
 const partnerLocationController = require("./partnerLocationController.js");
 
 const optimizationServiceQueries = require("./../queries/optimizationServiceQueries.js");
@@ -142,6 +143,14 @@ const createTripPlan = (userId, { name, partnerLocations }) => {
   });
 };
 
+const findPlannerUsersByTripLocations = (tripLocationIds) => {
+  return Promise.all(tripLocationIds.map(tripLocationId => {
+    return TripPlan.findOne({ tripLocations: { $in: tripLocationId } }).select('user').then(({ user }) => {
+      return userController.findById(user).then(user => ({ [tripLocationId]: user }))
+    })
+  })).then(users => Object.assign({}, ...users));
+}
+
 module.exports = {
   findWithPartnerLocationsByTripPlan,
   findById,
@@ -149,5 +158,6 @@ module.exports = {
   getNumTripsPlannedByUsers,
   calculateTripLocationRatingsOfUsersFollowed,
   findTripLocationsPlannedByUsers,
-  createTripPlan
+  createTripPlan,
+  findPlannerUsersByTripLocations
 };

@@ -13,10 +13,13 @@ import {
   Button
 } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
+import EditIcon from '@mui/icons-material/Edit';
 import Spinner from '../components/common/Spinner';
 import ContentModal from '../components/common/ContentModal';
-import TripCard from '../components/TripCard';
-import Wallet from '../components/Wallet';
+import TripCard from '../components/UserProfilePage/TripCard';
+import Wallet from '../components/UserProfilePage/Wallet';
+import FollowingsCard from '../components/UserProfilePage/FollowingsCard';
+import EditUserProfileCard from '../components/UserProfilePage/EditUserProfileCard';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser, updateUserFields } from '../queries/user-queries';
 import {
@@ -27,8 +30,6 @@ import {
   getFollowed
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
-import FollowingsCard from '../components/FollowingsCard';
-import EditUserProfileCard from '../components/EditUserProfileCard';
 
 const avatarStyle = {
   width: '200px',
@@ -49,7 +50,7 @@ function UserProfilePage() {
   const [numTripsPlannedByUsers, setNumTripsPlannedByUsers] = useState([]);
   const [followersModalShown, setFollowersModalShown] = useState(false);
   const [followedModalShown, setFollowedModalShown] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isProfileEditMode, setIsProfileEditMode] = useState(false);
   const [isEditInProgress, setIsEditInProgress] = useState(false);
 
   const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
@@ -141,7 +142,8 @@ function UserProfilePage() {
     // Reset the remaining state that is not reset below!
     setFollowersModalShown(false);
     setFollowedModalShown(false);
-    setIsEditMode(false);
+    setIsProfileEditMode(false);
+    setIsEditInProgress(false);
 
     if (!userId) {
       return;
@@ -187,11 +189,14 @@ function UserProfilePage() {
   };
 
   // Authenticated User Fields Edit
-  const handleUserFieldsChangedClick = (params) => {
+  const saveProfile = (params) => {
     setIsEditInProgress(true);
     updateUserFields(authenticatedUser.user.id, params)
       .then(() => getUser(userId).then((data) => setUser(data)))
-      .finally(() => setIsEditInProgress(false));
+      .finally(() => {
+        setIsEditInProgress(false);
+        setIsProfileEditMode(false);
+      });
   };
 
   if (loading) {
@@ -206,7 +211,7 @@ function UserProfilePage() {
             <Avatar sx={avatarStyle} src={user.profilePicture} loading="lazy" />
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={3} display="flex">
             <Typography
               component="div"
               align="center"
@@ -214,6 +219,29 @@ function UserProfilePage() {
               sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
               {user.firstName} {user.lastName}
             </Typography>
+
+            {isShownUserAuthenticated ? (
+              <IconButton onClick={() => setIsProfileEditMode(true)}>
+                <EditIcon fontSize="small" />
+              </IconButton>
+            ) : (
+              []
+            )}
+            <ContentModal
+              open={isProfileEditMode}
+              onClose={() => {
+                setIsProfileEditMode(false);
+              }}
+              contentStyle={{ minWidth: '500px' }}
+              header="Edit Profile"
+              contentRendered={
+                <EditUserProfileCard
+                  user={user}
+                  isLoading={isEditInProgress}
+                  handleUserFieldsChange={saveProfile}
+                />
+              }
+            />
           </Grid>
 
           <Grid item xs={3} align-items="inherit">
@@ -352,30 +380,6 @@ function UserProfilePage() {
           </Grid>
         </Grid>
       </Grid>
-      {isShownUserAuthenticated ? (
-        <Grid item xs={2}>
-          <Button size="small" variant="outlined" onClick={() => setIsEditMode(true)}>
-            Edit Profile
-          </Button>
-
-          <ContentModal
-            open={isEditMode}
-            onClose={() => {
-              setIsEditMode(false);
-            }}
-            contentStyle={{ minWidth: '500px' }}
-            contentRendered={
-              <EditUserProfileCard
-                user={user}
-                isLoading={isEditInProgress}
-                handleUserFieldsChangedClick={handleUserFieldsChangedClick}
-              />
-            }
-          />
-        </Grid>
-      ) : (
-        <Grid item xs={2} />
-      )}
     </Grid>
   );
 }

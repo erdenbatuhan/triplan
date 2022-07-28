@@ -44,17 +44,13 @@ const Restaurant = mongoose.model(
     cuisines: {
       type: [String],
       enum: enums.CUISINES,
-      default: [],
-      required: false,
+      default: enums.CUISINES,
+      required: true,
     },
     priceLevels: {
       type: [String],
       enum: enums.PRICE_LEVELS,
-      default: [
-        enums.PRICE_LEVELS[0],
-        enums.PRICE_LEVELS[1],
-        enums.PRICE_LEVELS[2],
-      ],
+      default: enums.PRICE_LEVELS,
       required: true,
     },
     foodTypes: {

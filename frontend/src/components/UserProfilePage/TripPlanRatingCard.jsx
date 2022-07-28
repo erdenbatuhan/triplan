@@ -10,8 +10,8 @@ import {
   Avatar
 } from '@mui/material';
 import StarRatings from 'react-star-ratings';
-import Spinner from './common/Spinner';
-import { updateRatingAndCommentOfTripLocation } from '../queries/trip-location-queries';
+import Spinner from '../common/Spinner';
+import { updateRatingAndCommentOfTripLocation } from '../../queries/trip-location-queries';
 
 export default function TripPlanRatingCard({
   index,

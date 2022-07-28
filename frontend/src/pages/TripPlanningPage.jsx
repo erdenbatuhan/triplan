@@ -12,14 +12,13 @@ import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Spinner from '../components/common/Spinner';
-import Header from '../components/Header';
+import Header from '../components/common/Header';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
 import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import { createTripPlan } from '../queries/trip-plan-queries';
-import * as partnerLocationDefaultFilter from '../queries/data/partner-location-default-filter.json';
 import GoogleMap from '../components/GoogleMap';
 import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
 
@@ -29,10 +28,8 @@ export default function TripPlanningPage() {
   const navigate = useNavigate();
 
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
-  const [selectedCity] = useState(state ? state.selectedCity : null);
-  const [filterState, setFilterState] = useState(
-    state ? state.filterData : partnerLocationDefaultFilter
-  );
+  const [selectedCity] = useState(state.selectedCity);
+  const [filterState, setFilterState] = useState(state.filterData);
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(
     state ? state.isRestaurantEnabled : true
   );
@@ -73,6 +70,7 @@ export default function TripPlanningPage() {
     if (!authenticatedUser) {
       return;
     }
+
     setLoading(true);
     getFilteredPartnerLocations(authenticatedUser.user.id, filterState)
       .then((data) => setPartnerLocations(data))
@@ -143,7 +141,7 @@ export default function TripPlanningPage() {
   };
 
   const handleFilterChange = (newFilterState) => {
-    setFilterState(newFilterState);
+    setFilterState({ ...newFilterState, city: selectedCity });
   };
 
   const proceedWithTripPlanCreation = () => {

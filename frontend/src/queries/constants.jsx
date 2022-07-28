@@ -12,6 +12,7 @@ export const HOST_TRIP_LOCATION = `${HOST}/trip-location`;
 export const HOST_WALLET = `${HOST}/wallet`;
 export const HOST_TRANSACTION = `${HOST}/transaction`;
 export const HOST_BUYABLE_ITEM = `${HOST}/buyable-item`;
+export const HOST_ITEM_BOUGHT = `${HOST}/item-bought`;
 export const HOST_WITHDRAW_REQUEST = `${HOST}/withdraw-request`;
 export const HOST_COUPON = `${HOST}/coupon`;
 export const HOST_PARTNER_SIGNUP_REQUEST = `${HOST}/partner-signup-request`;

@@ -12,9 +12,9 @@ import {
 } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CollectionsIcon from '@mui/icons-material/Collections';
-import Spinner from './common/Spinner';
-import ContentModal from './common/ContentModal';
-import * as cmsQueries from '../queries/cms-queries';
+import Spinner from './Spinner';
+import ContentModal from './ContentModal';
+import * as cmsQueries from '../../queries/cms-queries';
 
 const avatarStyle = { width: '5em', height: '5em' };
 
@@ -73,7 +73,10 @@ export default function ImageUpload({ objectId, image, onSaveSuccess }) {
           }
         })
         .catch(({ response }) => alert((response && response.data) || 'An error occurred!'))
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          setIsLoading(false);
+          findPreviousVersions();
+        });
     };
 
     reader.readAsDataURL(file);
@@ -100,12 +103,12 @@ export default function ImageUpload({ objectId, image, onSaveSuccess }) {
 
   return (
     <>
-      <Card>
+      <Card sx={{ minWidth: '260px', minHeight: '156px' }}>
         <CardContent>
           <Grid container justify="center" alignItems="center">
             {isLoading ? (
               <Grid item xs={12}>
-                <Spinner marginTop="0.5em" />
+                <Spinner marginTop="2.5em" />
               </Grid>
             ) : (
               <>

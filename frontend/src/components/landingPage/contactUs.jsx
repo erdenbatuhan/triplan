@@ -1,14 +1,8 @@
 import { useState, useRef } from 'react';
-import { Typography, Box, TextField, Button, Modal } from '@mui/material';
-import { green } from '@mui/material/colors';
+import { Typography, Grid, Box, TextField, Button, Modal } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { handleEmail } from '../../queries/email-queries';
-
-// import { SECONDARY_COLOR } from '../../shared/constants';
-// import WhyTriplanCard from './whyTriplanCard';
-
-// const personalizedImg = require('../../assets/personalized.png');
 
 const style = {
   position: 'absolute',
@@ -31,19 +25,20 @@ export default function ContactUs() {
   const emailInput = useRef(null);
   const messageInput = useRef(null);
 
-  const onNameChanged = (e) => {
+  const onNameChange = (e) => {
     setName(e.target.value);
   };
 
-  const onEmailChanged = (e) => {
+  const onEmailChange = (e) => {
     setEmail(e.target.value);
   };
 
-  const onMessageChanged = (e) => {
+  const onMessageChange = (e) => {
     setMessage(e.target.value);
   };
 
   const handleSubmitMessage = () => {
+    console.log(email, name);
     handleEmail(
       {
         to_email: 'seba.tum2022@gmail.com',
@@ -73,7 +68,7 @@ export default function ContactUs() {
         style={{
           textAlign: 'center'
         }}>
-        Contact With Us
+        Contact Us
       </Typography>
       <div
         style={{
@@ -86,66 +81,85 @@ export default function ContactUs() {
         <br />
         <br />
         <br />
-        <Box
-          component="form"
-          style={{
-            maxWidth: '100%',
-            padding: 10
-          }}>
-          <TextField
-            label="Your Email"
-            id="fullWidth"
-            inputRef={emailInput}
-            onChange={onEmailChanged}
-          />
-        </Box>
-        <Box
-          component="form"
-          style={{
-            maxWidth: '100%',
-            padding: 10
-          }}>
-          <TextField
-            label="Your Name"
-            id="fullWidth"
-            inputRef={nameInput}
-            onChange={onNameChanged}
-          />
-        </Box>
-        <Box
-          style={{
-            maxWidth: '100%',
-            padding: 10
-          }}>
-          <TextField
-            fullWidth
-            multiline
-            rows={6}
-            label="Your Message"
-            inputRef={messageInput}
-            onChange={onMessageChanged}
-          />
-        </Box>
-        <Box
-          style={{
-            maxWidth: '100%',
-            textAlign: 'center',
-            padding: 20
-          }}>
-          <Button
-            style={{
-              color: '#FFFFFF',
-              backgroundColor: green[500],
-              width: '60%',
-              border: 1,
-              // borderColor: grey[500],
-              borderRadius: 4,
-              height: '50px'
-            }}
-            onClick={handleSubmitMessage}>
-            Submit Message
-          </Button>
-        </Box>
+
+        <Grid container>
+          <Grid item xs={1} />
+
+          <Grid item xs={10}>
+            <Grid container>
+              <Grid item xs={6}>
+                <Box
+                  component="form"
+                  style={{
+                    padding: 10
+                  }}>
+                  <TextField
+                    fullWidth
+                    label="Your Name"
+                    inputRef={nameInput}
+                    onChange={onNameChange}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Box
+                  component="form"
+                  style={{
+                    padding: 10
+                  }}>
+                  <TextField
+                    fullWidth
+                    label="Your Email"
+                    inputRef={emailInput}
+                    onChange={onEmailChange}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+
+            <Grid container>
+              <Grid item xs={12}>
+                <Box
+                  style={{
+                    maxWidth: '100%',
+                    padding: 10
+                  }}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={6}
+                    label="Your Message"
+                    inputRef={messageInput}
+                    onChange={onMessageChange}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+
+            <Grid container>
+              <Grid item xs={12}>
+                <Box
+                  style={{
+                    maxWidth: '100%',
+                    textAlign: 'center',
+                    padding: 20
+                  }}>
+                  <Button
+                    sx={{ width: '60%', height: '60px' }}
+                    variant="contained"
+                    color="success"
+                    onClick={handleSubmitMessage}
+                    disabled={!name || !email || !message}>
+                    Submit Message
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={1} />
+        </Grid>
       </div>
       <Modal
         open={isOpen}

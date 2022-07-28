@@ -12,6 +12,20 @@ module.exports.FOOD_TYPES = ["Regular", "Vegetarian", "Vegan", "Gluten Free"];
 
 module.exports.PRICE_LEVELS = ["€", "€€", "€€€"];
 
+module.exports.CUISINES = [
+  "Japanese",
+  "Chinese",
+  "Indian",
+  "Lebanese",
+  "Turkish",
+  "Greek",
+  "Italian",
+  "German",
+  "Spanish",
+  "American",
+  "Mexican",
+];
+
 module.exports.TOURIST_ATTRACTION_TYPES = [
   "tourist_attraction",
   "museum",
@@ -58,20 +72,6 @@ module.exports.TOURIST_ATTRACTION_TYPES = [
   "hair_care",
   "university",
   "meal_takeaway",
-];
-
-module.exports.CUISINES = [
-  "Japanese",
-  "Chinese",
-  "Indian",
-  "Lebanese",
-  "Turkish",
-  "Greek",
-  "Italian",
-  "German",
-  "Spanish",
-  "American",
-  "Mexican",
 ];
 
 module.exports.TRANSACTION_TYPE = ["Deposit", "Withdraw", "Purchase"];
