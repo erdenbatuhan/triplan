@@ -48,7 +48,13 @@ export default function CheckoutItemCard({
     <Card sx={{ display: 'flex', margin: '10px' }}>
       <CardMedia
         component="img"
-        sx={{ width: 125, height: 105, borderRadius: '50%', margin: '10px 0 0 10px' }}
+        style={{
+          width: 100,
+          height: 100,
+          flex: 1,
+          borderRadius: '50%',
+          margin: '10px 0 0 10px'
+        }}
         image={partnerLocation.locationPicture}
       />
 
