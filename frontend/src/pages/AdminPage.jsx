@@ -33,51 +33,51 @@ import {
 } from '../shared/constants';
 import { getAuthData } from '../queries/authentication-queries';
 
-function getWithdrawRequestRows(allWithdrawRequests) {
-  const rows = [];
-  for (let i = 0; i < allWithdrawRequests.length; i += 1) {
-    rows.push({
-      id: allWithdrawRequests[i]._id,
-      username: allWithdrawRequests[i].username,
-      userId: allWithdrawRequests[i].userId,
-      email: allWithdrawRequests[i].email,
-      paypalEmail: allWithdrawRequests[i].paypalEmail,
-      amount: allWithdrawRequests[i].amount,
-      createdAt: new Date(allWithdrawRequests[i].createdAt).toString()
-    });
-  }
-  return rows;
-}
+// function getWithdrawRequestRows(allWithdrawRequests) {
+//   const rows = [];
+//   for (let i = 0; i < allWithdrawRequests.length; i += 1) {
+//     rows.push({
+//       id: allWithdrawRequests[i]._id,
+//       username: allWithdrawRequests[i].username,
+//       userId: allWithdrawRequests[i].userId,
+//       email: allWithdrawRequests[i].email,
+//       paypalEmail: allWithdrawRequests[i].paypalEmail,
+//       amount: allWithdrawRequests[i].amount,
+//       createdAt: new Date(allWithdrawRequests[i].createdAt).toString()
+//     });
+//   }
+//   return rows;
+// }
 
 const withdrawRequestColumns = [
   { field: 'id', headerName: 'Request ID', width: 210 },
   { field: 'username', headerName: 'User Name', width: 210 },
-  { field: 'userId', headerName: 'User ID', width: 210 },
   { field: 'email', headerName: 'User Email', width: 210 },
   { field: 'paypalEmail', headerName: 'Paypal Account', width: 210 },
   { field: 'amount', headerName: 'Transaction Amount', type: 'number', width: 140 },
+  { field: 'wallet', headerName: 'Wallet Id', type: 'number', width: 210 },
   { field: 'createdAt', headerName: 'Request Date', type: 'date', width: 600 }
 ];
 
-function getPartnerSignupRequestRows(allPartnerSignupRequests) {
-  const rows = [];
-  for (let i = 0; i < allPartnerSignupRequests.length; i += 1) {
-    getAuthData(allPartnerSignupRequests[i].authentication).then((authData) =>
-      rows.push({
-        id: allPartnerSignupRequests[i]._id,
-        username: authData.username,
-        email: authData.email,
-        googleLocationLink: allPartnerSignupRequests[i].googleLocationLink,
-        partnerLocationName: allPartnerSignupRequests[i].partnerLocationName,
-        partnerLocationContact: allPartnerSignupRequests[i].partnerLocationContact,
-        partnerType: authData.userType,
-        createdAt: new Date(allPartnerSignupRequests[i].createdAt).toString()
-      })
-    );
-  }
-  console.log('rows: ', rows);
-  return rows;
-}
+// function getPartnerSignupRequestRows(allPartnerSignupRequests) {
+//   const rows = [];
+//   for (let i = 0; i < allPartnerSignupRequests.length; i += 1) {
+//     getAuthData(allPartnerSignupRequests[i].authentication).then((authData) =>
+//       rows.push({
+//         id: allPartnerSignupRequests[i]._id,
+//         username: authData.username,
+//         email: authData.email,
+//         googleLocationLink: allPartnerSignupRequests[i].googleLocationLink,
+//         partnerLocationName: allPartnerSignupRequests[i].partnerLocationName,
+//         partnerLocationContact: allPartnerSignupRequests[i].partnerLocationContact,
+//         partnerType: authData.userType,
+//         createdAt: new Date(allPartnerSignupRequests[i].createdAt).toString()
+//       })
+//     );
+//   }
+//   console.log('rows: ', rows);
+//   return rows;
+// }
 
 const partnerSignupRequestColumns = [
   { field: 'id', headerName: 'Request ID', width: 210 },
@@ -103,17 +103,12 @@ const style = {
   borderRadius: '15px'
 };
 
-// const username = 'admin';
-// const password = 'admin123';
-// const email = 'seba.tum2022@gmail.com';
-
 function AdminPage() {
   const [withdrawSelectedRows, setWithdrawSelectedRows] = useState();
   const [partnerSignupSelectedRows, setPartnerSignupSelectedRows] = useState();
   const [value, setValue] = useState(1);
   const [allWithdrawRequests, setAllWithdrawRequests] = useState([]);
   const [allPartnerSignupRequests, setAllPartnerSignupRequests] = useState([]);
-  // const [allPartnerSignupRequestsAuthData, setAllPartnerSignupRequestsAuthData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessfull, setIsSuccessfull] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
@@ -121,7 +116,6 @@ function AdminPage() {
   const [curPartner, setCurPartner] = useState(null);
   const [signupRows, setSignupRows] = useState([]);
   const [withdrawRows, setWithdrawRows] = useState([]);
-  // const [signupUniqueRows, setUniqueSignupRows] = useState([]);
 
   useEffect(() => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
@@ -162,13 +156,12 @@ function AdminPage() {
     setWithdrawRows([]);
     Promise.all([
       allWithdrawRequests.map(async (request) => {
-        const user = await getAuthData(request.authentication);
-        setSignupRows((signRows) => [
+        setWithdrawRows((signRows) => [
           ...signRows,
           {
             id: request._id,
-            username: user.username,
-            email: user.email,
+            username: request.username,
+            email: request.email,
             paypalEmail: request.paypalEmail,
             amount: request.amount,
             wallet: request.walletId,
@@ -189,18 +182,13 @@ function AdminPage() {
 
   const handleWithdrawSelection = (ids) => {
     const selectedIDs = new Set(ids);
-
-    const selectedRowData = getWithdrawRequestRows(allWithdrawRequests).filter((row) =>
-      selectedIDs.has(row.id)
-    );
-
+    const selectedRowData = withdrawRows.filter((row) => selectedIDs.has(row.id));
     setWithdrawSelectedRows(selectedRowData);
   };
 
   const handlePartnerSignupSelection = (ids) => {
     const selectedIDs = new Set(ids);
     const selectedRowData = signupRows.filter((row) => selectedIDs.has(row.id));
-    console.log();
     setPartnerSignupSelectedRows(selectedRowData);
   };
 
@@ -291,60 +279,61 @@ function AdminPage() {
   };
 
   const handleRejectWithdrawRequest = () => {
-    removeWithdrawRequest(withdrawSelectedRows[0].id).then(() =>
-      handleEmail(
-        {
-          subject: 'Your Withdraw Request is Rejected!',
-          to_name: withdrawSelectedRows[0].username,
-          to_email: withdrawSelectedRows[0].email,
-          intro_message: `Your withdraw request is rejected.`,
-          final_message: 'Please do not hesitate to contact about the problem.',
-          details_message: 'Request Details',
-          details_1: `Paypal Account: ${withdrawSelectedRows[0].paypalEmail}`,
-          details_2: `Amount: ${withdrawSelectedRows[0].amount} €`,
-          details_3: `Request Id: ${withdrawSelectedRows[0].id}`
-        },
-        'general'
-      ).then(() => {
-        syncWithdrawRequests();
-        setIsApproved(false);
-        setIsSuccessfull(true);
-        setIsOpen(true);
-      })
-    );
+    withdrawSelectedRows.forEach((withdrawReq) => {
+      removeWithdrawRequest(withdrawReq.id).then(() =>
+        handleEmail(
+          {
+            subject: 'Your Withdraw Request is Rejected!',
+            to_name: withdrawReq.username,
+            to_email: withdrawReq.email,
+            intro_message: `Your withdraw request is rejected.`,
+            final_message: 'Please do not hesitate to contact about the problem.',
+            details_message: 'Request Details',
+            details_1: `Paypal Account: ${withdrawReq.paypalEmail}`,
+            details_2: `Amount: ${withdrawReq.amount} €`,
+            details_3: `Request Id: ${withdrawReq.id}`
+          },
+          'general'
+        ).then(() => {
+          syncWithdrawRequests();
+          setIsApproved(false);
+          setIsSuccessfull(true);
+          setIsOpen(true);
+        })
+      );
+    });
   };
 
   const handleApproveWithdrawRequest = () => {
-    getUser(withdrawSelectedRows[0].userId).then((data) =>
+    withdrawSelectedRows.forEach((withdrawReq) => {
       createTransaction({
-        amount: Number(withdrawSelectedRows[0].amount),
+        amount: withdrawReq.amount,
         type: TRANSACTION_TYPE_WITHDRAW,
         incomingWalletId: null,
-        outgoingWalletId: data.wallet
+        outgoingWalletId: withdrawReq.wallet
       }).then(({ transaction, outgoingWalletObject }) => {
         if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
-          setIsSuccessfull(true);
-          setIsOpen(true);
           console.log(outgoingWalletObject);
-          removeWithdrawRequest(withdrawSelectedRows[0].id).then(() => {
-            syncWithdrawRequests().then(() => {
-              handleEmail(
-                {
-                  subject: 'Your Withdraw Request is Approved!',
-                  to_name: withdrawSelectedRows[0].username,
-                  to_email: withdrawSelectedRows[0].email,
-                  intro_message: `Your withdraw request is approved.`,
-                  final_message:
-                    'Thanks for being part of our family. Please do not hesitate to contact with us in case of any problem.',
-                  details_message: 'Request Details',
-                  details_1: `Paypal Account: ${withdrawSelectedRows[0].paypalEmail}`,
-                  details_2: `Amount: ${withdrawSelectedRows[0].amount} €`,
-                  details_3: `Request Id: ${withdrawSelectedRows[0].id}`
-                },
-                'general'
-              ).then(() => {
-                setIsApproved(true);
-              });
+          removeWithdrawRequest(withdrawReq.id).then(() => {
+            handleEmail(
+              {
+                subject: 'Your Withdraw Request is Approved!',
+                to_name: withdrawReq.username,
+                to_email: withdrawReq.email,
+                intro_message: `Your withdraw request is approved.`,
+                final_message:
+                  'Thanks for being part of our family. Please do not hesitate to contact with us in case of any problem.',
+                details_message: 'Request Details',
+                details_1: `Paypal Account: ${withdrawReq.paypalEmail}`,
+                details_2: `Amount: ${withdrawReq.amount} €`,
+                details_3: `Request Id: ${withdrawReq.id}`
+              },
+              'general'
+            ).then(() => {
+              syncWithdrawRequests();
+              setIsApproved(true);
+              setIsSuccessfull(true);
+              setIsOpen(true);
             });
           });
         } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
@@ -353,8 +342,8 @@ function AdminPage() {
           setIsApproved(true);
           alert('Opps, something went wrong!');
         }
-      })
-    );
+      });
+    });
   };
 
   return (
@@ -376,7 +365,7 @@ function AdminPage() {
               padding: 2
             }}>
             <DataGrid
-              rows={getWithdrawRequestRows(allWithdrawRequests)}
+              rows={withdrawRows}
               columns={withdrawRequestColumns}
               checkboxSelection
               onSelectionModelChange={(ids) => {

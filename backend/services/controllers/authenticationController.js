@@ -163,7 +163,7 @@ const login = async (req, res) => {
           .status(400)
           .json({ msg: `Given user type is not known: ${userType}` });
     }
-
+    
     if (!!!newUser) {
       return res.status(400).json({ msg: "Error in getting user." });
     }

@@ -12,6 +12,7 @@ import { UserAuthHelper } from '../../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../../queries/user-queries';
 import { createTransaction } from '../../queries/transaction-queries';
 import { createNewWithdrawRequest } from '../../queries/withdraw-request-queries';
+import { getAuthData } from '../../queries/authentication-queries';
 import {
   // CURRENCIES,
   TRANSACTION_TYPE_DEPOSIT,
@@ -55,17 +56,13 @@ export default function Wallet() {
     if (!authenticatedUser) {
       return;
     }
-    getUser(authenticatedUser.user.id).then((data) => setAuthenticatedUserData(data));
+    getUser(authenticatedUser.user.id).then((data) =>
+      getAuthData(data.authentication).then((response) => {
+        setAuthenticatedUserData(data);
+        setAuthData(response);
+      })
+    );
   }, [authenticatedUser]);
-
-  useEffect(() => {
-    if (!authenticatedUser) {
-      return;
-    }
-    getAuthData(authenticatedUserData.authentication).then((data) => setAuthData(data));
-  }, [authenticatedUser]);
-
-  console.log(authenticatedUserData);
 
   const handleTransaction = () => {
     if (transactionType === TRANSACTION_TYPE_DEPOSIT) {
@@ -92,13 +89,13 @@ export default function Wallet() {
         email,
         paypalEmail,
         amount: transactionAmount,
-        walletId: ''
+        walletId: authenticatedUserData.wallet
       };
 
-      createNewWithdrawRequest(newWithdrawRequest).then((response) => {
-        console.log(response);
+      createNewWithdrawRequest(newWithdrawRequest).then(() => {
         handleEmail(
           {
+            subject: 'About Your Withdraw Request',
             to_name: username,
             to_email: email,
             intro_message: generateIntroMessage('create'),
