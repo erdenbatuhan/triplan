@@ -24,20 +24,25 @@ export default function ServicesBoughtModal({ open, onClose, tripPlan }) {
     setIsLoading(true);
     getLocationsOfTripPlan(tripPlan._id)
       .then(async (locationsData) => {
-        // Store a mapping from trip location id to partner location name
-        const tripLocationToPlaceName_ = Object.assign(
-          {},
-          ...locationsData.map(({ partnerLocation, tripLocation }) => ({
-            [tripLocation._id]: partnerLocation.name
-          }))
-        );
-        setTripLocationToPlaceName(tripLocationToPlaceName_);
+        try {
+          // Store a mapping from trip location id to partner location name
+          const tripLocationToPlaceName_ = Object.assign(
+            {},
+            ...locationsData.map(({ partnerLocation, tripLocation }) => ({
+              [tripLocation._id]: partnerLocation.name
+            }))
+          );
+          setTripLocationToPlaceName(tripLocationToPlaceName_);
 
-        // Get the items bought by the user in this trip plan
-        const tripLocationIds = Object.keys(tripLocationToPlaceName_);
-        await getItemBoughtsByTripLocations(tripLocationIds).then((itemBoughtsData) =>
-          setItemBoughtsByTripLocations(itemBoughtsData)
-        );
+          // Get the items bought by the user in this trip plan
+          const tripLocationIds = Object.keys(tripLocationToPlaceName_);
+          await getItemBoughtsByTripLocations(tripLocationIds).then((itemBoughtsData) =>
+            setItemBoughtsByTripLocations(itemBoughtsData)
+          );
+        } catch {
+          alert('Faulty plan! Please contact an administrator.');
+          onClose();
+        }
       })
       .finally(() => setIsLoading(false));
   }, [tripPlan]);

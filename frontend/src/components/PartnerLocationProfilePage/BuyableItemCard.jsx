@@ -1,83 +1,97 @@
-/* eslint-disable react/jsx-no-useless-fragment */
 import * as React from 'react';
-// import { useNavigate, useParams } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import ListItem from '@mui/material/ListItem';
-import PropTypes from 'prop-types';
-import { Button, Stack } from '@mui/material';
+import { Button, Avatar } from '@mui/material';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import FastfoodIcon from '@mui/icons-material/Fastfood';
+import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
 
 export default function BuyableItemCard(props) {
-  const { itemIdx, name, content, price, image, handleEditClick, handleDeleteClick, inEdit } =
-    props;
-  // const navigate = useNavigate();
-  // const { partnerId } = useParams();
+  const {
+    itemIdx,
+    name,
+    content,
+    price,
+    image,
+    handleBuyableItemEditClick,
+    handleBuyableItemDeleteClick,
+    partnerType
+    /* , inEdit */
+  } = props;
 
   return (
-    <Card sx={{ maxWidth: '%100' }}>
-      <CardContent>
-        <Stack direction="row" spacing={2}>
-          <Grid container spacing={2}>
-            <Grid item xs={3}>
-              <img
-                src={`${image}?w=164&h=164&fit=crop&auto=format`}
-                srcSet={`${image}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                alt=""
-                loading="lazy"
-                width={150}
-                height={150}
-              />
+    <Card sx={{ width: '100%', marginBottom: 1 }}>
+      <Grid container direction="column" marginTop={4}>
+        <Grid item xs={8}>
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            display="inline-flex"
+            spacing={2}
+            mb={2}>
+            <Grid item xs={4} justifyItems="center" display="inline-grid">
+              {image ? (
+                <Avatar
+                  sx={{
+                    width: '125px',
+                    height: '125px'
+                  }}
+                  src={image}
+                />
+              ) : (
+                <Avatar
+                  sx={{
+                    width: '125px',
+                    height: '125px'
+                  }}>
+                  {partnerType === PARTNER_TYPE_RESTAURANT ? (
+                    <FastfoodIcon sx={{ width: '50%', height: '50%' }} />
+                  ) : (
+                    <ConfirmationNumberIcon sx={{ width: '50%', height: '50%' }} />
+                  )}
+                </Avatar>
+              )}
             </Grid>
-            <Grid item xs={6}>
-              <ListItem>
-                <CardContent>
-                  <Typography gutterBottom variant="h3" component="div">
-                    {name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {content}
-                  </Typography>
-                </CardContent>
-              </ListItem>
-            </Grid>
-            <Grid item xs={3}>
-              <CardContent>
-                <Typography variant="h5" color="text.secondary">
-                  {price} €
-                </Typography>
+            <Grid item xs={4} padding="unset">
+              <CardContent sx={{ padding: 'inherit' }}>
+                <Grid container direction="column">
+                  <Grid item xs={8}>
+                    <Typography gutterBottom variant="h6" component="div">
+                      {name}
+                    </Typography>
+
+                    <Typography variant="body2" color="text.secondary">
+                      {content}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item xs={2} sx={{ mb: 2 }} />
+
+                  <Grid item xs={2} justifyContent="center">
+                    <Typography variant="h5" color="text.secondary">
+                      {price} €
+                    </Typography>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Grid>
-          </Grid>
-          {inEdit ? (
-            <Stack direction="row" spacing={2}>
-              <Button value={itemIdx} onClick={handleEditClick}>
+
+            <Grid item xs={4}>
+              <Button value={itemIdx} onClick={handleBuyableItemEditClick}>
                 Edit
               </Button>
-              <Button value={itemIdx} onClick={handleDeleteClick}>
+
+              <Button value={itemIdx} onClick={handleBuyableItemDeleteClick}>
                 Delete
               </Button>
-            </Stack>
-          ) : (
-            <></>
-          )}
-        </Stack>
-      </CardContent>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
     </Card>
   );
 }
-
-BuyableItemCard.propTypes = {
-  itemIdx: PropTypes.number,
-  name: PropTypes.string.isRequired,
-  content: PropTypes.string.isRequired,
-  price: PropTypes.string.isRequired,
-  image: PropTypes.string.isRequired,
-  inEdit: PropTypes.bool
-};
-
-BuyableItemCard.defaultProps = {
-  itemIdx: -1,
-  inEdit: false
-};

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import { Button, CardActionArea, CardMedia, Typography } from '@mui/material';
+import { CardActionArea, CardMedia, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -11,8 +11,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Tooltip from '@mui/material/Tooltip';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 // import emailjs from '@emailjs/browser';
@@ -20,14 +18,14 @@ import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Header from '../components/common/Header';
-import ContentModal from '../components/common/ContentModal';
-import CheckoutItemCard from '../components/CheckoutItemCard';
+import Spinner from '../components/common/Spinner';
+import CheckoutItemCard from '../components/CheckoutPage/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
-import { createTransaction } from '../queries/transaction-queries';
+import { buyItems } from '../queries/transaction-queries';
 import { findCouponForUser } from '../queries/coupon-queries';
 import {
   generateEmailAmount,
@@ -36,14 +34,10 @@ import {
   generateEmailRoute,
   handleEmail
 } from '../queries/email-queries';
-import { getAuthData } from '../queries/authentication-queries';
+// import { getAuthData } from '../queries/authentication-queries';
 import {
   PARTNER_TYPE_RESTAURANT,
   PARTNER_TYPE_TOURIST_ATTRACTION,
-  // CURRENCIES,
-  TRANSACTION_TYPE_WITHDRAW,
-  TRANSACTION_STATUS_SUCCESSFUL,
-  TRANSACTION_STATUS_REJECTED,
   // COUPON CONSTANTS
   MIN_AMOUNT_FOR_COUPON,
   DEFAULT_VALUE_OF_COUPON,
@@ -89,6 +83,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
+  const [lazyLoading, setLazyLoading] = useState(true);
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [wallet, setWallet] = useState(null);
   const [tripPlan, setTripPlan] = useState({});
@@ -100,15 +95,10 @@ export default function CheckoutPage() {
   const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
   const [coupon, setCoupon] = useState(null);
   const [user, setUser] = useState(null);
-  const [authData, setAuthData] = useState(null);
+  // const [authData, setAuthData] = useState(null);
   const [emailContent] = useState({});
   // const [itemList, setItemList] = useState([]);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
-
-  console.log(authenticatedUser, user, authData);
-  const handleCompletePayment = (bool) => {
-    setPaymentCompleted(bool);
-  };
 
   // const handleEmail = () => {
   //   emailjs.init(emailjsCredentials.publicKey);
@@ -130,27 +120,33 @@ export default function CheckoutPage() {
   //     );
   // };
 
-  const handleSavePlanButton = () => {
+  const handleCheckoutSuccess = () => {
     setPaymentCompleted(true);
+    alert('Your trip plan is saved successfully! <strong>Enjoy your vacation!</strong>');
+
+    navigate(`/user/${authenticatedUser.user.id}`);
   };
 
-  const handleWalletPayment = () => {
+  const handleCheckout = (paypalTransactionId) => {
     setLoading(true);
-    createTransaction({
-      amount: Number(totalPaidServicePrice),
-      type: TRANSACTION_TYPE_WITHDRAW,
-      incomingWalletId: null,
-      outgoingWalletId: wallet._id
-    })
-      .then(({ transaction, outgoingWalletObject }) => {
-        if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
-          setWallet(outgoingWalletObject);
-          setPaymentCompleted(true);
-        } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
-          alert('Opps, something went wrong!');
-        }
+    buyItems(user, servicesToBeBought, coupon, paypalTransactionId)
+      .then(() => {
+        handleCheckoutSuccess();
+      })
+      .catch(() => {
+        setPaymentCompleted(false);
+        alert('An error occurred while creating the transaction! Please contact an administrator.');
       })
       .finally(() => setLoading(false));
+  };
+
+  const onPaypalTransactionComplete = (transactionStatus) => {
+    if (!transactionStatus) {
+      alert('An error occurred during PayPal transaction! Please try again.');
+      return;
+    }
+
+    handleCheckout('352H8RH329RFH9328HF238TH32NF032FN382ND2');
   };
 
   // Update the trip plan data for every change in trip plan ID
@@ -160,28 +156,45 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Fetch the trip plan itself
-    getTripPlan(tripPlanId).then((data) => {
-      if (data.paid) {
-        alert(
-          'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
-        );
+    setLoading(true);
+    Promise.all([
+      // Fetch the trip plan itself
+      getTripPlan(tripPlanId).then((data) => {
+        if (data.paid) {
+          setLoading(false);
+          alert(
+            'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
+          );
 
-        navigate(-1); // Go back
-        return;
-      }
+          navigate(-1); // Go back
+          return;
+        }
 
-      setTripPlan(data);
-    });
-
-    // Fetch all the partner locations of the trip plan
-    getLocationsOfTripPlan(tripPlanId)
-      .then((data) =>
-        setPartnerLocations(
-          data.map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
+        setTripPlan(data);
+      }),
+      // Fetch all the partner locations of the trip plan
+      getLocationsOfTripPlan(tripPlanId)
+        .then((data) =>
+          data
+            .filter(({ partnerLocation, tripLocation }) => partnerLocation && tripLocation)
+            .map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
         )
-      )
-      .catch(() => navigate('/'));
+        .then((data) => {
+          if (!data || data.length === 0) {
+            setLoading(false);
+            alert('Faulty trip plan! Please contact an administrator.');
+
+            navigate(-1); // Go back
+            return;
+          }
+
+          setPartnerLocations(data);
+        })
+        .catch(() => {
+          setLoading(false);
+          navigate('/');
+        })
+    ]).finally(() => setLoading(false));
   }, [tripPlanId]);
 
   // Listening to the changes in authenticatedUser
@@ -191,10 +204,11 @@ export default function CheckoutPage() {
     }
 
     getUser(authenticatedUser.user.id).then((data) => {
-      getAuthData(data.authentication).then((response) => {
-        setUser(data);
-        setAuthData(response);
-      });
+      setUser(data);
+      // getAuthData(data.authentication).then((response) => {
+      //   setUser(data);
+      //   setAuthData(response);
+      // });
     });
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
     findCouponForUser(authenticatedUser.user.id).then((data) => setCoupon(data));
@@ -202,6 +216,8 @@ export default function CheckoutPage() {
 
   // Listening to the changes in partnerLocations
   useEffect(() => {
+    setLazyLoading(true);
+
     // Request body needed to get the buyable items
     const selectedPartnerLocationIds = {
       restaurantIds: partnerLocations
@@ -216,13 +232,16 @@ export default function CheckoutPage() {
         .map(({ _id }) => _id)
     };
 
-    setLoading(true);
     getBuyableItems(selectedPartnerLocationIds)
       .then(({ menuItemData, ticketData }) => {
         const fetchedBuyableItemData = { ...menuItemData, ...ticketData };
         const emptyBuyableItemSelections = {};
 
         partnerLocations.forEach((partnerLocation) => {
+          if (!fetchedBuyableItemData[partnerLocation._id]) {
+            return;
+          }
+
           emptyBuyableItemSelections[partnerLocation._id] = Object.assign(
             {},
             ...fetchedBuyableItemData[partnerLocation._id].map((item) => ({ [item._id]: 0 }))
@@ -234,7 +253,7 @@ export default function CheckoutPage() {
         setLatestSelectionUpdateDate(new Date()); // Forces re-rendering
       })
       .finally(() => {
-        setLoading(false);
+        setLazyLoading(false);
       });
   }, [partnerLocations]);
 
@@ -282,8 +301,6 @@ export default function CheckoutPage() {
 
     setServicesToBeBought(updatedServicesToBeBought);
 
-    console.log(updatedServicesToBeBought);
-
     // Calculate the total paid service price using the services to be bought
     const totalPrice = updatedServicesToBeBought.reduce(
       (accumTotalPrice, { itemsToBeBought }) =>
@@ -295,9 +312,7 @@ export default function CheckoutPage() {
       0 // Initial value
     );
 
-    // setTotalPaidServicePrice(Math.max(0, totalPrice - (coupon ? coupon.value : 0)));
-    console.log(totalPrice);
-    setTotalPaidServicePrice(0);
+    setTotalPaidServicePrice(Math.max(0, totalPrice - (coupon ? coupon.value : 0)));
   }, [buyableItemSelections, coupon]);
 
   // Listening to the changes in user
@@ -346,6 +361,10 @@ export default function CheckoutPage() {
     setLatestSelectionUpdateDate(new Date()); // Forces re-rendering
   };
 
+  if (loading) {
+    return <Spinner marginTop="5em" />;
+  }
+
   return (
     <div style={{ backgroundColor: BG_COLOR }}>
       <Grid container spacing={2}>
@@ -361,7 +380,7 @@ export default function CheckoutPage() {
               position: 'relative',
               overflow: 'auto',
               minHeight: '30em',
-              height: '50em',
+              height: '43em',
               '& ul': { padding: 0 }
             }}>
             {partnerLocations
@@ -370,7 +389,7 @@ export default function CheckoutPage() {
                 <li key={`CheckoutPage-CheckoutItemCard-${partnerLocation._id}`}>
                   <ul>
                     <CheckoutItemCard
-                      loading={loading}
+                      loading={lazyLoading}
                       index={idx + 1}
                       partnerLocation={partnerLocation}
                       items={buyableItemData[partnerLocation._id] || []}
@@ -383,6 +402,7 @@ export default function CheckoutPage() {
               ))}
           </List>
         </Grid>
+
         <Grid item xs={4}>
           <Header title="Paid Services" />
 
@@ -392,6 +412,7 @@ export default function CheckoutPage() {
               bgcolor: 'background.paper',
               position: 'relative',
               overflow: 'auto',
+              height: '43em',
               '& ul': { padding: 0 }
             }}>
             <li>
@@ -412,7 +433,11 @@ export default function CheckoutPage() {
                         subheader={<li />}>
                         {servicesToBeBought.length === 0 ? (
                           <Box style={{ width: '%100', textAlign: 'center' }}>
-                            <Typography gutterBottom variant="body" component="div">
+                            <Typography
+                              gutterBottom
+                              variant="body2"
+                              component="div"
+                              color="text.secondary">
                               No Paid Service Added!
                             </Typography>
                           </Box>
@@ -574,17 +599,22 @@ export default function CheckoutPage() {
                 </Card>
               </ul>
             </li>
-          </List>
-          <br />
 
-          {totalPaidServicePrice === 0 ? (
-            <div>
-              {' '}
-              <Card
-                sx={{ width: '%100' }}
-                style={{ backgroundColor: PRIMARY_COLOR, height: '4em' }}>
-                <CardActionArea onClick={handleSavePlanButton}>
-                  <CardContent>
+            <Card
+              sx={{
+                width: '%100',
+                height: '4em',
+                mt: '1.5em',
+                ml: '10px',
+                mr: '10px',
+                backgroundColor: !totalPaidServicePrice ? PRIMARY_COLOR : grey[300]
+              }}>
+              <CardActionArea
+                onClick={
+                  !totalPaidServicePrice ? handleCheckoutSuccess : () => handleCheckout(null)
+                }>
+                <CardContent>
+                  {!totalPaidServicePrice ? (
                     <div
                       style={{
                         display: 'flex',
@@ -595,66 +625,85 @@ export default function CheckoutPage() {
                         Save Your Triplan!
                       </Typography>
                     </div>
-                  </CardContent>
-                </CardActionArea>
-              </Card>{' '}
-            </div>
-          ) : (
-            <div>
-              {' '}
-              <Card sx={{ width: '%100' }} style={{ backgroundColor: grey[300], height: '4em' }}>
-                <CardActionArea onClick={handleWalletPayment}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={2}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          height: '4em'
-                        }}>
-                        <CardMedia
-                          component="img"
-                          sx={{ width: '2em', height: '2em' }}
-                          image={walletImg}
-                          alt="wallet_icon"
-                        />
-                      </div>
-                    </Grid>
+                  ) : (
+                    <Grid container>
+                      <Grid item xs={2}>
+                        <div>
+                          <CardMedia
+                            component="img"
+                            sx={{ width: '2em', height: '2em' }}
+                            image={walletImg}
+                            alt="wallet_icon"
+                          />
+                        </div>
+                      </Grid>
 
-                    <Grid item xs={10}>
-                      <CardContent>
-                        <Typography gutterBottom variant="h6" component="div">
-                          Pay with Triplan Wallet
-                        </Typography>
-                      </CardContent>
+                      <Grid item xs={10}>
+                        <CardContent sx={{ p: 0 }}>
+                          <Typography gutterBottom variant="h6" component="div">
+                            Pay with Triplan Wallet
+                          </Typography>
+                        </CardContent>
+                      </Grid>
                     </Grid>
+                  )}
+                </CardContent>
+              </CardActionArea>
+            </Card>
+
+            {totalPaidServicePrice ? (
+              <>
+                <Grid
+                  sx={{ mt: '0.5em', mb: '0.5em', pl: '10px', pr: '10px' }}
+                  container
+                  direction="row"
+                  textAlign="center">
+                  <Grid item xs={5}>
+                    <hr />
                   </Grid>
-                </CardActionArea>
-              </Card>
-              <br />
-              <PayPalScriptProvider
-                options={{
-                  'client-id':
-                    'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
-                  components: 'buttons',
-                  currency: 'EUR'
-                }}>
-                <PaypalCheckoutButtons
-                  currency="EUR"
-                  amount={totalPaidServicePrice}
-                  onPaymentComplete={handleCompletePayment}
-                  showSpinner
-                />
-              </PayPalScriptProvider>{' '}
-            </div>
-          )}
+
+                  <Grid item xs={2}>
+                    <Typography variant="secondary"> OR </Typography>
+                  </Grid>
+
+                  <Grid item xs={5}>
+                    <hr />
+                  </Grid>
+                </Grid>
+
+                <Grid
+                  sx={{ width: '96%', mb: '1.5em', ml: '10px' }}
+                  container
+                  direction="row"
+                  alignItems="center">
+                  <Grid item xs={12}>
+                    <PayPalScriptProvider
+                      options={{
+                        'client-id':
+                          'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
+                        components: 'buttons',
+                        currency: 'EUR'
+                      }}>
+                      <PaypalCheckoutButtons
+                        currency="EUR"
+                        amount={totalPaidServicePrice}
+                        onPaymentComplete={onPaypalTransactionComplete}
+                        showSpinner
+                      />
+                    </PayPalScriptProvider>
+                  </Grid>
+                </Grid>
+              </>
+            ) : (
+              []
+            )}
+          </List>
         </Grid>
 
         <Grid item xs={1} />
       </Grid>
 
-      <ContentModal
+      {/* <ContentModal
         open={isPaymentCompleted}
         onClose={() => false}
         contentStyle={{
@@ -680,7 +729,7 @@ export default function CheckoutPage() {
             </div>
           </Box>
         }
-      />
+      /> */}
     </div>
   );
 }

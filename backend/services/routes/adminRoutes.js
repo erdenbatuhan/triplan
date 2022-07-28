@@ -14,11 +14,7 @@ router.post("/signup", async (req, res) => {
     await adminController.signUp(req, res);
     // res.status(200).send(await userController.signUp(req, res));
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the users! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -26,11 +22,7 @@ router.post("/login", async (req, res) => {
   try {
     await adminController.login(req, res);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the users! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -48,9 +40,7 @@ router.get("/:id", async (req, res) => {
 
     return res.status(200).send(admin);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while getting the user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

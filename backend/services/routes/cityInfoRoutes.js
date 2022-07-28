@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
   try {
     res.status(200).send((await cityInfoController.find(req.query)));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while returning city info entries that match the query! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

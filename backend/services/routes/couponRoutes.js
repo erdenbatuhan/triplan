@@ -17,7 +17,7 @@ router.get("/user/:id", async (req, res) => {
 
     return res.status(200).send(coupon);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while finds the most outdated coupon the user has! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

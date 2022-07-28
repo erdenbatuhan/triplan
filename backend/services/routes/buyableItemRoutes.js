@@ -8,17 +8,10 @@ const buyableItemController = require("./../controllers/buyableItemController.js
  */
 router.get("/menu-item", async (req, res) => {
   try {
-    const restaurantId = req.query.id;
-    const menuItems = await buyableItemController.getMenuItemsByPartnerLocation(
-      restaurantId
-    );
+    const menuItems = await buyableItemController.getMenuItemsByPartnerLocation(req.query.id);
     res.status(200).send(menuItems);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting menu items for the restaurant ${req.body}! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -28,16 +21,10 @@ router.get("/menu-item", async (req, res) => {
 router.get("/ticket", async (req, res) => {
   try {
     const touristAttractionId = req.query.id;
-    const tickets = await buyableItemController.getTicketsByPartnerLocation(
-      touristAttractionId
-    );
+    const tickets = await buyableItemController.getTicketsByPartnerLocation(req.query.id);
     res.status(200).send(tickets);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting tickets for the place ${req.body}! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -50,11 +37,7 @@ router.post("/ticket", async (req, res) => {
     const ticketCreated = await buyableItemController.addTicket(req.body);
     res.status(200).send(ticketCreated);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while creating a ticket for a tourist attraction! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -67,11 +50,7 @@ router.post("/menu-item", async (req, res) => {
     const menuItemCreated = await buyableItemController.addMenuItem(req.body);
     res.status(200).send(menuItemCreated);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while creating a menu item for a restaurant! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -81,18 +60,10 @@ router.post("/menu-item", async (req, res) => {
  */
 router.put("/ticket/:id", async (req, res) => {
   try {
-    const ticketId = req.params.id;
-    const query = req.query;
-
-    const ticketUpdated = await buyableItemController.updateTicket(
-      ticketId,
-      query
-    );
+    const ticketUpdated = await buyableItemController.updateTicket(req.params.id, req.query);
     res.status(200).send(ticketUpdated);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while updating a ticket! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -102,20 +73,10 @@ router.put("/ticket/:id", async (req, res) => {
  */
 router.put("/menu-item/:id", async (req, res) => {
   try {
-    const menuItemId = req.params.id;
-    const query = req.query;
-
-    const menuItemUpdated = await buyableItemController.updateMenuItem(
-      menuItemId,
-      query
-    );
+    const menuItemUpdated = await buyableItemController.updateMenuItem(req.params.id, req.query);
     res.status(200).send(menuItemUpdated);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while updating a menu item! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -128,14 +89,12 @@ router.delete("/ticket", async (req, res) => {
     const ticketRemoved = await buyableItemController.deleteTicket(ticketId);
 
     if (!ticketRemoved) {
-      return res.status(404).send(`The ticket not found!`);
+      return res.status(404).send(`Ticket with ID=${ticketId} not found!`);
     }
 
     res.status(200).send(ticketRemoved);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while deleting the ticket! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -145,21 +104,15 @@ router.delete("/ticket", async (req, res) => {
 router.delete("/menu-item", async (req, res) => {
   try {
     const menuItemId = req.query.id;
-    const menuItemRemoved = await buyableItemController.deleteMenuItem(
-      menuItemId
-    );
+    const menuItemRemoved = await buyableItemController.deleteMenuItem(menuItemId);
 
     if (!menuItemRemoved) {
-      return res.status(404).send(`Menu item not found!`);
+      return res.status(404).send(`Menu Item with ID=${menuItemId} not found!`);
     }
 
     res.status(200).send(menuItemRemoved);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while deleting the menu item! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -170,15 +123,10 @@ router.delete("/menu-item", async (req, res) => {
  */
 router.post("/", async (req, res) => {
   try {
-    const ticketsAndMenuItems =
-      await buyableItemController.findTicketsAndMenuItems(req.body);
+    const ticketsAndMenuItems = await buyableItemController.findTicketsAndMenuItems(req.body);
     res.status(200).send(ticketsAndMenuItems);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting buyable items of partner locations! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 

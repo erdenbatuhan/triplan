@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
   try {
     res.status(200).send(await (googleLocationInfoController.find()));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting all the records fetched from Google APIs! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
   try {
     res.status(200).send(await (googleLocationInfoController.save(req.body)));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while upserting a new google location info! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

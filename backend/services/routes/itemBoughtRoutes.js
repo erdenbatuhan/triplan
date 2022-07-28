@@ -8,16 +8,10 @@ const itemBoughtController = require("./../controllers/itemBoughtController.js")
  */
 router.post("/", async (req, res) => {
   try {
-    const itemBoughtCreated = await itemBoughtController.addNewItemBoughtEntry(
-      req.body
-    );
+    const itemBoughtCreated = await itemBoughtController.addNewItemBoughtEntry(req.body);
     res.status(200).send(itemBoughtCreated);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while creating a new item bought entry for a trip location! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -26,20 +20,10 @@ router.post("/", async (req, res) => {
  */
 router.put("/:id", async (req, res) => {
   try {
-    const itemBoughtId = req.params.id;
-    const query = req.query;
-
-    const ticketUpdated = await itemBoughtController.updateItemBoughtEntry(
-      itemBoughtId,
-      query
-    );
+    const ticketUpdated = await itemBoughtController.updateItemBoughtEntry(req.params.id, req.query);
     res.status(200).send(ticketUpdated);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while updating an item bought entry! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -48,10 +32,7 @@ router.put("/:id", async (req, res) => {
  */
 router.delete("/", async (req, res) => {
   try {
-    const itemBoughtId = req.query.id;
-    const itemBoughtRemoved = await itemBoughtController.deleteItemBoughtEntry(
-      itemBoughtId
-    );
+    const itemBoughtRemoved = await itemBoughtController.deleteItemBoughtEntry(req.query.id);
 
     if (!itemBoughtRemoved) {
       return res.status(404).send(`Item Bought not found!`);
@@ -59,11 +40,7 @@ router.delete("/", async (req, res) => {
 
     res.status(200).send(itemBoughtRemoved);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while deleting the item bought entry! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -72,15 +49,10 @@ router.delete("/", async (req, res) => {
  */
 router.get("/", async (req, res) => {
   try {
-    const id = req.query.id;
-    const itemBought = await itemBoughtController.getItemBoughtEntryById(id);
+    const itemBought = await itemBoughtController.getItemBoughtEntryById(req.query.id);
     res.status(200).send(itemBought);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the item bought for the id! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -89,15 +61,10 @@ router.get("/", async (req, res) => {
  */
 router.post("/location", async (req, res) => {
   try {
-    const itemBoughts =
-      await itemBoughtController.getItemBoughtsByTripLocations(req.body);
+    const itemBoughts = await itemBoughtController.getItemBoughtsByTripLocations(req.body);
     res.status(200).send(itemBoughts);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the items bought for the given list of trip locations! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -109,11 +76,7 @@ router.post("/purchase-history", async (req, res) => {
     const purchaseHistory = await itemBoughtController.getBuyableItemPurchaseHistory(req.body);
     res.status(200).send(purchaseHistory);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the purchase history for a buyable item! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 

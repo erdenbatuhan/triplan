@@ -58,7 +58,7 @@ export default function TripPlanRatingCard({
     setComment(tripLocation ? tripLocation.comment : '');
   };
 
-  return (
+  return partnerLocation ? (
     <Card sx={{ width: '100%', marginBottom: 1 }}>
       <Grid container direction="column" marginTop={4}>
         <Grid item xs={8}>
@@ -171,5 +171,7 @@ export default function TripPlanRatingCard({
         </Grid>
       </Grid>
     </Card>
+  ) : (
+    []
   );
 }

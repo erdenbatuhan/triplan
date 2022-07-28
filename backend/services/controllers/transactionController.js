@@ -47,7 +47,7 @@ module.exports.updateFields = (id, fields) => {
 /**
  * Transactional
  */
-module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
+module.exports.buyItems = ({ user, checkoutPayload, coupon, paypalTransactionId }) => {
   return mongoose.startSession().then(async (session) => {
     let newTransactions = undefined;
 
@@ -74,11 +74,12 @@ module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
 
           const partnerLocationWallet = await walletController.findPartnerLocationWallet(partnerLocation._id, session);
           return await createTransactionWithSession({
+            paypalTransactionId,
             amount: totalPrice,
             type: enums.TRANSACTION_TYPE[2],
             incomingWalletId: partnerLocationWallet._id, 
             outgoingWalletId: userWallet._id,
-            couponUsed,
+            couponUsed: coupon && { ...coupon, value: coupon.value / checkoutPayload.length }, // Distribute coupon value for each transaction
             commission: PARTNER_COMMISSION
           }, session);
         })).then(transactionsCreated => {
@@ -99,13 +100,13 @@ module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
 /**
  * Transactional
  */
-module.exports.createTransaction = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
+module.exports.createTransaction = ({ paypalTransactionId, amount, type, incomingWalletId, outgoingWalletId, couponUsed }) => {
   return mongoose.startSession().then(async (session) => {
     let newTransaction = undefined;
 
     await session.withTransaction(async () => {
       newTransaction = await createTransactionWithSession({
-        amount, type, incomingWalletId, outgoingWalletId, couponUsed
+        paypalTransactionId, amount, type, incomingWalletId, outgoingWalletId, couponUsed
       }, session);
     });
 
@@ -114,7 +115,7 @@ module.exports.createTransaction = ({ amount, type, incomingWalletId, outgoingWa
   });
 };
 
-const createTransactionWithSession = ({ amount, type, incomingWalletId, outgoingWalletId, couponUsed, commission }, session) => {
+const createTransactionWithSession = ({ paypalTransactionId, amount, type, incomingWalletId, outgoingWalletId, couponUsed, commission }, session) => {
   return Promise.all([
     incomingWalletId && walletController.findOne(incomingWalletId, session), // Incoming Wallet
     outgoingWalletId && walletController.findOne(outgoingWalletId, session) // Outgoing Wallet
@@ -122,8 +123,8 @@ const createTransactionWithSession = ({ amount, type, incomingWalletId, outgoing
     await checkWalletValidity(amount, type, incomingWallet, outgoingWallet, incomingWalletId, outgoingWalletId);
 
     return Promise.all([
-      updateWalletBalances(amount, type, incomingWallet, outgoingWallet, commission, session),
-      getCouponsConsumedAndEarned(amount, type, outgoingWallet, couponUsed, session)
+      updateWalletBalances(paypalTransactionId, amount, type, incomingWallet, outgoingWallet, couponUsed, commission, session),
+      getCouponsConsumedAndEarned(paypalTransactionId, amount, type, outgoingWallet, couponUsed, session)
     ]).then(async ([
       [ updatedIncomingWallet, updatedOutgoingWallet ],
       [ couponConsumed, couponEarned ]
@@ -168,18 +169,21 @@ const checkWalletValidity = async (amount, type, incomingWallet, outgoingWallet,
   }
 }
 
-const updateWalletBalances = async (amount, type, incomingWallet, outgoingWallet, commission, session) => {
+const updateWalletBalances = async (paypalTransactionId, amount, type, incomingWallet, outgoingWallet, couponUsed, commission, session) => {
   // In case of Deposit or Purchase, update the balance of "incoming" wallet
   let updatedIncomingWalletPromise = undefined;
   if ((type == enums.TRANSACTION_TYPE[0] || type == enums.TRANSACTION_TYPE[2]) && incomingWallet) {
-    commissionedAmount = !commission ? amount : amount * (1 - commission); // Apply commission in case of purchase and if there is any
-    updatedIncomingWalletPromise = walletController.updateWalletBalance(incomingWallet, incomingWallet.balance + commissionedAmount, session);
+    const commissionedAmount = !commission ? amount : amount * (1 - commission); // Apply commission in case of purchase and if there is any
+    updatedIncomingWalletPromise = walletController.updateWalletBalance(incomingWallet, commissionedAmount, session);
   }
 
   // In case of Withdraw or Purchase, update the balance of "outgoing" wallet
   let updatedOutgoingWalletPromise = undefined;
-  if ((type == enums.TRANSACTION_TYPE[1] || type == enums.TRANSACTION_TYPE[2]) && outgoingWallet) {
-    updatedOutgoingWalletPromise = walletController.updateWalletBalance(outgoingWallet, outgoingWallet.balance - amount, session);
+  if ((type == enums.TRANSACTION_TYPE[1] || !paypalTransactionId && type == enums.TRANSACTION_TYPE[2]) && outgoingWallet) {
+    const finalAmount = amount - (couponUsed ? couponUsed.value : 0); // Use coupon if exists
+    updatedOutgoingWalletPromise = walletController.updateWalletBalance(outgoingWallet, -finalAmount, session);
+  } else if (paypalTransactionId) { // Do not deduct money from wallet for PayPal transactions
+    updatedOutgoingWalletPromise = new Promise(resolve => resolve(outgoingWallet));
   }
 
   return await Promise.all([

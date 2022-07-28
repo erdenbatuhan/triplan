@@ -1,34 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Modal, TextField } from '@mui/material';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import { useParams } from 'react-router-dom';
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  Modal,
+  TextField,
+  Avatar,
+  IconButton,
+  Divider,
+  Paper,
+  List,
+  Tooltip
+} from '@mui/material';
 import { green } from '@mui/material/colors';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import ItemListDisplay from '../components/PartnerLocationProfilePage/ItemListDisplay';
+import PlaceIcon from '@mui/icons-material/Place';
+import PhoneIcon from '@mui/icons-material/Phone';
+// import TourIcon from '@mui/icons-material/Tour';
+// import ItemListDisplay from '../components/PartnerLocationProfilePage/ItemListDisplay';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/RestaurantCuisineDisplay';
-import { getRestaurant, getTouristAttraction } from '../queries/partner-location-queries';
-import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
-import InfoCard from '../components/InfoCard';
+import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
+import {
+  getRestaurant,
+  getTouristAttraction,
+  saveRestaurant,
+  saveTouristAttraction,
+  getPartnerLocationById
+} from '../queries/partner-location-queries';
+import {
+  getMenuItems,
+  getTickets,
+  updateMenuItem,
+  updateTicket,
+  addMenuItem,
+  addTicket,
+  deleteMenuItem,
+  deleteTicket
+} from '../queries/buyable-item-queries';
+// import InfoCard from '../components/InfoCard';
 import { createNewPartnerSignupRequest } from '../queries/partner-signup-request-queries';
 import { handleEmail } from '../queries/email-queries';
+import ContentModal from '../components/common/ContentModal';
+import Spinner from '../components/common/Spinner';
 
 // import { modalStyle } from '../shared/styles';
 // import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
-import {
-  PARTNER_TYPE_RESTAURANT,
-  PARTNER_TYPE_TOURIST_ATTRACTION,
-  BG_COLOR
-} from '../shared/constants';
-
-const mockImgData = {
-  img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
-  title: ''
-};
+import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
+import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
+import EditPartnerLocationCard from '../components/PartnerLocationProfilePage/EditPartnerLocationCard';
 
 const style = {
   display: 'flex',
@@ -36,9 +59,25 @@ const style = {
   justifyContent: 'center'
 };
 
+const avatarStyle = {
+  width: '200px',
+  height: '200px'
+};
+
 export default function PartnerLocationProfilePage() {
+  const [loading, setLoading] = useState(false);
+  const [lazyLoading, setLazyLoading] = useState(false);
+
+  // Fetch the restaurant for every change in restaurant ID
+  const { partnerId } = useParams();
+
   const [partner, setPartner] = useState({});
+
   const [cuisineList, setCuisineList] = useState([]);
+  const [foodTypeList, setFoodTypeList] = useState([]);
+  const [priceLevels, setPriceLevels] = useState([]);
+  // const [touristAttractionTypes, setTouristAttractionTypes] = useState([]);
+
   const [menuList, setMenuList] = useState([]);
   const [ticketList, setTicketList] = useState([]);
   const [isConfirmed, setIsConfirmed] = useState('No Request');
@@ -46,14 +85,19 @@ export default function PartnerLocationProfilePage() {
   const [partnerGoogleLink, setPartnerGoogleLink] = useState('');
   const [partnerContactInfo, setPartnerContactInfo] = useState('');
 
-  const location = useLocation();
-  // Fetch the restaurant for every change in restaurant ID
-  const { partnerId } = useParams();
-  const navigate = useNavigate();
-  const partnerLocationType = location.state ? location.state.partnerType : PARTNER_TYPE_RESTAURANT; // tourist-attraction // restaurant
+  const [isPartnerLocationEditMode, setIsPartnerLocationEditMode] = useState(false);
 
-  const handleEditClick = () => {
-    navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
+  const [menuItemInEdit, setMenuItemInEdit] = useState([]);
+  // const [menuItemInDelete, setMenuItemInDelete] = useState([]);
+  const [ticketInEdit, setTicketInEdit] = useState([]);
+  // const [ticketInDelete, setTicketInDelete] = useState([]);
+
+  const [itemEditAddMode, setItemEditAddMode] = useState(false);
+  const [itemInAdd, setItemInAdd] = useState(false);
+
+  const handleProfileEditClick = () => {
+    // navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
+    setIsPartnerLocationEditMode(true);
   };
 
   const handleSendPartnerRequest = () => {
@@ -81,71 +125,380 @@ export default function PartnerLocationProfilePage() {
   console.log(isConfirmed);
 
   useEffect(() => {
-    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
-      getRestaurant(partnerId).then((data) => {
-        setPartner(data);
-        console.log(data);
-        setCuisineList(data.cuisines);
-        setIsConfirmed(data.confirmed);
-      });
-      getMenuItems(partnerId).then((data) => {
-        setMenuList(data);
-      });
-    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
-      getTouristAttraction(partnerId).then((data) => {
-        setPartner(data);
-        setIsConfirmed(data.confirmed);
-      });
-      getTickets(partnerId).then((data) => {
-        setTicketList(data);
-      });
-    }
+    setLazyLoading(false);
+    setLoading(true);
+
+    getPartnerLocationById(partnerId)
+      .then(({ partnerLocation }) => {
+        setPartner(partnerLocation);
+        setIsConfirmed(partnerLocation.confirmed);
+
+        if (partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT) {
+          getMenuItems(partnerId).then((data) => {
+            setMenuList(data);
+          });
+          setCuisineList(partnerLocation.cuisines);
+          setFoodTypeList(partnerLocation.foodTypes);
+          setPriceLevels(partnerLocation.priceLevels);
+        } else if (partnerLocation.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+          getTickets(partnerId).then((data) => {
+            setTicketList(data);
+          });
+          // setTouristAttractionTypes(partnerLocation.touristAttractionTypes);
+        }
+      })
+      .finally(() => setLoading(false));
   }, [partnerId]);
 
+  const handlePartnerFieldsChange = (params) => {
+    const updatedLocation = {
+      _id: partnerId,
+      name: params.partnerName,
+      address: params.partnerAddress,
+      locationPicture: params.partnerLocationPicture
+    };
+
+    setLazyLoading(true);
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      saveRestaurant({
+        ...updatedLocation,
+        phoneNumber: params.partnerPhoneNumber,
+        cuisines: params.restaurantCuisines
+      })
+        .then(() =>
+          getRestaurant(partnerId).then((data) => {
+            setPartner(data);
+            setCuisineList(data.cuisines);
+            setFoodTypeList(data.foodTypes);
+            setPriceLevels(data.priceLevels);
+          })
+        )
+        .finally(() => setLazyLoading(false));
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      saveTouristAttraction(updatedLocation)
+        .then(() =>
+          getTouristAttraction(partnerId).then((data) => {
+            setPartner(data);
+            // setTouristAttractionTypes(data.touristAttractionTypes);
+          })
+        )
+        .finally(() => setLazyLoading(false));
+    }
+  };
+
+  const handleBuyableItemEditClick = (event) => {
+    const editItemId = event.target.value;
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      const editItem = menuList.filter((_, idx) => idx.toString() === editItemId)[0];
+      setMenuItemInEdit(editItem);
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      const editItem = ticketList.filter((_, idx) => idx.toString() === editItemId)[0];
+      setTicketInEdit(editItem);
+    }
+
+    setItemEditAddMode(true);
+  };
+
+  const handleEditCompletionClick = (_, updateParams) => {
+    setLazyLoading(true);
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      updateMenuItem(updateParams)
+        .then(() =>
+          getMenuItems(partnerId).then((data) => {
+            setMenuList(data);
+          })
+        )
+        .finally(() => {
+          setLazyLoading(false);
+          setItemEditAddMode(false);
+        });
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      updateTicket(updateParams)
+        .then(() =>
+          getTickets(partnerId).then((data) => {
+            setTicketList(data);
+          })
+        )
+        .finally(() => {
+          setLazyLoading(false);
+          setItemEditAddMode(false);
+        });
+    }
+  };
+
+  const handleAddCompletionClick = async (_, newItem) => {
+    setLazyLoading(true);
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      addMenuItem(newItem)
+        .then((menuItemCreated) => {
+          setMenuList([menuItemCreated, ...menuList]);
+        })
+        .finally(() => {
+          setLazyLoading(false);
+          setItemEditAddMode(false);
+          setItemInAdd(false);
+        });
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      addTicket(newItem)
+        .then((ticketCreated) => {
+          setTicketList([ticketCreated, ...ticketList]);
+        })
+        .finally(() => {
+          setLazyLoading(false);
+          setItemEditAddMode(false);
+          setItemInAdd(false);
+        });
+    }
+  };
+
+  const handleItemChangeCompletionClick = async (event, params) => {
+    if (!itemInAdd) {
+      handleEditCompletionClick(event, params);
+    } else {
+      handleAddCompletionClick(event, params);
+    }
+  };
+
+  const handleAddMenuItem = async () => {
+    setItemEditAddMode(true);
+    setItemInAdd(true);
+  };
+
+  const handleBuyableItemDeleteClick = (event) => {
+    setLazyLoading(true);
+
+    const deleteItemId = event.target.value;
+
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
+      const deleteItem = menuList.filter((_, idx) => idx.toString() === deleteItemId)[0];
+      deleteMenuItem(deleteItem._id)
+        .then(() =>
+          getMenuItems(partnerId).then((data) => {
+            setMenuList(data);
+          })
+        )
+        .finally(() => {
+          setLazyLoading(false);
+        });
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      const deleteItem = ticketList.filter((_, idx) => idx.toString() === deleteItemId)[0];
+
+      deleteTicket(deleteItem._id)
+        .then(() =>
+          getTickets(partnerId).then((data) => {
+            setTicketList(data);
+          })
+        )
+        .finally(() => {
+          setLazyLoading(false);
+        });
+    }
+  };
+
+  if (loading) {
+    return <Spinner marginTop="5em" />;
+  }
+
   return (
-    <Box
-      component="form"
-      noValidate
-      sx={{
-        mt: 4,
-        marginLeft: 5,
-        marginRight: 5,
-        marginBottom: 5,
-        minWidth: 400,
-        backgroundColor: BG_COLOR
-      }}>
-      <Grid container direction="row" spacing={8}>
-        <Grid item xs={3}>
-          <Stack spacing={4}>
-            <img
-              src={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${partner.locationPicture}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              alt={mockImgData.title}
-              loading="lazy"
-              width={250}
-              height={250}
-            />
-            <InfoCard title="Address" value={partner.address} />
-            <InfoCard title="Phone Number" value={partner.phoneNumber} />
-            <Button variant="contained" onClick={handleEditClick}>
-              Edit Profile
-            </Button>
-          </Stack>
-        </Grid>
-        <Grid item xs={9}>
-          <Stack>
-            <Typography variant="h1" component="div" align="center">
-              {partner.name}
+    <Grid container spacing={2} m={5}>
+      <Grid item xs={3}>
+        <Grid container direction="column" justifyContent="center" alignItems="center" spacing={1}>
+          <Grid item xs={6}>
+            <Avatar sx={avatarStyle} src={partner.locationPicture} loading="lazy" />
+          </Grid>
+
+          {partner.address ? (
+            <Grid item xs={3} display="flex">
+              <IconButton
+                disabled
+                sx={{
+                  ml: 4,
+                  pr: 0,
+                  mt: 1,
+                  '&.MuiButtonBase-root:hover': {
+                    bgcolor: 'transparent'
+                  }
+                }}>
+                <PlaceIcon />
+              </IconButton>
+
+              <Typography component="div" align="center" mt={2} sx={{ fontSize: 'subtitle1' }}>
+                {partner.address}
+              </Typography>
+            </Grid>
+          ) : (
+            []
+          )}
+
+          {partner.phoneNumber ? (
+            <Grid item xs={3} display="flex">
+              <IconButton
+                disabled
+                sx={{
+                  ml: 1,
+                  '&.MuiButtonBase-root:hover': {
+                    bgcolor: 'transparent'
+                  }
+                }}>
+                <PhoneIcon />
+              </IconButton>
+
+              <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
+                {partner.phoneNumber}
+              </Typography>
+            </Grid>
+          ) : (
+            []
+          )}
+
+          {/* touristAttractionTypes.length > 0 ? (
+            <Grid item xs={3} display="flex">
+              <IconButton pointerEvents="none">
+                <TourIcon />
+              </IconButton>
+
+              <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
+                {touristAttractionTypes}
+              </Typography>
+            </Grid>
+          ) : (
+            []
+          ) */}
+
+          <Grid item display="grid">
+            <RestaurantCuisineDisplay displayList={cuisineList} isCuisine />
+          </Grid>
+
+          <Grid item display="grid">
+            <RestaurantCuisineDisplay displayList={foodTypeList} isCuisine={false} />
+          </Grid>
+
+          <Grid item xs={3} display="flex">
+            <Typography component="div" align="center" m={1} sx={{ fontSize: 'h6' }}>
+              {priceLevels.join(' | ')}
             </Typography>
-            {partnerLocationType === 'restaurant' ? (
-              <Stack>
-                <RestaurantCuisineDisplay cuisineList={cuisineList} />
-                <ItemListDisplay itemList={menuList} inEdit={false} />
-              </Stack>
-            ) : (
-              <ItemListDisplay itemList={ticketList} inEdit={false} />
-            )}
-          </Stack>
+          </Grid>
+        </Grid>
+
+        <Grid item display="grid" sx={{ m: 2 }}>
+          <Button variant="contained" onClick={handleProfileEditClick}>
+            Edit Profile
+          </Button>
+        </Grid>
+      </Grid>
+
+      <ContentModal
+        open={isPartnerLocationEditMode}
+        onClose={() => {
+          setIsPartnerLocationEditMode(false);
+        }}
+        contentStyle={{ minWidth: '500px' }}
+        header="Edit Profile"
+        contentRendered={
+          <EditPartnerLocationCard
+            partner={partner}
+            lazyLoading={lazyLoading}
+            handlePartnerFieldsChange={handlePartnerFieldsChange}
+          />
+        }
+      />
+
+      <Grid item xs={1} />
+
+      <Grid item xs={6}>
+        <Grid>
+          <Grid container direction="row">
+            <Grid item>
+              <Typography variant="h2" component="div" align="left" color="text.secondary">
+                {partner.name}
+              </Typography>
+            </Grid>
+
+            <Grid item>
+              <Tooltip
+                title={
+                  partner.partnerType === PARTNER_TYPE_RESTAURANT
+                    ? 'Add new menu'
+                    : 'Add new ticket'
+                }>
+                <IconButton sx={{ m: 2 }} onClick={handleAddMenuItem}>
+                  <AddCircleOutlineIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ mb: 2 }} />
+        </Grid>
+        <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
+          {/* <Grid item xs={9} sx={{ width: '100%' }}>
+            <Stack>
+              {partnerLocationType === 'restaurant' ? (
+                <Stack>
+                  <RestaurantCuisineDisplay cuisineList={cuisineList} />
+                  <ItemListDisplay itemList={menuList} inEdit={false} />
+                </Stack>
+              ) : (
+                <ItemListDisplay itemList={ticketList} inEdit={false} />
+              )}
+            </Stack>
+              </Grid> */}
+          <Grid item xs={9} sx={{ width: '100%' }}>
+            <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
+              <List spacing={2} overflow="auto">
+                {(partner.partnerType === PARTNER_TYPE_RESTAURANT
+                  ? menuList || []
+                  : ticketList || []
+                ).map((item, idx) => {
+                  return (
+                    <BuyableItemCard
+                      key={item._id}
+                      menuId={item._id}
+                      itemIdx={idx}
+                      name={item.name}
+                      content={item.description}
+                      price={item.price.toString()}
+                      image={item.image}
+                      handleBuyableItemEditClick={handleBuyableItemEditClick}
+                      handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
+                      partnerType={partner.partnerType}
+                      // inEdit
+                    />
+                  );
+                })}
+              </List>
+            </Paper>
+
+            <ContentModal
+              open={itemEditAddMode}
+              onClose={() => {
+                setItemEditAddMode(false);
+              }}
+              header={`${itemInAdd ? 'Create New' : 'Edit'} ${
+                partner.partnerType === PARTNER_TYPE_RESTAURANT ? 'Menu' : 'Ticket'
+              }`}
+              contentRendered={
+                <EditItemModal
+                  key={
+                    partner.partnerType === PARTNER_TYPE_RESTAURANT
+                      ? menuItemInEdit._id
+                      : ticketInEdit._id
+                  }
+                  item={
+                    partner.partnerType === PARTNER_TYPE_RESTAURANT ? menuItemInEdit : ticketInEdit
+                  }
+                  locationType={partner.partnerType}
+                  handleItemChangeCompletionClick={handleItemChangeCompletionClick}
+                  itemInAdd={itemInAdd}
+                  lazyLoading={lazyLoading}
+                />
+              }
+            />
+          </Grid>
         </Grid>
       </Grid>
 
@@ -228,6 +581,6 @@ export default function PartnerLocationProfilePage() {
           </div>
         </Box>
       </Modal>
-    </Box>
+    </Grid>
   );
 }

@@ -11,7 +11,7 @@ const cmsController = require("../controllers/cmsController.js");
     const imagesFound = await cmsController.findAllImages(req.query.owner);
     res.status(200).send({ imagesFound });
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while uploading the image to CMS and assigning it to the given owner! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -23,7 +23,7 @@ router.post("/upload", async (req, res) => {
     const imageUploaded = await cmsController.uploadImage(req.query.owner, req.body);
     res.status(200).send({ imageUploaded });
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while uploading the image to CMS and assigning it to the given owner! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -35,7 +35,7 @@ router.post("/restore", async (req, res) => {
     const imageRestored = await cmsController.restoreImage(req.query);
     res.status(200).send({ imageRestored });
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while restoring a previously uploaded image assigned to the given user with the given version! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

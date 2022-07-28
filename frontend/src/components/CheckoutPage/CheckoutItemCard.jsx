@@ -15,8 +15,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
-import Spinner from './common/Spinner';
-import { PARTNER_TYPE_RESTAURANT } from '../shared/constants';
+import Spinner from '../common/Spinner';
+import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
 
 const MAX_NUM_ITEMS_BUYABLE = 9;
 
@@ -46,17 +46,19 @@ export default function CheckoutItemCard({
 
   return (
     <Card sx={{ display: 'flex', margin: '10px' }}>
-      <CardMedia
-        component="img"
-        style={{
-          width: 100,
-          height: 100,
-          flex: 1,
-          borderRadius: '50%',
-          margin: '10px 0 0 10px'
-        }}
-        image={partnerLocation.locationPicture}
-      />
+      <CardMedia>
+        <Box
+          component="img"
+          sx={{
+            width: 100,
+            height: 100,
+            flex: 1,
+            borderRadius: '50%',
+            margin: '10px 0 0 10px'
+          }}
+          src={partnerLocation.locationPicture}
+        />
+      </CardMedia>
 
       <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
         <CardContent sx={{ flex: '1 0 auto' }}>

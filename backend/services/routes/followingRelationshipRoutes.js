@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     const followingRelationship = await followingRelationshipController.getFollowingRelationship(req.query);
     res.status(200).send({ followingRelationship });
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the users following relationship from ${followerId} to ${followedId}! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
 
     res.status(200).send(relationshipCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating the following relationship! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -45,7 +45,7 @@ router.delete("/", async (req, res) => {
 
     res.status(200).send(relationshipRemoved);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while deleting the following relationship! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -63,7 +63,7 @@ router.get("/user/:id/followed", async (req, res) => {
 
     res.status(200).send(followed);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the users followed by the given user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -81,7 +81,7 @@ router.get("/user/:id/followers", async (req, res) => {
 
     res.status(200).send(followers);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the users following the given user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
