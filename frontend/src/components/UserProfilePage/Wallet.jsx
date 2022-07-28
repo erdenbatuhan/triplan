@@ -5,7 +5,6 @@ import EuroIcon from '@mui/icons-material/Euro';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import { green } from '@mui/material/colors';
 import ContentModal from '../common/ContentModal';
 import PaypalCheckoutButtons from '../PaypalButtons';
 import { UserAuthHelper } from '../../authentication/user-auth-helper';
@@ -18,7 +17,8 @@ import {
   TRANSACTION_TYPE_DEPOSIT,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
-  TRANSACTION_STATUS_REJECTED
+  TRANSACTION_STATUS_REJECTED,
+  PRIMARY_COLOR
 } from '../../shared/constants';
 import {
   generatePaypalEmail,
@@ -252,7 +252,7 @@ export default function Wallet() {
                   alignItems="center"
                   justifyContent="center"
                   sx={{
-                    '& .MuiTextField-root': { m: 2, width: '25ch' }
+                    '& .MuiTextField-root': { width: '25ch' }
                   }}
                   p={2}>
                   {transactionType === TRANSACTION_TYPE_WITHDRAW ? (
@@ -290,7 +290,7 @@ export default function Wallet() {
                 <Button
                   style={{
                     color: '#FFFFFF',
-                    backgroundColor: green[500],
+                    backgroundColor: PRIMARY_COLOR,
                     width: '100%',
                     border: 1,
                     // borderColor: grey[500],
@@ -315,21 +315,17 @@ export default function Wallet() {
           }}
           contentRendered={
             <div className="center">
-              <Alert severity={isPaymentSuccessfull ? 'success' : 'error'}>
+              <Alert
+                severity={isPaymentSuccessfull ? 'success' : 'error'}
+                onClose={() => {
+                  setTransactionDialogShown(false);
+                  setPaymentCompleted(false);
+                }}>
                 <AlertTitle>{isPaymentSuccessfull ? 'Success' : 'Error'}</AlertTitle>
                 {isPaymentSuccessfull
                   ? `Your ${transactionType} process completed successfully!`
                   : `Your ${transactionType} process failed plase check your information!`}
               </Alert>
-
-              <Button
-                alignItems="center"
-                onClick={() => {
-                  setTransactionDialogShown(false);
-                  setPaymentCompleted(false);
-                }}>
-                Continue
-              </Button>
             </div>
           }
         />

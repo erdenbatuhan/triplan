@@ -138,6 +138,7 @@ function LoginPage() {
                 required
                 id="outlined-required"
                 label="Password"
+                type="password"
                 defaultValue={password}
                 onChange={onPasswordChanged}
                 style={{ width }}

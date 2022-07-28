@@ -2,17 +2,42 @@ import { Typography, Grid, Box, Button } from '@mui/material';
 import '../App.css';
 import Fab from '@mui/material/Fab';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import landingBg from '../assets/landing-page-background.png';
 // import LandingPageBar from '../components/landingPage/NavigationBarLandingPage';
-import { BG_COLOR } from '../shared/constants';
+import { SECONDARY_COLOR } from '../shared/constants';
 import AboutUs from '../components/LandingPage/AboutUs';
 import WhyTriplan from '../components/LandingPage/WhyTriplan';
 import ContactUs from '../components/LandingPage/ContactUs';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 
 function LandingPage() {
+  const navigate = useNavigate();
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+
+  console.log(authenticatedUser);
+
   const handleMainScroll = () => {
     const anchor = document.querySelector('#main');
     anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+  console.log(!authenticatedUser);
+
+  const handleExploreWorldButton = () => {
+    if (!authenticatedUser) {
+      navigate('/login');
+    } else {
+      navigate('/main-page');
+    }
+  };
+
+  const handleBeOurButton = () => {
+    if (!authenticatedUser) {
+      navigate('/login');
+    } else {
+      navigate(`/partner-profile/${authenticatedUser.user.id}`);
+    }
   };
 
   return (
@@ -84,6 +109,7 @@ function LandingPage() {
                             height: '60px'
                           }}
                           variant="contained"
+                          onClick={handleExploreWorldButton}
                           color="primary">
                           Explore World!
                         </Button>
@@ -96,6 +122,7 @@ function LandingPage() {
                             height: '60px'
                           }}
                           variant="contained"
+                          onClick={handleBeOurButton}
                           color="success">
                           Be Our Partner!
                         </Button>
@@ -112,7 +139,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: BG_COLOR,
+          backgroundColor: SECONDARY_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}
@@ -129,7 +156,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: BG_COLOR,
+          backgroundColor: SECONDARY_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}
@@ -146,7 +173,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: BG_COLOR,
+          backgroundColor: SECONDARY_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}
