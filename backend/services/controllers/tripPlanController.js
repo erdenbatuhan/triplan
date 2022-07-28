@@ -149,7 +149,7 @@ const findPlannerUsersByTripLocations = (tripLocationIds) => {
       return userController.findById(user).then(user => ({ [tripLocationId]: user }))
     })
   })).then(users => Object.assign({}, ...users));
-}
+};
 
 const setPaidByTripLocation = (tripLocationId, session) => {
   return TripPlan.findOneAndUpdate(
@@ -157,7 +157,11 @@ const setPaidByTripLocation = (tripLocationId, session) => {
     { paid: true },
     { new: true, runValidators: true, session }
   );
-}
+};
+
+const deleteById = (tripPlanId, session) => {
+  return TripPlan.deleteOne({ _id: tripPlanId }, { session });
+};
 
 module.exports = {
   findWithPartnerLocationsByTripPlan,
@@ -168,5 +172,6 @@ module.exports = {
   findTripLocationsPlannedByUsers,
   createTripPlan,
   findPlannerUsersByTripLocations,
-  setPaidByTripLocation
+  setPaidByTripLocation,
+  deleteById
 };

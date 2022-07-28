@@ -89,9 +89,9 @@ router.get("/", async (req, res) => {
  */
 router.post("/location", async (req, res) => {
   try {
-    const itemsBought =
-      await itemBoughtController.getItemsBoughtByTripLocations(req.body);
-    res.status(200).send(itemsBought);
+    const itemBoughts =
+      await itemBoughtController.getItemBoughtsByTripLocations(req.body);
+    res.status(200).send(itemBoughts);
   } catch ({ message }) {
     res
       .status(400)

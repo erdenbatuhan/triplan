@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const tripPlanController = require("./../controllers/tripPlanController.js");
+const tripPlanDeleteOperations = require("./../operations/tripPlanDeleteOperations.js");
 
 /**
  * Gets the trip plan given id
@@ -12,6 +13,17 @@ router.get("/:id", async (req, res) => {
     res.status(200).send(await (tripPlanController.findById(tripPlanId)));
   } catch ({ message }) {
     res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
+  }
+});
+
+/**
+ * Deletes a trip plan
+ */
+router.delete("/:id", async (req, res) => {
+  try {
+    res.status(200).send(await (tripPlanDeleteOperations.deleteTripPlan(req.params.id)));
+  } catch ({ message }) {
+    res.status(400).send(`An error occurred while deleting the trip plan! Error => ${message}`);
   }
 });
 
