@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import { Button, CardActionArea, CardMedia, Typography } from '@mui/material';
+import { CardActionArea, CardMedia, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -11,8 +11,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Tooltip from '@mui/material/Tooltip';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 // import emailjs from '@emailjs/browser';
@@ -20,14 +18,14 @@ import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Header from '../components/common/Header';
-import ContentModal from '../components/common/ContentModal';
-import CheckoutItemCard from '../components/CheckoutItemCard';
+import Spinner from '../components/common/Spinner';
+import CheckoutItemCard from '../components/CheckoutPage/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
+// import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
-import { createTransaction } from '../queries/transaction-queries';
+import { buyItems } from '../queries/transaction-queries';
 import { findCouponForUser } from '../queries/coupon-queries';
 import {
   generateEmailAmount,
@@ -40,10 +38,6 @@ import {
 import {
   PARTNER_TYPE_RESTAURANT,
   PARTNER_TYPE_TOURIST_ATTRACTION,
-  // CURRENCIES,
-  TRANSACTION_TYPE_WITHDRAW,
-  TRANSACTION_STATUS_SUCCESSFUL,
-  TRANSACTION_STATUS_REJECTED,
   // COUPON CONSTANTS
   MIN_AMOUNT_FOR_COUPON,
   DEFAULT_VALUE_OF_COUPON,
@@ -88,7 +82,8 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
-  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [lazyLoading, setLazyLoading] = useState(true);
+  const [authenticatedUser] = useState({ user: { id: '62c430e748c4994b2c42af0f' } });
   const [wallet, setWallet] = useState(null);
   const [tripPlan, setTripPlan] = useState({});
   const [partnerLocations, setPartnerLocations] = useState([]);
@@ -103,10 +98,6 @@ export default function CheckoutPage() {
   const [emailContent] = useState({});
   // const [itemList, setItemList] = useState([]);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
-
-  const handleCompletePayment = (bool) => {
-    setPaymentCompleted(bool);
-  };
 
   // const handleEmail = () => {
   //   emailjs.init(emailjsCredentials.publicKey);
@@ -128,27 +119,33 @@ export default function CheckoutPage() {
   //     );
   // };
 
-  const handleSavePlanButton = () => {
+  const handleCheckoutSuccess = () => {
     setPaymentCompleted(true);
+    alert('Your trip plan is saved successfully! <strong>Enjoy your vacation!</strong>');
+
+    navigate(`/user/${authenticatedUser.user.id}`);
   };
 
-  const handleWalletPayment = () => {
+  const handleCheckout = (paypalTransactionId) => {
     setLoading(true);
-    createTransaction({
-      amount: Number(totalPaidServicePrice),
-      type: TRANSACTION_TYPE_WITHDRAW,
-      incomingWalletId: null,
-      outgoingWalletId: wallet._id
-    })
-      .then(({ transaction, outgoingWalletObject }) => {
-        if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
-          setWallet(outgoingWalletObject);
-          setPaymentCompleted(true);
-        } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
-          alert('Opps, something went wrong!');
-        }
+    buyItems(user, servicesToBeBought, coupon, paypalTransactionId)
+      .then(() => {
+        handleCheckoutSuccess();
+      })
+      .catch(() => {
+        setPaymentCompleted(false);
+        alert('An error occurred while creating the transaction! Please contact an administrator.');
       })
       .finally(() => setLoading(false));
+  };
+
+  const onPaypalTransactionComplete = (transactionStatus) => {
+    if (!transactionStatus) {
+      alert('An error occurred during PayPal transaction! Please try again.');
+      return;
+    }
+
+    handleCheckout('352H8RH329RFH9328HF238TH32NF032FN382ND2');
   };
 
   // Update the trip plan data for every change in trip plan ID
@@ -158,38 +155,45 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Fetch the trip plan itself
-    getTripPlan(tripPlanId).then((data) => {
-      if (data.paid) {
-        alert(
-          'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
-        );
-
-        navigate(-1); // Go back
-        return;
-      }
-
-      setTripPlan(data);
-    });
-
-    // Fetch all the partner locations of the trip plan
-    getLocationsOfTripPlan(tripPlanId)
-      .then((data) =>
-        data
-          .filter(({ partnerLocation, tripLocation }) => partnerLocation && tripLocation)
-          .map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
-      )
-      .then((data) => {
-        if (!data || data.length === 0) {
-          alert('Faulty trip plan! Please contact an administrator.');
+    setLoading(true);
+    Promise.all([
+      // Fetch the trip plan itself
+      getTripPlan(tripPlanId).then((data) => {
+        if (data.paid) {
+          setLoading(false);
+          alert(
+            'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
+          );
 
           navigate(-1); // Go back
           return;
         }
 
-        setPartnerLocations(data);
-      })
-      .catch(() => navigate('/'));
+        setTripPlan(data);
+      }),
+      // Fetch all the partner locations of the trip plan
+      getLocationsOfTripPlan(tripPlanId)
+        .then((data) =>
+          data
+            .filter(({ partnerLocation, tripLocation }) => partnerLocation && tripLocation)
+            .map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
+        )
+        .then((data) => {
+          if (!data || data.length === 0) {
+            setLoading(false);
+            alert('Faulty trip plan! Please contact an administrator.');
+
+            navigate(-1); // Go back
+            return;
+          }
+
+          setPartnerLocations(data);
+        })
+        .catch(() => {
+          setLoading(false);
+          navigate('/');
+        })
+    ]).finally(() => setLoading(false));
   }, [tripPlanId]);
 
   // Listening to the changes in authenticatedUser
@@ -211,6 +215,8 @@ export default function CheckoutPage() {
 
   // Listening to the changes in partnerLocations
   useEffect(() => {
+    setLazyLoading(true);
+
     // Request body needed to get the buyable items
     const selectedPartnerLocationIds = {
       restaurantIds: partnerLocations
@@ -225,7 +231,6 @@ export default function CheckoutPage() {
         .map(({ _id }) => _id)
     };
 
-    setLoading(true);
     getBuyableItems(selectedPartnerLocationIds)
       .then(({ menuItemData, ticketData }) => {
         const fetchedBuyableItemData = { ...menuItemData, ...ticketData };
@@ -247,7 +252,7 @@ export default function CheckoutPage() {
         setLatestSelectionUpdateDate(new Date()); // Forces re-rendering
       })
       .finally(() => {
-        setLoading(false);
+        setLazyLoading(false);
       });
   }, [partnerLocations]);
 
@@ -355,6 +360,10 @@ export default function CheckoutPage() {
     setLatestSelectionUpdateDate(new Date()); // Forces re-rendering
   };
 
+  if (loading) {
+    return <Spinner marginTop="5em" />;
+  }
+
   return (
     <div>
       <Grid container spacing={2}>
@@ -379,7 +388,7 @@ export default function CheckoutPage() {
                 <li key={`CheckoutPage-CheckoutItemCard-${partnerLocation._id}`}>
                   <ul>
                     <CheckoutItemCard
-                      loading={loading}
+                      loading={lazyLoading}
                       index={idx + 1}
                       partnerLocation={partnerLocation}
                       items={buyableItemData[partnerLocation._id] || []}
@@ -600,7 +609,9 @@ export default function CheckoutPage() {
                 backgroundColor: !totalPaidServicePrice ? PRIMARY_COLOR : grey[300]
               }}>
               <CardActionArea
-                onClick={!totalPaidServicePrice ? handleSavePlanButton : handleWalletPayment}>
+                onClick={
+                  !totalPaidServicePrice ? handleCheckoutSuccess : () => handleCheckout(null)
+                }>
                 <CardContent>
                   {!totalPaidServicePrice ? (
                     <div
@@ -675,7 +686,7 @@ export default function CheckoutPage() {
                       <PaypalCheckoutButtons
                         currency="EUR"
                         amount={totalPaidServicePrice}
-                        onPaymentComplete={handleCompletePayment}
+                        onPaymentComplete={onPaypalTransactionComplete}
                         showSpinner
                       />
                     </PayPalScriptProvider>
@@ -691,7 +702,7 @@ export default function CheckoutPage() {
         <Grid item xs={1} />
       </Grid>
 
-      <ContentModal
+      {/* <ContentModal
         open={isPaymentCompleted}
         onClose={() => false}
         contentStyle={{
@@ -717,7 +728,7 @@ export default function CheckoutPage() {
             </div>
           </Box>
         }
-      />
+      /> */}
     </div>
   );
 }

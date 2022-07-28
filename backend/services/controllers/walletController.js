@@ -71,10 +71,10 @@ const createWalletForOwner = (ownerRetrivalFn, ownerUpdateFn, ownerId) => {
   });
 };
 
-const updateWalletBalance = (wallet, balance, session) => {
+const updateWalletBalance = (wallet, amount, session) => {
   return Wallet.findOneAndUpdate(
     { "_id": wallet._id },
-    { balance },
+    { "$inc": { balance: amount } },
     { new: true, runValidators: true, session }
   );
 };
