@@ -17,7 +17,7 @@ router.get("/user/:userId", async (req, res) => {
 
     res.status(200).send(transactionsFound);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting all the transactions of the user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -31,7 +31,7 @@ router.get("/user/:userId", async (req, res) => {
     const transactionsCreated = await transactionController.buyItems(req.body);
     res.status(200).send(transactionsCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while buying items from partner locations for a user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
     const transactionCreated = await transactionController.createTransaction(req.body);
     res.status(200).send(transactionCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating a transaction between wallets! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

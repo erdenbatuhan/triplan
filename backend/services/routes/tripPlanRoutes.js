@@ -9,10 +9,9 @@ const tripPlanDeleteOperations = require("./../operations/tripPlanDeleteOperatio
  */
 router.get("/:id", async (req, res) => {
   try {
-    const tripPlanId = req.params.id;
-    res.status(200).send(await (tripPlanController.findById(tripPlanId)));
+    res.status(200).send(await (tripPlanController.findById(req.params.id)));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -26,7 +25,7 @@ router.delete("/:id", async (req, res) => {
     if (err.code) {
       res.status(err.code).send(err.message);
     } else {
-      res.status(400).send(err.message);
+      res.status(500).send(message);
     }
   }
 });
@@ -45,7 +44,7 @@ router.get("/:id/location", async (req, res) => {
   
     res.status(200).send(tripLocations);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -57,7 +56,7 @@ router.get("/user/count", async (req, res) => {
     const userIds = req.query.users ? req.query.users.split(",") : []; // [] means "fetch all"
     res.status(200).send(await (tripPlanController.getNumTripsPlannedByUsers(userIds)));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the number of trips planned by the given users! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -66,10 +65,9 @@ router.get("/user/count", async (req, res) => {
  */
 router.get("/user/:id", async (req, res) => {
   try {
-    const userId = req.params.id;
-    res.status(200).send(await (tripPlanController.findByUsers([userId])));
+    res.status(200).send(await (tripPlanController.findByUsers([req.params.id])));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while getting the trip plans of a user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -78,10 +76,9 @@ router.get("/user/:id", async (req, res) => {
  */
 router.post("/user/:id", async (req, res) => {
   try {
-    const userId = req.params.id;
-    res.status(200).send(await (tripPlanController.createTripPlan(userId, req.body)));
+    res.status(200).send(await (tripPlanController.createTripPlan(req.params.id, req.body)));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating a trip plan for the user using the locations provided! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

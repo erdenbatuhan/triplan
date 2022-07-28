@@ -6,11 +6,7 @@ router.post("/save", async (req, res) => {
   try {
     res.status(200).send(await partnerSignupRequestController.sendPartnerSignupRequest(req.body));
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the users! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -19,11 +15,7 @@ router.get("/", async (req, res) => {
   try {
     res.status(200).send(await partnerSignupRequestController.find());
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the users! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -38,9 +30,7 @@ router.get("/", async (req, res) => {
 
     return res.status(200).send(partnerSignupRequest);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while getting the user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -56,9 +46,7 @@ router.get("/remove/:id", async (req, res) => {
 
     return res.status(200).send(partnerSignupRequest);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while removing the withdraw request! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

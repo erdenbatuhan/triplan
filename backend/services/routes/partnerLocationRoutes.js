@@ -8,13 +8,10 @@ const partnerLocationController = require("./../controllers/partnerLocationContr
  */
 router.get("/cities", async (req, res) => {
   try {
-    const distinctCities =
-      await partnerLocationController.findDistinctCitiesWithEnoughPlaces();
+    const distinctCities = await partnerLocationController.findDistinctCitiesWithEnoughPlaces();
     res.status(200).send(distinctCities);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while getting the cities! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -28,11 +25,7 @@ router.post("/filtered", async (req, res) => {
     const partnerLocationsFiltered = await partnerLocationController.findFiltered(req.query["user"], req.body);
     res.status(200).send(partnerLocationsFiltered);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the filtered partner locations! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -42,23 +35,15 @@ router.post("/filtered", async (req, res) => {
 router.get("/restaurant", async (req, res) => {
   try {
     const restaurantId = req.query.id;
-    const restaurant = await partnerLocationController.findRestaurantById(
-      restaurantId
-    );
+    const restaurant = await partnerLocationController.findRestaurantById(restaurantId);
 
     if (!restaurant) {
-      return res
-        .status(404)
-        .send(`No restaurant found with ID=${restaurantId}!`);
+      return res.status(404).send(`No restaurant found with ID=${restaurantId}!`);
     }
 
     res.status(200).send(restaurant);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the restaurant! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -67,16 +52,10 @@ router.get("/restaurant", async (req, res) => {
  */
 router.post("/restaurant", async (req, res) => {
   try {
-    const restaurantSaved = await partnerLocationController.saveRestaurant(
-      req.body
-    );
+    const restaurantSaved = await partnerLocationController.saveRestaurant(req.body);
     res.status(200).send(restaurantSaved);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while creating/updating the restaurant given! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -86,24 +65,15 @@ router.post("/restaurant", async (req, res) => {
 router.get("/tourist-attraction", async (req, res) => {
   try {
     const touristAttractionId = req.query.id;
-    const touristAttraction =
-      await partnerLocationController.findTouristAttractionById(
-        touristAttractionId
-      );
+    const touristAttraction = await partnerLocationController.findTouristAttractionById(touristAttractionId);
 
     if (!touristAttraction) {
-      return res
-        .status(404)
-        .send(`No tourist attraction found with ID=${touristAttractionId}!`);
+      return res.status(404).send(`No tourist attraction found with ID=${touristAttractionId}!`);
     }
 
     res.status(200).send(touristAttraction);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the tourist attraction! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -112,15 +82,10 @@ router.get("/tourist-attraction", async (req, res) => {
  */
 router.post("/tourist-attraction", async (req, res) => {
   try {
-    const touristAttractionSaved =
-      await partnerLocationController.saveTouristAttraction(req.body);
+    const touristAttractionSaved = await partnerLocationController.saveTouristAttraction(req.body);
     res.status(200).send(touristAttractionSaved);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while creating/updating the tourist attraction given! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -129,11 +94,7 @@ router.post("/google-id", async (req, res) => {
     const partnerLocation = await partnerLocationController.findByGoogleId(req.body);
     res.status(200).send({ partnerLocation });
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the partner location! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 

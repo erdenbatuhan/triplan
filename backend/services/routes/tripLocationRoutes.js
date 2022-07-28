@@ -10,12 +10,10 @@ const tripLocationController = require("./../controllers/tripLocationController.
  */
 router.post("/", async (req, res) => {
   try {
-    const query = req.query;
-    const tripLocationCreated = await tripLocationController.create(query);
-  
+    const tripLocationCreated = await tripLocationController.create(req.query);
     res.status(200).send(tripLocationCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating the trip location! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -26,14 +24,10 @@ router.post("/", async (req, res) => {
  */
 router.put("/:id", async (req, res) => {
   try {
-    const tripLocationId = req.params.id;
-    const query = req.query;
-
-    const tripLocationUpdated = await tripLocationController.update(tripLocationId, query);
-  
+    const tripLocationUpdated = await tripLocationController.update(req.params.id, req.query);
     res.status(200).send(tripLocationUpdated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while updating the trip location! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

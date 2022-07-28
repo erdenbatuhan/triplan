@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
     const healthCheckPromise = new Promise((resolve) => resolve("Yey! Everything works as expected!"));
     res.status(200).send((await healthCheckPromise));
   } catch ({ message }) {
-    res.status(400).send(`An error occurred! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
