@@ -6,8 +6,8 @@ import landingBg from '../assets/landing-page-background.png';
 // import LandingPageBar from '../components/landingPage/NavigationBarLandingPage';
 import { SECONDARY_COLOR } from '../shared/constants';
 import AboutUs from '../components/landingPage/AboutUs';
-import WhyTriplan from '../components/landingPage/WhyTriplan2';
-import ContactUs from '../components/landingPage/ContactUs2';
+import WhyTriplan from '../components/landingPage/WhyTriplan';
+import ContactUs from '../components/landingPage/ContactUs';
 
 function LandingPage() {
   const handleMainScroll = () => {
