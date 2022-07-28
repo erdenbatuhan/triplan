@@ -16,9 +16,11 @@ import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import EditIcon from '@mui/icons-material/Edit';
 import Spinner from '../components/common/Spinner';
 import ContentModal from '../components/common/ContentModal';
-import TripCard from '../components/TripCard';
-import Wallet from '../components/Wallet';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
+import TripCard from '../components/UserProfilePage/TripCard';
+import Wallet from '../components/UserProfilePage/Wallet';
+import FollowingsCard from '../components/UserProfilePage/FollowingsCard';
+import EditUserProfileCard from '../components/UserProfilePage/EditUserProfileCard';
+// import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser, updateUserFields } from '../queries/user-queries';
 import {
   getFollowingRelationship,
@@ -28,8 +30,6 @@ import {
   getFollowed
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
-import FollowingsCard from '../components/FollowingsCard';
-import EditUserProfileCard from '../components/EditUserProfileCard';
 
 const avatarStyle = {
   width: '200px',
@@ -39,7 +39,7 @@ const avatarStyle = {
 function UserProfilePage() {
   const { userId } = useParams();
 
-  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [authenticatedUser] = useState({ user: { id: '62c56ce1ec52b6643190e167' } });
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
   const [tripPlans, setTripPlans] = useState([]);
@@ -222,7 +222,7 @@ function UserProfilePage() {
 
             {isShownUserAuthenticated ? (
               <IconButton onClick={() => setIsProfileEditMode(true)}>
-                <EditIcon />
+                <EditIcon fontSize="small" />
               </IconButton>
             ) : (
               []
