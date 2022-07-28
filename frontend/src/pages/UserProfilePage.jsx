@@ -30,6 +30,7 @@ import {
   getFollowed
 } from '../queries/following-relationship-queries';
 import { getNumTripsPlannedByUsers, getTripPlansOfUser } from '../queries/trip-plan-queries';
+import { BG_COLOR } from '../shared/constants';
 
 const avatarStyle = {
   width: '200px',
@@ -204,7 +205,7 @@ function UserProfilePage() {
   }
 
   return (
-    <Grid container spacing={2} m={5}>
+    <Grid container spacing={2} m={5} style={{ backgroundColor: BG_COLOR }}>
       <Grid item xs={3}>
         <Grid container direction="column" justifyContent="center" alignItems="center">
           <Grid item xs={6}>

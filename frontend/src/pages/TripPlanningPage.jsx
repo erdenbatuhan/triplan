@@ -20,7 +20,11 @@ import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import { createTripPlan } from '../queries/trip-plan-queries';
 import GoogleMap from '../components/GoogleMap';
-import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
+import {
+  PARTNER_TYPE_RESTAURANT,
+  PARTNER_TYPE_TOURIST_ATTRACTION,
+  BG_COLOR
+} from '../shared/constants';
 
 export default function TripPlanningPage() {
   const { state } = useLocation();
@@ -166,7 +170,7 @@ export default function TripPlanningPage() {
   }
 
   return (
-    <div>
+    <div style={{ backgroundColor: BG_COLOR }}>
       <Grid container spacing={1}>
         <Grid item xs={3}>
           <Header title="Filters" />

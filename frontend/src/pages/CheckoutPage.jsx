@@ -41,7 +41,8 @@ import {
   // COUPON CONSTANTS
   MIN_AMOUNT_FOR_COUPON,
   DEFAULT_VALUE_OF_COUPON,
-  PRIMARY_COLOR
+  PRIMARY_COLOR,
+  BG_COLOR
 } from '../shared/constants';
 
 const walletImg = require('../assets/wallet-logo.png');
@@ -365,7 +366,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div>
+    <div style={{ backgroundColor: BG_COLOR }}>
       <Grid container spacing={2}>
         <Grid item xs={1} />
 
