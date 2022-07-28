@@ -15,8 +15,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
-import Spinner from './common/Spinner';
-import { PARTNER_TYPE_RESTAURANT } from '../shared/constants';
+import Spinner from '../common/Spinner';
+import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
 
 const MAX_NUM_ITEMS_BUYABLE = 9;
 
