@@ -151,6 +151,14 @@ const findPlannerUsersByTripLocations = (tripLocationIds) => {
   })).then(users => Object.assign({}, ...users));
 }
 
+const setPaidByTripLocation = (tripLocationId, session) => {
+  return TripPlan.findOneAndUpdate(
+    { tripLocations: { $in: tripLocationId } },
+    { paid: true },
+    { new: true, runValidators: true, session }
+  );
+}
+
 module.exports = {
   findWithPartnerLocationsByTripPlan,
   findById,
@@ -159,5 +167,6 @@ module.exports = {
   calculateTripLocationRatingsOfUsersFollowed,
   findTripLocationsPlannedByUsers,
   createTripPlan,
-  findPlannerUsersByTripLocations
+  findPlannerUsersByTripLocations,
+  setPaidByTripLocation
 };

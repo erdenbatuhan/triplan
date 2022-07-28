@@ -144,7 +144,18 @@ export default function CheckoutPage() {
     }
 
     // Fetch the trip plan itself
-    getTripPlan(tripPlanId).then((data) => setTripPlan(data));
+    getTripPlan(tripPlanId).then((data) => {
+      if (!data || !data.paid) {
+        alert(
+          'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
+        );
+
+        navigate(-1); // Go back
+        return;
+      }
+
+      setTripPlan(data);
+    });
 
     // Fetch all the partner locations of the trip plan
     getLocationsOfTripPlan(tripPlanId)
