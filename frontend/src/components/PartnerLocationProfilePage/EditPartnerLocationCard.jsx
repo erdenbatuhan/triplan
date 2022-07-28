@@ -3,7 +3,8 @@ import { Box, Grid, TextField, Button } from '@mui/material';
 import Spinner from '../common/Spinner';
 import ImageUpload from '../common/ImageUpload';
 import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
-import EditRestaurantCuisineBox from './EditRestaurantCuisineBox';
+import EditRestaurantMultipleSelectDropdown from './EditRestaurantMultipleSelectDropdown';
+import * as constants from '../../shared/constants';
 
 export default function EditPartnerLocationCard({
   partner,
@@ -16,6 +17,8 @@ export default function EditPartnerLocationCard({
   const [partnerLocationPicture, setPartnerLocationPicture] = useState(partner.locationPicture);
 
   const [restaurantCuisines, setRestaurantCuisines] = useState(partner.cuisines);
+  const [restaurantFoodTypes, setRestaurantFoodTypes] = useState(partner.foodTypes);
+  const [restaurantPriceLevels, setRestaurantPriceLevels] = useState(partner.priceLevels);
 
   const LABEL_PREFIX =
     partner.partnerType === PARTNER_TYPE_RESTAURANT ? 'Restaurant' : 'Tourist Attraction';
@@ -46,6 +49,14 @@ export default function EditPartnerLocationCard({
 
   const handleCuisineChange = (params) => {
     setRestaurantCuisines(params);
+  };
+
+  const handleFoodTypeChange = (params) => {
+    setRestaurantFoodTypes(params);
+  };
+
+  const handlePriceLevelChange = (params) => {
+    setRestaurantPriceLevels(params);
   };
 
   return (
@@ -92,7 +103,6 @@ export default function EditPartnerLocationCard({
               <Grid item xs={8}>
                 <TextField
                   fullWidth
-                  required
                   id="outlined-required"
                   label={`${LABEL_PREFIX} Phone Number`}
                   value={partnerPhoneNumber}
@@ -125,9 +135,47 @@ export default function EditPartnerLocationCard({
 
               {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
                 <Grid item xs={8}>
-                  <EditRestaurantCuisineBox
-                    selectedCuisines={restaurantCuisines}
-                    handleCuisineChange={handleCuisineChange}
+                  <EditRestaurantMultipleSelectDropdown
+                    label="Cuisine(s)"
+                    itemList={constants.cuisines}
+                    selectedItems={restaurantCuisines}
+                    handleDropdownSelection={handleCuisineChange}
+                  />
+                </Grid>
+              ) : (
+                <Grid item xs={8} />
+              )}
+
+              <Grid item xs={2} />
+            </Grid>
+
+            <Grid container item>
+              <Grid item xs={2} />
+
+              {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
+                <Grid item xs={8}>
+                  <EditRestaurantMultipleSelectDropdown
+                    label="Food Types"
+                    itemList={constants.foodTypes}
+                    selectedItems={restaurantFoodTypes}
+                    handleDropdownSelection={handleFoodTypeChange}
+                  />
+                </Grid>
+              ) : (
+                <Grid item xs={8} />
+              )}
+              <Grid item xs={2} />
+            </Grid>
+
+            <Grid container item>
+              <Grid item xs={2} />
+              {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
+                <Grid item xs={8}>
+                  <EditRestaurantMultipleSelectDropdown
+                    label="Price Levels"
+                    itemList={constants.priceLevels}
+                    selectedItems={restaurantPriceLevels}
+                    handleDropdownSelection={handlePriceLevelChange}
                   />
                 </Grid>
               ) : (
@@ -156,7 +204,9 @@ export default function EditPartnerLocationCard({
                       partnerAddress,
                       partnerPhoneNumber,
                       partnerLocationPicture,
-                      restaurantCuisines
+                      restaurantCuisines,
+                      restaurantFoodTypes,
+                      restaurantPriceLevels
                     });
                   }}>
                   Save

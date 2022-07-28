@@ -84,6 +84,7 @@ export default function PartnerLocationProfilePage() {
   const [partnerName, setPartnerName] = useState('');
   const [partnerGoogleLink, setPartnerGoogleLink] = useState('');
   const [partnerContactInfo, setPartnerContactInfo] = useState('');
+  const [partnerLocationPicture, setPartnerLocationPicture] = useState('');
 
   const [isPartnerLocationEditMode, setIsPartnerLocationEditMode] = useState(false);
 
@@ -125,6 +126,7 @@ export default function PartnerLocationProfilePage() {
   console.log(isConfirmed);
 
   useEffect(() => {
+    setIsPartnerLocationEditMode(false);
     setLazyLoading(false);
     setLoading(true);
 
@@ -132,6 +134,7 @@ export default function PartnerLocationProfilePage() {
       .then(({ partnerLocation }) => {
         setPartner(partnerLocation);
         setIsConfirmed(partnerLocation.confirmed);
+        setPartnerLocationPicture(partnerLocation.locationPicture);
 
         if (partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT) {
           getMenuItems(partnerId).then((data) => {
@@ -164,7 +167,10 @@ export default function PartnerLocationProfilePage() {
       saveRestaurant({
         ...updatedLocation,
         phoneNumber: params.partnerPhoneNumber,
-        cuisines: params.restaurantCuisines
+        cuisines: params.restaurantCuisines,
+        foodTypes: params.restaurantFoodTypes,
+        priceLevels: params.restaurantPriceLevels,
+        locationPicture: params.partnerLocationPicture
       })
         .then(() =>
           getRestaurant(partnerId).then((data) => {
@@ -172,18 +178,26 @@ export default function PartnerLocationProfilePage() {
             setCuisineList(data.cuisines);
             setFoodTypeList(data.foodTypes);
             setPriceLevels(data.priceLevels);
+            setPartnerLocationPicture(data.locationPicture);
           })
         )
-        .finally(() => setLazyLoading(false));
+        .finally(() => {
+          setIsPartnerLocationEditMode(false);
+          setLazyLoading(false);
+        });
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       saveTouristAttraction(updatedLocation)
         .then(() =>
           getTouristAttraction(partnerId).then((data) => {
             setPartner(data);
+            setPartnerLocationPicture(data.locationPicture);
             // setTouristAttractionTypes(data.touristAttractionTypes);
           })
         )
-        .finally(() => setLazyLoading(false));
+        .finally(() => {
+          setIsPartnerLocationEditMode(false);
+          setLazyLoading(false);
+        });
     }
   };
 
@@ -308,7 +322,7 @@ export default function PartnerLocationProfilePage() {
       <Grid item xs={3}>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={1}>
           <Grid item xs={6}>
-            <Avatar sx={avatarStyle} src={partner.locationPicture} loading="lazy" />
+            <Avatar sx={avatarStyle} src={partnerLocationPicture} loading="lazy" />
           </Grid>
 
           {partner.address ? (

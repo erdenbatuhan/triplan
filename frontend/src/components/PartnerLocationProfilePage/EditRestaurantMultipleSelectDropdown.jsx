@@ -9,31 +9,35 @@ import {
   ListItemText,
   OutlinedInput
 } from '@mui/material';
-import * as constants from '../../shared/constants';
 
-function EditRestaurantCuisineBox({ selectedCuisines, handleCuisineChange }) {
+export default function EditRestaurantMultipleSelectDropdown({
+  label,
+  itemList,
+  selectedItems,
+  handleDropdownSelection
+}) {
   const handleChange = (event) => {
     const val = event.target.value;
 
-    handleCuisineChange(val);
+    handleDropdownSelection(val);
   };
 
   return (
     <Grid>
       <FormControl sx={{ width: '100%' }}>
-        <InputLabel> Cuisines(s)</InputLabel>
+        <InputLabel> {label} </InputLabel>
         <Select
           fullWidth
           multiple
           selected="selected"
-          value={selectedCuisines}
+          value={selectedItems}
           onChange={handleChange}
           input={<OutlinedInput label="Cuisines(s)" />}
           renderValue={(selected) => selected.join(', ')}>
-          {constants.cuisines.map((cuisine) => (
-            <MenuItem key={cuisine} value={cuisine}>
-              <Checkbox checked={selectedCuisines.indexOf(cuisine) > -1} />
-              <ListItemText primary={cuisine} />
+          {itemList.map((item) => (
+            <MenuItem key={item} value={item}>
+              <Checkbox checked={selectedItems.indexOf(item) > -1} />
+              <ListItemText primary={item} />
             </MenuItem>
           ))}
         </Select>
@@ -41,5 +45,3 @@ function EditRestaurantCuisineBox({ selectedCuisines, handleCuisineChange }) {
     </Grid>
   );
 }
-
-export default EditRestaurantCuisineBox;
