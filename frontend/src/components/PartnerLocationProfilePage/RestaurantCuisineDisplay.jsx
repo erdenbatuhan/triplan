@@ -1,20 +1,21 @@
 import React from 'react';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
-function RestaurantCuisineDisplay(props) {
-  const { cuisineList } = props;
+export default function RestaurantCuisineDisplay({ displayList, isCuisine }) {
   return (
-    <Stack margin={2} direction="row" spacing={2}>
-      <Typography variant="h6" color="text.primary" align="center">
-        Cuisines:
+    <Box display="flex" flexDirection="column" justifyContent="center">
+      {displayList.length > 0 ? (
+        <IconButton pointerEvents="none">
+          {isCuisine ? <RestaurantIcon /> : <MenuBookIcon />}
+        </IconButton>
+      ) : (
+        []
+      )}
+      <Typography variant="body3" color="text.secondary" align="center">
+        {displayList.map((c, idx) => (idx === displayList.length - 1 ? `${c}` : `${c}, `))}
       </Typography>
-      <Box display="flex" flexDirection="column" justifyContent="center">
-        <Typography variant="body3" color="text.secondary" align="center">
-          {cuisineList.map((c, idx) => (idx === cuisineList.length - 1 ? `${c}.` : `${c}, `))}
-        </Typography>
-      </Box>
-    </Stack>
+    </Box>
   );
 }
-
-export default RestaurantCuisineDisplay;

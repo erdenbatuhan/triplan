@@ -1,13 +1,12 @@
-/* eslint-disable react/jsx-no-useless-fragment */
 import * as React from 'react';
-// import { useNavigate, useParams } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-// import ListItem from '@mui/material/ListItem';
-// import PropTypes from 'prop-types';
 import { Button, Avatar } from '@mui/material';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import FastfoodIcon from '@mui/icons-material/Fastfood';
+import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
 
 export default function BuyableItemCard(props) {
   const {
@@ -17,10 +16,10 @@ export default function BuyableItemCard(props) {
     price,
     image,
     handleBuyableItemEditClick,
-    handleBuyableItemDeleteClick /* , inEdit */
+    handleBuyableItemDeleteClick,
+    partnerType
+    /* , inEdit */
   } = props;
-  // const navigate = useNavigate();
-  // const { partnerId } = useParams();
 
   return (
     <Card sx={{ width: '100%', marginBottom: 1 }}>
@@ -35,13 +34,27 @@ export default function BuyableItemCard(props) {
             spacing={2}
             mb={2}>
             <Grid item xs={4} justifyItems="center" display="inline-grid">
-              <Avatar
-                sx={{
-                  width: '125px',
-                  height: '125px'
-                }}
-                src={image}
-              />
+              {image ? (
+                <Avatar
+                  sx={{
+                    width: '125px',
+                    height: '125px'
+                  }}
+                  src={image}
+                />
+              ) : (
+                <Avatar
+                  sx={{
+                    width: '125px',
+                    height: '125px'
+                  }}>
+                  {partnerType === PARTNER_TYPE_RESTAURANT ? (
+                    <FastfoodIcon sx={{ width: '50%', height: '50%' }} />
+                  ) : (
+                    <ConfirmationNumberIcon sx={{ width: '50%', height: '50%' }} />
+                  )}
+                </Avatar>
+              )}
             </Grid>
             <Grid item xs={4} padding="unset">
               <CardContent sx={{ padding: 'inherit' }}>
@@ -81,69 +94,4 @@ export default function BuyableItemCard(props) {
       </Grid>
     </Card>
   );
-  /* return (
-    <Card sx={{ maxWidth: '%100' }}>
-      <CardContent>
-        <Stack direction="row" spacing={2}>
-          <Grid container spacing={2}>
-            <Grid item xs={3}>
-              <img
-                src={`${image}?w=164&h=164&fit=crop&auto=format`}
-                srcSet={`${image}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                alt=""
-                loading="lazy"
-                width={150}
-                height={150}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ListItem>
-                <CardContent>
-                  <Typography gutterBottom variant="h3" component="div">
-                    {name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {content}
-                  </Typography>
-                </CardContent>
-              </ListItem>
-            </Grid>
-            <Grid item xs={3}>
-              <CardContent>
-                <Typography variant="h5" color="text.secondary">
-                  {price} €
-                </Typography>
-              </CardContent>
-            </Grid>
-          </Grid>
-          {inEdit ? (
-            <Stack direction="row" spacing={2}>
-              <Button value={itemIdx} onClick={handleEditClick}>
-                Edit
-              </Button>
-              <Button value={itemIdx} onClick={handleDeleteClick}>
-                Delete
-              </Button>
-            </Stack>
-          ) : (
-            <></>
-          )}
-        </Stack>
-      </CardContent>
-    </Card>
-  ); */
 }
-
-/* BuyableItemCard.propTypes = {
-  itemIdx: PropTypes.number,
-  name: PropTypes.string.isRequired,
-  content: PropTypes.string.isRequired,
-  price: PropTypes.string.isRequired,
-  image: PropTypes.string.isRequired
-  // inEdit: PropTypes.bool
-};
-
-BuyableItemCard.defaultProps = {
-  itemIdx: -1
-  // inEdit: false
-}; */

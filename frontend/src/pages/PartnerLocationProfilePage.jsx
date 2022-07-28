@@ -19,11 +19,10 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import PlaceIcon from '@mui/icons-material/Place';
 import PhoneIcon from '@mui/icons-material/Phone';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
+// import TourIcon from '@mui/icons-material/Tour';
 // import ItemListDisplay from '../components/PartnerLocationProfilePage/ItemListDisplay';
-// import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/RestaurantCuisineDisplay';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/RestaurantCuisineDisplay';
 import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
 import {
   getRestaurant,
@@ -73,7 +72,11 @@ export default function PartnerLocationProfilePage() {
 
   const [partner, setPartner] = useState({});
 
-  // const [cuisineList, setCuisineList] = useState([]);
+  const [cuisineList, setCuisineList] = useState([]);
+  const [foodTypeList, setFoodTypeList] = useState([]);
+  const [priceLevels, setPriceLevels] = useState([]);
+  // const [touristAttractionTypes, setTouristAttractionTypes] = useState([]);
+
   const [menuList, setMenuList] = useState([]);
   const [ticketList, setTicketList] = useState([]);
   const [isConfirmed, setIsConfirmed] = useState('No Request');
@@ -129,11 +132,14 @@ export default function PartnerLocationProfilePage() {
         getMenuItems(partnerId).then((data) => {
           setMenuList(data);
         });
-        // setCuisineList(partnerLocation.cuisines);
+        setCuisineList(partnerLocation.cuisines);
+        setFoodTypeList(partnerLocation.foodTypes);
+        setPriceLevels(partnerLocation.priceLevels);
       } else if (partnerLocation.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
         getTickets(partnerId).then((data) => {
           setTicketList(data);
         });
+        // setTouristAttractionTypes(partnerLocation.touristAttractionTypes);
       }
     });
   }, [partnerId]);
@@ -154,11 +160,23 @@ export default function PartnerLocationProfilePage() {
         phoneNumber: params.partnerPhoneNumber,
         cuisines: params.restaurantCuisines
       })
-        .then(() => getRestaurant(partnerId).then((data) => setPartner(data)))
+        .then(() =>
+          getRestaurant(partnerId).then((data) => {
+            setPartner(data);
+            setCuisineList(data.cuisines);
+            setFoodTypeList(data.foodTypes);
+            setPriceLevels(data.priceLevels);
+          })
+        )
         .finally(() => setLoading(false));
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       saveTouristAttraction(updatedLocation)
-        .then(() => getTouristAttraction(partnerId).then((data) => setPartner(data)))
+        .then(() =>
+          getTouristAttraction(partnerId).then((data) => {
+            setPartner(data);
+            // setTouristAttractionTypes(data.touristAttractionTypes);
+          })
+        )
         .finally(() => setLoading(false));
     }
   };
@@ -287,7 +305,7 @@ export default function PartnerLocationProfilePage() {
 
           {partner.address ? (
             <Grid item xs={3} display="flex">
-              <IconButton pointerEvents="none">
+              <IconButton>
                 <PlaceIcon />
               </IconButton>
 
@@ -313,37 +331,37 @@ export default function PartnerLocationProfilePage() {
             []
           )}
 
-          {partner.cuisines ? (
-            <Grid item display="flex">
+          {/* touristAttractionTypes.length > 0 ? (
+            <Grid item xs={3} display="flex">
               <IconButton pointerEvents="none">
-                <RestaurantIcon />
+                <TourIcon />
               </IconButton>
 
-              <Typography
-                component="div"
-                sx={{ fontSize: 'subtitle1', color: 'text.secondary', pt: 1 }}>
-                {partner.cuisines.join(' ')}
+              <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
+                {touristAttractionTypes}
               </Typography>
             </Grid>
           ) : (
-            <Grid item />
-          )}
+            []
+          ) */}
 
-          {partner.foodTypes ? (
-            <Grid item display="flex">
-              <IconButton pointerEvents="none">
-                <MenuBookIcon />
-              </IconButton>
+          <Grid item xs={3} display="flex">
+            <Typography
+              component="div"
+              align="center"
+              m={1}
+              sx={{ fontSize: 'h6', color: 'text.secondary' }}>
+              {priceLevels.join('\n')}
+            </Typography>
+          </Grid>
 
-              <Typography
-                component="div"
-                sx={{ fontSize: 'subtitle1', color: 'text.secondary', pt: 1 }}>
-                {partner.foodTypes.join(' ')}
-              </Typography>
-            </Grid>
-          ) : (
-            <Grid item />
-          )}
+          <Grid item display="grid">
+            <RestaurantCuisineDisplay displayList={cuisineList} isCuisine />
+          </Grid>
+
+          <Grid item display="grid">
+            <RestaurantCuisineDisplay displayList={foodTypeList} isCuisine={false} />
+          </Grid>
         </Grid>
 
         <Grid item display="grid" sx={{ m: 2 }}>
@@ -426,6 +444,7 @@ export default function PartnerLocationProfilePage() {
                       image={item.image}
                       handleBuyableItemEditClick={handleBuyableItemEditClick}
                       handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
+                      partnerType={partner.partnerType}
                       // inEdit
                     />
                   );
