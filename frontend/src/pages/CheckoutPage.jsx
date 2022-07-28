@@ -360,7 +360,7 @@ export default function CheckoutPage() {
               position: 'relative',
               overflow: 'auto',
               minHeight: '30em',
-              height: '50em',
+              height: '43em',
               '& ul': { padding: 0 }
             }}>
             {partnerLocations
@@ -382,6 +382,7 @@ export default function CheckoutPage() {
               ))}
           </List>
         </Grid>
+
         <Grid item xs={4}>
           <Header title="Paid Services" />
 
@@ -391,6 +392,7 @@ export default function CheckoutPage() {
               bgcolor: 'background.paper',
               position: 'relative',
               overflow: 'auto',
+              height: '43em',
               '& ul': { padding: 0 }
             }}>
             <li>
@@ -411,7 +413,11 @@ export default function CheckoutPage() {
                         subheader={<li />}>
                         {servicesToBeBought.length === 0 ? (
                           <Box style={{ width: '%100', textAlign: 'center' }}>
-                            <Typography gutterBottom variant="body" component="div">
+                            <Typography
+                              gutterBottom
+                              variant="body2"
+                              component="div"
+                              color="text.secondary">
                               No Paid Service Added!
                             </Typography>
                           </Box>
@@ -573,17 +579,20 @@ export default function CheckoutPage() {
                 </Card>
               </ul>
             </li>
-          </List>
-          <br />
 
-          {totalPaidServicePrice === 0 ? (
-            <div>
-              {' '}
-              <Card
-                sx={{ width: '%100' }}
-                style={{ backgroundColor: PRIMARY_COLOR, height: '4em' }}>
-                <CardActionArea onClick={handleSavePlanButton}>
-                  <CardContent>
+            <Card
+              sx={{
+                width: '%100',
+                height: '4em',
+                mt: '1.5em',
+                ml: '10px',
+                mr: '10px',
+                backgroundColor: !totalPaidServicePrice ? PRIMARY_COLOR : grey[300]
+              }}>
+              <CardActionArea
+                onClick={!totalPaidServicePrice ? handleSavePlanButton : handleWalletPayment}>
+                <CardContent>
+                  {!totalPaidServicePrice ? (
                     <div
                       style={{
                         display: 'flex',
@@ -594,60 +603,79 @@ export default function CheckoutPage() {
                         Save Your Triplan!
                       </Typography>
                     </div>
-                  </CardContent>
-                </CardActionArea>
-              </Card>{' '}
-            </div>
-          ) : (
-            <div>
-              {' '}
-              <Card sx={{ width: '%100' }} style={{ backgroundColor: grey[300], height: '4em' }}>
-                <CardActionArea onClick={handleWalletPayment}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={2}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          height: '4em'
-                        }}>
-                        <CardMedia
-                          component="img"
-                          sx={{ width: '2em', height: '2em' }}
-                          image={walletImg}
-                          alt="wallet_icon"
-                        />
-                      </div>
-                    </Grid>
+                  ) : (
+                    <Grid container>
+                      <Grid item xs={2}>
+                        <div>
+                          <CardMedia
+                            component="img"
+                            sx={{ width: '2em', height: '2em' }}
+                            image={walletImg}
+                            alt="wallet_icon"
+                          />
+                        </div>
+                      </Grid>
 
-                    <Grid item xs={10}>
-                      <CardContent>
-                        <Typography gutterBottom variant="h6" component="div">
-                          Pay with Triplan Wallet
-                        </Typography>
-                      </CardContent>
+                      <Grid item xs={10}>
+                        <CardContent sx={{ p: 0 }}>
+                          <Typography gutterBottom variant="h6" component="div">
+                            Pay with Triplan Wallet
+                          </Typography>
+                        </CardContent>
+                      </Grid>
                     </Grid>
+                  )}
+                </CardContent>
+              </CardActionArea>
+            </Card>
+
+            {totalPaidServicePrice ? (
+              <>
+                <Grid
+                  sx={{ mt: '0.5em', mb: '0.5em', pl: '10px', pr: '10px' }}
+                  container
+                  direction="row"
+                  textAlign="center">
+                  <Grid item xs={5}>
+                    <hr />
                   </Grid>
-                </CardActionArea>
-              </Card>
-              <br />
-              <PayPalScriptProvider
-                options={{
-                  'client-id':
-                    'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
-                  components: 'buttons',
-                  currency: 'EUR'
-                }}>
-                <PaypalCheckoutButtons
-                  currency="EUR"
-                  amount={totalPaidServicePrice}
-                  onPaymentComplete={handleCompletePayment}
-                  showSpinner
-                />
-              </PayPalScriptProvider>{' '}
-            </div>
-          )}
+
+                  <Grid item xs={2}>
+                    <Typography variant="secondary"> OR </Typography>
+                  </Grid>
+
+                  <Grid item xs={5}>
+                    <hr />
+                  </Grid>
+                </Grid>
+
+                <Grid
+                  sx={{ width: '96%', mb: '1.5em', ml: '10px' }}
+                  container
+                  direction="row"
+                  alignItems="center">
+                  <Grid item xs={12}>
+                    <PayPalScriptProvider
+                      options={{
+                        'client-id':
+                          'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
+                        components: 'buttons',
+                        currency: 'EUR'
+                      }}>
+                      <PaypalCheckoutButtons
+                        currency="EUR"
+                        amount={totalPaidServicePrice}
+                        onPaymentComplete={handleCompletePayment}
+                        showSpinner
+                      />
+                    </PayPalScriptProvider>
+                  </Grid>
+                </Grid>
+              </>
+            ) : (
+              []
+            )}
+          </List>
         </Grid>
 
         <Grid item xs={1} />
