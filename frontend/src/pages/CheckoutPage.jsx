@@ -21,7 +21,7 @@ import Header from '../components/common/Header';
 import Spinner from '../components/common/Spinner';
 import CheckoutItemCard from '../components/CheckoutPage/CheckoutItemCard';
 import PaypalCheckoutButtons from '../components/PaypalButtons';
-// import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { findUserWallet, getUser } from '../queries/user-queries';
 import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-queries';
 import { getBuyableItems } from '../queries/buyable-item-queries';
@@ -83,7 +83,7 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(true);
   const [lazyLoading, setLazyLoading] = useState(true);
-  const [authenticatedUser] = useState({ user: { id: '62c430e748c4994b2c42af0f' } });
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [wallet, setWallet] = useState(null);
   const [tripPlan, setTripPlan] = useState({});
   const [partnerLocations, setPartnerLocations] = useState([]);
