@@ -12,7 +12,7 @@ import { getReadableDate, getReadableMonthYearFromTimestamp } from '../../shared
 import { TRANSACTION_STATUS_SUCCESSFUL, TRANSACTION_STATUS_REJECTED } from '../../shared/constants';
 
 export default function TransactionHistoryModal({ open, onClose }) {
-  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser()); // TODO: Replace with UserAuthHelper.getStoredUser()
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [loading, setLoading] = useState(false);
   const [walletId, setWalletId] = useState(null);
   const [previousTransactions, setPreviousTransactions] = useState([]);

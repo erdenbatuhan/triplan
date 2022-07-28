@@ -20,7 +20,7 @@ import TripCard from '../components/UserProfilePage/TripCard';
 import Wallet from '../components/UserProfilePage/Wallet';
 import FollowingsCard from '../components/UserProfilePage/FollowingsCard';
 import EditUserProfileCard from '../components/UserProfilePage/EditUserProfileCard';
-// import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getUser, updateUserFields } from '../queries/user-queries';
 import {
   getFollowingRelationship,
@@ -39,7 +39,7 @@ const avatarStyle = {
 function UserProfilePage() {
   const { userId } = useParams();
 
-  const [authenticatedUser] = useState({ user: { id: '62c56ce1ec52b6643190e167' } });
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
   const [tripPlans, setTripPlans] = useState([]);
