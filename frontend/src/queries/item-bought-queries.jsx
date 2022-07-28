@@ -1,6 +1,6 @@
 import { HOST_ITEM_BOUGHT, HEADERS } from './constants';
 
-export async function getItemsBoughtByTripLocations(tripLocations) {
+export async function getItemBoughtsByTripLocations(tripLocations) {
   return await fetch(`${HOST_ITEM_BOUGHT}/location`, {
     method: `POST`,
     mode: `cors`,

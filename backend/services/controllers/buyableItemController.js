@@ -8,11 +8,11 @@ const partnerLocationController = require("./partnerLocationController.js");
 
 const enums = require("./../utils/enums.js");
 
-const getBuyableItemsByItemsBought = (itemsBought) => {
+const getBuyableItemsByItemBoughts = (itemBoughts) => {
   const selectOptions = 'name description price image foodType';
 
-  const itemIdsAssociatedWithMenuItems = itemsBought.filter(({ itemType }) => itemType === enums.ITEM_TYPES[0]).map(({ _id }) => _id);
-  const itemIdsAssociatedWithTickets = itemsBought.filter(({ itemType }) => itemType === enums.ITEM_TYPES[1]).map(({ _id }) => _id);
+  const itemIdsAssociatedWithMenuItems = itemBoughts.filter(({ itemType }) => itemType === enums.ITEM_TYPES[0]).map(({ _id }) => _id);
+  const itemIdsAssociatedWithTickets = itemBoughts.filter(({ itemType }) => itemType === enums.ITEM_TYPES[1]).map(({ _id }) => _id);
 
   return Promise.all([
     ...itemIdsAssociatedWithMenuItems.map(async (itemId) => ({
@@ -141,8 +141,8 @@ const findTicketsAndMenuItems = ({ restaurantIds, touristAttractionIds }) => {
   });
 };
 
-// NOTE: The ordering of buyableItems and itemsBought must be the same!
-const addItemsBought = (buyableItems, itemsBoughtOrdered, session) => {
+// NOTE: The ordering of buyableItems and itemBoughts must be the same!
+const addItemBoughts = (buyableItems, itemBoughtsOrdered, session) => {
   const getFindQueryParams = (_id, itemBought) => ([
     { _id: _id },
     { $push: { associatedItemBoughts: itemBought } },
@@ -150,7 +150,7 @@ const addItemsBought = (buyableItems, itemsBoughtOrdered, session) => {
   ]);
 
   return Promise.all(buyableItems.map(({ _id, itemType }, idx) => {
-    const itemBought = itemsBoughtOrdered[idx];
+    const itemBought = itemBoughtsOrdered[idx];
 
     if (itemType === enums.ITEM_TYPES[0]) { // MenuItem
       return MenuItem.findOneAndUpdate(...getFindQueryParams(_id, itemBought));
@@ -158,10 +158,25 @@ const addItemsBought = (buyableItems, itemsBoughtOrdered, session) => {
       return Ticket.findOneAndUpdate(...getFindQueryParams(_id, itemBought));
     }
   }));
-}
+};
+
+const deleteAssociatedItemBoughtsFromBuyableItems = (itemBoughts, session) => {
+  return Promise.all(itemBoughts.map(itemBought => {
+    const queryParams = [
+      { associatedItemBoughts: { $in: itemBought._id } },
+      { $pull: { associatedItemBoughts: itemBought._id } },
+      { new: true, runValidators: true, session }
+    ];
+
+    return Promise.all([
+      MenuItem.findOneAndUpdate(...queryParams),
+      Ticket.findOneAndUpdate(...queryParams)
+    ]).then(([ menuItem, ticket ]) => menuItem || ticket);
+  }));
+};
 
 module.exports = {
-  getBuyableItemsByItemsBought,
+  getBuyableItemsByItemBoughts,
   getTicket,
   getMenuItem,
   getTicketsByPartnerLocation,
@@ -173,5 +188,6 @@ module.exports = {
   deleteTicket,
   deleteMenuItem,
   findTicketsAndMenuItems,
-  addItemsBought,
+  addItemBoughts,
+  deleteAssociatedItemBoughtsFromBuyableItems,
 };

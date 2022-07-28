@@ -1,6 +1,3 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-
 const {
   MIN_COUNT_FOR_VISIBILITY_RESTAURANT,
   MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION,
@@ -8,6 +5,8 @@ const {
   TouristAttraction,
 } = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
+
+const scoreOperations = require("./../operations/scoreOperations.js");
 
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
@@ -33,7 +32,7 @@ const findDistinctCitiesWithEnoughPlaces = () => {
   });
 };
 
-const findFiltered = ({ filterData }) => {
+const findFiltered = (userId, { filterData }) => {
   // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
   return Promise.all([
     Restaurant.find({
@@ -48,10 +47,9 @@ const findFiltered = ({ filterData }) => {
         $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
       },
     }),
-  ]).then(([restaurants, touristAttractions]) => ({
-    restaurants,
-    touristAttractions,
-  }));
+  ]).then(([restaurants, touristAttractions]) => (
+    scoreOperations.sortLocations(userId, { restaurants, touristAttractions })
+  ));
 };
 
 const findByTripLocations = (tripLocationIds) => {
@@ -134,7 +132,7 @@ const updatePartnerLocation = async (id, fields, session) => {
 const addTripLocationToRestaurant = (restaurantId, tripLocation, session) => {
   return Restaurant.findOneAndUpdate(
     { _id: restaurantId },
-    { $push: { associatedTripLocations: tripLocation } },
+    { $dr: { associatedTripLocations: tripLocation } },
     { new: true, runValidators: true, session }
   );
 };
@@ -202,6 +200,21 @@ const findByGoogleId = async ({ googlePlaceId, partnerType }) => {
   }
 };
 
+const deleteAssociatedTripLocationsFromPartnerLocations = (tripLocationsIds, session) => {
+  return Promise.all(tripLocationsIds.map(tripLocationId => {
+    const queryParams = [
+      { associatedTripLocations: { $in: tripLocationId } },
+      { $pull: { associatedTripLocations: tripLocationId } },
+      { new: true, runValidators: true, session }
+    ];
+
+    return Promise.all([
+      Restaurant.findOneAndUpdate(...queryParams),
+      TouristAttraction.findOneAndUpdate(...queryParams)
+    ]).then(([ restaurant, touristAttraction ]) => restaurant || touristAttraction);
+  }));
+};
+
 module.exports = {
   findRestaurantByAuthId,
   findTouristAttractionByAuthId,
@@ -220,4 +233,5 @@ module.exports = {
   findRestaurantWalletsByWalletIds,
   findTouristAttractionWalletsByWalletIds,
   findByGoogleId,
+  deleteAssociatedTripLocationsFromPartnerLocations,
 };

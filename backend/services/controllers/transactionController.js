@@ -61,12 +61,12 @@ module.exports.buyItems = ({ user, checkoutPayload, couponUsed }) => {
         // Connect the BuyableItems with the TripLocations through the ItemBought collection
         Promise.all(checkoutPayload.map(async ({ tripLocation, itemsToBeBought }) => {
           const buyableItems = itemsToBeBought.map(({ _id, itemType }) => ({ _id, itemType }));
-          const itemsBought = itemsToBeBought.map(({ count, itemType }) => ({
+          const itemBoughts = itemsToBeBought.map(({ count, itemType }) => ({
             amount: count, associatedTripLocation: tripLocation._id, itemType
           }));
   
-          const itemsBoughtCreated = await itemBoughtController.createMany(itemsBought, session);
-          return await buyableItemController.addItemsBought(buyableItems, itemsBoughtCreated, session);
+          const itemBoughtsCreated = await itemBoughtController.createMany(itemBoughts, session);
+          return await buyableItemController.addItemBoughts(buyableItems, itemBoughtsCreated, session);
         })),
         // Pay the PartnerLocations the amount of each item bought
         Promise.all(checkoutPayload.map(async ({ partnerLocation, itemsToBeBought }) => {

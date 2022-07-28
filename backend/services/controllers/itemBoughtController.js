@@ -39,33 +39,33 @@ const getItemBoughtEntryById = async (itemBoughtId) => {
   return ItemBought.findById(itemBoughtId);
 };
 
-const getItemsBoughtByTripLocations = (tripLocationIdList) => {
+const getItemBoughtsByTripLocations = (tripLocationIdList) => {
   return Promise.all([
     ItemBought.find({
       associatedTripLocation: { $in: tripLocationIdList }
     }),
-  ]).then(async ([ itemsBought ]) => {
-    const buyableItemsByItemsBought = await buyableItemController.getBuyableItemsByItemsBought(itemsBought);
-    const itemsBoughtData = Object.assign({}, ...tripLocationIdList.map((id) => ({ [id]: [] })));
+  ]).then(async ([ itemBoughts ]) => {
+    const buyableItemsByItemBoughts = await buyableItemController.getBuyableItemsByItemBoughts(itemBoughts);
+    const itemBoughtsData = Object.assign({}, ...tripLocationIdList.map((id) => ({ [id]: [] })));
 
     // Assign buyable items to the trip locations
-    itemsBought.forEach(({ _id, amount, associatedTripLocation, createdAt }) => {
-      itemsBoughtData[associatedTripLocation].push({ ...buyableItemsByItemsBought[_id], amount, dateOfPurchase: createdAt })
+    itemBoughts.forEach(({ _id, amount, associatedTripLocation, createdAt }) => {
+      itemBoughtsData[associatedTripLocation].push({ ...buyableItemsByItemBoughts[_id], amount, dateOfPurchase: createdAt })
     });
 
     // Sort the buyable items by the final price
-    Object.entries(itemsBoughtData).forEach(([associatedTripLocation, itemsBought]) =>
-      itemsBoughtData[associatedTripLocation] = itemsBought.sort((a, b) =>
+    Object.entries(itemBoughtsData).forEach(([associatedTripLocation, itemBoughts]) =>
+      itemBoughtsData[associatedTripLocation] = itemBoughts.sort((a, b) =>
         a.price * a.amount - b.price * b.amount
       )
     );
 
-    return itemsBoughtData;
+    return itemBoughtsData;
   });
 };
 
 const getBuyableItemPurchaseHistory = (buyableItem) => {
-  const getItemsBoughtWithUsers = async ({ associatedItemBoughts }) => {
+  const getItemBoughtsWithUsers = async ({ associatedItemBoughts }) => {
     const itemBoughtsRetrieved = await ItemBought.find({ _id: { $in: associatedItemBoughts } }).sort({ createdAt: -1 }).lean();
 
     const tripLocations = itemBoughtsRetrieved.map(({ associatedTripLocation }) => associatedTripLocation)
@@ -78,12 +78,27 @@ const getBuyableItemPurchaseHistory = (buyableItem) => {
   };
 
   if (buyableItem.itemType === enums.ITEM_TYPES[0]) { // MenuItem
-    return buyableItemController.getMenuItem(buyableItem._id).then(getItemsBoughtWithUsers);
+    return buyableItemController.getMenuItem(buyableItem._id).then(getItemBoughtsWithUsers);
   } else if (buyableItem.itemType === enums.ITEM_TYPES[1]) { // Ticket
-    return buyableItemController.getTicket(buyableItem._id).then(getItemsBoughtWithUsers);
+    return buyableItemController.getTicket(buyableItem._id).then(getItemBoughtsWithUsers);
   }
 
   return [];
+}
+
+const deleteItemBoughtsByTripLocations = async (tripLocationIds, session) => {
+  const deleteFilter = { associatedTripLocation: { $in: tripLocationIds } };
+
+  // Find item boughts to delete
+  const itemBoughts = await ItemBought.find(deleteFilter).lean().session(session);
+
+  // Delete item boughts from buyable items
+  await buyableItemController.deleteAssociatedItemBoughtsFromBuyableItems(itemBoughts, session);
+
+  // Delete item boughts completely
+  await ItemBought.deleteMany(deleteFilter).session(session);
+
+  return itemBoughts;
 }
 
 module.exports = {
@@ -92,6 +107,7 @@ module.exports = {
   updateItemBoughtEntry,
   deleteItemBoughtEntry,
   getItemBoughtEntryById,
-  getItemsBoughtByTripLocations,
-  getBuyableItemPurchaseHistory
+  getItemBoughtsByTripLocations,
+  getBuyableItemPurchaseHistory,
+  deleteItemBoughtsByTripLocations,
 };
