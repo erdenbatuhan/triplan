@@ -22,8 +22,12 @@ router.get("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     res.status(200).send(await (tripPlanDeleteOperations.deleteTripPlan(req.params.id)));
-  } catch ({ message }) {
-    res.status(400).send(`An error occurred while deleting the trip plan! Error => ${message}`);
+  } catch (err) {
+    if (err.code) {
+      res.status(err.code).send(err.message);
+    } else {
+      res.status(400).send(err.message);
+    }
   }
 });
 
