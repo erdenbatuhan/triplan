@@ -36,7 +36,7 @@ import {
   generateEmailRoute,
   handleEmail
 } from '../queries/email-queries';
-import { getAuthData } from '../queries/authentication-queries';
+// import { getAuthData } from '../queries/authentication-queries';
 import {
   PARTNER_TYPE_RESTAURANT,
   PARTNER_TYPE_TOURIST_ATTRACTION,
@@ -99,12 +99,11 @@ export default function CheckoutPage() {
   const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
   const [coupon, setCoupon] = useState(null);
   const [user, setUser] = useState(null);
-  const [authData, setAuthData] = useState(null);
+  // const [authData, setAuthData] = useState(null);
   const [emailContent] = useState({});
   // const [itemList, setItemList] = useState([]);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
 
-  console.log(authenticatedUser, user, authData);
   const handleCompletePayment = (bool) => {
     setPaymentCompleted(bool);
   };
@@ -176,10 +175,20 @@ export default function CheckoutPage() {
     // Fetch all the partner locations of the trip plan
     getLocationsOfTripPlan(tripPlanId)
       .then((data) =>
-        setPartnerLocations(
-          data.map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
-        )
+        data
+          .filter(({ partnerLocation, tripLocation }) => partnerLocation && tripLocation)
+          .map(({ partnerLocation, tripLocation }) => ({ ...partnerLocation, tripLocation }))
       )
+      .then((data) => {
+        if (!data || data.length === 0) {
+          alert('Faulty trip plan! Please contact an administrator.');
+
+          navigate(-1); // Go back
+          return;
+        }
+
+        setPartnerLocations(data);
+      })
       .catch(() => navigate('/'));
   }, [tripPlanId]);
 
@@ -190,10 +199,11 @@ export default function CheckoutPage() {
     }
 
     getUser(authenticatedUser.user.id).then((data) => {
-      getAuthData(data.authentication).then((response) => {
-        setUser(data);
-        setAuthData(response);
-      });
+      setUser(data);
+      // getAuthData(data.authentication).then((response) => {
+      //   setUser(data);
+      //   setAuthData(response);
+      // });
     });
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
     findCouponForUser(authenticatedUser.user.id).then((data) => setCoupon(data));
@@ -222,6 +232,10 @@ export default function CheckoutPage() {
         const emptyBuyableItemSelections = {};
 
         partnerLocations.forEach((partnerLocation) => {
+          if (!fetchedBuyableItemData[partnerLocation._id]) {
+            return;
+          }
+
           emptyBuyableItemSelections[partnerLocation._id] = Object.assign(
             {},
             ...fetchedBuyableItemData[partnerLocation._id].map((item) => ({ [item._id]: 0 }))
@@ -281,8 +295,6 @@ export default function CheckoutPage() {
 
     setServicesToBeBought(updatedServicesToBeBought);
 
-    console.log(updatedServicesToBeBought);
-
     // Calculate the total paid service price using the services to be bought
     const totalPrice = updatedServicesToBeBought.reduce(
       (accumTotalPrice, { itemsToBeBought }) =>
@@ -294,9 +306,7 @@ export default function CheckoutPage() {
       0 // Initial value
     );
 
-    // setTotalPaidServicePrice(Math.max(0, totalPrice - (coupon ? coupon.value : 0)));
-    console.log(totalPrice);
-    setTotalPaidServicePrice(0);
+    setTotalPaidServicePrice(Math.max(0, totalPrice - (coupon ? coupon.value : 0)));
   }, [buyableItemSelections, coupon]);
 
   // Listening to the changes in user
