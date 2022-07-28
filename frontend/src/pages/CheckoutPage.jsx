@@ -29,7 +29,14 @@ import { getTripPlan, getLocationsOfTripPlan } from '../queries/trip-plan-querie
 import { getBuyableItems } from '../queries/buyable-item-queries';
 import { createTransaction } from '../queries/transaction-queries';
 import { findCouponForUser } from '../queries/coupon-queries';
-import { handleEmail } from '../queries/email-queries';
+import {
+  generateEmailAmount,
+  generateEmailGoogleMapsLink,
+  generateEmailPaidServices,
+  generateEmailRoute,
+  handleEmail
+} from '../queries/email-queries';
+import { getAuthData } from '../queries/authentication-queries';
 import {
   PARTNER_TYPE_RESTAURANT,
   PARTNER_TYPE_TOURIST_ATTRACTION,
@@ -92,11 +99,12 @@ export default function CheckoutPage() {
   const [totalPaidServicePrice, setTotalPaidServicePrice] = useState([]);
   const [coupon, setCoupon] = useState(null);
   const [user, setUser] = useState(null);
+  const [authData, setAuthData] = useState(null);
   const [emailContent] = useState({});
   // const [itemList, setItemList] = useState([]);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
 
-  console.log(authenticatedUser);
+  console.log(authenticatedUser, user, authData);
   const handleCompletePayment = (bool) => {
     setPaymentCompleted(bool);
   };
@@ -120,6 +128,10 @@ export default function CheckoutPage() {
   //       }
   //     );
   // };
+
+  const handleSavePlanButton = () => {
+    setPaymentCompleted(true);
+  };
 
   const handleWalletPayment = () => {
     setLoading(true);
@@ -177,7 +189,12 @@ export default function CheckoutPage() {
       return;
     }
 
-    getUser(authenticatedUser.user.id).then((data) => setUser(data));
+    getUser(authenticatedUser.user.id).then((data) => {
+      getAuthData(data.authentication).then((response) => {
+        setUser(data);
+        setAuthData(response);
+      });
+    });
     findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
     findCouponForUser(authenticatedUser.user.id).then((data) => setCoupon(data));
   }, [authenticatedUser]);
@@ -307,12 +324,13 @@ export default function CheckoutPage() {
     if (isPaymentCompleted) {
       handleEmail(
         {
-          to_email: '',
-          to_name: '',
-          route: '',
-          paid_services: '',
-          total_amount: '',
-          google_maps_link: ''
+          // to_email: authData.email,
+          to_email: 'anil.kults@gmail.com',
+          to_name: `${user.firstName} ${user.lastName}`,
+          route: generateEmailRoute(partnerLocations),
+          paid_services: generateEmailPaidServices(servicesToBeBought),
+          total_amount: generateEmailAmount(totalPaidServicePrice),
+          google_maps_link: generateEmailGoogleMapsLink(partnerLocations)
         },
         'checkout'
       );
@@ -564,7 +582,7 @@ export default function CheckoutPage() {
               <Card
                 sx={{ width: '%100' }}
                 style={{ backgroundColor: PRIMARY_COLOR, height: '4em' }}>
-                <CardActionArea onClick={handleWalletPayment}>
+                <CardActionArea onClick={handleSavePlanButton}>
                   <CardContent>
                     <div
                       style={{
@@ -648,7 +666,7 @@ export default function CheckoutPage() {
             <div className="center">
               <Alert severity="success">
                 <AlertTitle>Success</AlertTitle>
-                Your payment is successfull! <strong>Enjoy your vacation!</strong>
+                Your trip plan is saved successfully! <strong>Enjoy your vacation!</strong>
               </Alert>
 
               <Button

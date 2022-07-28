@@ -7,7 +7,8 @@ export function generateEmailRoute(partnerLocations) {
 }
 
 export function generateGoogleMapsLink(partnerLocations) {
-  return partnerLocations.map(({ name }) => name.replaceAll(' ', '+')).join('/');
+  const extension = partnerLocations.map(({ name }) => name.replaceAll(' ', '+')).join('/');
+  return `https://www.google.com/maps/dir/${extension}`;
 }
 
 export function generateEmailPaidServices(servicesToBeBought) {
@@ -27,7 +28,7 @@ export function generateEmailPaidServices(servicesToBeBought) {
     })
     .join('\r\n');
 
-  return `\r\nYour Paid Services:\r\n${serviceInfo}`;
+  return serviceInfo;
 }
 
 export function generateEmailAmount(amount) {
