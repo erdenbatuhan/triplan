@@ -1,9 +1,9 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
-import { green, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-import { SECONDARY_COLOR } from '../shared/constants';
+import { BG_COLOR, PRIMARY_COLOR, WHITE } from '../shared/constants';
 import { loginAdmin } from '../queries/admin-queries';
 // const logo = require('../assets/triplan_logo.png');
 
@@ -54,7 +54,7 @@ function AdminLoginPage() {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh',
-        backgroundColor: SECONDARY_COLOR
+        backgroundColor: BG_COLOR
       }}>
       <Box
         ref={ref}
@@ -64,8 +64,9 @@ function AdminLoginPage() {
           border: 1,
           borderRadius: 4,
           borderColor: grey[500],
-          minWidth: 300,
-          padding: 1
+          backgroundColor: WHITE,
+          padding: 5,
+          minWidth: '25vw'
         }}>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={1}>
           <p align="center">ADMIN LOGIN</p>
@@ -85,6 +86,7 @@ function AdminLoginPage() {
               required
               id="outlined-required"
               label="Password"
+              type="password"
               defaultValue={password}
               onChange={onPasswordChanged}
               style={{ width: width * 0.8 }}
@@ -95,8 +97,8 @@ function AdminLoginPage() {
             <Button
               style={{
                 color: '#FFFFFF',
-                backgroundColor: green[500],
-                width: width * 0.8,
+                backgroundColor: PRIMARY_COLOR,
+                width: width * 0.4,
                 border: 1,
                 borderColor: grey[500],
                 borderRadius: 4,

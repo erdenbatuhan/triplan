@@ -4,10 +4,10 @@ import Fab from '@mui/material/Fab';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import landingBg from '../assets/landing-page-background.png';
 // import LandingPageBar from '../components/landingPage/NavigationBarLandingPage';
-import { SECONDARY_COLOR } from '../shared/constants';
-import AboutUs from '../components/landingPage/AboutUs';
-import WhyTriplan from '../components/landingPage/WhyTriplan';
-import ContactUs from '../components/landingPage/ContactUs';
+import { BG_COLOR } from '../shared/constants';
+import AboutUs from '../components/LandingPage/AboutUs';
+import WhyTriplan from '../components/LandingPage/WhyTriplan';
+import ContactUs from '../components/LandingPage/ContactUs';
 
 function LandingPage() {
   const handleMainScroll = () => {
@@ -112,7 +112,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: SECONDARY_COLOR,
+          backgroundColor: BG_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}
@@ -129,7 +129,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: SECONDARY_COLOR,
+          backgroundColor: BG_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}
@@ -146,7 +146,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: SECONDARY_COLOR,
+          backgroundColor: BG_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}

@@ -29,7 +29,8 @@ import {
   PARTNER_TYPE_TOURIST_ATTRACTION,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
-  TRANSACTION_STATUS_REJECTED
+  TRANSACTION_STATUS_REJECTED,
+  BG_COLOR
 } from '../shared/constants';
 import { getAuthData } from '../queries/authentication-queries';
 
@@ -347,7 +348,14 @@ function AdminPage() {
   };
 
   return (
-    <Box sx={{ width: '100%', typography: 'body1', padding: 1, height: '80vh' }}>
+    <Box
+      sx={{
+        width: '100%',
+        typography: 'body1',
+        padding: 1,
+        height: '80vh',
+        backgroundColor: BG_COLOR
+      }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
@@ -479,19 +487,15 @@ function AdminPage() {
         }}>
         <Box sx={style}>
           <div className="center">
-            <Alert severity="warning">
+            <Alert
+              severity="warning"
+              onClose={() => {
+                setOpenPartnerLocWarning(false);
+              }}>
               <AlertTitle>WARNING</AlertTitle>
               The Google place id can not found in your database. Please add it before approve the
               request.
             </Alert>
-
-            <Button
-              alignItems="center"
-              onClick={() => {
-                setOpenPartnerLocWarning(false);
-              }}>
-              Continue
-            </Button>
           </div>
         </Box>
       </Modal>
