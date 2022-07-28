@@ -42,8 +42,8 @@ export async function getTickets(partnerLocationIdData) {
 }
 
 export async function updateMenuItem(menu) {
-  const { _id, name, description, price, type, image } = menu;
-  const queryParams = `name=${name}&description=${description}&price=${price}&type=${type}&image=${image}`;
+  const { _id, name, description, price, type, image, foodType } = menu;
+  const queryParams = `name=${name}&description=${description}&price=${price}&type=${type}&image=${image}&foodType=${foodType}`;
 
   return await fetch(`${HOST_BUYABLE_ITEM}/menu-item/${_id}?${queryParams}`, {
     method: `PUT`,

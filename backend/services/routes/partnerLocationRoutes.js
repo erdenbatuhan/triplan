@@ -93,12 +93,31 @@ router.post("/tourist-attraction", async (req, res) => {
   }
 });
 
+/**
+ * Finds the partner location by google id
+ */
 router.post("/google-id", async (req, res) => {
   try {
     const partnerLocation = await partnerLocationController.findByGoogleId(req.body);
     res.status(200).send({ partnerLocation });
   } catch ({ message }) {
     res.status(500).send(message);
+  }
+});
+
+/**
+ * Finds the partner location by id
+ */
+router.get("/:partnerLocationId", async (req, res) => {
+  try {
+    const partnerLocation = await partnerLocationController.findPartnerLocationById(req.params.partnerLocationId);
+    res.status(200).send({ partnerLocation });
+  } catch ({ message }) {
+    res
+      .status(400)
+      .send(
+        `An error occurred while getting the partner location! Error => ${message}`
+      );
   }
 });
 
