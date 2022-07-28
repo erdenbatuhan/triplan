@@ -18,6 +18,7 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import emailjs from '@emailjs/browser';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 // import Collapse from '@mui/material/Collapse';
+import { grey } from '@mui/material/colors';
 import Header from '../components/common/Header';
 import ContentModal from '../components/common/ContentModal';
 import CheckoutItemCard from '../components/CheckoutItemCard';
@@ -37,7 +38,8 @@ import {
   TRANSACTION_STATUS_REJECTED,
   // COUPON CONSTANTS
   MIN_AMOUNT_FOR_COUPON,
-  DEFAULT_VALUE_OF_COUPON
+  DEFAULT_VALUE_OF_COUPON,
+  PRIMARY_COLOR
 } from '../shared/constants';
 
 const walletImg = require('../assets/wallet-logo.png');
@@ -273,7 +275,9 @@ export default function CheckoutPage() {
       0 // Initial value
     );
 
-    setTotalPaidServicePrice(Math.max(0, totalPrice - (coupon ? coupon.value : 0)));
+    // setTotalPaidServicePrice(Math.max(0, totalPrice - (coupon ? coupon.value : 0)));
+    console.log(totalPrice);
+    setTotalPaidServicePrice(0);
   }, [buyableItemSelections, coupon]);
 
   // Listening to the changes in user
@@ -325,6 +329,7 @@ export default function CheckoutPage() {
               bgcolor: 'background.paper',
               position: 'relative',
               overflow: 'auto',
+              minHeight: '30em',
               height: '50em',
               '& ul': { padding: 0 }
             }}>
@@ -356,7 +361,6 @@ export default function CheckoutPage() {
               bgcolor: 'background.paper',
               position: 'relative',
               overflow: 'auto',
-              height: '50em',
               '& ul': { padding: 0 }
             }}>
             <li>
@@ -370,10 +374,20 @@ export default function CheckoutPage() {
                           bgcolor: 'background.paper',
                           position: 'relative',
                           overflow: 'auto',
-                          height: '30em',
+                          minHeight: '10em',
+                          height: '25em',
                           '& ul': { padding: 0 }
                         }}
                         subheader={<li />}>
+                        {servicesToBeBought.length === 0 ? (
+                          <Box style={{ width: '%100', textAlign: 'center' }}>
+                            <Typography gutterBottom variant="body" component="div">
+                              No Paid Service Added!
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <div />
+                        )}
                         {servicesToBeBought.map(({ partnerLocation, itemsToBeBought }) => (
                           <li
                             key={`CheckoutPage-SelectedPaidServices-Parent-${partnerLocation._id}`}>
@@ -530,62 +544,80 @@ export default function CheckoutPage() {
               </ul>
             </li>
           </List>
+          <br />
 
-          <Card sx={{ width: '%100' }}>
-            <CardActionArea onClick={handleWalletPayment}>
-              <Grid container spacing={2} direction="row">
-                <Grid item xs={2}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '8vh'
-                    }}>
-                    <CardMedia
-                      component="img"
-                      sx={{ width: '5vh', height: '5vh' }}
-                      image={walletImg}
-                      alt="wallet_icon"
-                    />
-                  </div>
-                </Grid>
-
-                <Grid item xs={10}>
+          {totalPaidServicePrice === 0 ? (
+            <div>
+              {' '}
+              <Card
+                sx={{ width: '%100' }}
+                style={{ backgroundColor: PRIMARY_COLOR, height: '4em' }}>
+                <CardActionArea onClick={handleWalletPayment}>
                   <CardContent>
                     <div
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        height: '8vh'
+                        justifyContent: 'center'
                       }}>
-                      <Typography gutterBottom variant="h6" component="div">
-                        Pay with Triplan Wallet
+                      <Typography gutterBottom variant="h6" component="div" color="#FFFFFF">
+                        Save Your Triplan!
                       </Typography>
                     </div>
                   </CardContent>
-                </Grid>
-              </Grid>
-            </CardActionArea>
-          </Card>
+                </CardActionArea>
+              </Card>{' '}
+            </div>
+          ) : (
+            <div>
+              {' '}
+              <Card sx={{ width: '%100' }} style={{ backgroundColor: grey[300], height: '4em' }}>
+                <CardActionArea onClick={handleWalletPayment}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={2}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '4em'
+                        }}>
+                        <CardMedia
+                          component="img"
+                          sx={{ width: '2em', height: '2em' }}
+                          image={walletImg}
+                          alt="wallet_icon"
+                        />
+                      </div>
+                    </Grid>
 
-          <br />
-
-          <PayPalScriptProvider
-            options={{
-              'client-id':
-                'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
-              components: 'buttons',
-              currency: 'EUR'
-            }}>
-            <PaypalCheckoutButtons
-              currency="EUR"
-              amount={totalPaidServicePrice}
-              onPaymentComplete={handleCompletePayment}
-              showSpinner
-            />
-          </PayPalScriptProvider>
+                    <Grid item xs={10}>
+                      <CardContent>
+                        <Typography gutterBottom variant="h6" component="div">
+                          Pay with Triplan Wallet
+                        </Typography>
+                      </CardContent>
+                    </Grid>
+                  </Grid>
+                </CardActionArea>
+              </Card>
+              <br />
+              <PayPalScriptProvider
+                options={{
+                  'client-id':
+                    'AX1nBcZuVJUWtiqFlkh_F4-OjQAYHoJ7KYTgGo0XJMr0Z3Uow9zJxUhj64sZceY_E3t__CeEM8w7VpMU',
+                  components: 'buttons',
+                  currency: 'EUR'
+                }}>
+                <PaypalCheckoutButtons
+                  currency="EUR"
+                  amount={totalPaidServicePrice}
+                  onPaymentComplete={handleCompletePayment}
+                  showSpinner
+                />
+              </PayPalScriptProvider>{' '}
+            </div>
+          )}
         </Grid>
 
         <Grid item xs={1} />
