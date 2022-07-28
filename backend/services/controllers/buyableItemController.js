@@ -1,4 +1,4 @@
-const { Ticket, MenuItem } = require("./../models/buyableItem.js");
+const { MenuItem, Ticket } = require("./../models/buyableItem.js");
 const {
   Restaurant,
   TouristAttraction,
@@ -7,6 +7,24 @@ const {
 const partnerLocationController = require("./partnerLocationController.js");
 
 const enums = require("./../utils/enums.js");
+
+const getBuyableItemsByItemsBought = (itemsBought) => {
+  const selectOptions = 'name description price image foodType';
+
+  const itemIdsAssociatedWithMenuItems = itemsBought.filter(({ itemType }) => itemType === enums.ITEM_TYPES[0]).map(({ _id }) => _id);
+  const itemIdsAssociatedWithTickets = itemsBought.filter(({ itemType }) => itemType === enums.ITEM_TYPES[1]).map(({ _id }) => _id);
+
+  return Promise.all([
+    ...itemIdsAssociatedWithMenuItems.map(async (itemId) => ({
+      [itemId]: await MenuItem.find({ associatedItemBoughts: { $in: itemId } })
+        .select(selectOptions).lean().then(([menuItem]) => menuItem)
+    })),
+    ...itemIdsAssociatedWithTickets.map(async (itemId) => ({
+      [itemId]: await Ticket.find({ associatedItemBoughts: { $in: itemId } })
+        .select(selectOptions).lean().then(([ticket]) => ticket)
+    }))
+  ]).then(buyableItems => Object.assign({}, ...buyableItems));
+}
 
 const getTicket = async (ticketId) => {
   if (!(await Ticket.exists({ _id: ticketId }))) {
@@ -143,6 +161,7 @@ const addItemsBought = (buyableItems, itemsBoughtOrdered, session) => {
 }
 
 module.exports = {
+  getBuyableItemsByItemsBought,
   getTicket,
   getMenuItem,
   getTicketsByPartnerLocation,

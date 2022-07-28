@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, TextField, Button } from '@mui/material';
-import Spinner from './common/Spinner';
-import ImageUpload from './common/ImageUpload';
+import Spinner from '../common/Spinner';
+import ImageUpload from '../common/ImageUpload';
 
 export default function EditUserProfileCard({ user, isLoading, handleUserFieldsChange }) {
   const [firstName, setFirstName] = useState(user.firstName);

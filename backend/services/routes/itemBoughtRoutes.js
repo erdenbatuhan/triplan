@@ -87,7 +87,7 @@ router.get("/", async (req, res) => {
 /**
  * Find items bought given a list of trip locations ids.
  */
-router.post("/locations", async (req, res) => {
+router.post("/location", async (req, res) => {
   try {
     const itemsBought =
       await itemBoughtController.getItemsBoughtByTripLocations(req.body);
@@ -97,6 +97,22 @@ router.post("/locations", async (req, res) => {
       .status(400)
       .send(
         `An error occurred while getting the items bought for the given list of trip locations! Error => ${message}`
+      );
+  }
+});
+
+/**
+ * Gets the purchase history for a buyable item
+ */
+router.post("/purchase-history", async (req, res) => {
+  try {
+    const purchaseHistory = await itemBoughtController.getBuyableItemPurchaseHistory(req.body);
+    res.status(200).send(purchaseHistory);
+  } catch ({ message }) {
+    res
+      .status(400)
+      .send(
+        `An error occurred while getting the purchase history for a buyable item! Error => ${message}`
       );
   }
 });

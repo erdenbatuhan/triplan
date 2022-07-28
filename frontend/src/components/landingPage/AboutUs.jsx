@@ -37,9 +37,9 @@ export default function AboutUs() {
         style={{
           textAlign: 'left'
         }}>
-        As young engineers who love to travel, we have developed the Triplan to solve the
-        difficulties we encountered during out travel planning. Our aim is being the best assistant
-        for travellers and being a global actor in the transformation of the travel market.
+        As young engineers who love to travel, we developed the Triplan to solve the difficulties we
+        encountered in our travel planning. Our goal is to be the best assistant for travelers and a
+        global player in transforming the travel market.
       </Typography>
       <br />
       <Grid container direction="column" spacing={2}>

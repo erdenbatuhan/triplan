@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, List } from '@mui/material';
 import TripPlanRatingCard from './TripPlanRatingCard';
-import { getLocationsOfTripPlan } from '../queries/trip-plan-queries';
+import { getLocationsOfTripPlan } from '../../queries/trip-plan-queries';
 
 export default function TripPlanRatings({ tripPlanId, viewMode }) {
   const [detailedLocations, setDetailedLocations] = useState([]);

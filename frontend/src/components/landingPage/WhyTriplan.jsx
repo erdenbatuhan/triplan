@@ -3,7 +3,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useState } from 'react';
 import { SECONDARY_COLOR } from '../../shared/constants';
-import WhyTriplanCard from './whyTriplanCard';
+import WhyTriplanCard from './WhyTriplanCard';
 
 const personalizedImg = require('../../assets/personalized.png');
 const timeSaverImg = require('../../assets/timeSaver.png');
