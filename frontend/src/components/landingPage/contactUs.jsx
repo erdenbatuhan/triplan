@@ -146,7 +146,7 @@ export default function ContactUs() {
                     padding: 20
                   }}>
                   <Button
-                    sx={{ width: '60%' }}
+                    sx={{ width: '60%', height: '60px' }}
                     variant="contained"
                     color="success"
                     onClick={handleSubmitMessage}
