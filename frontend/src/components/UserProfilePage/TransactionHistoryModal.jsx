@@ -3,13 +3,13 @@ import { Grid, List, ListSubheader, Typography, Tooltip } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-import Spinner from './common/Spinner';
-import ContentModal from './common/ContentModal';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { getPreviousTransactions } from '../queries/transaction-queries';
-import { getOwnersOfWallets } from '../queries/wallet-queries';
-import { getReadableDate, getReadableMonthYearFromTimestamp } from '../shared/date-utils';
-import { TRANSACTION_STATUS_SUCCESSFUL, TRANSACTION_STATUS_REJECTED } from '../shared/constants';
+import Spinner from '../common/Spinner';
+import ContentModal from '../common/ContentModal';
+import { UserAuthHelper } from '../../authentication/user-auth-helper';
+import { getPreviousTransactions } from '../../queries/transaction-queries';
+import { getOwnersOfWallets } from '../../queries/wallet-queries';
+import { getReadableDate, getReadableMonthYearFromTimestamp } from '../../shared/date-utils';
+import { TRANSACTION_STATUS_SUCCESSFUL, TRANSACTION_STATUS_REJECTED } from '../../shared/constants';
 
 export default function TransactionHistoryModal({ open, onClose }) {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser()); // TODO: Replace with UserAuthHelper.getStoredUser()

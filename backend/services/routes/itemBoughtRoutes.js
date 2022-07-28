@@ -87,7 +87,7 @@ router.get("/", async (req, res) => {
 /**
  * Find items bought given a list of trip locations ids.
  */
-router.post("/locations", async (req, res) => {
+router.post("/location", async (req, res) => {
   try {
     const itemsBought =
       await itemBoughtController.getItemsBoughtByTripLocations(req.body);

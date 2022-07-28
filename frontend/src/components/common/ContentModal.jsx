@@ -16,7 +16,14 @@ const modalBoxStyles = {
   borderRadius: 8
 };
 
-export default function ContentModal({ open, onClose, contentStyle, header, contentRendered }) {
+export default function ContentModal({
+  open,
+  onClose,
+  contentStyle,
+  header,
+  subtitle,
+  contentRendered
+}) {
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={modalBoxStyles}>
@@ -26,6 +33,14 @@ export default function ContentModal({ open, onClose, contentStyle, header, cont
               sx={{ color: 'text.secondary', fontWeight: 'medium', fontSize: 25, pb: 2 }}
               align="center">
               {header}
+            </Typography>
+          ) : (
+            []
+          )}
+
+          {subtitle ? (
+            <Typography sx={{ color: 'text.secondary', fontSize: 12 }} align="center">
+              {subtitle}
             </Typography>
           ) : (
             []

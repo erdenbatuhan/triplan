@@ -6,26 +6,26 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { green } from '@mui/material/colors';
-import ContentModal from './common/ContentModal';
-import PaypalCheckoutButtons from './PaypalButtons';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { findUserWallet, getUser } from '../queries/user-queries';
-import { createTransaction } from '../queries/transaction-queries';
-import { createNewWithdrawRequest } from '../queries/withdraw-request-queries';
+import ContentModal from '../common/ContentModal';
+import PaypalCheckoutButtons from '../PaypalButtons';
+import { UserAuthHelper } from '../../authentication/user-auth-helper';
+import { findUserWallet, getUser } from '../../queries/user-queries';
+import { createTransaction } from '../../queries/transaction-queries';
+import { createNewWithdrawRequest } from '../../queries/withdraw-request-queries';
 import {
   // CURRENCIES,
   TRANSACTION_TYPE_DEPOSIT,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
   TRANSACTION_STATUS_REJECTED
-} from '../shared/constants';
+} from '../../shared/constants';
 import {
   generatePaypalEmail,
   generatePaypalWithdrawAmount,
   generateIntroMessage,
   // generateRequestId,
   handleEmail
-} from '../queries/email-queries';
+} from '../../queries/email-queries';
 import TransactionHistoryModal from './TransactionHistoryModal';
 
 export default function Wallet() {
