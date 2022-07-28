@@ -25,6 +25,10 @@ app.listen(appProps["port"], () =>
 const healthCheckRoutes = require("./routes/healthCheckRoutes.js");
 app.use("/", healthCheckRoutes);
 
+// Routes: Utilization
+const utilRoutes = require("./routes/utilRoutes.js");
+app.use("/utils", utilRoutes);
+
 // Routes: Authentication
 const authenticationRoutes = require("./routes/authenticationRoutes.js");
 app.use("/auth", authenticationRoutes);
