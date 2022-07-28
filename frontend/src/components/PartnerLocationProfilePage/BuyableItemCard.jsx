@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 // import ListItem from '@mui/material/ListItem';
 import PropTypes from 'prop-types';
-import { Button, Stack, Avatar } from '@mui/material';
+import { Button, Avatar } from '@mui/material';
 
 export default function BuyableItemCard(props) {
   const {
@@ -32,6 +32,7 @@ export default function BuyableItemCard(props) {
             justifyContent="center"
             alignItems="center"
             display="inline-flex"
+            spacing={2}
             mb={2}>
             <Grid item xs={4} justifyItems="center" display="inline-grid">
               <Avatar
@@ -42,10 +43,10 @@ export default function BuyableItemCard(props) {
                 src={image}
               />
             </Grid>
-            <Grid item xs={8} padding="unset">
-              <CardContent>
+            <Grid item xs={4} padding="unset">
+              <CardContent sx={{ padding: 'inherit' }}>
                 <Grid container direction="column">
-                  <Grid item xs={6}>
+                  <Grid item xs={8}>
                     <Typography gutterBottom variant="h6" component="div">
                       {name}
                     </Typography>
@@ -55,28 +56,25 @@ export default function BuyableItemCard(props) {
                     </Typography>
                   </Grid>
 
-                  <Grid item xs={1} sx={{ mb: 2 }} />
+                  <Grid item xs={2} sx={{ mb: 2 }} />
 
-                  <Grid item xs={2} justifyContent="right">
+                  <Grid item xs={2} justifyContent="center">
                     <Typography variant="h5" color="text.secondary">
                       {price} €
                     </Typography>
                   </Grid>
-
-                  <Grid item xs={1} />
-
-                  <Grid item xs={2} justifyContent="inherit">
-                    <Stack direction="row" spacing={2}>
-                      <Button value={itemIdx} onClick={handleEditClick}>
-                        Edit
-                      </Button>
-                      <Button value={itemIdx} onClick={handleDeleteClick}>
-                        Delete
-                      </Button>
-                    </Stack>
-                  </Grid>
                 </Grid>
               </CardContent>
+            </Grid>
+
+            <Grid item xs={4}>
+              <Button value={itemIdx} onClick={handleEditClick}>
+                Edit
+              </Button>
+
+              <Button value={itemIdx} onClick={handleDeleteClick}>
+                Delete
+              </Button>
             </Grid>
           </Grid>
         </Grid>

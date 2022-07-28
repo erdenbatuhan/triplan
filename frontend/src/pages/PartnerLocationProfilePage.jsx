@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Grid,
@@ -27,7 +27,8 @@ import {
   getRestaurant,
   getTouristAttraction,
   saveRestaurant,
-  saveTouristAttraction
+  saveTouristAttraction,
+  getPartnerLocationById
 } from '../queries/partner-location-queries';
 import { getMenuItems, getTickets } from '../queries/buyable-item-queries';
 // import InfoCard from '../components/InfoCard';
@@ -42,11 +43,6 @@ import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../sha
 // import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
 import EditPartnerLocationCard from '../components/EditPartnerLocationCard';
 
-/* const mockImgData = {
-  img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
-  title: ''
-}; */
-
 const style = {
   display: 'flex',
   alignItems: 'center',
@@ -60,13 +56,12 @@ const avatarStyle = {
 
 export default function PartnerLocationProfilePage() {
   const [loading, setLoading] = useState(false);
-  const location = useLocation();
+
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
-  // const navigate = useNavigate();
-  const partnerLocationType = location.state ? location.state.partnerType : PARTNER_TYPE_RESTAURANT; // tourist-attraction // restaurant
 
   const [partner, setPartner] = useState({});
+
   // const [cuisineList, setCuisineList] = useState([]);
   const [menuList, setMenuList] = useState([]);
   const [ticketList, setTicketList] = useState([]);
@@ -107,25 +102,21 @@ export default function PartnerLocationProfilePage() {
   console.log(isConfirmed);
 
   useEffect(() => {
-    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
-      getRestaurant(partnerId).then((data) => {
-        setPartner(data);
-        console.log(data);
-        // setCuisineList(data.cuisines);
-        setIsConfirmed(data.confirmed);
-      });
-      getMenuItems(partnerId).then((data) => {
-        setMenuList(data);
-      });
-    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
-      getTouristAttraction(partnerId).then((data) => {
-        setPartner(data);
-        setIsConfirmed(data.confirmed);
-      });
-      getTickets(partnerId).then((data) => {
-        setTicketList(data);
-      });
-    }
+    getPartnerLocationById(partnerId).then(({ partnerLocation }) => {
+      setPartner(partnerLocation);
+      setIsConfirmed(partnerLocation.confirmed);
+
+      if (partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT) {
+        getMenuItems(partnerId).then((data) => {
+          setMenuList(data);
+        });
+        // setCuisineList(partnerLocation.cuisines);
+      } else if (partnerLocation.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+        getTickets(partnerId).then((data) => {
+          setTicketList(data);
+        });
+      }
+    });
   }, [partnerId]);
 
   const handlePartnerFieldsChange = (params) => {
@@ -138,7 +129,7 @@ export default function PartnerLocationProfilePage() {
 
     setLoading(true);
 
-    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
+    if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
       saveRestaurant({
         ...updatedLocation,
         phoneNumber: params.partnerPhoneNumber,
@@ -146,7 +137,7 @@ export default function PartnerLocationProfilePage() {
       })
         .then(() => getRestaurant(partnerId).then((data) => setPartner(data)))
         .finally(() => setLoading(false));
-    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+    } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       saveTouristAttraction(updatedLocation)
         .then(() => getTouristAttraction(partnerId).then((data) => setPartner(data)))
         .finally(() => setLoading(false));
@@ -165,25 +156,33 @@ export default function PartnerLocationProfilePage() {
             <Avatar sx={avatarStyle} src={partner.locationPicture} loading="lazy" />
           </Grid>
 
-          <Grid item xs={3} display="flex">
-            <IconButton pointerEvents="none">
-              <PlaceIcon />
-            </IconButton>
+          {partner.address ? (
+            <Grid item xs={3} display="flex">
+              <IconButton pointerEvents="none">
+                <PlaceIcon />
+              </IconButton>
 
-            <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
-              {partner.address}
-            </Typography>
-          </Grid>
+              <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
+                {partner.address}
+              </Typography>
+            </Grid>
+          ) : (
+            []
+          )}
 
-          <Grid item xs={3} display="flex">
-            <IconButton pointerEvents="none">
-              <PhoneIcon />
-            </IconButton>
+          {partner.phoneNumber ? (
+            <Grid item xs={3} display="flex">
+              <IconButton pointerEvents="none">
+                <PhoneIcon />
+              </IconButton>
 
-            <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
-              {partner.phoneNumber}
-            </Typography>
-          </Grid>
+              <Typography component="div" align="center" m={1} sx={{ fontSize: 'subtitle1' }}>
+                {partner.phoneNumber}
+              </Typography>
+            </Grid>
+          ) : (
+            []
+          )}
 
           {partner.cuisines ? (
             <Grid item display="flex">
@@ -248,7 +247,7 @@ export default function PartnerLocationProfilePage() {
             {partner.name}
           </Typography>
 
-          <Divider />
+          <Divider sx={{ mb: 2 }} />
         </Grid>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
           {/* <Grid item xs={9} sx={{ width: '100%' }}>
@@ -266,7 +265,7 @@ export default function PartnerLocationProfilePage() {
           <Grid item xs={9} sx={{ width: '100%' }}>
             <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
               <List spacing={2} overflow="auto">
-                {(partnerLocationType === PARTNER_TYPE_RESTAURANT
+                {(partner.partnerType === PARTNER_TYPE_RESTAURANT
                   ? menuList || []
                   : ticketList || []
                 ).map((item, idx) => {
@@ -373,7 +372,36 @@ export default function PartnerLocationProfilePage() {
     </Grid>
   );
 
-  /* return (
+  /* 
+   const location = useLocation();
+   const navigate = useNavigate();
+   const partnerLocationType = location.state ? location.state.partnerType : PARTNER_TYPE_RESTAURANT; // tourist-attraction // restaurant
+
+   useEffect(() => {
+    if (partnerLocationType === PARTNER_TYPE_RESTAURANT) {
+      getRestaurant(partnerId).then((data) => {
+        setPartner(data);
+        console.log(data);
+        setCuisineList(data.cuisines);
+        setIsConfirmed(data.confirmed);
+      });
+      getMenuItems(partnerId).then((data) => {
+        setMenuList(data);
+      });
+    } else if (partnerLocationType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+      getTouristAttraction(partnerId).then((data) => {
+        setPartner(data);
+        setIsConfirmed(data.confirmed);
+      });
+      getTickets(partnerId).then((data) => {
+        setTicketList(data);
+      });
+    }
+  }, [partnerId]);
+  
+  
+  
+  return (
     <Box
       component="form"
       noValidate
