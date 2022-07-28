@@ -20,8 +20,8 @@ import LandingPage from './pages/LandingPage';
 import LandingPageBar from './components/landingPage/NavigationBarLandingPage';
 
 export default function App() {
-  // const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
+  // const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
   console.log('App, ', isLoggedIn);
 
