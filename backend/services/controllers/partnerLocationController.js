@@ -6,8 +6,6 @@ const {
 } = require("./../models/partnerLocation.js");
 const { Wallet } = require("./../models/wallet.js");
 
-const scoreOperations = require("./../operations/scoreOperations.js");
-
 const { PARTNER_TYPES } = require("./../utils/enums.js");
 
 const findDistinctCitiesWithEnoughPlaces = () => {
@@ -32,7 +30,7 @@ const findDistinctCitiesWithEnoughPlaces = () => {
   });
 };
 
-const findFiltered = (userId, { filterData }) => {
+const findFiltered = ({ filterData }) => {
   // Fetch all the locations (restaurants and tourist attractions) matching the specified filters
   return Promise.all([
     Restaurant.find({
@@ -47,9 +45,7 @@ const findFiltered = (userId, { filterData }) => {
         $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
       },
     }),
-  ]).then(([restaurants, touristAttractions]) => (
-    scoreOperations.sortLocations(userId, { restaurants, touristAttractions })
-  ));
+  ]).then(([restaurants, touristAttractions]) => ({ restaurants, touristAttractions }));
 };
 
 const findByTripLocations = (tripLocationIds) => {

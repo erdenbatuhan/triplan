@@ -19,7 +19,7 @@ const findWithPartnerLocationsByTripPlan = (tripPlanId) => {
       return null;
     }
 
-    tripLocationIds = tripPlan.tripLocations.map(({ _id }) => _id);
+    const tripLocationIds = tripPlan.tripLocations.map(({ _id }) => _id);
 
     let { tripLocations, partnerLocations } = await Promise.all([
       // Find the trip locations
