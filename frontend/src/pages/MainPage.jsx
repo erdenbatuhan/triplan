@@ -32,7 +32,7 @@ export default function MainPage() {
     } else if (
       filterData.restaurantFilter.cuisines.length === 0 &&
       filterData.restaurantFilter.foodTypes.length === 0 &&
-      filterData.restaurantFilter.priceLevel.length === 0 &&
+      filterData.restaurantFilter.priceLevels.length === 0 &&
       filterData.touristAttractionFilter.types[0].length === 0
     ) {
       console.log('choosing filter is mandatory');
