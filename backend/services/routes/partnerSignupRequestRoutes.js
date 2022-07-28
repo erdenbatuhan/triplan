@@ -50,7 +50,7 @@ router.get("/remove/:id", async (req, res) => {
     const partnerSignupRequestId = req.params.id;
     const partnerSignupRequest = await partnerSignupRequestController.removePartnerSignupRequest(partnerSignupRequestId);
 
-    if (!withdrawRequest) {
+    if (!partnerSignupRequest) {
       return res.status(404).send(`No withdrawRequest found with ID=${partnerSignupRequestId}!`);
     }
 

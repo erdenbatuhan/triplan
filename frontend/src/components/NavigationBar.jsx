@@ -64,7 +64,7 @@ export default function MenuAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const { state } = useLocation(); // Received from the previous route
-  console.log(isLoggedIn);
+
   const navigate = useNavigate();
 
   useEffect(() => {

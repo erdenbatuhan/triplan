@@ -28,12 +28,8 @@ router.get("/cities", async (req, res) => {
  */
 router.post("/filtered", async (req, res) => {
   try {
-    const partnerLocationsFiltered =
-      await partnerLocationController.findFiltered(req.body["filterData"]);
-    const partnerLocationsSorted = await scoreController.sortLocations(
-      req.query["user"],
-      partnerLocationsFiltered
-    );
+    const partnerLocationsFiltered = await partnerLocationController.findFiltered(req.body);
+    const partnerLocationsSorted = await scoreController.sortLocations(req.query["user"], partnerLocationsFiltered);
 
     res.status(200).send(partnerLocationsSorted);
   } catch ({ message }) {
