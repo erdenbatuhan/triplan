@@ -132,7 +132,7 @@ const updatePartnerLocation = async (id, fields, session) => {
 const addTripLocationToRestaurant = (restaurantId, tripLocation, session) => {
   return Restaurant.findOneAndUpdate(
     { _id: restaurantId },
-    { $dr: { associatedTripLocations: tripLocation } },
+    { $push: { associatedTripLocations: tripLocation } },
     { new: true, runValidators: true, session }
   );
 };
