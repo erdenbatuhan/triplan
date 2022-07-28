@@ -6,6 +6,11 @@ export function generateEmailRoute(partnerLocations) {
   return partnerLocations.map(({ name }) => name).join('  ->  ');
 }
 
+export function generateGoogleMapsLink(partnerLocations) {
+  const extension = partnerLocations.map(({ name }) => name.replaceAll(' ', '+')).join('/');
+  return `https://www.google.com/maps/dir/${extension}`;
+}
+
 export function generateEmailPaidServices(servicesToBeBought) {
   if (servicesToBeBought.length === 0) {
     return 'You do not have any prepaid services!';
@@ -23,7 +28,7 @@ export function generateEmailPaidServices(servicesToBeBought) {
     })
     .join('\r\n');
 
-  return `\r\nYour Paid Services:\r\n${serviceInfo}`;
+  return serviceInfo;
 }
 
 export function generateEmailAmount(amount) {

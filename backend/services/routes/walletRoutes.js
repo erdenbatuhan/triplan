@@ -17,7 +17,7 @@ router.post("/user/:userId", async (req, res) => {
 
     res.status(200).send(walletCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating a wallet for the user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -35,7 +35,7 @@ router.post("/partner-location/:partnerLocationId", async (req, res) => {
 
     res.status(200).send(walletCreated);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while creating a wallet for the partner location! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -49,7 +49,7 @@ router.get("/owner", async (req, res) => {
 
     res.status(200).send(walletsFound);
   } catch ({ message }) {
-    res.status(400).send(`An error occurred while finding owners of the given wallets! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

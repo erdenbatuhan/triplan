@@ -14,11 +14,7 @@ router.get("/", AuthService, async (req, res) => {
   try {
     res.status(200).send(await userController.find());
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting all the users! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -36,9 +32,7 @@ router.get("/:id", async (req, res) => {
 
     return res.status(200).send(user);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while getting the user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -56,11 +50,7 @@ router.get("/:userId/wallet", async (req, res) => {
 
     res.status(200).send(userWallet);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while getting the wallet for a user! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -74,11 +64,7 @@ router.get("/:userId/wallet", async (req, res) => {
 
     res.status(200).send(userUpdated);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while updating the user given! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 

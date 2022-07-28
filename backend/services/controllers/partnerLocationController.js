@@ -1,6 +1,3 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-
 const {
   MIN_COUNT_FOR_VISIBILITY_RESTAURANT,
   MIN_COUNT_FOR_VISIBILITY_TOURIST_ATTRACTION,
@@ -48,10 +45,7 @@ const findFiltered = ({ filterData }) => {
         $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
       },
     }),
-  ]).then(([restaurants, touristAttractions]) => ({
-    restaurants,
-    touristAttractions,
-  }));
+  ]).then(([restaurants, touristAttractions]) => ({ restaurants, touristAttractions }));
 };
 
 const findByTripLocations = (tripLocationIds) => {
@@ -202,6 +196,21 @@ const findByGoogleId = async ({ googlePlaceId, partnerType }) => {
   }
 };
 
+const deleteAssociatedTripLocationsFromPartnerLocations = (tripLocationsIds, session) => {
+  return Promise.all(tripLocationsIds.map(tripLocationId => {
+    const queryParams = [
+      { associatedTripLocations: { $in: tripLocationId } },
+      { $pull: { associatedTripLocations: tripLocationId } },
+      { new: true, runValidators: true, session }
+    ];
+
+    return Promise.all([
+      Restaurant.findOneAndUpdate(...queryParams),
+      TouristAttraction.findOneAndUpdate(...queryParams)
+    ]).then(([ restaurant, touristAttraction ]) => restaurant || touristAttraction);
+  }));
+};
+
 module.exports = {
   findRestaurantByAuthId,
   findTouristAttractionByAuthId,
@@ -220,4 +229,5 @@ module.exports = {
   findRestaurantWalletsByWalletIds,
   findTouristAttractionWalletsByWalletIds,
   findByGoogleId,
+  deleteAssociatedTripLocationsFromPartnerLocations,
 };

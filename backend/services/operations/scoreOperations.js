@@ -1,6 +1,6 @@
 
-const googleLocationInfoController = require("./googleLocationInfoController.js");
-const tripPlanController = require("./tripPlanController.js");
+const googleLocationInfoController = require("./../controllers/googleLocationInfoController.js");
+const tripPlanController = require("./../controllers/tripPlanController.js");
 
 const { average } = require("../utils/objectUtils.js");
 

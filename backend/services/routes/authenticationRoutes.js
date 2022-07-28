@@ -12,11 +12,7 @@ router.post("/signup", async (req, res) => {
   try {
     await authenticationController.signUp(req, res);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(
-        `An error occurred while registering the user! Error => ${message}`
-      );
+    res.status(500).send(message);
   }
 });
 
@@ -27,9 +23,7 @@ router.post("/login", async (req, res) => {
   try {
     await authenticationController.login(req, res);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while getting the user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 
@@ -44,9 +38,7 @@ router.get("/user", async (req, res) => {
     );
     res.status(200).send(user);
   } catch ({ message }) {
-    res
-      .status(400)
-      .send(`An error occurred while getting the user! Error => ${message}`);
+    res.status(500).send(message);
   }
 });
 

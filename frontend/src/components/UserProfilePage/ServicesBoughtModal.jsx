@@ -12,32 +12,37 @@ import CircleIcon from '@mui/icons-material/Circle';
 import Spinner from '../common/Spinner';
 import ContentModal from '../common/ContentModal';
 import { getLocationsOfTripPlan } from '../../queries/trip-plan-queries';
-import { getItemsBoughtByTripLocations } from '../../queries/item-bought-queries';
+import { getItemBoughtsByTripLocations } from '../../queries/item-bought-queries';
 
 export default function ServicesBoughtModal({ open, onClose, tripPlan }) {
   const [isLoading, setIsLoading] = useState(false);
   const [tripLocationToPlaceName, setTripLocationToPlaceName] = useState({});
-  const [itemsBoughtByTripLocations, setItemsBoughtByTripLocations] = useState({});
+  const [itemBoughtsByTripLocations, setItemBoughtsByTripLocations] = useState({});
 
   // Listening to the change in tripPlan
   useEffect(() => {
     setIsLoading(true);
     getLocationsOfTripPlan(tripPlan._id)
       .then(async (locationsData) => {
-        // Store a mapping from trip location id to partner location name
-        const tripLocationToPlaceName_ = Object.assign(
-          {},
-          ...locationsData.map(({ partnerLocation, tripLocation }) => ({
-            [tripLocation._id]: partnerLocation.name
-          }))
-        );
-        setTripLocationToPlaceName(tripLocationToPlaceName_);
+        try {
+          // Store a mapping from trip location id to partner location name
+          const tripLocationToPlaceName_ = Object.assign(
+            {},
+            ...locationsData.map(({ partnerLocation, tripLocation }) => ({
+              [tripLocation._id]: partnerLocation.name
+            }))
+          );
+          setTripLocationToPlaceName(tripLocationToPlaceName_);
 
-        // Get the items bought by the user in this trip plan
-        const tripLocationIds = Object.keys(tripLocationToPlaceName_);
-        await getItemsBoughtByTripLocations(tripLocationIds).then((itemsBoughtData) =>
-          setItemsBoughtByTripLocations(itemsBoughtData)
-        );
+          // Get the items bought by the user in this trip plan
+          const tripLocationIds = Object.keys(tripLocationToPlaceName_);
+          await getItemBoughtsByTripLocations(tripLocationIds).then((itemBoughtsData) =>
+            setItemBoughtsByTripLocations(itemBoughtsData)
+          );
+        } catch {
+          alert('Faulty plan! Please contact an administrator.');
+          onClose();
+        }
       })
       .finally(() => setIsLoading(false));
   }, [tripPlan]);
@@ -76,18 +81,18 @@ export default function ServicesBoughtModal({ open, onClose, tripPlan }) {
                           '& ul': { padding: 0 }
                         }}
                         subheader={<li />}>
-                        {Object.entries(itemsBoughtByTripLocations).map(
-                          ([tripLocationId, itemsBought]) => (
+                        {Object.entries(itemBoughtsByTripLocations).map(
+                          ([tripLocationId, itemBoughts]) => (
                             <li
                               key={`ServicesBoughtCard-BoughtPaidServices-Parent-${tripLocationId}`}>
                               <ul>
                                 <ListSubheader sx={{ fontWeight: 500 }}>
                                   {`${tripLocationToPlaceName[tripLocationId]}${
-                                    itemsBought.length === 0 ? ' (No services bought)' : ''
+                                    itemBoughts.length === 0 ? ' (No services bought)' : ''
                                   }`}
                                 </ListSubheader>
 
-                                {itemsBought.map((itemBought) => {
+                                {itemBoughts.map((itemBought) => {
                                   return (
                                     <ListItem
                                       key={`ServicesBoughtCard-BoughtPaidServices-Child-${itemBought._id}`}>

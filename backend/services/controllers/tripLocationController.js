@@ -28,4 +28,8 @@ const findByIds = (ids) => {
   return TripLocation.find({ _id: { $in: ids } }).sort({ order: "asc" }); // In ascending order
 };
 
-module.exports = { create, createMany, update, exists, findByIds };
+const deleteByIds = (ids, session) => {
+  return TripLocation.deleteMany({ _id: { $in: ids } }).session(session);
+}
+
+module.exports = { create, createMany, update, exists, findByIds, deleteByIds };
