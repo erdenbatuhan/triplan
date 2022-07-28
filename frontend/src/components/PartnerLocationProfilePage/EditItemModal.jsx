@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Stack, TextField, Button } from '@mui/material';
+import {
+  Box,
+  Stack,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
 import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
 import ImageUpload from '../common/ImageUpload';
+import * as constants from '../../shared/constants';
 
 function EditItemModal(props) {
   const { item, locationType, handleItemChangeCompletionClick, itemInAdd } = props;
@@ -36,6 +46,7 @@ function EditItemModal(props) {
   // const pictureLabel = locationType === PARTNER_TYPE_RESTAURANT ? 'Menu Picture' : 'Ticket Picture';
 
   useEffect(() => {
+    console.log(item.foodType);
     setItemId(!itemInAdd ? item._id : '');
     setItemName(!itemInAdd ? item.name : '');
     setItemDescription(!itemInAdd ? item.description : '');
@@ -121,14 +132,28 @@ function EditItemModal(props) {
           value={price}
           onChange={(e) => onItemPriceChange(e)}
         />
-        {/* <TextField
-          required
-          id="outlined-required"
-          label={pictureLabel}
-          value={image}
-          onChange={(e) => onItemPictureChange(e)}
-  /> */}
+
         {locationType === PARTNER_TYPE_RESTAURANT ? (
+          <FormControl>
+            <InputLabel id="outlined">Food Type</InputLabel>
+            <Select
+              labelId="outlined"
+              id="outlined-required"
+              value={foodType}
+              label={menuTypeLabel}
+              onChange={(e) => onItemFoodTypeChange(e)}>
+              {constants.foodTypes.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ) : (
+          []
+        )}
+
+        {/* locationType === PARTNER_TYPE_RESTAURANT ? (
           <TextField
             required
             id="outlined-required"
@@ -143,10 +168,10 @@ function EditItemModal(props) {
           //   label={pictureLabel}
           //   value={itemReservationDate}
           //   onChange={(e) => onItemReservationDateChange(e)}
-          // />
+          //
           // eslint-disable-next-line react/jsx-no-useless-fragment
-          <></>
-        )}
+         
+        ) */}
         <Button
           onClick={(e) => {
             handleItemChangeCompletionClick(e, getChangedItemObject());

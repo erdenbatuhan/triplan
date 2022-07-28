@@ -13,7 +13,8 @@ export default function EditPartnerLocationCard({ partner, handlePartnerFieldsCh
 
   const [restaurantCuisines, setRestaurantCuisines] = useState([]);
 
-  const LABEL_PREFIX = partner.partnerType === PARTNER_TYPE_RESTAURANT ? 'Restaurant' : 'Museum';
+  const LABEL_PREFIX =
+    partner.partnerType === PARTNER_TYPE_RESTAURANT ? 'Restaurant' : 'Tourist Attraction';
 
   // Listening to the changes in partner
   useEffect(() => {
@@ -115,9 +116,13 @@ export default function EditPartnerLocationCard({ partner, handlePartnerFieldsCh
           <Grid container item>
             <Grid item xs={2} />
 
-            <Grid item xs={8}>
-              <EditRestaurantCuisineBox handleCuisineChange={handleCuisineChange} />
-            </Grid>
+            {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
+              <Grid item xs={8}>
+                <EditRestaurantCuisineBox handleCuisineChange={handleCuisineChange} />
+              </Grid>
+            ) : (
+              <Grid item xs={8} />
+            )}
 
             <Grid item xs={2} />
           </Grid>
