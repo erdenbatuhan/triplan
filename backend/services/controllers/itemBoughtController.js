@@ -1,7 +1,9 @@
 const { ItemBought } = require("./../models/itemBought.js");
 
-const buyableItemController = require("./../controllers/buyableItemController.js");
-const { compare } = require("bcryptjs");
+const buyableItemController = require("./buyableItemController.js");
+const tripPlanController = require("./tripPlanController.js");
+
+const enums = require("./../utils/enums.js");
 
 const createMany = (fieldsList, session) => {
   return ItemBought.insertMany(fieldsList, { ordered: true, session });
@@ -62,6 +64,28 @@ const getItemsBoughtByTripLocations = (tripLocationIdList) => {
   });
 };
 
+const getBuyableItemPurchaseHistory = (buyableItem) => {
+  const getItemsBoughtWithUsers = async ({ associatedItemBoughts }) => {
+    const itemBoughtsRetrieved = await ItemBought.find({ _id: { $in: associatedItemBoughts } }).sort({ createdAt: -1 }).lean();
+
+    const tripLocations = itemBoughtsRetrieved.map(({ associatedTripLocation }) => associatedTripLocation)
+    const usersByTripLocations = await tripPlanController.findPlannerUsersByTripLocations(tripLocations);
+
+    return itemBoughtsRetrieved.map(itemBought => ({
+      ...itemBought,
+      user: usersByTripLocations[itemBought.associatedTripLocation]
+    }))
+  };
+
+  if (buyableItem.itemType === enums.ITEM_TYPES[0]) { // MenuItem
+    return buyableItemController.getMenuItem(buyableItem._id).then(getItemsBoughtWithUsers);
+  } else if (buyableItem.itemType === enums.ITEM_TYPES[1]) { // Ticket
+    return buyableItemController.getTicket(buyableItem._id).then(getItemsBoughtWithUsers);
+  }
+
+  return [];
+}
+
 module.exports = {
   createMany,
   addNewItemBoughtEntry,
@@ -69,4 +93,5 @@ module.exports = {
   deleteItemBoughtEntry,
   getItemBoughtEntryById,
   getItemsBoughtByTripLocations,
+  getBuyableItemPurchaseHistory
 };

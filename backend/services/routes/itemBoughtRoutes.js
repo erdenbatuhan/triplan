@@ -101,4 +101,20 @@ router.post("/location", async (req, res) => {
   }
 });
 
+/**
+ * Gets the purchase history for a buyable item
+ */
+router.post("/purchase-history", async (req, res) => {
+  try {
+    const purchaseHistory = await itemBoughtController.getBuyableItemPurchaseHistory(req.body);
+    res.status(200).send(purchaseHistory);
+  } catch ({ message }) {
+    res
+      .status(400)
+      .send(
+        `An error occurred while getting the purchase history for a buyable item! Error => ${message}`
+      );
+  }
+});
+
 module.exports = router;
