@@ -133,7 +133,6 @@ export default function Wallet() {
   };
 
   const handleCompletePayment = (bool) => {
-    console.log(bool);
     handleTransaction();
     setPaymentCompleted(bool);
     setIsPaymentSuccessfull(bool);
