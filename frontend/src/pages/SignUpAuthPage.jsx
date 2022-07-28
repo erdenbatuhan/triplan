@@ -1,15 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react'; // useContext
+import * as React from 'react';
+import { useState, useEffect, useRef } from 'react'; // useContext
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
-import { green, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import {
   USER_TYPE_USER,
   USER_TYPE_RESTAURANT,
   USER_TYPE_TOURIST_ATTRACTION,
-  SECONDARY_COLOR
+  BG_COLOR,
+  PRIMARY_COLOR,
+  WHITE
 } from '../shared/constants';
+
+const logo = require('../assets/triplan_logo.png');
 
 function SignUpAuthPage() {
   const [email, setEmail] = useState('');
@@ -68,7 +73,7 @@ function SignUpAuthPage() {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh',
-        backgroundColor: SECONDARY_COLOR
+        backgroundColor: BG_COLOR
       }}>
       <Box
         component="form"
@@ -80,23 +85,43 @@ function SignUpAuthPage() {
           marginBottom: 5
         }}>
         <Box
-          ref={ref}
           sx={{
             alignItems: 'center',
             justifyContent: 'center',
             border: 1,
             borderRadius: 4,
+            backgroundColor: WHITE,
             borderColor: grey[500],
-            padding: 1
+            padding: 4,
+            minWidth: '25vw'
           }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              margin: 5
+              justifyContent: 'center'
             }}>
-            <ToggleButtonGroup color="primary" value={userType} exclusive onChange={handleChange}>
+            <img src={logo} alt={logo} style={{ width: 75, height: 75, borderRadius: 20 }} />
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 20
+            }}>
+            <ToggleButtonGroup
+              ref={ref}
+              color="primary"
+              value={userType}
+              exclusive
+              onChange={handleChange}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
               <ToggleButton value="USER">User</ToggleButton>
               <ToggleButton value="RESTAURANT">Restaurant</ToggleButton>
               <ToggleButton value="TOURIST_ATTRACTION">Tourist Attraction</ToggleButton>
@@ -117,7 +142,7 @@ function SignUpAuthPage() {
                 label="E-mail"
                 defaultValue={email}
                 onChange={(e) => onEmailChanged(e)}
-                style={{ width: width * 0.8 }}
+                style={{ width }}
               />
             </Grid>
             <Grid item>
@@ -127,17 +152,17 @@ function SignUpAuthPage() {
                 label="Username"
                 defaultValue={username}
                 onChange={(e) => onUsernameChanged(e)}
-                style={{ width: width * 0.8 }}
+                style={{ width }}
               />
             </Grid>
             <Grid item>
               <TextField
                 required
-                id="outlined-required"
+                type="password"
                 label="Password"
                 defaultValue={password}
                 onChange={(e) => onPasswordChanged(e)}
-                style={{ width: width * 0.8 }}
+                style={{ width }}
               />
             </Grid>
             <br />
@@ -145,8 +170,8 @@ function SignUpAuthPage() {
               <Button
                 style={{
                   color: '#FFFFFF',
-                  backgroundColor: green[500],
-                  width: width * 0.8,
+                  backgroundColor: PRIMARY_COLOR,
+                  width: width * 0.6,
                   border: 1,
                   borderColor: grey[500],
                   borderRadius: 4,

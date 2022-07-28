@@ -21,7 +21,11 @@ import {
   deleteMenuItem,
   deleteTicket
 } from '../queries/buyable-item-queries';
-import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
+import {
+  PARTNER_TYPE_RESTAURANT,
+  PARTNER_TYPE_TOURIST_ATTRACTION,
+  BG_COLOR
+} from '../shared/constants';
 
 export default function EditPartnerLocationProfilePage() {
   // TODO: will get partnerLocationType from auth token once the update on authentication occurs.
@@ -282,7 +286,8 @@ export default function EditPartnerLocationProfilePage() {
         marginLeft: 5,
         marginRight: 5,
         marginBottom: 5,
-        minWidth: 400
+        minWidth: 400,
+        backgroundColor: BG_COLOR
       }}>
       <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2}>
         <Grid item>

@@ -1,3 +1,5 @@
+import { grey } from '@mui/material/colors';
+
 export const cuisines = [
   'Japanese',
   'Chinese',
@@ -183,6 +185,8 @@ export const CURRENCIES = [
 
 export const PRIMARY_COLOR = '#15A4FF';
 export const SECONDARY_COLOR = '#FFF7E3';
+export const BG_COLOR = grey[100];
+export const WHITE = '#FFFFFF';
 
 export const MIN_AMOUNT_FOR_COUPON = 100;
 export const DEFAULT_VALUE_OF_COUPON = 5;

@@ -19,7 +19,11 @@ import { handleEmail } from '../queries/email-queries';
 
 // import { modalStyle } from '../shared/styles';
 // import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
-import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
+import {
+  PARTNER_TYPE_RESTAURANT,
+  PARTNER_TYPE_TOURIST_ATTRACTION,
+  BG_COLOR
+} from '../shared/constants';
 
 const mockImgData = {
   img: 'https://fastly.4sqi.net/img/general/width960/41222779_zbo5pj_DAblB24yPU--MnDvDmIlvqIGLuBkc8hZxmyY.jpg',
@@ -107,7 +111,8 @@ export default function PartnerLocationProfilePage() {
         marginLeft: 5,
         marginRight: 5,
         marginBottom: 5,
-        minWidth: 400
+        minWidth: 400,
+        backgroundColor: BG_COLOR
       }}>
       <Grid container direction="row" spacing={8}>
         <Grid item xs={3}>

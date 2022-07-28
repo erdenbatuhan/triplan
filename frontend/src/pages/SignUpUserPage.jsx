@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
-import { green, grey } from '@mui/material/colors';
-import { SECONDARY_COLOR } from '../shared/constants';
+import { grey } from '@mui/material/colors';
+import { PRIMARY_COLOR, BG_COLOR } from '../shared/constants';
 import { signupNewUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
+
+const logo = require('../assets/triplan_logo.png');
 
 function SignUpUserDataPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [profilePicture, setProfilePicture] = useState('');
+  // const [profilePicture, setProfilePicture] = useState('');
 
   const authContext = useContext(AuthUserContext);
   const navigate = useNavigate();
@@ -33,13 +35,13 @@ function SignUpUserDataPage() {
   const onPhoneNumberChange = (e) => {
     setPhoneNumber(e.target.value);
   };
-  const onProfilePictureChange = (e) => {
-    setProfilePicture(e.target.value);
-  };
+  // const onProfilePictureChange = (e) => {
+  //   setProfilePicture(e.target.value);
+  // };
 
   const handleOnSubmitClick = async () => {
     try {
-      const userData = { firstName, lastName, phoneNumber, profilePicture };
+      const userData = { firstName, lastName, phoneNumber };
       if (!authData) {
         console.error(`authentication data is missing ${authData}`);
       }
@@ -66,7 +68,7 @@ function SignUpUserDataPage() {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh',
-        backgroundColor: SECONDARY_COLOR
+        backgroundColor: BG_COLOR
       }}>
       <Box
         component="form"
@@ -85,16 +87,17 @@ function SignUpUserDataPage() {
             border: 1,
             borderRadius: 4,
             borderColor: grey[500],
-            padding: 1
+            padding: 5,
+            minWidth: '25vw'
           }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              margin: 5
-            }}
-          />
+              justifyContent: 'center'
+            }}>
+            <img src={logo} alt={logo} style={{ width: 75, height: 75, borderRadius: 20 }} />
+          </div>
           <Grid
             container
             direction="column"
@@ -133,7 +136,7 @@ function SignUpUserDataPage() {
                 style={{ width: width * 0.8 }}
               />
             </Grid>
-            <Grid item>
+            {/* <Grid item>
               <TextField
                 required
                 id="outlined-required"
@@ -142,14 +145,14 @@ function SignUpUserDataPage() {
                 onChange={(e) => onProfilePictureChange(e)}
                 style={{ width: width * 0.8 }}
               />
-            </Grid>
+            </Grid> */}
             <br />
             <Grid item>
               <Button
                 style={{
                   color: '#FFFFFF',
-                  backgroundColor: green[500],
-                  width: width * 0.8,
+                  backgroundColor: PRIMARY_COLOR,
+                  width: width * 0.5,
                   border: 1,
                   borderColor: grey[500],
                   borderRadius: 4,
