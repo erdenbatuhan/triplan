@@ -223,8 +223,11 @@ function AdminPage() {
       console.log(googlePlaceId);
       getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
         if (partnerData.partnerLocation) {
-          if (partnerType === 'RESTAURANT') {
-            saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
+          if (partnerType === PARTNER_TYPE_RESTAURANT) {
+            saveRestaurant({
+              ...partnerData.partnerLocation,
+              authentication: partner.authentication
+            }).then(() => {
               console.log(partner.username, ' is approved!');
               handleEmail(
                 {
@@ -245,30 +248,31 @@ function AdminPage() {
                 });
               });
             });
-          } else if (partnerType === 'TOURIST_ATTRACTION') {
-            saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
-              () => {
-                console.log(partner.username, ' is approved!');
-                handleEmail(
-                  {
-                    subject: 'Congratulations! Your Partnership is Approved!',
-                    to_name: partner.username,
-                    to_email: 'anil.kults@gmail.com', // partner.email
-                    intro_message: `Your partnership is approved. Welcome to Triplan family.`,
-                    final_message:
-                      'You can complete your profile by logging in the system and start to meet with your customers.'
-                  },
-                  'general'
-                ).then(() => {
-                  removePartnerSignupRequest(id).then(() => {
-                    syncPartnerSignupRequests();
-                    setIsSuccessfull(true);
-                    setIsOpen(true);
-                    setIsApproved(true);
-                  });
+          } else if (partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+            saveTouristAttraction({
+              ...partnerData.partnerLocation,
+              authentication: partner.authentication
+            }).then(() => {
+              console.log(partner.username, ' is approved!');
+              handleEmail(
+                {
+                  subject: 'Congratulations! Your Partnership is Approved!',
+                  to_name: partner.username,
+                  to_email: 'anil.kults@gmail.com', // partner.email
+                  intro_message: `Your partnership is approved. Welcome to Triplan family.`,
+                  final_message:
+                    'You can complete your profile by logging in the system and start to meet with your customers.'
+                },
+                'general'
+              ).then(() => {
+                removePartnerSignupRequest(id).then(() => {
+                  syncPartnerSignupRequests();
+                  setIsSuccessfull(true);
+                  setIsOpen(true);
+                  setIsApproved(true);
                 });
-              }
-            );
+              });
+            });
           } else {
             console.error('the selected partner type is not defined.');
           }
@@ -453,7 +457,12 @@ function AdminPage() {
         }}>
         <Box sx={style}>
           <div className="center">
-            <Alert severity={isSuccessfull ? 'success' : 'error'}>
+            <Alert
+              severity={isSuccessfull ? 'success' : 'error'}
+              onClose={() => {
+                setIsOpen(false);
+                setIsSuccessfull(false);
+              }}>
               <AlertTitle>{isSuccessfull ? 'Success' : 'Error'}</AlertTitle>
               {isSuccessfull
                 ? `${value === 1 ? 'Withdraw' : 'Partner Signup'} request ${
@@ -463,15 +472,6 @@ function AdminPage() {
                     isApproved ? 'approved' : 'rejected'
                   }!`}
             </Alert>
-
-            <Button
-              alignItems="center"
-              onClick={() => {
-                setIsOpen(false);
-                setIsSuccessfull(false);
-              }}>
-              Continue
-            </Button>
           </div>
         </Box>
       </Modal>
