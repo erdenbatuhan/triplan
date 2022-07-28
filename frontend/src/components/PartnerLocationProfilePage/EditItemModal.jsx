@@ -10,12 +10,13 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
+import Spinner from '../common/Spinner';
 import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
 import ImageUpload from '../common/ImageUpload';
 import * as constants from '../../shared/constants';
 
 function EditItemModal(props) {
-  const { item, locationType, handleItemChangeCompletionClick, itemInAdd } = props;
+  const { item, locationType, handleItemChangeCompletionClick, itemInAdd, lazyLoading } = props;
   const { partnerId } = useParams();
 
   // const { name, description, price, type, image } = item; // reservationDate
@@ -46,7 +47,6 @@ function EditItemModal(props) {
   // const pictureLabel = locationType === PARTNER_TYPE_RESTAURANT ? 'Menu Picture' : 'Ticket Picture';
 
   useEffect(() => {
-    console.log(item.foodType);
     setItemId(!itemInAdd ? item._id : '');
     setItemName(!itemInAdd ? item.name : '');
     setItemDescription(!itemInAdd ? item.description : '');
@@ -106,54 +106,57 @@ function EditItemModal(props) {
 
   return (
     <Box sx={{ width: 400 }}>
-      <Stack spacing={2}>
-        <ImageUpload objectId={item._id} image={image} onSaveSuccess={onItemImageChange} />
+      {lazyLoading ? (
+        <Spinner marginTop="1em" />
+      ) : (
+        <Stack spacing={2}>
+          <ImageUpload objectId={item._id} image={image} onSaveSuccess={onItemImageChange} />
 
-        <TextField
-          required
-          id="outlined-required"
-          label={nameLabel}
-          value={name}
-          onChange={(e) => onItemNameChange(e)}
-        />
+          <TextField
+            required
+            id="outlined-required"
+            label={nameLabel}
+            value={name}
+            onChange={(e) => onItemNameChange(e)}
+          />
 
-        <TextField
-          required
-          id="outlined-required"
-          label={descriptionLabel}
-          value={description}
-          onChange={(e) => onItemDescriptionChange(e)}
-        />
+          <TextField
+            required
+            id="outlined-required"
+            label={descriptionLabel}
+            value={description}
+            onChange={(e) => onItemDescriptionChange(e)}
+          />
 
-        <TextField
-          required
-          id="outlined-required"
-          label={priceLabel}
-          value={price}
-          onChange={(e) => onItemPriceChange(e)}
-        />
+          <TextField
+            required
+            id="outlined-required"
+            label={priceLabel}
+            value={price}
+            onChange={(e) => onItemPriceChange(e)}
+          />
 
-        {locationType === PARTNER_TYPE_RESTAURANT ? (
-          <FormControl>
-            <InputLabel id="outlined">Food Type</InputLabel>
-            <Select
-              labelId="outlined"
-              id="outlined-required"
-              value={foodType}
-              label={menuTypeLabel}
-              onChange={(e) => onItemFoodTypeChange(e)}>
-              {constants.foodTypes.map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : (
-          []
-        )}
+          {locationType === PARTNER_TYPE_RESTAURANT ? (
+            <FormControl>
+              <InputLabel id="outlined">Food Type</InputLabel>
+              <Select
+                labelId="outlined"
+                id="outlined-required"
+                value={foodType}
+                label={menuTypeLabel}
+                onChange={(e) => onItemFoodTypeChange(e)}>
+                {constants.foodTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ) : (
+            []
+          )}
 
-        {/* locationType === PARTNER_TYPE_RESTAURANT ? (
+          {/* locationType === PARTNER_TYPE_RESTAURANT ? (
           <TextField
             required
             id="outlined-required"
@@ -172,13 +175,14 @@ function EditItemModal(props) {
           // eslint-disable-next-line react/jsx-no-useless-fragment
          
         ) */}
-        <Button
-          onClick={(e) => {
-            handleItemChangeCompletionClick(e, getChangedItemObject());
-          }}>
-          {buttonText}
-        </Button>
-      </Stack>
+          <Button
+            onClick={(e) => {
+              handleItemChangeCompletionClick(e, getChangedItemObject());
+            }}>
+            {buttonText}
+          </Button>
+        </Stack>
+      )}
     </Box>
   );
 }

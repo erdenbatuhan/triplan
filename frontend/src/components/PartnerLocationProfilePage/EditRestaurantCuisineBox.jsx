@@ -29,6 +29,7 @@ function EditRestaurantCuisineBox({ handleCuisineChange } /* props */) {
         <Select
           fullWidth
           multiple
+          selected="selected"
           value={selectedCuisines}
           onChange={handleChange}
           input={<OutlinedInput label="Cuisines(s)" />}

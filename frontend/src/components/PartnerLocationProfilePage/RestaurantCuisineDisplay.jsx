@@ -5,15 +5,22 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 export default function RestaurantCuisineDisplay({ displayList, isCuisine }) {
   return (
-    <Box display="flex" flexDirection="column" justifyContent="center">
+    <Box display="flex" flexDirection="row" justifyContent="center">
       {displayList.length > 0 ? (
-        <IconButton pointerEvents="none">
+        <IconButton
+          disabled
+          sx={{
+            ml: 1,
+            '&.MuiButtonBase-root:hover': {
+              bgcolor: 'transparent'
+            }
+          }}>
           {isCuisine ? <RestaurantIcon /> : <MenuBookIcon />}
         </IconButton>
       ) : (
         []
       )}
-      <Typography variant="body3" color="text.secondary" align="center">
+      <Typography sx={{ mt: 1 }} variant="body3" align="center">
         {displayList.map((c, idx) => (idx === displayList.length - 1 ? `${c}` : `${c}, `))}
       </Typography>
     </Box>

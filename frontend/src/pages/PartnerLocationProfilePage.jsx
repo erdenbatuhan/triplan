@@ -66,6 +66,7 @@ const avatarStyle = {
 
 export default function PartnerLocationProfilePage() {
   const [loading, setLoading] = useState(false);
+  const [lazyLoading, setLazyLoading] = useState(false);
 
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
@@ -124,24 +125,29 @@ export default function PartnerLocationProfilePage() {
   console.log(isConfirmed);
 
   useEffect(() => {
-    getPartnerLocationById(partnerId).then(({ partnerLocation }) => {
-      setPartner(partnerLocation);
-      setIsConfirmed(partnerLocation.confirmed);
+    setLazyLoading(false);
+    setLoading(true);
 
-      if (partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT) {
-        getMenuItems(partnerId).then((data) => {
-          setMenuList(data);
-        });
-        setCuisineList(partnerLocation.cuisines);
-        setFoodTypeList(partnerLocation.foodTypes);
-        setPriceLevels(partnerLocation.priceLevels);
-      } else if (partnerLocation.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
-        getTickets(partnerId).then((data) => {
-          setTicketList(data);
-        });
-        // setTouristAttractionTypes(partnerLocation.touristAttractionTypes);
-      }
-    });
+    getPartnerLocationById(partnerId)
+      .then(({ partnerLocation }) => {
+        setPartner(partnerLocation);
+        setIsConfirmed(partnerLocation.confirmed);
+
+        if (partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT) {
+          getMenuItems(partnerId).then((data) => {
+            setMenuList(data);
+          });
+          setCuisineList(partnerLocation.cuisines);
+          setFoodTypeList(partnerLocation.foodTypes);
+          setPriceLevels(partnerLocation.priceLevels);
+        } else if (partnerLocation.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+          getTickets(partnerId).then((data) => {
+            setTicketList(data);
+          });
+          // setTouristAttractionTypes(partnerLocation.touristAttractionTypes);
+        }
+      })
+      .finally(() => setLoading(false));
   }, [partnerId]);
 
   const handlePartnerFieldsChange = (params) => {
@@ -152,7 +158,7 @@ export default function PartnerLocationProfilePage() {
       locationPicture: params.partnerLocationPicture
     };
 
-    setLoading(true);
+    setLazyLoading(true);
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
       saveRestaurant({
@@ -168,7 +174,7 @@ export default function PartnerLocationProfilePage() {
             setPriceLevels(data.priceLevels);
           })
         )
-        .finally(() => setLoading(false));
+        .finally(() => setLazyLoading(false));
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       saveTouristAttraction(updatedLocation)
         .then(() =>
@@ -177,7 +183,7 @@ export default function PartnerLocationProfilePage() {
             // setTouristAttractionTypes(data.touristAttractionTypes);
           })
         )
-        .finally(() => setLoading(false));
+        .finally(() => setLazyLoading(false));
     }
   };
 
@@ -196,7 +202,7 @@ export default function PartnerLocationProfilePage() {
   };
 
   const handleEditCompletionClick = (_, updateParams) => {
-    setLoading(true);
+    setLazyLoading(true);
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
       updateMenuItem(updateParams)
@@ -206,7 +212,7 @@ export default function PartnerLocationProfilePage() {
           })
         )
         .finally(() => {
-          setLoading(false);
+          setLazyLoading(false);
           setItemEditAddMode(false);
         });
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
@@ -217,14 +223,14 @@ export default function PartnerLocationProfilePage() {
           })
         )
         .finally(() => {
-          setLoading(false);
+          setLazyLoading(false);
           setItemEditAddMode(false);
         });
     }
   };
 
   const handleAddCompletionClick = async (_, newItem) => {
-    setLoading(true);
+    setLazyLoading(true);
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
       addMenuItem(newItem)
@@ -232,7 +238,7 @@ export default function PartnerLocationProfilePage() {
           setMenuList([menuItemCreated, ...menuList]);
         })
         .finally(() => {
-          setLoading(false);
+          setLazyLoading(false);
           setItemEditAddMode(false);
           setItemInAdd(false);
         });
@@ -242,7 +248,7 @@ export default function PartnerLocationProfilePage() {
           setTicketList([ticketCreated, ...ticketList]);
         })
         .finally(() => {
-          setLoading(false);
+          setLazyLoading(false);
           setItemEditAddMode(false);
           setItemInAdd(false);
         });
@@ -263,6 +269,8 @@ export default function PartnerLocationProfilePage() {
   };
 
   const handleBuyableItemDeleteClick = (event) => {
+    setLazyLoading(true);
+
     const deleteItemId = event.target.value;
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
@@ -274,7 +282,7 @@ export default function PartnerLocationProfilePage() {
           })
         )
         .finally(() => {
-          setLoading(false);
+          setLazyLoading(false);
         });
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       const deleteItem = ticketList.filter((_, idx) => idx.toString() === deleteItemId)[0];
@@ -286,7 +294,7 @@ export default function PartnerLocationProfilePage() {
           })
         )
         .finally(() => {
-          setLoading(false);
+          setLazyLoading(false);
         });
     }
   };
@@ -305,7 +313,14 @@ export default function PartnerLocationProfilePage() {
 
           {partner.address ? (
             <Grid item xs={3} display="flex">
-              <IconButton>
+              <IconButton
+                disabled
+                sx={{
+                  ml: 1,
+                  '&.MuiButtonBase-root:hover': {
+                    bgcolor: 'transparent'
+                  }
+                }}>
                 <PlaceIcon />
               </IconButton>
 
@@ -319,7 +334,14 @@ export default function PartnerLocationProfilePage() {
 
           {partner.phoneNumber ? (
             <Grid item xs={3} display="flex">
-              <IconButton pointerEvents="none">
+              <IconButton
+                disabled
+                sx={{
+                  ml: 1,
+                  '&.MuiButtonBase-root:hover': {
+                    bgcolor: 'transparent'
+                  }
+                }}>
                 <PhoneIcon />
               </IconButton>
 
@@ -346,11 +368,7 @@ export default function PartnerLocationProfilePage() {
           ) */}
 
           <Grid item xs={3} display="flex">
-            <Typography
-              component="div"
-              align="center"
-              m={1}
-              sx={{ fontSize: 'h6', color: 'text.secondary' }}>
+            <Typography component="div" align="center" m={1} sx={{ fontSize: 'h6' }}>
               {priceLevels.join('\n')}
             </Typography>
           </Grid>
@@ -381,6 +399,7 @@ export default function PartnerLocationProfilePage() {
         contentRendered={
           <EditPartnerLocationCard
             partner={partner}
+            lazyLoading={lazyLoading}
             handlePartnerFieldsChange={handlePartnerFieldsChange}
           />
         }
@@ -473,6 +492,7 @@ export default function PartnerLocationProfilePage() {
                   locationType={partner.partnerType}
                   handleItemChangeCompletionClick={handleItemChangeCompletionClick}
                   itemInAdd={itemInAdd}
+                  lazyLoading={lazyLoading}
                 />
               }
             />
