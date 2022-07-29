@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
@@ -6,10 +5,7 @@ import Paper from '@mui/material/Paper';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import { green } from '@mui/material/colors';
 import { Button, FormControlLabel, Switch } from '@mui/material';
-import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Spinner from '../components/common/Spinner';
@@ -34,7 +30,7 @@ export default function TripPlanningPage() {
     return <div />;
   }
 
-  // const [authenticatedUser] = useState({ user: { id: '62e166e0c21cf3c59e89a27d' } });
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [selectedCity] = useState(state.filterData.selectedCity);
   const [filterState, setFilterState] = useState(state.filterData);
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(state.isRestaurantEnabled);
