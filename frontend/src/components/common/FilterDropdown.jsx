@@ -19,6 +19,8 @@ const MenuProps = {
   }
 };
 
+const MAX_SELECTED_LENGTH_BEFORE_UNWIND = 3;
+
 const VALUE_SELECT_ALL = 'select_all';
 
 export default function FilterBox({
@@ -32,6 +34,9 @@ export default function FilterBox({
 }) {
   const getName = (option) => (nameKey ? option[nameKey] : option);
   const getValue = (option) => (valueKey ? option[valueKey] : option);
+
+  const getNamesFromValues = (values) =>
+    valueKey ? options.filter((option) => values.includes(getValue(option))).map(getName) : values;
 
   const [localSelections, setLocalSelections] = useState(selections || []);
   const [isSelectedAll, setIsSelectedAll] = useState(options.length === localSelections.length);
@@ -70,8 +75,8 @@ export default function FilterBox({
           onChange={handleChange}
           input={<OutlinedInput label={label} />}
           renderValue={(selected) =>
-            !selected.length
-              ? 'No items selected'
+            selected.length <= MAX_SELECTED_LENGTH_BEFORE_UNWIND
+              ? getNamesFromValues(selected).join(', ')
               : `${selected.length} ${label.toLocaleLowerCase()}`
           }
           MenuProps={MenuProps}

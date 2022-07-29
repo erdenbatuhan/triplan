@@ -10,7 +10,7 @@ import {
   OutlinedInput
 } from '@mui/material';
 
-const MIN_SELECTED_LENGTH_BEFORE_UNWIND = 4;
+const MAX_SELECTED_LENGTH_BEFORE_UNWIND = 4;
 
 export default function EditRestaurantMultipleSelectDropdown({
   label,
@@ -37,7 +37,7 @@ export default function EditRestaurantMultipleSelectDropdown({
           onChange={handleChange}
           input={<OutlinedInput label={label} />}
           renderValue={(selected) =>
-            selected.length <= MIN_SELECTED_LENGTH_BEFORE_UNWIND
+            selected.length <= MAX_SELECTED_LENGTH_BEFORE_UNWIND
               ? selected.join(', ')
               : `${selected.length} ${label.toLocaleLowerCase()}`
           }>
