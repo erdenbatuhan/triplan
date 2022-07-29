@@ -331,7 +331,7 @@ export default function TripPlanningPage() {
               margin: 0,
               top: 'auto',
               right: 20,
-              bottom: 20,
+              bottom: 10,
               left: 'auto',
               position: 'fixed',
               border: '3px',
