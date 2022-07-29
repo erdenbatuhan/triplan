@@ -4,6 +4,8 @@ import GoogleMapReact from 'google-map-react';
 import Spinner from './common/Spinner';
 import { getCityInfoByName } from '../queries/city-info-queries';
 
+const googleMapCredentials = require('../credentials/googlemap_credentials.json');
+
 function GoogleMap({ selectedCity, selectedPartnerLocations }) {
   const [loading, setLoading] = useState(false);
   const [googleLocationInfoList, setGoogleLocationInfoList] = useState([]);
@@ -38,7 +40,10 @@ function GoogleMap({ selectedCity, selectedPartnerLocations }) {
         {loading ? (
           <Spinner marginTop="1em" />
         ) : (
-          <GoogleMapReact bootstrapURLKeys={{ key: '' }} defaultCenter={mapCenter} defaultZoom={11}>
+          <GoogleMapReact
+            bootstrapURLKeys={{ key: googleMapCredentials.mapApiKey }}
+            defaultCenter={mapCenter}
+            defaultZoom={11}>
             {googleLocationInfoList.map((googleLocationInfo) => {
               if (googleLocationInfo) {
                 return (
