@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Grid,
@@ -70,8 +70,13 @@ const avatarStyle = {
 };
 
 export default function PartnerLocationProfilePage() {
+  const { state } = useLocation();
+
   const [loading, setLoading] = useState(true);
   const [lazyLoading, setLazyLoading] = useState(false);
+
+  const [previouslySelectedPartnerLocations] = useState(state.currentlySelectedPartnerLocations);
+  const [tripPlanViewMode] = useState(!!state.currentlySelectedPartnerLocations);
 
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [isShownPartnerAuthenticated, setIsShownPartnerAuthenticated] = useState(false);
@@ -432,6 +437,23 @@ export default function PartnerLocationProfilePage() {
             </Typography>
           </Grid>
         </Grid>
+
+        {tripPlanViewMode ? (
+          <Grid item justifyContent="center" display="flex" sx={{ mb: 2 }}>
+            <Button
+              sx={{ mt: 1, mb: 1 }}
+              variant="contained"
+              onClick={() => {
+                navigate(`/trip-plan`, {
+                  state: { ...state }
+                });
+              }}>
+              Go Back to Your Planning
+            </Button>
+          </Grid>
+        ) : (
+          []
+        )}
 
         {isShownPartnerAuthenticated ? (
           <Grid>
