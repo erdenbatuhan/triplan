@@ -16,7 +16,7 @@ import ContentModal from '../components/common/ContentModal';
 import FilterDropdown from '../components/common/FilterDropdown';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
-// import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import { createTripPlan } from '../queries/trip-plan-queries';
 import GoogleMap from '../components/GoogleMap';
@@ -34,7 +34,7 @@ export default function TripPlanningPage() {
     return <div />;
   }
 
-  const [authenticatedUser] = useState({ user: { id: '62e166e0c21cf3c59e89a27d' } });
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [selectedCity] = useState(state.selectedCity);
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(state.isRestaurantEnabled);
   const [filterState, setFilterState] = useState(state.filterData);
