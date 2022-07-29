@@ -128,7 +128,7 @@ export default function PartnerLocationProfilePage() {
       setIsConfirmed('Requested');
       handleEmail({
         to_name: partner.username, // auth.username
-        to_email: 'anil.kults@gmail.com',
+        to_email: partner.email,
         intro_message: `Your sign up request is processing. We will get in touch with you as soon as possible.`,
         request_id: 'New partner location sign up request'
       });

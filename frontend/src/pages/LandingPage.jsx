@@ -7,9 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import landingBg from '../assets/landing-page-background.png';
 // import LandingPageBar from '../components/landingPage/NavigationBarLandingPage';
 import { BG_COLOR } from '../shared/constants';
-import AboutUs from '../components/LandingPage/AboutUs';
-import WhyTriplan from '../components/LandingPage/WhyTriplan';
-import ContactUs from '../components/LandingPage/ContactUs';
+import AboutUs from '../components/landingPage/AboutUs';
+import WhyTriplan from '../components/landingPage/WhyTriplan';
+import ContactUs from '../components/landingPage/ContactUs';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 
 function LandingPage() {
