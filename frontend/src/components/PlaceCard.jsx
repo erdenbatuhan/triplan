@@ -13,7 +13,8 @@ export default function PlaceCard({
   partnerLocation,
   cardSelected,
   onPlaceCardSelect,
-  onPlaceCardDeselect
+  onPlaceCardDeselect,
+  smaller
 }) {
   const handleCardSelection = () => {
     if (cardSelected) {
@@ -45,16 +46,16 @@ export default function PlaceCard({
                 {partnerLocation.locationPicture ? (
                   <Avatar
                     sx={{
-                      width: '125px',
-                      height: '125px'
+                      width: smaller === undefined ? '125px' : '75px',
+                      height: smaller === undefined ? '125px' : '75px'
                     }}
                     src={partnerLocation.locationPicture}
                   />
                 ) : (
                   <Avatar
                     sx={{
-                      width: '125px',
-                      height: '125px'
+                      width: smaller === undefined ? '125px' : '75px',
+                      height: smaller === undefined ? '125px' : '75px'
                     }}>
                     {partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT ? (
                       <RestaurantIcon sx={{ width: '50%', height: '50%' }} />
@@ -69,15 +70,25 @@ export default function PlaceCard({
             <Grid item xs={8}>
               <ListItem>
                 <CardContent>
-                  <Typography gutterBottom fontSize="medium" variant="h6" color="text.primary">
+                  <Typography
+                    gutterBottom
+                    fontSize={smaller === undefined ? 'medium' : 'small'}
+                    variant="h6"
+                    color="text.primary">
                     {partnerLocation.name}
                   </Typography>
 
-                  <Typography variant="body2" color="text.secondary">
-                    {partnerLocation.description}
-                  </Typography>
+                  {smaller === undefined ? (
+                    <>
+                      <Typography variant="body2" color="text.secondary">
+                        {partnerLocation.description}
+                      </Typography>
 
-                  <br />
+                      <br />
+                    </>
+                  ) : (
+                    []
+                  )}
 
                   <Typography variant="body3" color="text.secondary">
                     {partnerLocation.address}

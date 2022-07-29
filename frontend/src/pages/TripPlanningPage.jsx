@@ -34,7 +34,7 @@ export default function TripPlanningPage() {
     return <div />;
   }
 
-  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  // const [authenticatedUser] = useState({ user: { id: '62e166e0c21cf3c59e89a27d' } });
   const [selectedCity] = useState(state.filterData.selectedCity);
   const [filterState, setFilterState] = useState(state.filterData);
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(state.isRestaurantEnabled);
@@ -309,12 +309,12 @@ export default function TripPlanningPage() {
         <Grid item xs={2}>
           <Header title="Selected Places" />
 
-          <GoogleMap
-            selectedCity={selectedCity}
-            selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
-          />
-
           <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+            <GoogleMap
+              selectedCity={selectedCity}
+              selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
+            />
+
             <SelectedPlacesList
               selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
             />
