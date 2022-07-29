@@ -56,12 +56,15 @@ function SignUpPartnerDataPage() {
       authContext.loginUser(token);
       if (success && token) {
         setIsConfirmed('Requested');
-        handleEmail({
-          to_name: authData.username, // auth.username
-          to_email: 'anil.kults@gmail.com', // auth.email ?
-          intro_message: `Your sign up request is processing. We will get in touch with you as soon as possible.`,
-          request_id: 'New partner location sign up request'
-        });
+        handleEmail(
+          {
+            subject: 'Your Confirmation Request is Under Investigation!',
+            to_name: authData.username, // auth.username
+            to_email: authData.email, // auth.email ?
+            intro_message: `Your sign up request is processing. We will get in touch with you as soon as possible.`
+          },
+          'general'
+        );
       }
     } catch (e) {
       console.error(`failed to create user ${e}`);
@@ -141,7 +144,7 @@ function SignUpPartnerDataPage() {
                   height: '40px'
                 }}
                 onClick={handleSendPartnerRequest}>
-                Send Withdraw Request
+                Send Confirmation Request
               </Button>
             </Grid>
           </Box>

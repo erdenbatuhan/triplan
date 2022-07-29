@@ -201,8 +201,13 @@ const login = async (req, res) => {
   }
 };
 
+const removeAuthentication = (id) => {
+  return Authentication.deleteOne({ _id: id });
+};
+
 module.exports = {
   getAuthDataWithoutPassword,
   signUp,
   login,
+  removeAuthentication
 };
