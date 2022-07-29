@@ -18,6 +18,7 @@ export default function ServicesBoughtModal({ open, onClose, tripPlan }) {
   const [isLoading, setIsLoading] = useState(false);
   const [tripLocationToPlaceName, setTripLocationToPlaceName] = useState({});
   const [itemBoughtsByTripLocations, setItemBoughtsByTripLocations] = useState({});
+  const [totalPrice, setTotalPrice] = useState(0);
 
   // Listening to the change in tripPlan
   useEffect(() => {
@@ -36,9 +37,20 @@ export default function ServicesBoughtModal({ open, onClose, tripPlan }) {
 
           // Get the items bought by the user in this trip plan
           const tripLocationIds = Object.keys(tripLocationToPlaceName_);
-          await getItemBoughtsByTripLocations(tripLocationIds).then((itemBoughtsData) =>
-            setItemBoughtsByTripLocations(itemBoughtsData)
-          );
+          await getItemBoughtsByTripLocations(tripLocationIds).then((itemBoughtsData) => {
+            setItemBoughtsByTripLocations(itemBoughtsData);
+            setTotalPrice(
+              itemBoughtsData.reduce(
+                (overallTotal, itemBoughts) =>
+                  totalPrice +
+                  itemBoughts.reduce(
+                    (placeTotal, { price, amount }) => placeTotal + price * amount,
+                    0
+                  ),
+                0
+              )
+            );
+          });
         } catch {
           alert('Faulty plan! Please contact an administrator.');
           onClose();
@@ -114,30 +126,34 @@ export default function ServicesBoughtModal({ open, onClose, tripPlan }) {
                         )}
                       </List>
 
-                      <Box
-                        sx={{
-                          bgcolor: 'background.paper',
-                          boxShadow: 1,
-                          borderRadius: 2,
-                          p: 2,
-                          minWidth: 300
-                        }}>
-                        <Grid container spacing={0}>
-                          <Grid item xs={8}>
-                            <Box sx={{ color: 'text.secondary' }}> Total </Box>
+                      {totalPrice ? (
+                        <Box
+                          sx={{
+                            bgcolor: 'background.paper',
+                            boxShadow: 1,
+                            borderRadius: 2,
+                            p: 2,
+                            minWidth: 300
+                          }}>
+                          <Grid container spacing={0}>
+                            <Grid item xs={8}>
+                              <Box sx={{ color: 'text.secondary' }}> Total </Box>
 
-                            <Box
-                              sx={{
-                                color: 'text.primary',
-                                display: 'inline',
-                                fontSize: 34,
-                                fontWeight: 'medium'
-                              }}>
-                              {`${111} €`}
-                            </Box>
+                              <Box
+                                sx={{
+                                  color: 'text.primary',
+                                  display: 'inline',
+                                  fontSize: 34,
+                                  fontWeight: 'medium'
+                                }}>
+                                {`${totalPrice} €`}
+                              </Box>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                      </Box>
+                        </Box>
+                      ) : (
+                        []
+                      )}
                     </CardContent>
                   </Box>
                 </Card>

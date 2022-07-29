@@ -1,16 +1,19 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Grid, Pagination } from '@mui/material';
 import PlaceCard from './PlaceCard';
 
-// const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 export default function PlacesList({
   partnerLocations,
   selectedPartnerLocationObject,
-  onSelectedPartnerLocationsChange
+  onSelectedPartnerLocationsChange,
+  onPaginationChange
 }) {
   const [partnerLocationDictionary, setPartnerLocationDictionary] = useState({});
-  // const [currentPage, setCurrentPage] = useState([]);
+  const [numPages, setNumPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Listening to the changes in partnerLocations
   useEffect(() => {
@@ -21,8 +24,14 @@ export default function PlacesList({
         ...partnerLocations.map((partnerLocation) => ({ [partnerLocation._id]: partnerLocation }))
       )
     );
-    // setCurrentPage(Array.from({ length: PAGE_SIZE }, (_, idx) => idx));
+
+    // Set number of pages
+    setNumPages(Math.ceil(partnerLocations.length / PAGE_SIZE));
   }, [partnerLocations]);
+
+  const getPage = () => {
+    return Array.from({ length: PAGE_SIZE }, (_, idx) => (currentPage - 1) * PAGE_SIZE + idx);
+  };
 
   const selectPartnerLocation = (selectedPartnerLocationId) => {
     onSelectedPartnerLocationsChange({
@@ -45,16 +54,38 @@ export default function PlacesList({
   return (
     <Grid>
       {partnerLocations
-        ? partnerLocations.map((partnerLocation) => (
-            <PlaceCard
-              key={partnerLocation._id}
-              partnerLocation={partnerLocation}
-              cardSelected={isSelected(partnerLocation._id)}
-              onPlaceCardSelect={selectPartnerLocation}
-              onPlaceCardDeselect={deselectPartnerLocation}
-            />
-          ))
+        ? getPage()
+            .filter((idx) => idx < partnerLocations.length)
+            .map((idx) => (
+              <PlaceCard
+                key={partnerLocations[idx]._id}
+                partnerLocation={partnerLocations[idx]}
+                cardSelected={isSelected(partnerLocations[idx]._id)}
+                onPlaceCardSelect={selectPartnerLocation}
+                onPlaceCardDeselect={deselectPartnerLocation}
+              />
+            ))
         : []}
+
+      <Pagination
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          li: {
+            display: 'block'
+          },
+          mt: 2,
+          mb: 2
+        }}
+        page={currentPage}
+        count={numPages}
+        onChange={(_, page) => {
+          setCurrentPage(page);
+          onPaginationChange();
+        }}
+        color="primary"
+        variant="outlined"
+      />
     </Grid>
   );
 }

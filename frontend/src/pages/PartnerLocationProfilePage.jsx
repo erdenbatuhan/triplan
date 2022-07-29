@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -22,6 +23,8 @@ import PhoneIcon from '@mui/icons-material/Phone';
 // import TourIcon from '@mui/icons-material/Tour';
 // import ItemListDisplay from '../components/PartnerLocationProfilePage/ItemListDisplay';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import ContentModal from '../components/common/ContentModal';
+import Spinner from '../components/common/Spinner';
 import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/RestaurantCuisineDisplay';
 import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
 import {
@@ -43,15 +46,16 @@ import {
 } from '../queries/buyable-item-queries';
 // import InfoCard from '../components/InfoCard';
 import { createNewPartnerSignupRequest } from '../queries/partner-signup-request-queries';
+import { createObjectId } from '../queries/util-queries';
 import { handleEmail } from '../queries/email-queries';
-import ContentModal from '../components/common/ContentModal';
-import Spinner from '../components/common/Spinner';
 
 // import { modalStyle } from '../shared/styles';
 // import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
 import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
 import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
 import EditPartnerLocationCard from '../components/PartnerLocationProfilePage/EditPartnerLocationCard';
+import Wallet from '../components/UserProfilePage/Wallet';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 
 const style = {
   display: 'flex',
@@ -65,8 +69,11 @@ const avatarStyle = {
 };
 
 export default function PartnerLocationProfilePage() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [lazyLoading, setLazyLoading] = useState(false);
+
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [isShownPartnerAuthenticated, setIsShownPartnerAuthenticated] = useState(false);
 
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
@@ -84,16 +91,19 @@ export default function PartnerLocationProfilePage() {
   const [partnerName, setPartnerName] = useState('');
   const [partnerGoogleLink, setPartnerGoogleLink] = useState('');
   const [partnerContactInfo, setPartnerContactInfo] = useState('');
+  const [partnerLocationPicture, setPartnerLocationPicture] = useState('');
 
   const [isPartnerLocationEditMode, setIsPartnerLocationEditMode] = useState(false);
 
-  const [menuItemInEdit, setMenuItemInEdit] = useState([]);
+  const [menuItemInEdit, setMenuItemInEdit] = useState(null);
   // const [menuItemInDelete, setMenuItemInDelete] = useState([]);
-  const [ticketInEdit, setTicketInEdit] = useState([]);
+  const [ticketInEdit, setTicketInEdit] = useState(null);
   // const [ticketInDelete, setTicketInDelete] = useState([]);
 
   const [itemEditAddMode, setItemEditAddMode] = useState(false);
   const [itemInAdd, setItemInAdd] = useState(false);
+
+  const [newObjectId, setNewObjectId] = useState(null);
 
   const handleProfileEditClick = () => {
     // navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
@@ -125,13 +135,17 @@ export default function PartnerLocationProfilePage() {
   console.log(isConfirmed);
 
   useEffect(() => {
+    setIsPartnerLocationEditMode(false);
     setLazyLoading(false);
     setLoading(true);
+
+    setIsShownPartnerAuthenticated(authenticatedUser.user.id === partnerId);
 
     getPartnerLocationById(partnerId)
       .then(({ partnerLocation }) => {
         setPartner(partnerLocation);
         setIsConfirmed(partnerLocation.confirmed);
+        setPartnerLocationPicture(partnerLocation.locationPicture);
 
         if (partnerLocation.partnerType === PARTNER_TYPE_RESTAURANT) {
           getMenuItems(partnerId).then((data) => {
@@ -150,6 +164,14 @@ export default function PartnerLocationProfilePage() {
       .finally(() => setLoading(false));
   }, [partnerId]);
 
+  useEffect(() => {
+    // When "item edit and add" mode is set to false, reset the items in edit
+    if (!itemEditAddMode) {
+      setMenuItemInEdit(null);
+      setTicketInEdit(null);
+    }
+  }, [itemEditAddMode]);
+
   const handlePartnerFieldsChange = (params) => {
     const updatedLocation = {
       _id: partnerId,
@@ -164,7 +186,10 @@ export default function PartnerLocationProfilePage() {
       saveRestaurant({
         ...updatedLocation,
         phoneNumber: params.partnerPhoneNumber,
-        cuisines: params.restaurantCuisines
+        cuisines: params.restaurantCuisines,
+        foodTypes: params.restaurantFoodTypes,
+        priceLevels: params.restaurantPriceLevels,
+        locationPicture: params.partnerLocationPicture
       })
         .then(() =>
           getRestaurant(partnerId).then((data) => {
@@ -172,29 +197,37 @@ export default function PartnerLocationProfilePage() {
             setCuisineList(data.cuisines);
             setFoodTypeList(data.foodTypes);
             setPriceLevels(data.priceLevels);
+            setPartnerLocationPicture(data.locationPicture);
           })
         )
-        .finally(() => setLazyLoading(false));
+        .finally(() => {
+          setIsPartnerLocationEditMode(false);
+          setLazyLoading(false);
+        });
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
       saveTouristAttraction(updatedLocation)
         .then(() =>
           getTouristAttraction(partnerId).then((data) => {
             setPartner(data);
+            setPartnerLocationPicture(data.locationPicture);
             // setTouristAttractionTypes(data.touristAttractionTypes);
           })
         )
-        .finally(() => setLazyLoading(false));
+        .finally(() => {
+          setIsPartnerLocationEditMode(false);
+          setLazyLoading(false);
+        });
     }
   };
 
   const handleBuyableItemEditClick = (event) => {
-    const editItemId = event.target.value;
+    const itemIdxString = event.target.value;
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
-      const editItem = menuList.filter((_, idx) => idx.toString() === editItemId)[0];
+      const editItem = menuList.find((_, idx) => idx.toString() === itemIdxString);
       setMenuItemInEdit(editItem);
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
-      const editItem = ticketList.filter((_, idx) => idx.toString() === editItemId)[0];
+      const editItem = ticketList.find((_, idx) => idx.toString() === itemIdxString);
       setTicketInEdit(editItem);
     }
 
@@ -229,13 +262,14 @@ export default function PartnerLocationProfilePage() {
     }
   };
 
-  const handleAddCompletionClick = async (_, newItem) => {
+  const handleAddCompletionClick = (_, newItem) => {
     setLazyLoading(true);
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
       addMenuItem(newItem)
         .then((menuItemCreated) => {
           setMenuList([menuItemCreated, ...menuList]);
+          setNewObjectId(null);
         })
         .finally(() => {
           setLazyLoading(false);
@@ -246,6 +280,7 @@ export default function PartnerLocationProfilePage() {
       addTicket(newItem)
         .then((ticketCreated) => {
           setTicketList([ticketCreated, ...ticketList]);
+          setNewObjectId(null);
         })
         .finally(() => {
           setLazyLoading(false);
@@ -255,7 +290,7 @@ export default function PartnerLocationProfilePage() {
     }
   };
 
-  const handleItemChangeCompletionClick = async (event, params) => {
+  const handleItemChangeCompletionClick = (event, params) => {
     if (!itemInAdd) {
       handleEditCompletionClick(event, params);
     } else {
@@ -263,7 +298,14 @@ export default function PartnerLocationProfilePage() {
     }
   };
 
-  const handleAddMenuItem = async () => {
+  const handleBuyableItemAddClick = () => {
+    setLazyLoading(true);
+    createObjectId()
+      .then((data) => {
+        setNewObjectId(data);
+      })
+      .finally(() => setLazyLoading(false));
+
     setItemEditAddMode(true);
     setItemInAdd(true);
   };
@@ -308,7 +350,7 @@ export default function PartnerLocationProfilePage() {
       <Grid item xs={3}>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={1}>
           <Grid item xs={6}>
-            <Avatar sx={avatarStyle} src={partner.locationPicture} loading="lazy" />
+            <Avatar sx={avatarStyle} src={partnerLocationPicture} loading="lazy" />
           </Grid>
 
           {partner.address ? (
@@ -379,16 +421,26 @@ export default function PartnerLocationProfilePage() {
 
           <Grid item xs={3} display="flex">
             <Typography component="div" align="center" m={1} sx={{ fontSize: 'h6' }}>
-              {priceLevels.join(' | ')}
+              {priceLevels.sort().join(' | ')}
             </Typography>
           </Grid>
         </Grid>
 
-        <Grid item display="grid" sx={{ m: 2 }}>
-          <Button variant="contained" onClick={handleProfileEditClick}>
-            Edit Profile
-          </Button>
-        </Grid>
+        {isShownPartnerAuthenticated ? (
+          <Grid>
+            <Grid item justifyContent="center" display="flex" sx={{ mb: 2 }}>
+              <Button sx={{ mt: 1, mb: 1 }} variant="contained" onClick={handleProfileEditClick}>
+                Edit Profile
+              </Button>
+            </Grid>
+
+            <Grid>
+              <Wallet isUser={false} />
+            </Grid>
+          </Grid>
+        ) : (
+          <Grid item />
+        )}
       </Grid>
 
       <ContentModal
@@ -418,18 +470,22 @@ export default function PartnerLocationProfilePage() {
               </Typography>
             </Grid>
 
-            <Grid item>
-              <Tooltip
-                title={
-                  partner.partnerType === PARTNER_TYPE_RESTAURANT
-                    ? 'Add new menu'
-                    : 'Add new ticket'
-                }>
-                <IconButton sx={{ m: 2 }} onClick={handleAddMenuItem}>
-                  <AddCircleOutlineIcon fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            {isShownPartnerAuthenticated ? (
+              <Grid item>
+                <Tooltip
+                  title={
+                    partner.partnerType === PARTNER_TYPE_RESTAURANT
+                      ? 'Add new menu'
+                      : 'Add new ticket'
+                  }>
+                  <IconButton sx={{ m: 2 }} onClick={handleBuyableItemAddClick}>
+                    <AddCircleOutlineIcon fontSize="large" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : (
+              <Grid item />
+            )}
           </Grid>
 
           <Divider sx={{ mb: 2 }} />
@@ -457,16 +513,12 @@ export default function PartnerLocationProfilePage() {
                   return (
                     <BuyableItemCard
                       key={item._id}
-                      menuId={item._id}
                       itemIdx={idx}
-                      name={item.name}
-                      content={item.description}
-                      price={item.price.toString()}
-                      image={item.image}
+                      buyableItem={item}
                       handleBuyableItemEditClick={handleBuyableItemEditClick}
                       handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
                       partnerType={partner.partnerType}
-                      // inEdit
+                      viewMode={!isShownPartnerAuthenticated}
                     />
                   );
                 })}
@@ -484,9 +536,11 @@ export default function PartnerLocationProfilePage() {
               contentRendered={
                 <EditItemModal
                   key={
-                    partner.partnerType === PARTNER_TYPE_RESTAURANT
-                      ? menuItemInEdit._id
-                      : ticketInEdit._id
+                    menuItemInEdit
+                      ? partner.partnerType === PARTNER_TYPE_RESTAURANT
+                        ? menuItemInEdit._id
+                        : ticketInEdit._id
+                      : newObjectId
                   }
                   item={
                     partner.partnerType === PARTNER_TYPE_RESTAURANT ? menuItemInEdit : ticketInEdit
@@ -494,6 +548,7 @@ export default function PartnerLocationProfilePage() {
                   locationType={partner.partnerType}
                   handleItemChangeCompletionClick={handleItemChangeCompletionClick}
                   itemInAdd={itemInAdd}
+                  newObjectId={newObjectId}
                   lazyLoading={lazyLoading}
                 />
               }
