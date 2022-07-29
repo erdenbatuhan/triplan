@@ -463,67 +463,40 @@ export default function PartnerLocationProfilePage() {
 
       <Grid item xs={6}>
         <Grid>
-          <Grid container direction="row">
-            <Grid item>
-              <Typography variant="h2" component="div" align="left" color="text.secondary">
-                {partner.name}
-              </Typography>
-            </Grid>
-
-            {isShownPartnerAuthenticated ? (
-              <Grid item>
-                <Tooltip
-                  title={
-                    partner.partnerType === PARTNER_TYPE_RESTAURANT
-                      ? 'Add new menu'
-                      : 'Add new ticket'
-                  }>
-                  <IconButton sx={{ m: 2 }} onClick={handleBuyableItemAddClick}>
-                    <AddCircleOutlineIcon fontSize="large" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            ) : (
-              <Grid item />
-            )}
+          <Grid item>
+            <Typography variant="h2" component="div" align="left" color="text.secondary">
+              {partner.name}
+            </Typography>
           </Grid>
 
           <Divider sx={{ mb: 2 }} />
         </Grid>
         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
-          {/* <Grid item xs={9} sx={{ width: '100%' }}>
-            <Stack>
-              {partnerLocationType === 'restaurant' ? (
-                <Stack>
-                  <RestaurantCuisineDisplay cuisineList={cuisineList} />
-                  <ItemListDisplay itemList={menuList} inEdit={false} />
-                </Stack>
-              ) : (
-                <ItemListDisplay itemList={ticketList} inEdit={false} />
-              )}
-            </Stack>
-              </Grid> */}
-          <Grid item xs={9} sx={{ width: '100%' }}>
-            <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
-              <List spacing={2} overflow="auto">
-                {(partner.partnerType === PARTNER_TYPE_RESTAURANT
-                  ? menuList || []
-                  : ticketList || []
-                ).map((item, idx) => {
-                  return (
-                    <BuyableItemCard
-                      key={item._id}
-                      itemIdx={idx}
-                      buyableItem={item}
-                      handleBuyableItemEditClick={handleBuyableItemEditClick}
-                      handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
-                      partnerType={partner.partnerType}
-                      viewMode={!isShownPartnerAuthenticated}
-                    />
-                  );
-                })}
-              </List>
-            </Paper>
+          <Grid alignItems="center" item xs={9} sx={{ width: '100%', height: '100%' }}>
+            {menuList.length > 0 || ticketList.length > 0 ? (
+              <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
+                <List spacing={2} overflow="auto">
+                  {(partner.partnerType === PARTNER_TYPE_RESTAURANT
+                    ? menuList || []
+                    : ticketList || []
+                  ).map((item, idx) => {
+                    return (
+                      <BuyableItemCard
+                        key={item._id}
+                        itemIdx={idx}
+                        buyableItem={item}
+                        handleBuyableItemEditClick={handleBuyableItemEditClick}
+                        handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
+                        partnerType={partner.partnerType}
+                        viewMode={!isShownPartnerAuthenticated}
+                      />
+                    );
+                  })}
+                </List>
+              </Paper>
+            ) : (
+              []
+            )}
 
             <ContentModal
               open={itemEditAddMode}
@@ -554,6 +527,21 @@ export default function PartnerLocationProfilePage() {
               }
             />
           </Grid>
+
+          {isShownPartnerAuthenticated ? (
+            <Grid alignItems="center" sx={{ mt: 2 }}>
+              <Button onClick={handleBuyableItemAddClick} color="primary">
+                {partner.partnerType === PARTNER_TYPE_RESTAURANT
+                  ? 'Add new menu'
+                  : 'Add new ticket'}
+              </Button>
+              <IconButton disabled sx={{ padding: 0, mb: 0.5 }}>
+                <AddCircleOutlineIcon color="primary" />
+              </IconButton>
+            </Grid>
+          ) : (
+            <Grid />
+          )}
         </Grid>
       </Grid>
 
