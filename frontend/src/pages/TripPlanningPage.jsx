@@ -32,9 +32,9 @@ export default function TripPlanningPage() {
   }
 
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
-  const [selectedCity] = useState(state.filterData.selectedCity);
-  const [filterState, setFilterState] = useState(state.filterData);
+  const [selectedCity] = useState(state.selectedCity);
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(state.isRestaurantEnabled);
+  const [filterState, setFilterState] = useState(state.filterData);
 
   const [loading, setLoading] = useState(false);
   const [tripPlanCreationInProgress, setTripPlanCreationInProgress] = useState(false);
@@ -59,13 +59,17 @@ export default function TripPlanningPage() {
     });
   };
 
-  useEffect(() => {
-    window.addEventListener('resize', detectSize);
-
-    return () => {
-      window.removeEventListener('resize', detectSize);
-    };
-  }, [windowDimenion]);
+  const applyFilter = () => {
+    setLoading(true);
+    getFilteredPartnerLocations({
+      user: authenticatedUser.user.id,
+      selectedCity,
+      isRestaurantEnabled,
+      filter: filterState
+    })
+      .then((data) => setPartnerLocations(data))
+      .finally(() => setLoading(false));
+  };
 
   // Listenining to the changes in authenticatedUser and filterState
   useEffect(() => {
@@ -73,12 +77,16 @@ export default function TripPlanningPage() {
       return;
     }
 
-    setLoading(true);
-    getFilteredPartnerLocations(authenticatedUser.user.id, filterState)
-      .then((data) => setPartnerLocations(data))
-      .catch(() => alert('An error occurred!'))
-      .finally(() => setLoading(false));
+    applyFilter();
   }, [authenticatedUser, filterState]);
+
+  useEffect(() => {
+    window.addEventListener('resize', detectSize);
+
+    return () => {
+      window.removeEventListener('resize', detectSize);
+    };
+  }, [windowDimenion]);
 
   // Listening to the changes in query and partnerLocations
   useEffect(() => {
@@ -155,26 +163,6 @@ export default function TripPlanningPage() {
         setLoading(false);
         setTripPlanCreationInProgress(false);
       });
-  };
-
-  const applyFilter = () => {
-    const filterStateApplied = { ...filterState };
-
-    if (!isRestaurantEnabled) {
-      filterStateApplied.filterData.restaurantFilter =
-        constants.EMPTY_FILTER.filterData.restaurantFilter;
-    }
-
-    // Check for unchanged filter
-    if (JSON.stringify(constants.EMPTY_FILTER) === JSON.stringify(filterStateApplied)) {
-      alert('Please select at least one option from the filter');
-      return;
-    }
-
-    setLoading(true);
-    getFilteredPartnerLocations(authenticatedUser.user.id, filterStateApplied)
-      .then((data) => setPartnerLocations(data))
-      .finally(() => setLoading(false));
   };
 
   const handleCuisinesChange = (updatedCuisines) => {

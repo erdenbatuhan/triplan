@@ -2,10 +2,13 @@ import { grey } from '@mui/material/colors';
 
 export const EMPTY_FILTER = {
   filterData: {
-    selectedCity: '',
     restaurantFilter: { cuisines: [], foodTypes: [], priceLevels: [] },
     touristAttractionFilter: { types: [] }
   }
+};
+
+export const isFilterEmpty = (filterData) => {
+  return JSON.stringify(EMPTY_FILTER) === JSON.stringify(filterData);
 };
 
 export const CUISINES = [

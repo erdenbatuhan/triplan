@@ -30,7 +30,6 @@ export default function MainPage() {
   const handleButtonClick = () => {
     const filterData = {
       filterData: {
-        city: selectedCity,
         restaurantFilter: isRestaurantEnabled
           ? { cuisines, foodTypes, priceLevels }
           : constants.EMPTY_FILTER.filterData.restaurantFilter,
@@ -40,13 +39,12 @@ export default function MainPage() {
 
     if (!selectedCity) {
       alert('city selection is mandatory');
-    } else if (JSON.stringify(constants.EMPTY_FILTER) === JSON.stringify(filterData)) {
-      alert('choosing filter is mandatory');
-    } else {
-      navigate('/trip-plan', {
-        state: { selectedCity, filterData, isRestaurantEnabled }
-      });
+      return;
     }
+
+    navigate('/trip-plan', {
+      state: { selectedCity, isRestaurantEnabled, filterData }
+    });
   };
 
   const handleCitySelectionChange = (updatedCitySelection) => {
