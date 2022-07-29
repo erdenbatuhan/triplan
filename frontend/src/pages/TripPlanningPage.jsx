@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
@@ -13,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Spinner from '../components/common/Spinner';
 import Header from '../components/common/Header';
+import ContentModal from '../components/common/ContentModal';
 import FilterDropdown from '../components/common/FilterDropdown';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
@@ -322,6 +324,7 @@ export default function TripPlanningPage() {
             variant="extended"
             sx={{
               bgcolor: '#15A4FF',
+              color: 'white',
               '&:hover': {
                 bgcolor: green[600]
               },
@@ -344,35 +347,19 @@ export default function TripPlanningPage() {
         <Grid item xs={1} />
       </Grid>
 
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
+      <ContentModal
         open={tripPlanCreationInProgress}
         onClose={() => setTripPlanCreationInProgress(false)}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500
-        }}>
-        <Fade in={tripPlanCreationInProgress}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 400,
-              bgcolor: 'background.paper',
-              border: '2px solid #000',
-              boxShadow: 24,
-              p: 4
-            }}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
+        contentStyle={{ minWidth: '400px' }}
+        header="Your Next Triplan :)"
+        contentRendered={
+          <Box>
+            <Typography variant="body1" component="h2">
               What would you like to call this trip?
             </Typography>
 
             <TextField
-              sx={{ mt: 2 }}
+              sx={{ mt: 2, mb: 2 }}
               label="Plan Name"
               placeholder={tripPlanNamePlaceholder}
               rows={4}
@@ -382,24 +369,15 @@ export default function TripPlanningPage() {
             />
 
             <Button
-              disabled={!tripPlanName}
-              variant="extended"
-              sx={{
-                mt: 2,
-                bgcolor: '#15A4FF',
-                '&:hover': {
-                  bgcolor: green[600]
-                },
-                border: '3px',
-                borderStyle: 'solid',
-                borderRadius: '10px'
-              }}
+              sx={{ width: '100%', background: 'white' }}
+              fontSize="large"
+              variant="outlined"
               onClick={proceedWithTripPlanCreation}>
-              Proceed
+              Create!
             </Button>
           </Box>
-        </Fade>
-      </Modal>
+        }
+      />
     </div>
   );
 }
