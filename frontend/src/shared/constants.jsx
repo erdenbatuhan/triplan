@@ -25,6 +25,7 @@ export const CUISINES = [
   'Mexican'
 ];
 export const PRICE_LEVELS = ['€', '€€', '€€€'];
+export const PRICE_LEVELS_TO_INT = { '€': 1, '€€': 2, '€€€': 3 };
 export const FOOD_TYPES = ['Regular', 'Vegetarian', 'Vegan', 'Gluten Free'];
 export const TOURIST_ATTRACTION_TYPES = [
   'Museum',
