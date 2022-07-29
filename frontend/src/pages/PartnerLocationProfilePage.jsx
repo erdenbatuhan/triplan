@@ -81,7 +81,7 @@ export default function PartnerLocationProfilePage() {
       getRestaurant(partnerId).then((data) => {
         setPartner(data);
         console.log(data);
-        setCuisineList(data.cuisines);
+        setCuisineList(data.CUISINES);
         setIsConfirmed(data.confirmed);
       });
       getMenuItems(partnerId).then((data) => {

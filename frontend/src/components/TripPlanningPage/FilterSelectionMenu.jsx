@@ -5,9 +5,9 @@ import * as constants from '../../shared/constants';
 
 const menuNames = {
   places: 'Place',
-  cuisines: 'Cuisine',
-  priceLevels: 'Price Level',
-  foodTypes: 'Diet'
+  CUISINES: 'Cuisine',
+  PRICE_LEVELS: 'Price Level',
+  FOOD_TYPES: 'Diet'
 };
 
 function FilterSelectionMenu(props) {

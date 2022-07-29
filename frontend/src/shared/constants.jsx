@@ -1,4 +1,12 @@
-export const cuisines = [
+export const EMPTY_FILTER = {
+  filterData: {
+    selectedCity: '',
+    restaurantFilter: { cuisines: [], foodTypes: [], priceLevels: [] },
+    touristAttractionFilter: { types: [] }
+  }
+};
+
+export const CUISINES = [
   'Japanese',
   'Chinese',
   'Indian',
@@ -11,9 +19,9 @@ export const cuisines = [
   'American',
   'Mexican'
 ];
-export const priceLevels = ['€', '€€', '€€€'];
-export const foodTypes = ['Regular', 'Vegetarian', 'Vegan', 'Gluten Free'];
-export const places = [
+export const PRICE_LEVELS = ['€', '€€', '€€€'];
+export const FOOD_TYPES = ['Regular', 'Vegetarian', 'Vegan', 'Gluten Free'];
+export const TOURIST_ATTRACTION_TYPES = [
   'Museum',
   'Art Gallery',
   'Point of Interest',
@@ -59,100 +67,187 @@ export const places = [
   'University',
   'Meal Takeaway'
 ];
-export const touristAttractionsMapper = {
-  'Tourist Attraction': 'tourist_attraction',
-  Museum: 'museum',
-  'Point of Interest': 'point_of_interest',
-  Establishment: 'establishment',
-  Church: 'church',
-  'Place of Worship': 'place_of_worship',
-  Park: 'park',
-  'Art Gallery': 'art_gallery',
-  'Natural Feature': 'natural_feature',
-  'Travel Agency': 'travel_agency',
-  Mosque: 'mosque',
-  Lodging: 'lodging',
-  'City Hall': 'city_hall',
-  'Local Government Office': 'local_government_office',
-  'Night Club': 'night_club',
-  School: 'school',
-  'Department Store': 'department_store',
-  Store: 'store',
-  Synagogue: 'synagogue',
-  Bar: 'bar',
-  Restaurant: 'restaurant',
-  Food: 'food',
-  Aquarium: 'aquarium',
-  Spa: 'spa',
-  Stadium: 'stadium',
-  'Home Goods Store': 'home_goods_store',
-  Cafe: 'cafe',
-  Library: 'library',
-  Zoo: 'zoo',
-  Parking: 'parking',
-  'Book Store': 'book_store',
-  Cemetery: 'cemetery',
-  'Amusement Park': 'amusement_park',
-  'Movie Theater': 'movie_theater',
-  'Jewelry Store': 'jewelry_store',
-  'Train Station': 'train_station',
-  'Transit Station': 'transit_station',
-  'Shopping Mall': 'shopping_mall',
-  'General Contractor': 'general_contractor',
-  Finance: 'finance',
-  Health: 'health',
-  Route: 'route',
-  'Hair Care': 'hair_care',
-  University: 'university',
-  'Meal Takeaway': 'meal_takeaway'
-};
-
-export const touristAttractions = [
-  'tourist_attraction',
-  'museum',
-  'point_of_interest',
-  'establishment',
-  'church',
-  'place_of_worship',
-  'park',
-  'art_gallery',
-  'natural_feature',
-  'travel_agency',
-  'mosque',
-  'lodging',
-  'city_hall',
-  'local_government_office',
-  'night_club',
-  'school',
-  'department_store',
-  'store',
-  'synagogue',
-  'bar',
-  'restaurant',
-  'food',
-  'aquarium',
-  'spa',
-  'stadium',
-  'home_goods_store',
-  'cafe',
-  'library',
-  'zoo',
-  'parking',
-  'book_store',
-  'cemetery',
-  'amusement_park',
-  'movie_theater',
-  'jewelry_store',
-  'train_station',
-  'transit_station',
-  'shopping_mall',
-  'general_contractor',
-  'finance',
-  'health',
-  'route',
-  'hair_care',
-  'university',
-  'meal_takeaway'
+export const TOURIST_ATTRACTION_TYPE_MAP = [
+  {
+    name: 'Tourist Attraction',
+    value: 'tourist_attraction'
+  },
+  {
+    name: 'Museum',
+    value: 'museum'
+  },
+  {
+    name: 'Point of Interest',
+    value: 'point_of_interest'
+  },
+  {
+    name: 'Establishment',
+    value: 'establishment'
+  },
+  {
+    name: 'Church',
+    value: 'church'
+  },
+  {
+    name: 'Place of Worship',
+    value: 'place_of_worship'
+  },
+  {
+    name: 'Park',
+    value: 'park'
+  },
+  {
+    name: 'Art Gallery',
+    value: 'art_gallery'
+  },
+  {
+    name: 'Natural Feature',
+    value: 'natural_feature'
+  },
+  {
+    name: 'Travel Agency',
+    value: 'travel_agency'
+  },
+  {
+    name: 'Mosque',
+    value: 'mosque'
+  },
+  {
+    name: 'Lodging',
+    value: 'lodging'
+  },
+  {
+    name: 'City Hall',
+    value: 'city_hall'
+  },
+  {
+    name: 'Local Government Office',
+    value: 'local_government_office'
+  },
+  {
+    name: 'Night Club',
+    value: 'night_club'
+  },
+  {
+    name: 'School',
+    value: 'school'
+  },
+  {
+    name: 'Department Store',
+    value: 'department_store'
+  },
+  {
+    name: 'Store',
+    value: 'store'
+  },
+  {
+    name: 'Synagogue',
+    value: 'synagogue'
+  },
+  {
+    name: 'Bar',
+    value: 'bar'
+  },
+  {
+    name: 'Restaurant',
+    value: 'restaurant'
+  },
+  {
+    name: 'Food',
+    value: 'food'
+  },
+  {
+    name: 'Aquarium',
+    value: 'aquarium'
+  },
+  {
+    name: 'Spa',
+    value: 'spa'
+  },
+  {
+    name: 'Stadium',
+    value: 'stadium'
+  },
+  {
+    name: 'Home Goods Store',
+    value: 'home_goods_store'
+  },
+  {
+    name: 'Cafe',
+    value: 'cafe'
+  },
+  {
+    name: 'Library',
+    value: 'library'
+  },
+  {
+    name: 'Zoo',
+    value: 'zoo'
+  },
+  {
+    name: 'Parking',
+    value: 'parking'
+  },
+  {
+    name: 'Book Store',
+    value: 'book_store'
+  },
+  {
+    name: 'Cemetery',
+    value: 'cemetery'
+  },
+  {
+    name: 'Amusement Park',
+    value: 'amusement_park'
+  },
+  {
+    name: 'Movie Theater',
+    value: 'movie_theater'
+  },
+  {
+    name: 'Jewelry Store',
+    value: 'jewelry_store'
+  },
+  {
+    name: 'Train Station',
+    value: 'train_station'
+  },
+  {
+    name: 'Transit Station',
+    value: 'transit_station'
+  },
+  {
+    name: 'Shopping Mall',
+    value: 'shopping_mall'
+  },
+  {
+    name: 'General Contractor',
+    value: 'general_contractor'
+  },
+  {
+    name: 'Finance',
+    value: 'finance'
+  },
+  {
+    name: 'Health',
+    value: 'health'
+  },
+  {
+    name: 'Route',
+    value: 'route'
+  },
+  {
+    name: 'Hair Care',
+    value: 'hair_care'
+  },
+  {
+    name: 'University',
+    value: 'university'
+  },
+  {
+    name: 'Meal Takeaway',
+    value: 'meal_takeaway'
+  }
 ];
 
 export const PARTNER_TYPE_RESTAURANT = 'RESTAURANT';

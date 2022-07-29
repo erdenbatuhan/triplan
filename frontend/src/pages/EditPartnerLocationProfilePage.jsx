@@ -63,7 +63,7 @@ export default function EditPartnerLocationProfilePage() {
       dataLoadPromises = [
         getRestaurant(partnerId).then((data) => {
           setPartner(data);
-          setRestaurantCuisines(data.cuisines);
+          setRestaurantCuisines(data.CUISINES);
         }),
         getMenuItems(partnerId).then((data) => {
           setRestaurantMenuList(data);
@@ -110,10 +110,10 @@ export default function EditPartnerLocationProfilePage() {
   const handleCuisineChange = (event) => {
     const { value, checked } = event.target;
     if (checked) {
-      setRestaurantCuisines((cuisines) => [...cuisines, value]);
+      setRestaurantCuisines((CUISINES) => [...CUISINES, value]);
     } else {
-      setRestaurantCuisines((cuisines) => {
-        return cuisines.filter((cuisine) => cuisine !== value);
+      setRestaurantCuisines((CUISINES) => {
+        return CUISINES.filter((cuisine) => cuisine !== value);
       });
     }
   };
@@ -213,7 +213,7 @@ export default function EditPartnerLocationProfilePage() {
         saveRestaurant({
           ...updatedLocation,
           phoneNumber: partnerPhoneNumber,
-          cuisines: restaurantCuisines
+          CUISINES: restaurantCuisines
         }),
         // Create or update menu items
         Promise.all(

@@ -22,9 +22,9 @@ function PlaceFilter(props) {
   useEffect(() => {
     if (calledFrom === 'TripPlanningPage') {
       setSelectedPlaces(filterState.filterData.touristAttractionFilter.types[0]);
-      setSelectedCuisine(filterState.filterData.restaurantFilter.cuisines);
-      setSelectedFoodTypes(filterState.filterData.restaurantFilter.foodTypes);
-      setSelectedPriceLevels(filterState.filterData.restaurantFilter.priceLevels);
+      setSelectedCuisine(filterState.filterData.restaurantFilter.CUISINES);
+      setSelectedFoodTypes(filterState.filterData.restaurantFilter.FOOD_TYPES);
+      setSelectedPriceLevels(filterState.filterData.restaurantFilter.PRICE_LEVELS);
     }
   }, [filterState]);
 
@@ -42,10 +42,10 @@ function PlaceFilter(props) {
   const handleCuisineChangeCheckbox = (event) => {
     const { value, checked } = event.target;
     if (checked) {
-      setSelectedCuisine((cuisines) => [...cuisines, value]);
+      setSelectedCuisine((CUISINES) => [...CUISINES, value]);
     } else {
-      setSelectedCuisine((cuisines) => {
-        return cuisines.filter((cuisine) => cuisine !== value);
+      setSelectedCuisine((CUISINES) => {
+        return CUISINES.filter((cuisine) => cuisine !== value);
       });
     }
   };
@@ -53,10 +53,10 @@ function PlaceFilter(props) {
   const handlePriceLevelsChangeCheckbox = (event) => {
     const { value, checked } = event.target;
     if (checked) {
-      setSelectedPriceLevels((priceLevels) => [...priceLevels, value]);
+      setSelectedPriceLevels((PRICE_LEVELS) => [...PRICE_LEVELS, value]);
     } else {
-      setSelectedPriceLevels((priceLevels) => {
-        return priceLevels.filter((priceLevel) => priceLevel !== value);
+      setSelectedPriceLevels((PRICE_LEVELS) => {
+        return PRICE_LEVELS.filter((priceLevel) => priceLevel !== value);
       });
     }
   };
@@ -64,10 +64,10 @@ function PlaceFilter(props) {
   const handleFoodTypeChange = (event) => {
     const { value, checked } = event.target;
     if (checked) {
-      setSelectedFoodTypes((foodTypes) => [...foodTypes, value]);
+      setSelectedFoodTypes((FOOD_TYPES) => [...FOOD_TYPES, value]);
     } else {
-      setSelectedFoodTypes((foodTypes) => {
-        return foodTypes.filter((foodType) => foodType !== value);
+      setSelectedFoodTypes((FOOD_TYPES) => {
+        return FOOD_TYPES.filter((foodType) => foodType !== value);
       });
     }
   };
@@ -80,28 +80,31 @@ function PlaceFilter(props) {
 
     if (selectedPlaces.includes('all')) {
       // taTypes.push(constants.touristAttractions);
-      taTypes = constants.touristAttractions;
+      taTypes = Object.values(constants.TOURIST_ATTRACTION_TYPE_MAP);
     } else {
-      selectedPlaces.forEach((place) => taTypes.push(constants.touristAttractionsMapper[place]));
+      selectedPlaces.forEach((place) => taTypes.push(constants.TOURIST_ATTRACTION_TYPE_MAP[place]));
     }
     if (isRestaurantEnabled) {
-      restCuisines = selectedCuisine.includes('all') ? constants.cuisines : selectedCuisine;
+      restCuisines = selectedCuisine.includes('all') ? constants.CUISINES : selectedCuisine;
       restPriceLevels = selectedPriceLevels.includes('all')
-        ? constants.priceLevels
+        ? constants.PRICE_LEVELS
         : selectedPriceLevels;
-      restFoodTypes = selectedFoodTypes.includes('all') ? constants.foodTypes : selectedFoodTypes;
+      restFoodTypes = selectedFoodTypes.includes('all') ? constants.FOOD_TYPES : selectedFoodTypes;
     }
 
     const filterData = {
       filterData: {
         restaurantFilter: {
-          cuisines: restCuisines,
-          priceLevels: restPriceLevels,
-          foodTypes: restFoodTypes
+          CUISINES: restCuisines,
+          PRICE_LEVELS: restPriceLevels,
+          FOOD_TYPES: restFoodTypes
         },
         touristAttractionFilter: {
           types: selectedPlaces.includes('all')
-            ? [constants.places, constants.touristAttractions]
+            ? [
+                constants.TOURIST_ATTRACTION_TYPES,
+                Object.values(constants.TOURIST_ATTRACTION_TYPE_MAP)
+              ]
             : [selectedPlaces, taTypes]
         }
       }
@@ -141,17 +144,17 @@ function PlaceFilter(props) {
             <FilterSelectionMenu
               selectedItems={selectedCuisine}
               handleSelectionChange={handleCuisineChangeCheckbox}
-              filteredItemType="cuisines"
+              filteredItemType="CUISINES"
             />
             <FilterSelectionMenu
               selectedItems={selectedPriceLevels}
               handleSelectionChange={handlePriceLevelsChangeCheckbox}
-              filteredItemType="priceLevels"
+              filteredItemType="PRICE_LEVELS"
             />
             <FilterSelectionMenu
               selectedItems={selectedFoodTypes}
               handleSelectionChange={handleFoodTypeChange}
-              filteredItemType="foodTypes"
+              filteredItemType="FOOD_TYPES"
             />
           </>
         ) : (

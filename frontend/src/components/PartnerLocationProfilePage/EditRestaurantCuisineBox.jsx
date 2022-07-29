@@ -9,7 +9,7 @@ function EditRestaurantCuisineBox(props) {
       <Typography align="left">Select Type of Cuisines(s)</Typography>
       <FormGroup>
         <Grid container spacing={2}>
-          {constants.cuisines.map((cuisine, idx) => {
+          {constants.CUISINES.map((cuisine, idx) => {
             const checked = selectedItems.includes(cuisine);
             return (
               // eslint-disable-next-line react/no-array-index-key
