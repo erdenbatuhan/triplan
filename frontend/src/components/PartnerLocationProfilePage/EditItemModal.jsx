@@ -145,7 +145,7 @@ function EditItemModal(props) {
                 value={foodType}
                 label={menuTypeLabel}
                 onChange={(e) => onItemFoodTypeChange(e)}>
-                {constants.foodTypes.map((type) => (
+                {constants.FOOD_TYPES.map((type) => (
                   <MenuItem key={type} value={type}>
                     {type}
                   </MenuItem>

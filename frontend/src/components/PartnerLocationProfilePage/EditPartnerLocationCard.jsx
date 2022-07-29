@@ -149,7 +149,7 @@ export default function EditPartnerLocationCard({
                     <Grid item xs={8}>
                       <EditRestaurantMultipleSelectDropdown
                         label="Cuisine(s)"
-                        itemList={constants.cuisines}
+                        itemList={constants.CUISINES}
                         selectedItems={restaurantCuisines}
                         handleDropdownSelection={handleCuisineChange}
                       />
@@ -168,7 +168,7 @@ export default function EditPartnerLocationCard({
                     <Grid item xs={8}>
                       <EditRestaurantMultipleSelectDropdown
                         label="Food Types"
-                        itemList={constants.foodTypes}
+                        itemList={constants.FOOD_TYPES}
                         selectedItems={restaurantFoodTypes}
                         handleDropdownSelection={handleFoodTypeChange}
                       />
@@ -185,7 +185,7 @@ export default function EditPartnerLocationCard({
                     <Grid item xs={8}>
                       <EditRestaurantMultipleSelectDropdown
                         label="Price Levels"
-                        itemList={constants.priceLevels}
+                        itemList={constants.PRICE_LEVELS}
                         selectedItems={restaurantPriceLevels}
                         handleDropdownSelection={handlePriceLevelChange}
                       />
