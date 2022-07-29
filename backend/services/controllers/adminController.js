@@ -65,16 +65,17 @@ const signUp = async (req, res) => {
  */
 const login = async (req, res) => {
   const { username, password } = req.body;
+  // console.log(username, password);
   try {
     // check if the user exists
     let admin = await findByUsername(username);
-
     if (admin.length === 0) {
       return res.status(400).json({ msg: "Username or password incorrect" });
     }
-
+    
     // check is the encrypted password matches
     const isMatch = await bcrypt.compare(password, admin[0].password);
+    
 
     if (!isMatch) {
       return res.status(400).json({ msg: "Username or password incorrect" });
@@ -114,6 +115,10 @@ const login = async (req, res) => {
 
 const findById = (id) => {
   return Admin.findById(id);
+};
+
+const findPassById = (id) => {
+  return Admin.findById(id).select('password');
 };
 
 const findByUsername = (username) => {

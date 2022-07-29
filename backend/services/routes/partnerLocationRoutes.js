@@ -4,6 +4,7 @@ const router = express.Router();
 const partnerLocationController = require("./../controllers/partnerLocationController.js");
 
 const scoreOperations = require("./../operations/scoreOperations.js");
+const walletController = require("./../controllers/walletController.js");
 
 /**
  * Gets the distinct cities with enough places
@@ -118,6 +119,25 @@ router.get("/:partnerLocationId", async (req, res) => {
       .send(
         `An error occurred while getting the partner location! Error => ${message}`
       );
+  }
+});
+
+/**
+ * Gets the wallet of a partner
+ */
+ router.get("/:userId/wallet", async (req, res) => {
+  console.log(req.params);
+  try {
+    const userId = req.params.userId;
+    const userWallet = await walletController.findPartnerLocationWallet(userId);
+
+    if (!userWallet) {
+      res.status(404).send(`No wallet found for the user with ID=${userId}!`);
+    }
+
+    res.status(200).send(userWallet);
+  } catch ({ message }) {
+    res.status(500).send(message);
   }
 });
 

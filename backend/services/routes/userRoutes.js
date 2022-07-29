@@ -58,6 +58,7 @@ router.get("/check/:id", async (req, res) => {
  * Gets the wallet of a user
  */
 router.get("/:userId/wallet", async (req, res) => {
+  console.log(req.params);
   try {
     const userId = req.params.userId;
     const userWallet = await walletController.findUserWallet(userId);
