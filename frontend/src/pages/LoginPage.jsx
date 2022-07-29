@@ -7,6 +7,8 @@ import { grey } from '@mui/material/colors';
 import { loginUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
 import { USER_TYPE_USER, BG_COLOR, WHITE, PRIMARY_COLOR } from '../shared/constants';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
+import { checkRequest } from '../queries/partner-signup-request-queries';
 
 const logo = require('../assets/triplan_logo.png');
 
@@ -47,8 +49,13 @@ function LoginPage() {
       };
       const message = await loginUser(userData);
       const { success, token } = message;
-      authContext.loginUser(token);
       if ((success, token)) {
+        const data = UserAuthHelper.getDataFromToken(token);
+        console.log('data: ', data);
+        authContext.loginUser(token);
+        checkRequest(data.user.id)
+          .then((response) => navigate('/signup-partner-profile', { state: { response } }))
+          .catch(() => console.log('request is handled by admin'));
         navigate('/', {
           state: {
             isLoggedIn: true

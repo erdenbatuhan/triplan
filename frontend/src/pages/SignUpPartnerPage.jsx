@@ -34,6 +34,8 @@ function SignUpPartnerDataPage() {
   const location = useLocation();
   const authData = location.state ? location.state.authData : null;
 
+  const fromLogin = location.state.response ? location.state.response : null;
+
   const handleInfo = () => {
     setIsInfoOpened(true);
   };
@@ -50,7 +52,7 @@ function SignUpPartnerDataPage() {
         console.error(`authentication data is missing ${authData}`);
       }
       const signupData = { authData, userData };
-      console.log('signupData: ', signupData);
+
       const message = await signupNewUser(signupData);
       const { success, token } = message;
       authContext.loginUser(token);
@@ -81,7 +83,7 @@ function SignUpPartnerDataPage() {
         backgroundColor: BG_COLOR
       }}>
       <ContentModal
-        open={isConfirmed === 'No Request'}
+        open={isConfirmed === 'No Request' && !fromLogin}
         contentStyle={{
           display: 'flex',
           justifyConent: 'center',
@@ -152,7 +154,7 @@ function SignUpPartnerDataPage() {
       />
 
       <Modal
-        open={isConfirmed === 'Requested'}
+        open={isConfirmed === 'Requested' || !!fromLogin}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         style={{

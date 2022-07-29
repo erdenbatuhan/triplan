@@ -25,7 +25,7 @@ export class UserAuthHelper {
     return this.getStoredUser()?.user?.username;
   }
 
-  static getUserAuthId() {
+  static getUserId() {
     return this.getStoredUser()?.user?.id;
   }
 
