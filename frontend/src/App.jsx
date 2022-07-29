@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
-import NavigationBar from './components/NavigationBar';
+// import NavigationBar from './components/NavigationBar';
 // import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import MainPage from './pages/MainPage';
@@ -17,7 +17,8 @@ import { AuthUserContext } from './authentication/AuthUserContext';
 import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
 import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 import LandingPage from './pages/LandingPage';
-import LandingPageBar from './components/LandingPage/NavigationBarLandingPage';
+// import LandingPageBar from './components/LandingPage/NavigationBarLandingPage';
+import NavBar from './components/common/NavigationBar';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
@@ -39,9 +40,6 @@ export default function App() {
     UserAuthHelper.logoutUser();
     syncAuthUser();
   };
-  const { pathname } = window.location;
-
-  console.log(pathname);
 
   return (
     <AuthUserContext.Provider
@@ -49,7 +47,8 @@ export default function App() {
         return { authenticatedUser, loginUser, logoutUser };
       }, [authenticatedUser, loginUser, logoutUser])}>
       <BrowserRouter>
-        {pathname !== '/' ? <NavigationBar /> : <LandingPageBar />}
+        {/* {pathname !== '/' ? <NavigationBar /> : <LandingPageBar />} */}
+        <NavBar />
 
         <Routes>
           <Route path="/" element={<LandingPage />} />
