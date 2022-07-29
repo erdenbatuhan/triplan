@@ -87,7 +87,10 @@ export default function AboutUs() {
                 <PersonCard
                   name="Halil Eralp Kocas"
                   image={eralpImg}
-                  summary={['M.Sc. Informatics Student at TUM']}
+                  summary={[
+                    'Software Engineer at Solity Network',
+                    'M.Sc. Informatics Student at TUM'
+                  ]}
                   linkedInLink="https://www.linkedin.com/in/halileralpkocas/"
                   githubLink="https://github.com/EralpKocas"
                 />
