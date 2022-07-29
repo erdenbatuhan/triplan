@@ -94,3 +94,11 @@ export async function getPartnerLocationById(partnerLocationId) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function findPartnerWallet(userId) {
+  return await fetch(`${HOST_PARTNER_LOCATION}/${userId}/wallet`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}

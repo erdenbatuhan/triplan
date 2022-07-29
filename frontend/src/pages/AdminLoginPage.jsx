@@ -43,7 +43,7 @@ function AdminLoginPage() {
         navigate('/admin');
       }
     } catch (e) {
-      console.error(`failed to find user ${username}`);
+      console.error(`failed to find user ${e}`);
     }
   };
 

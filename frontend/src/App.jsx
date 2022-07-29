@@ -80,7 +80,7 @@ export default function App() {
             path="/edit-partner-profile/:partnerId"
             element={isLoggedIn ? <EditPartnerLocationProfilePage /> : <Navigate to="/" />}
           /> */}
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/b7690677-04a7-4ac6-8848-647851fee3d3" element={<AdminPage />} />
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

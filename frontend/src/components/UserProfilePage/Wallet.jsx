@@ -28,6 +28,7 @@ import {
   handleEmail
 } from '../../queries/email-queries';
 import TransactionHistoryModal from './TransactionHistoryModal';
+import { findPartnerWallet } from '../../queries/partner-location-queries';
 
 export default function Wallet({ isUser }) {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -48,9 +49,14 @@ export default function Wallet({ isUser }) {
     if (!authenticatedUser) {
       return;
     }
-
-    findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
+    if (isUser) {
+      findUserWallet(authenticatedUser.user.id).then((data) => setWallet(data));
+    } else {
+      findPartnerWallet(authenticatedUser.user.id).then((data) => setWallet(data));
+    }
   }, [authenticatedUser]);
+
+  console.log(wallet);
 
   useEffect(() => {
     if (!authenticatedUser) {
