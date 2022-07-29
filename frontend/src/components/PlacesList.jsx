@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
 import PlaceCard from './PlaceCard';
 
-const PAGE_SIZE = 10;
+// const PAGE_SIZE = 10;
 
 export default function PlacesList({
   partnerLocations,
@@ -10,7 +10,7 @@ export default function PlacesList({
   onSelectedPartnerLocationsChange
 }) {
   const [partnerLocationDictionary, setPartnerLocationDictionary] = useState({});
-  const [currentPage, setCurrentPage] = useState([]);
+  // const [currentPage, setCurrentPage] = useState([]);
 
   // Listening to the changes in partnerLocations
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function PlacesList({
         ...partnerLocations.map((partnerLocation) => ({ [partnerLocation._id]: partnerLocation }))
       )
     );
-    setCurrentPage(Array.from({ length: PAGE_SIZE }, (_, idx) => idx));
+    // setCurrentPage(Array.from({ length: PAGE_SIZE }, (_, idx) => idx));
   }, [partnerLocations]);
 
   const selectPartnerLocation = (selectedPartnerLocationId) => {
@@ -45,11 +45,11 @@ export default function PlacesList({
   return (
     <Grid>
       {partnerLocations
-        ? currentPage.map((idx) => (
+        ? partnerLocations.map((partnerLocation) => (
             <PlaceCard
-              key={partnerLocations[idx]._id}
-              partnerLocation={partnerLocations[idx]}
-              cardSelected={isSelected(partnerLocations[idx]._id)}
+              key={partnerLocation._id}
+              partnerLocation={partnerLocation}
+              cardSelected={isSelected(partnerLocation._id)}
               onPlaceCardSelect={selectPartnerLocation}
               onPlaceCardDeselect={deselectPartnerLocation}
             />
