@@ -1,6 +1,7 @@
 import { HOST_PARTNER_LOCATION, HEADERS } from './constants';
+import { EMPTY_FILTER, isFilterEmpty } from '../shared/constants';
 
-import * as partnerLocationDefaultFilter from './data/partner-location-default-filter.json';
+const defaultFilter = require('./data/partner-location-default-filter.json');
 
 export async function getCities() {
   return await fetch(`${HOST_PARTNER_LOCATION}/cities`, {
@@ -10,12 +11,36 @@ export async function getCities() {
   }).then((response) => response.json());
 }
 
-export async function getFilteredPartnerLocations(user, filter = partnerLocationDefaultFilter) {
+export async function getFilteredPartnerLocations({
+  user,
+  selectedCity,
+  isRestaurantEnabled,
+  filter
+}) {
+  let filterPayload = { ...filter };
+
+  // Do no fetch the restaurant data if the filter for that is not enabled!
+  if (!isRestaurantEnabled) {
+    filterPayload.filterData.restaurantFilter = EMPTY_FILTER.filterData.restaurantFilter;
+  }
+
+  // Load the default filter when the filter is empty
+  if (isFilterEmpty(filter)) {
+    filterPayload = { ...defaultFilter };
+
+    // Do no fetch the restaurant data if the filter for that is not enabled!
+    if (!isRestaurantEnabled) {
+      filterPayload.filterData.restaurantFilter = EMPTY_FILTER.filterData.restaurantFilter;
+    }
+  }
+
+  filterPayload.filterData.city = selectedCity;
+
   return await fetch(`${HOST_PARTNER_LOCATION}/filtered?user=${user}`, {
     method: `POST`,
     mode: `cors`,
     headers: HEADERS,
-    body: JSON.stringify(filter)
+    body: JSON.stringify(filterPayload)
   }).then((response) => response.json());
 }
 
