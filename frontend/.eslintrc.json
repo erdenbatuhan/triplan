@@ -31,6 +31,7 @@
     "no-return-await": "off",
     "no-underscore-dangle": "off",
     "no-promise-executor-return": "off",
+    "no-nested-ternary": "off",
     "prefer-spread": "off",
     "react/prop-types": "off",
     "react/no-array-index-key": "off",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+/* import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, TextField, Button, Paper, List } from '@mui/material';
 import Spinner from '../components/common/Spinner';
@@ -395,4 +395,4 @@ export default function EditPartnerLocationProfilePage() {
       </Grid>
     </Box>
   );
-}
+} */

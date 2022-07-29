@@ -1,5 +1,6 @@
 export const HOST = `http://localhost:8008`;
 
+export const HOST_UTILS = `${HOST}/utils`;
 export const HOST_AUTH = `${HOST}/auth`;
 export const HOST_CITY_INFO = `${HOST}/city-info`;
 export const HOST_USER = `${HOST}/user`;
