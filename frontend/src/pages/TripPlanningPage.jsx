@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
@@ -21,7 +20,6 @@ import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import { createTripPlan } from '../queries/trip-plan-queries';
 import GoogleMap from '../components/GoogleMap';
-import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
 import * as constants from '../shared/constants';
 
 const EMPTY_FILTER = {
@@ -140,12 +138,12 @@ export default function TripPlanningPage() {
     // Also update the number of places selected
     setNumRestaurantsSelected(
       Object.values(selectedPartnerLocationsChanged).filter(
-        ({ partnerType }) => partnerType === PARTNER_TYPE_RESTAURANT
+        ({ partnerType }) => partnerType === constants.PARTNER_TYPE_RESTAURANT
       ).length
     );
     setNumTouristAttractionsSelected(
       Object.values(selectedPartnerLocationsChanged).filter(
-        ({ partnerType }) => partnerType === PARTNER_TYPE_TOURIST_ATTRACTION
+        ({ partnerType }) => partnerType === constants.PARTNER_TYPE_TOURIST_ATTRACTION
       ).length
     );
   };
@@ -213,7 +211,7 @@ export default function TripPlanningPage() {
   }
 
   return (
-    <div>
+    <div style={{ backgroundColor: constants.BG_COLOR }}>
       <Grid container spacing={2} alignItems="stretch">
         <Grid item xs={1} />
 

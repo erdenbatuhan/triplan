@@ -3,10 +3,12 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button } from '@mui/material';
-import { green, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { loginUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-import { USER_TYPE_USER, SECONDARY_COLOR } from '../shared/constants';
+import { USER_TYPE_USER, BG_COLOR, WHITE, PRIMARY_COLOR } from '../shared/constants';
+
+const logo = require('../assets/triplan_logo.png');
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -65,7 +67,7 @@ function LoginPage() {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh',
-        backgroundColor: SECONDARY_COLOR
+        backgroundColor: BG_COLOR
       }}>
       <Box
         component="form"
@@ -77,23 +79,37 @@ function LoginPage() {
           marginBottom: 5
         }}>
         <Box
-          ref={ref}
           sx={{
             alignItems: 'center',
             justifyContent: 'center',
             border: 1,
             borderRadius: 4,
             borderColor: grey[500],
-            padding: 1
+            backgroundColor: WHITE,
+            padding: 4,
+            minWidth: '25vw'
           }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              margin: 5
+              justifyContent: 'center'
             }}>
-            <ToggleButtonGroup color="primary" value={userType} exclusive onChange={handleChange}>
+            <img src={logo} alt={logo} style={{ width: 75, height: 75, borderRadius: 20 }} />
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 20
+            }}>
+            <ToggleButtonGroup
+              ref={ref}
+              color="primary"
+              value={userType}
+              exclusive
+              onChange={handleChange}>
               <ToggleButton value="USER">User</ToggleButton>
               <ToggleButton value="RESTAURANT">Restaurant</ToggleButton>
               <ToggleButton value="TOURIST_ATTRACTION">Tourist Attraction</ToggleButton>
@@ -114,7 +130,7 @@ function LoginPage() {
                 label="Username"
                 defaultValue={username}
                 onChange={onUsernameChanged}
-                style={{ width: width * 0.8 }}
+                style={{ width }}
               />
             </Grid>
             <Grid item>
@@ -122,9 +138,10 @@ function LoginPage() {
                 required
                 id="outlined-required"
                 label="Password"
+                type="password"
                 defaultValue={password}
                 onChange={onPasswordChanged}
-                style={{ width: width * 0.8 }}
+                style={{ width }}
               />
             </Grid>
             <br />
@@ -132,8 +149,8 @@ function LoginPage() {
               <Button
                 style={{
                   color: '#FFFFFF',
-                  backgroundColor: green[500],
-                  width: width * 0.8,
+                  backgroundColor: PRIMARY_COLOR,
+                  width: width * 0.6,
                   border: 1,
                   borderColor: grey[500],
                   borderRadius: 4,

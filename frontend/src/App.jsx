@@ -17,7 +17,7 @@ import { AuthUserContext } from './authentication/AuthUserContext';
 import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
 import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 import LandingPage from './pages/LandingPage';
-import LandingPageBar from './components/landingPage/NavigationBarLandingPage';
+import LandingPageBar from './components/LandingPage/NavigationBarLandingPage';
 
 export default function App() {
   // const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());

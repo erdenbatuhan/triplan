@@ -61,3 +61,11 @@ export async function getPartnerLocationByGoogleId(partnerData) {
     body: JSON.stringify(partnerData)
   }).then((response) => response.json());
 }
+
+export async function getPartnerLocationById(partnerLocationId) {
+  return await fetch(`${HOST_PARTNER_LOCATION}/${partnerLocationId}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}

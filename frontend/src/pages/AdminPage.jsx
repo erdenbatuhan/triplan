@@ -29,7 +29,8 @@ import {
   PARTNER_TYPE_TOURIST_ATTRACTION,
   TRANSACTION_TYPE_WITHDRAW,
   TRANSACTION_STATUS_SUCCESSFUL,
-  TRANSACTION_STATUS_REJECTED
+  TRANSACTION_STATUS_REJECTED,
+  BG_COLOR
 } from '../shared/constants';
 import { getAuthData } from '../queries/authentication-queries';
 
@@ -222,8 +223,11 @@ function AdminPage() {
       console.log(googlePlaceId);
       getPartnerLocationByGoogleId({ googlePlaceId, partnerType }).then((partnerData) => {
         if (partnerData.partnerLocation) {
-          if (partnerType === 'RESTAURANT') {
-            saveRestaurant({ ...partnerData, authentication: partner.authentication }).then(() => {
+          if (partnerType === PARTNER_TYPE_RESTAURANT) {
+            saveRestaurant({
+              ...partnerData.partnerLocation,
+              authentication: partner.authentication
+            }).then(() => {
               console.log(partner.username, ' is approved!');
               handleEmail(
                 {
@@ -244,30 +248,31 @@ function AdminPage() {
                 });
               });
             });
-          } else if (partnerType === 'TOURIST_ATTRACTION') {
-            saveTouristAttraction({ ...partnerData, authentication: partner.authentication }).then(
-              () => {
-                console.log(partner.username, ' is approved!');
-                handleEmail(
-                  {
-                    subject: 'Congratulations! Your Partnership is Approved!',
-                    to_name: partner.username,
-                    to_email: 'anil.kults@gmail.com', // partner.email
-                    intro_message: `Your partnership is approved. Welcome to Triplan family.`,
-                    final_message:
-                      'You can complete your profile by logging in the system and start to meet with your customers.'
-                  },
-                  'general'
-                ).then(() => {
-                  removePartnerSignupRequest(id).then(() => {
-                    syncPartnerSignupRequests();
-                    setIsSuccessfull(true);
-                    setIsOpen(true);
-                    setIsApproved(true);
-                  });
+          } else if (partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
+            saveTouristAttraction({
+              ...partnerData.partnerLocation,
+              authentication: partner.authentication
+            }).then(() => {
+              console.log(partner.username, ' is approved!');
+              handleEmail(
+                {
+                  subject: 'Congratulations! Your Partnership is Approved!',
+                  to_name: partner.username,
+                  to_email: 'anil.kults@gmail.com', // partner.email
+                  intro_message: `Your partnership is approved. Welcome to Triplan family.`,
+                  final_message:
+                    'You can complete your profile by logging in the system and start to meet with your customers.'
+                },
+                'general'
+              ).then(() => {
+                removePartnerSignupRequest(id).then(() => {
+                  syncPartnerSignupRequests();
+                  setIsSuccessfull(true);
+                  setIsOpen(true);
+                  setIsApproved(true);
                 });
-              }
-            );
+              });
+            });
           } else {
             console.error('the selected partner type is not defined.');
           }
@@ -347,7 +352,14 @@ function AdminPage() {
   };
 
   return (
-    <Box sx={{ width: '100%', typography: 'body1', padding: 1, height: '80vh' }}>
+    <Box
+      sx={{
+        width: '100%',
+        typography: 'body1',
+        padding: 1,
+        height: '80vh',
+        backgroundColor: BG_COLOR
+      }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
@@ -445,7 +457,12 @@ function AdminPage() {
         }}>
         <Box sx={style}>
           <div className="center">
-            <Alert severity={isSuccessfull ? 'success' : 'error'}>
+            <Alert
+              severity={isSuccessfull ? 'success' : 'error'}
+              onClose={() => {
+                setIsOpen(false);
+                setIsSuccessfull(false);
+              }}>
               <AlertTitle>{isSuccessfull ? 'Success' : 'Error'}</AlertTitle>
               {isSuccessfull
                 ? `${value === 1 ? 'Withdraw' : 'Partner Signup'} request ${
@@ -455,15 +472,6 @@ function AdminPage() {
                     isApproved ? 'approved' : 'rejected'
                   }!`}
             </Alert>
-
-            <Button
-              alignItems="center"
-              onClick={() => {
-                setIsOpen(false);
-                setIsSuccessfull(false);
-              }}>
-              Continue
-            </Button>
           </div>
         </Box>
       </Modal>
@@ -479,19 +487,15 @@ function AdminPage() {
         }}>
         <Box sx={style}>
           <div className="center">
-            <Alert severity="warning">
+            <Alert
+              severity="warning"
+              onClose={() => {
+                setOpenPartnerLocWarning(false);
+              }}>
               <AlertTitle>WARNING</AlertTitle>
               The Google place id can not found in your database. Please add it before approve the
               request.
             </Alert>
-
-            <Button
-              alignItems="center"
-              onClick={() => {
-                setOpenPartnerLocWarning(false);
-              }}>
-              Continue
-            </Button>
           </div>
         </Box>
       </Modal>
