@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -24,6 +24,7 @@ export default function TripPlanningPage() {
   const { state } = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const columnPaperElemRefs = [createRef(), createRef(), createRef()];
 
   if (!state) {
     navigate(-1);
@@ -278,11 +279,16 @@ export default function TripPlanningPage() {
           <Grid item xs={3}>
             <Header title="Restaurants" />
 
-            <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+            <Paper
+              ref={columnPaperElemRefs[0]}
+              style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
               <PlacesList
                 partnerLocations={partnerLocations.restaurants}
                 selectedPartnerLocationObject={selectedPartnerLocationObject}
                 onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
+                onPaginationChange={() => {
+                  columnPaperElemRefs[0].current.scrollTop = 0;
+                }}
               />
             </Paper>
           </Grid>
@@ -293,11 +299,16 @@ export default function TripPlanningPage() {
         <Grid item xs={3}>
           <Header title="Tourist Attractions" />
 
-          <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+          <Paper
+            ref={columnPaperElemRefs[1]}
+            style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
             <PlacesList
               partnerLocations={partnerLocations.touristAttractions}
               selectedPartnerLocationObject={selectedPartnerLocationObject}
               onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
+              onPaginationChange={() => {
+                columnPaperElemRefs[1].current.scrollTop = 0;
+              }}
             />
           </Paper>
         </Grid>
@@ -305,7 +316,9 @@ export default function TripPlanningPage() {
         <Grid item xs={2}>
           <Header title="Selected Places" />
 
-          <Paper style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
+          <Paper
+            ref={columnPaperElemRefs[2]}
+            style={{ maxHeight: windowDimenion.winHeight * 0.8, overflow: 'auto' }}>
             <GoogleMap
               selectedCity={selectedCity}
               selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
@@ -313,6 +326,9 @@ export default function TripPlanningPage() {
 
             <SelectedPlacesList
               selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
+              onPaginationChange={() => {
+                columnPaperElemRefs[2].current.scrollTop = 0;
+              }}
             />
           </Paper>
 
