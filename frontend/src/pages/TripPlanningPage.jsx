@@ -22,14 +22,6 @@ import { createTripPlan } from '../queries/trip-plan-queries';
 import GoogleMap from '../components/GoogleMap';
 import * as constants from '../shared/constants';
 
-const EMPTY_FILTER = {
-  filterData: {
-    selectedCity: '',
-    restaurantFilter: { cuisines: [], foodTypes: [], priceLevels: [] },
-    touristAttractionFilter: { types: [] }
-  }
-};
-
 export default function TripPlanningPage() {
   const { state } = useLocation();
   const [searchParams] = useSearchParams();
