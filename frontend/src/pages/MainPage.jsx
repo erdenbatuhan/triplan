@@ -30,7 +30,7 @@ export default function MainPage() {
   const handleButtonClick = () => {
     const filterData = {
       filterData: {
-        selectedCity,
+        city: selectedCity,
         restaurantFilter: isRestaurantEnabled
           ? { cuisines, foodTypes, priceLevels }
           : constants.EMPTY_FILTER.filterData.restaurantFilter,
