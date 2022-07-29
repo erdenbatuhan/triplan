@@ -51,16 +51,13 @@ function LoginPage() {
       const { success, token } = message;
       if ((success, token)) {
         const data = UserAuthHelper.getDataFromToken(token);
-        console.log('data: ', data);
         authContext.loginUser(token);
         checkRequest(data.user.id)
           .then((response) => navigate('/signup-partner-profile', { state: { response } }))
           .catch(() => console.log('request is handled by admin'));
-        navigate('/', {
-          state: {
-            isLoggedIn: true
-          }
-        });
+        if (data.user.userType === USER_TYPE_USER) {
+          navigate('/main-page');
+        }
       }
     } catch (e) {
       console.error(`failed to find user ${username}`);
