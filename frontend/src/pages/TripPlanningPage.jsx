@@ -325,7 +325,8 @@ export default function TripPlanningPage() {
             />
 
             <SelectedPlacesList
-              selectedPartnerLocations={Object.values(selectedPartnerLocationObject)}
+              selectedPartnerLocationObject={selectedPartnerLocationObject}
+              onSelectedPartnerLocationsChange={handleSelectedPartnerLocationsChange}
               onPaginationChange={() => {
                 columnPaperElemRefs[2].current.scrollTop = 0;
               }}

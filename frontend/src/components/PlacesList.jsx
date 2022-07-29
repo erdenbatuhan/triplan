@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Grid, Pagination } from '@mui/material';
 import PlaceCard from './PlaceCard';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 
 export default function PlacesList({
   partnerLocations,
