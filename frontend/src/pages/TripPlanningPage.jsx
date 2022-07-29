@@ -42,8 +42,7 @@ export default function TripPlanningPage() {
     return <div />;
   }
 
-  const [authenticatedUser] = useState({ user: { id: '62e166e0c21cf3c59e89a27d' } });
-  // const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [selectedCity] = useState(state.filterData.selectedCity);
   const [filterState, setFilterState] = useState(state.filterData);
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(state.isRestaurantEnabled);
