@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -17,8 +17,8 @@ export default function BuyableItemCard(props) {
     image,
     handleBuyableItemEditClick,
     handleBuyableItemDeleteClick,
-    partnerType
-    /* , inEdit */
+    partnerType,
+    viewMode
   } = props;
 
   return (
@@ -80,15 +80,19 @@ export default function BuyableItemCard(props) {
               </CardContent>
             </Grid>
 
-            <Grid item xs={4}>
-              <Button value={itemIdx} onClick={handleBuyableItemEditClick}>
-                Edit
-              </Button>
+            {!viewMode ? (
+              <Grid item xs={4}>
+                <Button value={itemIdx} onClick={handleBuyableItemEditClick}>
+                  Edit
+                </Button>
 
-              <Button value={itemIdx} onClick={handleBuyableItemDeleteClick}>
-                Delete
-              </Button>
-            </Grid>
+                <Button value={itemIdx} onClick={handleBuyableItemDeleteClick}>
+                  Delete
+                </Button>
+              </Grid>
+            ) : (
+              <Grid item xs={4} />
+            )}
           </Grid>
         </Grid>
       </Grid>

@@ -262,7 +262,7 @@ function UserProfilePage() {
           <CardContent>
             {isShownUserAuthenticated ? (
               <Grid>
-                <Wallet />
+                <Wallet isUser />
               </Grid>
             ) : (
               <Grid justifyContent="center" display="flex">

@@ -22,6 +22,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 // import TourIcon from '@mui/icons-material/Tour';
 // import ItemListDisplay from '../components/PartnerLocationProfilePage/ItemListDisplay';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
 import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/RestaurantCuisineDisplay';
 import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
 import {
@@ -52,6 +53,8 @@ import Spinner from '../components/common/Spinner';
 import { PARTNER_TYPE_RESTAURANT, PARTNER_TYPE_TOURIST_ATTRACTION } from '../shared/constants';
 import EditItemModal from '../components/PartnerLocationProfilePage/EditItemModal';
 import EditPartnerLocationCard from '../components/PartnerLocationProfilePage/EditPartnerLocationCard';
+import Wallet from '../components/UserProfilePage/Wallet';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 
 const style = {
   display: 'flex',
@@ -67,6 +70,9 @@ const avatarStyle = {
 export default function PartnerLocationProfilePage() {
   const [loading, setLoading] = useState(false);
   const [lazyLoading, setLazyLoading] = useState(false);
+
+  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [isShownPartnerAuthenticated, setIsShownPartnerAuthenticated] = useState(false);
 
   // Fetch the restaurant for every change in restaurant ID
   const { partnerId } = useParams();
@@ -129,6 +135,8 @@ export default function PartnerLocationProfilePage() {
     setIsPartnerLocationEditMode(false);
     setLazyLoading(false);
     setLoading(true);
+
+    setIsShownPartnerAuthenticated(authenticatedUser.user.id === partnerId);
 
     getPartnerLocationById(partnerId)
       .then(({ partnerLocation }) => {
@@ -398,11 +406,21 @@ export default function PartnerLocationProfilePage() {
           </Grid>
         </Grid>
 
-        <Grid item display="grid" sx={{ m: 2 }}>
-          <Button variant="contained" onClick={handleProfileEditClick}>
-            Edit Profile
-          </Button>
-        </Grid>
+        {isShownPartnerAuthenticated ? (
+          <Grid>
+            <Grid item justifyContent="center" display="flex" sx={{ mb: 2 }}>
+              <Button variant="contained" onClick={handleProfileEditClick}>
+                Edit Profile
+              </Button>
+            </Grid>
+
+            <Grid>
+              <Wallet isUser={false} />
+            </Grid>
+          </Grid>
+        ) : (
+          <Grid item />
+        )}
       </Grid>
 
       <ContentModal
@@ -432,18 +450,22 @@ export default function PartnerLocationProfilePage() {
               </Typography>
             </Grid>
 
-            <Grid item>
-              <Tooltip
-                title={
-                  partner.partnerType === PARTNER_TYPE_RESTAURANT
-                    ? 'Add new menu'
-                    : 'Add new ticket'
-                }>
-                <IconButton sx={{ m: 2 }} onClick={handleAddMenuItem}>
-                  <AddCircleOutlineIcon fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            {isShownPartnerAuthenticated ? (
+              <Grid item>
+                <Tooltip
+                  title={
+                    partner.partnerType === PARTNER_TYPE_RESTAURANT
+                      ? 'Add new menu'
+                      : 'Add new ticket'
+                  }>
+                  <IconButton sx={{ m: 2 }} onClick={handleAddMenuItem}>
+                    <AddCircleOutlineIcon fontSize="large" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : (
+              <Grid item />
+            )}
           </Grid>
 
           <Divider sx={{ mb: 2 }} />
@@ -480,7 +502,7 @@ export default function PartnerLocationProfilePage() {
                       handleBuyableItemEditClick={handleBuyableItemEditClick}
                       handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
                       partnerType={partner.partnerType}
-                      // inEdit
+                      viewMode={!isShownPartnerAuthenticated}
                     />
                   );
                 })}

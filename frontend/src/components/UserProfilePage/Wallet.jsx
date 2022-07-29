@@ -29,7 +29,7 @@ import {
 } from '../../queries/email-queries';
 import TransactionHistoryModal from './TransactionHistoryModal';
 
-export default function Wallet() {
+export default function Wallet({ isUser }) {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
   const [authenticatedUserData, setAuthenticatedUserData] = useState();
   const [wallet, setWallet] = useState(null);
@@ -164,21 +164,25 @@ export default function Wallet() {
         </CardContent>
 
         <CardActions>
-          <Grid container>
+          <Grid container justifyContent="center">
             <Grid item xs={2} />
 
-            <Grid item xs={4}>
-              <Button
-                color="success"
-                size="small"
-                variant="outlined"
-                onClick={() => {
-                  setTransactionType(TRANSACTION_TYPE_DEPOSIT);
-                  setTransactionDialogShown(true);
-                }}>
-                Deposit
-              </Button>
-            </Grid>
+            {isUser ? (
+              <Grid item xs={4}>
+                <Button
+                  color="success"
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    setTransactionType(TRANSACTION_TYPE_DEPOSIT);
+                    setTransactionDialogShown(true);
+                  }}>
+                  Deposit
+                </Button>
+              </Grid>
+            ) : (
+              []
+            )}
 
             <Grid item xs={4}>
               <Button
