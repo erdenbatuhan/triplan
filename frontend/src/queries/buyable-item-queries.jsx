@@ -53,8 +53,8 @@ export async function updateMenuItem(menu) {
 }
 
 export async function updateTicket(menu) {
-  const { _id, name, description, price } = menu; // reservationDate
-  const queryParams = `name=${name}&description=${description}&price=${price}`;
+  const { _id, name, description, price, image } = menu; // reservationDate
+  const queryParams = `name=${name}&description=${description}&price=${price}&image=${image}`;
 
   return await fetch(`${HOST_BUYABLE_ITEM}/ticket/${_id}?${queryParams}`, {
     method: `PUT`,
