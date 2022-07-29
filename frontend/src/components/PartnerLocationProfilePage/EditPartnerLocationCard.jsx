@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, TextField, Button } from '@mui/material';
+import { Box, Grid, TextField, Button, List } from '@mui/material';
 import Spinner from '../common/Spinner';
 import ImageUpload from '../common/ImageUpload';
 import { PARTNER_TYPE_RESTAURANT } from '../../shared/constants';
@@ -65,157 +65,171 @@ export default function EditPartnerLocationCard({
         {lazyLoading ? (
           <Spinner marginTop="1em" />
         ) : (
-          <Grid container direction="column" justifyContent="center" spacing={2}>
-            <Grid sx={{ mt: 2, mb: 2 }} container item>
-              <Grid item xs={2} />
+          <List
+            sx={{
+              width: '100%',
+              bgcolor: 'background.paper',
+              position: 'relative',
+              overflow: 'auto',
+              minHeight: '1.5em',
+              maxHeight: '30em',
+              marginTop: '10px',
+              '& ul': { padding: 0 }
+            }}>
+            <Grid>
+              <Grid container direction="column" justifyContent="center" spacing={2}>
+                <Grid sx={{ mt: 2, mb: 2 }} container item>
+                  <Grid item xs={2} />
 
-              <Grid item xs={8}>
-                <ImageUpload
-                  objectId={partner._id}
-                  image={partnerLocationPicture}
-                  onSaveSuccess={onPartnerLocationPictureChange}
-                />
-              </Grid>
+                  <Grid item xs={8}>
+                    <ImageUpload
+                      objectId={partner._id}
+                      image={partnerLocationPicture}
+                      onSaveSuccess={onPartnerLocationPictureChange}
+                    />
+                  </Grid>
 
-              <Grid item xs={2} />
-            </Grid>
-
-            <Grid container item>
-              <Grid item xs={2} />
-
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  required
-                  id="outlined-required"
-                  label={`${LABEL_PREFIX} Name`}
-                  value={partnerName}
-                  onChange={onPartnerNameChange}
-                />
-              </Grid>
-
-              <Grid item xs={2} />
-            </Grid>
-
-            <Grid container item>
-              <Grid item xs={2} />
-
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  id="outlined-required"
-                  label={`${LABEL_PREFIX} Phone Number`}
-                  value={partnerPhoneNumber}
-                  onChange={onPartnerPhoneNumberChange}
-                />
-              </Grid>
-
-              <Grid item xs={2} />
-            </Grid>
-
-            <Grid container item>
-              <Grid item xs={2} />
-
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  required
-                  id="outlined-required"
-                  label={`${LABEL_PREFIX} Address`}
-                  value={partnerAddress}
-                  onChange={onPartnerAddressChange}
-                />
-              </Grid>
-
-              <Grid item xs={2} />
-            </Grid>
-
-            <Grid container item>
-              <Grid item xs={2} />
-
-              {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
-                <Grid item xs={8}>
-                  <EditRestaurantMultipleSelectDropdown
-                    label="Cuisine(s)"
-                    itemList={constants.cuisines}
-                    selectedItems={restaurantCuisines}
-                    handleDropdownSelection={handleCuisineChange}
-                  />
+                  <Grid item xs={2} />
                 </Grid>
-              ) : (
-                <Grid item xs={8} />
-              )}
 
-              <Grid item xs={2} />
-            </Grid>
+                <Grid container item>
+                  <Grid item xs={2} />
 
-            <Grid container item>
-              <Grid item xs={2} />
+                  <Grid item xs={8}>
+                    <TextField
+                      fullWidth
+                      required
+                      id="outlined-required"
+                      label={`${LABEL_PREFIX} Name`}
+                      value={partnerName}
+                      onChange={onPartnerNameChange}
+                    />
+                  </Grid>
 
-              {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
-                <Grid item xs={8}>
-                  <EditRestaurantMultipleSelectDropdown
-                    label="Food Types"
-                    itemList={constants.foodTypes}
-                    selectedItems={restaurantFoodTypes}
-                    handleDropdownSelection={handleFoodTypeChange}
-                  />
+                  <Grid item xs={2} />
                 </Grid>
-              ) : (
-                <Grid item xs={8} />
-              )}
-              <Grid item xs={2} />
-            </Grid>
 
-            <Grid container item>
-              <Grid item xs={2} />
-              {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
-                <Grid item xs={8}>
-                  <EditRestaurantMultipleSelectDropdown
-                    label="Price Levels"
-                    itemList={constants.priceLevels}
-                    selectedItems={restaurantPriceLevels}
-                    handleDropdownSelection={handlePriceLevelChange}
-                  />
+                <Grid container item>
+                  <Grid item xs={2} />
+
+                  <Grid item xs={8}>
+                    <TextField
+                      fullWidth
+                      id="outlined-required"
+                      label={`${LABEL_PREFIX} Phone Number`}
+                      value={partnerPhoneNumber}
+                      onChange={onPartnerPhoneNumberChange}
+                    />
+                  </Grid>
+
+                  <Grid item xs={2} />
                 </Grid>
-              ) : (
-                <Grid item xs={8} />
-              )}
 
-              <Grid item xs={2} />
-            </Grid>
+                <Grid container item>
+                  <Grid item xs={2} />
 
-            <Grid container item>
-              <Grid item xs={2} />
+                  <Grid item xs={8}>
+                    <TextField
+                      fullWidth
+                      required
+                      id="outlined-required"
+                      label={`${LABEL_PREFIX} Address`}
+                      value={partnerAddress}
+                      onChange={onPartnerAddressChange}
+                    />
+                  </Grid>
 
-              <Grid
-                container
-                item
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-                xs={8}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => {
-                    handlePartnerFieldsChange({
-                      partnerName,
-                      partnerAddress,
-                      partnerPhoneNumber,
-                      partnerLocationPicture,
-                      restaurantCuisines,
-                      restaurantFoodTypes,
-                      restaurantPriceLevels
-                    });
-                  }}>
-                  Save
-                </Button>
+                  <Grid item xs={2} />
+                </Grid>
+
+                <Grid container item>
+                  <Grid item xs={2} />
+
+                  {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
+                    <Grid item xs={8}>
+                      <EditRestaurantMultipleSelectDropdown
+                        label="Cuisine(s)"
+                        itemList={constants.cuisines}
+                        selectedItems={restaurantCuisines}
+                        handleDropdownSelection={handleCuisineChange}
+                      />
+                    </Grid>
+                  ) : (
+                    <Grid item xs={8} />
+                  )}
+
+                  <Grid item xs={2} />
+                </Grid>
+
+                <Grid container item>
+                  <Grid item xs={2} />
+
+                  {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
+                    <Grid item xs={8}>
+                      <EditRestaurantMultipleSelectDropdown
+                        label="Food Types"
+                        itemList={constants.foodTypes}
+                        selectedItems={restaurantFoodTypes}
+                        handleDropdownSelection={handleFoodTypeChange}
+                      />
+                    </Grid>
+                  ) : (
+                    <Grid item xs={8} />
+                  )}
+                  <Grid item xs={2} />
+                </Grid>
+
+                <Grid container item>
+                  <Grid item xs={2} />
+                  {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
+                    <Grid item xs={8}>
+                      <EditRestaurantMultipleSelectDropdown
+                        label="Price Levels"
+                        itemList={constants.priceLevels}
+                        selectedItems={restaurantPriceLevels}
+                        handleDropdownSelection={handlePriceLevelChange}
+                      />
+                    </Grid>
+                  ) : (
+                    <Grid item xs={8} />
+                  )}
+
+                  <Grid item xs={2} />
+                </Grid>
+
+                <Grid container item>
+                  <Grid item xs={2} />
+
+                  <Grid
+                    container
+                    item
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    xs={8}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => {
+                        handlePartnerFieldsChange({
+                          partnerName,
+                          partnerAddress,
+                          partnerPhoneNumber,
+                          partnerLocationPicture,
+                          restaurantCuisines,
+                          restaurantFoodTypes,
+                          restaurantPriceLevels
+                        });
+                      }}>
+                      Save
+                    </Button>
+                  </Grid>
+
+                  <Grid item xs={2} />
+                </Grid>
               </Grid>
-
-              <Grid item xs={2} />
             </Grid>
-          </Grid>
+          </List>
         )}
       </Grid>
     </Box>
