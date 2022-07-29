@@ -33,6 +33,14 @@ export async function getUser(id) {
   }).then((response) => response.json());
 }
 
+export async function checkUser(id) {
+  return await fetch(`${HOST_USER}/check/${id}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
+
 export async function updateUserFields(userId, updatedFields) {
   return await fetch(`${HOST_USER}/${userId}`, {
     method: `POST`,

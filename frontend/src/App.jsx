@@ -15,7 +15,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import { UserAuthHelper } from './authentication/user-auth-helper';
 import { AuthUserContext } from './authentication/AuthUserContext';
 import PartnerLocationProfilePage from './pages/PartnerLocationProfilePage';
-import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
+// import EditPartnerLocationProfilePage from './pages/EditPartnerLocationProfilePage';
 import LandingPage from './pages/LandingPage';
 // import LandingPageBar from './components/LandingPage/NavigationBarLandingPage';
 import NavBar from './components/common/NavigationBar';
@@ -76,10 +76,10 @@ export default function App() {
             path="/partner-profile/:partnerId"
             element={isLoggedIn ? <PartnerLocationProfilePage /> : <Navigate to="/" />}
           />
-          <Route
+          {/* <Route
             path="/edit-partner-profile/:partnerId"
             element={isLoggedIn ? <EditPartnerLocationProfilePage /> : <Navigate to="/" />}
-          />
+          /> */}
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="*" element={<Navigate to="/" />} />

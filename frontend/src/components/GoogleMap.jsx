@@ -48,6 +48,7 @@ function GoogleMap({ selectedCity, selectedPartnerLocations }) {
               if (googleLocationInfo) {
                 return (
                   <PlaceIcon
+                    key={googleLocationInfo.googlePlaceId}
                     fontSize="large"
                     sx={{ color: '#f44336' }}
                     lat={googleLocationInfo.latitude}

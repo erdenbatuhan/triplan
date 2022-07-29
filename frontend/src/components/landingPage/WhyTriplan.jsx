@@ -48,8 +48,8 @@ export default function WhyTriplan() {
         textColor="inherit"
         centered
         aria-label="full width tabs example">
-        <Tab label="Travellers">1</Tab>
-        <Tab label="Partners">2 </Tab>
+        <Tab label="Travellers" />
+        <Tab label="Partners" />
       </Tabs>
       <br />
       {value === 0 ? (
