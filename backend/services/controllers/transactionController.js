@@ -165,7 +165,10 @@ const checkWalletValidity = async (amount, type, incomingWallet, outgoingWallet,
       "status": enums.TRANSACTION_STATUS[1] // Rejected Transaction
     }]);
 
-    throw new Error("Transaction rejected! Reason: Not enough balance!");
+    const insufficientFundsError = new Error("Transaction rejected! Reason: Not enough balance!");
+    insufficientFundsError.code = 401;
+
+    throw insufficientFundsError;
   }
 }
 

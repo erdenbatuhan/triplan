@@ -25,36 +25,33 @@ export default function ServicesBoughtModal({ open, onClose, tripPlan }) {
     setIsLoading(true);
     getLocationsOfTripPlan(tripPlan._id)
       .then(async (locationsData) => {
-        try {
-          // Store a mapping from trip location id to partner location name
-          const tripLocationToPlaceName_ = Object.assign(
-            {},
-            ...locationsData.map(({ partnerLocation, tripLocation }) => ({
-              [tripLocation._id]: partnerLocation.name
-            }))
-          );
-          setTripLocationToPlaceName(tripLocationToPlaceName_);
+        // Store a mapping from trip location id to partner location name
+        const tripLocationToPlaceName_ = Object.assign(
+          {},
+          ...locationsData.map(({ partnerLocation, tripLocation }) => ({
+            [tripLocation._id]: partnerLocation.name
+          }))
+        );
+        setTripLocationToPlaceName(tripLocationToPlaceName_);
 
-          // Get the items bought by the user in this trip plan
-          const tripLocationIds = Object.keys(tripLocationToPlaceName_);
-          await getItemBoughtsByTripLocations(tripLocationIds).then((itemBoughtsData) => {
-            setItemBoughtsByTripLocations(itemBoughtsData);
-            setTotalPrice(
-              itemBoughtsData.reduce(
-                (overallTotal, itemBoughts) =>
-                  totalPrice +
-                  itemBoughts.reduce(
-                    (placeTotal, { price, amount }) => placeTotal + price * amount,
-                    0
-                  ),
-                0
-              )
-            );
-          });
-        } catch {
-          alert('Faulty plan! Please contact an administrator.');
-          onClose();
-        }
+        // Get the items bought by the user in this trip plan
+        const tripLocationIds = Object.keys(tripLocationToPlaceName_);
+        await getItemBoughtsByTripLocations(tripLocationIds).then((itemBoughtsData) => {
+          setItemBoughtsByTripLocations(itemBoughtsData);
+
+          // Calculate the total price of the services bought
+          setTotalPrice(
+            Object.values(itemBoughtsData).reduce(
+              (overallTotal, itemBoughts) =>
+                overallTotal +
+                itemBoughts.reduce(
+                  (placeTotal, { price, amount }) => placeTotal + price * amount,
+                  0
+                ),
+              0
+            )
+          );
+        });
       })
       .finally(() => setIsLoading(false));
   }, [tripPlan]);

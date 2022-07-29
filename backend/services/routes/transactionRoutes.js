@@ -30,8 +30,12 @@ router.get("/user/:userId", async (req, res) => {
   try {
     const transactionsCreated = await transactionController.buyItems(req.body);
     res.status(200).send(transactionsCreated);
-  } catch ({ message }) {
-    res.status(500).send(message);
+  } catch (err) {
+    if (err.code) {
+      res.status(err.code).send(err.message);
+    } else {
+      res.status(500).send(message);
+    }
   }
 });
 
@@ -44,8 +48,12 @@ router.post("/", async (req, res) => {
   try {
     const transactionCreated = await transactionController.createTransaction(req.body);
     res.status(200).send(transactionCreated);
-  } catch ({ message }) {
-    res.status(500).send(message);
+  } catch (err) {
+    if (err.code) {
+      res.status(err.code).send(err.message);
+    } else {
+      res.status(500).send(message);
+    }
   }
 });
 
