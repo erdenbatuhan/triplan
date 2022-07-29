@@ -11,7 +11,8 @@ const walletController = require("./../controllers/walletController.js");
  */
 router.get("/cities", async (req, res) => {
   try {
-    const distinctCities = await partnerLocationController.findDistinctCitiesWithEnoughPlaces();
+    const distinctCities =
+      await partnerLocationController.findDistinctCitiesWithEnoughPlaces();
     res.status(200).send(distinctCities);
   } catch ({ message }) {
     res.status(500).send(message);
@@ -25,8 +26,12 @@ router.get("/cities", async (req, res) => {
  */
 router.post("/filtered", async (req, res) => {
   try {
-    const partnerLocationsFiltered = await partnerLocationController.findFiltered(req.body);
-    const partnerLocationsSorted = await scoreOperations.sortLocations(req.query["user"], partnerLocationsFiltered);
+    const partnerLocationsFiltered =
+      await partnerLocationController.findFiltered(req.body);
+    const partnerLocationsSorted = await scoreOperations.sortLocations(
+      req.query["user"],
+      partnerLocationsFiltered
+    );
 
     res.status(200).send(partnerLocationsSorted);
   } catch ({ message }) {
@@ -40,10 +45,14 @@ router.post("/filtered", async (req, res) => {
 router.get("/restaurant", async (req, res) => {
   try {
     const restaurantId = req.query.id;
-    const restaurant = await partnerLocationController.findRestaurantById(restaurantId);
+    const restaurant = await partnerLocationController.findRestaurantById(
+      restaurantId
+    );
 
     if (!restaurant) {
-      return res.status(404).send(`No restaurant found with ID=${restaurantId}!`);
+      return res
+        .status(404)
+        .send(`No restaurant found with ID=${restaurantId}!`);
     }
 
     res.status(200).send(restaurant);
@@ -57,7 +66,9 @@ router.get("/restaurant", async (req, res) => {
  */
 router.post("/restaurant", async (req, res) => {
   try {
-    const restaurantSaved = await partnerLocationController.saveRestaurant(req.body);
+    const restaurantSaved = await partnerLocationController.saveRestaurant(
+      req.body
+    );
     res.status(200).send(restaurantSaved);
   } catch ({ message }) {
     res.status(500).send(message);
@@ -70,10 +81,15 @@ router.post("/restaurant", async (req, res) => {
 router.get("/tourist-attraction", async (req, res) => {
   try {
     const touristAttractionId = req.query.id;
-    const touristAttraction = await partnerLocationController.findTouristAttractionById(touristAttractionId);
+    const touristAttraction =
+      await partnerLocationController.findTouristAttractionById(
+        touristAttractionId
+      );
 
     if (!touristAttraction) {
-      return res.status(404).send(`No tourist attraction found with ID=${touristAttractionId}!`);
+      return res
+        .status(404)
+        .send(`No tourist attraction found with ID=${touristAttractionId}!`);
     }
 
     res.status(200).send(touristAttraction);
@@ -87,7 +103,8 @@ router.get("/tourist-attraction", async (req, res) => {
  */
 router.post("/tourist-attraction", async (req, res) => {
   try {
-    const touristAttractionSaved = await partnerLocationController.saveTouristAttraction(req.body);
+    const touristAttractionSaved =
+      await partnerLocationController.saveTouristAttraction(req.body);
     res.status(200).send(touristAttractionSaved);
   } catch ({ message }) {
     res.status(500).send(message);
@@ -99,7 +116,9 @@ router.post("/tourist-attraction", async (req, res) => {
  */
 router.post("/google-id", async (req, res) => {
   try {
-    const partnerLocation = await partnerLocationController.findByGoogleId(req.body);
+    const partnerLocation = await partnerLocationController.findByGoogleId(
+      req.body
+    );
     res.status(200).send({ partnerLocation });
   } catch ({ message }) {
     res.status(500).send(message);
@@ -111,7 +130,10 @@ router.post("/google-id", async (req, res) => {
  */
 router.get("/:partnerLocationId", async (req, res) => {
   try {
-    const partnerLocation = await partnerLocationController.findPartnerLocationById(req.params.partnerLocationId);
+    const partnerLocation =
+      await partnerLocationController.findPartnerLocationById(
+        req.params.partnerLocationId
+      );
     res.status(200).send({ partnerLocation });
   } catch ({ message }) {
     res
@@ -125,7 +147,7 @@ router.get("/:partnerLocationId", async (req, res) => {
 /**
  * Gets the wallet of a partner
  */
- router.get("/:userId/wallet", async (req, res) => {
+router.get("/:userId/wallet", async (req, res) => {
   console.log(req.params);
   try {
     const userId = req.params.userId;
@@ -136,6 +158,32 @@ router.get("/:partnerLocationId", async (req, res) => {
     }
 
     res.status(200).send(userWallet);
+  } catch ({ message }) {
+    res.status(500).send(message);
+  }
+});
+
+/**
+ * Checks the partner with given ID exists or not
+ */
+router.get("/check/:id", async (req, res) => {
+  try {
+    const partnerId = req.params.id;
+    if (!partnerId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).send(`No user found with ID=${partnerId}!`);
+    }
+    const restPartnerExists = await partnerLocationController.restaurantExists(
+      partnerId
+    );
+
+    const taPartnerExists =
+      await partnerLocationController.touristAttractionExists(partnerId);
+
+    if (!restPartnerExists && !taPartnerExists) {
+      return res.status(404).send(`No user found with ID=${partnerId}!`);
+    }
+
+    return res.status(200).send(true);
   } catch ({ message }) {
     res.status(500).send(message);
   }

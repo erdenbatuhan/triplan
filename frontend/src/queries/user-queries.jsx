@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { HOST_USER, HEADERS } from './constants';
 
 export async function getAllUsersData() {
@@ -34,11 +35,7 @@ export async function getUser(id) {
 }
 
 export async function checkUser(id) {
-  return await fetch(`${HOST_USER}/check/${id}`, {
-    method: `GET`,
-    mode: `cors`,
-    headers: HEADERS
-  }).then((response) => response.json());
+  return axios.get(`${HOST_USER}/check/${id}`, { HEADERS }).then(({ data }) => data);
 }
 
 export async function updateUserFields(userId, updatedFields) {

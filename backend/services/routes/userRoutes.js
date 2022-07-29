@@ -37,18 +37,21 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
- * Gets the user with given ID
+ * Checks the user with given ID exists or not
  */
 router.get("/check/:id", async (req, res) => {
   try {
     const userId = req.params.id;
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).send(`No user found with ID=${userId}!`);
+    }
     const userExists = await userController.exists(userId);
 
     if (!userExists) {
       return res.status(404).send(`No user found with ID=${userId}!`);
     }
 
-    return res.status(200).send(userExists);
+    return res.status(200).send(true);
   } catch ({ message }) {
     res.status(500).send(message);
   }

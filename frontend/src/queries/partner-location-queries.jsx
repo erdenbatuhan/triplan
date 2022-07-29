@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { HOST_PARTNER_LOCATION, HEADERS } from './constants';
 import { EMPTY_FILTER, isFilterEmpty } from '../shared/constants';
 
@@ -101,4 +102,8 @@ export async function findPartnerWallet(userId) {
     mode: `cors`,
     headers: HEADERS
   }).then((response) => response.json());
+}
+
+export async function checkPartner(id) {
+  return axios.get(`${HOST_PARTNER_LOCATION}/check/${id}`, { HEADERS }).then(({ data }) => data);
 }
