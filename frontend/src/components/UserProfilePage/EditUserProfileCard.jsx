@@ -91,24 +91,6 @@ export default function EditUserProfileCard({ user, isLoading, handleUserFieldsC
                 alignItems="center"
                 justifyContent="center"
                 xs={6}>
-                <Button sx={{ fontSize: '12px' }} href="/">
-                  Change your password
-                </Button>
-              </Grid>
-
-              <Grid item xs={3} />
-            </Grid>
-
-            <Grid container item>
-              <Grid item xs={3} />
-
-              <Grid
-                container
-                item
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-                xs={6}>
                 <Button
                   onClick={() => {
                     handleUserFieldsChange({ firstName, lastName, profilePicture });

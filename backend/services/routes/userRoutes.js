@@ -37,6 +37,24 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
+ * Gets the user with given ID
+ */
+router.get("/check/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const userExists = await userController.exists(userId);
+
+    if (!userExists) {
+      return res.status(404).send(`No user found with ID=${userId}!`);
+    }
+
+    return res.status(200).send(userExists);
+  } catch ({ message }) {
+    res.status(500).send(message);
+  }
+});
+
+/**
  * Gets the wallet of a user
  */
 router.get("/:userId/wallet", async (req, res) => {
@@ -57,7 +75,7 @@ router.get("/:userId/wallet", async (req, res) => {
 /**
  * Updates the user fields
  */
- router.post("/:userId", async (req, res) => {
+router.post("/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
     const userUpdated = await userController.updateFields(userId, req.body);

@@ -148,7 +148,7 @@ export default function ContactUs() {
                   <Button
                     sx={{ width: '60%', height: '60px' }}
                     variant="contained"
-                    color="success"
+                    color="primary"
                     onClick={handleSubmitMessage}
                     disabled={!name || !email || !message}>
                     Submit Message

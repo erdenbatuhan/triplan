@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import landingBg from '../assets/landing-page-background.png';
 // import LandingPageBar from '../components/landingPage/NavigationBarLandingPage';
-import { SECONDARY_COLOR } from '../shared/constants';
+import { BG_COLOR } from '../shared/constants';
 import AboutUs from '../components/LandingPage/AboutUs';
 import WhyTriplan from '../components/LandingPage/WhyTriplan';
 import ContactUs from '../components/LandingPage/ContactUs';
@@ -139,7 +139,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: SECONDARY_COLOR,
+          backgroundColor: BG_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}
@@ -156,7 +156,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: SECONDARY_COLOR,
+          backgroundColor: BG_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}
@@ -173,7 +173,7 @@ function LandingPage() {
       </div>
       <div
         style={{
-          backgroundColor: SECONDARY_COLOR,
+          backgroundColor: BG_COLOR,
           backgroundSize: 'cover',
           height: '100vh'
         }}

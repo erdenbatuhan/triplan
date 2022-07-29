@@ -4,6 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
+import { WHITE } from '../../shared/constants';
 
 export default function WhyTriplanCard({ title, image, summary }) {
   return (
@@ -13,7 +14,7 @@ export default function WhyTriplanCard({ title, image, summary }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)'
+        backgroundColor: WHITE
       }}>
       <Grid
         container
@@ -36,16 +37,11 @@ export default function WhyTriplanCard({ title, image, summary }) {
         <Grid item xs={10}>
           <Grid container direction="row">
             <CardContent>
-              <Typography
-                gutterBottom
-                variant="h4"
-                color="#FFFFFF"
-                textAlign="center"
-                fontWeight="bold">
+              <Typography gutterBottom variant="h4" textAlign="center" fontWeight="bold">
                 {title}
               </Typography>
               {summary.map((sum) => (
-                <Typography key={sum} variant="body2" color="#FFFFFF" fontWeight="medium">
+                <Typography key={sum} variant="body2" fontWeight="medium">
                   <li>{sum} </li>
                 </Typography>
               ))}
