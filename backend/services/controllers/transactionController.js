@@ -120,7 +120,7 @@ const createTransactionWithSession = ({ paypalTransactionId, amount, type, incom
     incomingWalletId && walletController.findOne(incomingWalletId, session), // Incoming Wallet
     outgoingWalletId && walletController.findOne(outgoingWalletId, session) // Outgoing Wallet
   ]).then(async ([ incomingWallet, outgoingWallet ]) => {
-    await checkWalletValidity(amount, type, incomingWallet, outgoingWallet, incomingWalletId, outgoingWalletId);
+    await checkWalletValidity(paypalTransactionId, amount, type, incomingWallet, outgoingWallet, incomingWalletId, outgoingWalletId);
 
     return Promise.all([
       updateWalletBalances(paypalTransactionId, amount, type, incomingWallet, outgoingWallet, couponUsed, commission, session),
@@ -146,7 +146,7 @@ const createTransactionWithSession = ({ paypalTransactionId, amount, type, incom
   });
 };
 
-const checkWalletValidity = async (amount, type, incomingWallet, outgoingWallet, incomingWalletId, outgoingWalletId) => {
+const checkWalletValidity = async (paypalTransactionId, amount, type, incomingWallet, outgoingWallet, incomingWalletId, outgoingWalletId) => {
   /**
    * Wallet Validity Check:
    * - Check if both of the wallets are missing or the same
@@ -157,7 +157,7 @@ const checkWalletValidity = async (amount, type, incomingWallet, outgoingWallet,
     throw new Error("Both of the wallets are missing or the same!");
   } else if (type == enums.TRANSACTION_TYPE[2] && (!incomingWallet || !outgoingWallet)) {
     throw new Error("There must be an incoming and an outgoing wallet for the purchase transaction!");
-  } else if (type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
+  } else if (!paypalTransactionId && type != enums.TRANSACTION_TYPE[0] && outgoingWallet && outgoingWallet.balance < amount) {
     // Reject the transaction (not in the session) and then throw error
     await Transaction.create([{
       amount, type,
