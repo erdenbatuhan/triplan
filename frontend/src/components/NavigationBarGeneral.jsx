@@ -14,7 +14,12 @@ import Typography from '@mui/material/Typography';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { PRIMARY_COLOR } from '../shared/constants';
+import {
+  PRIMARY_COLOR,
+  USER_TYPE_USER,
+  USER_TYPE_RESTAURANT,
+  USER_TYPE_TOURIST_ATTRACTION
+} from '../shared/constants';
 
 const logo = require('../assets/triplan_logo.png');
 
@@ -89,7 +94,14 @@ export default function MenuAppBar() {
   };
 
   const navigateToProfile = () => {
-    navigate(`/user/${authenticatedUser.user.id}`);
+    const userType = UserAuthHelper.getUserType();
+    if (userType === USER_TYPE_USER) {
+      navigate(`/user/${authenticatedUser.user.id}`);
+    } else if (userType === USER_TYPE_RESTAURANT || userType === USER_TYPE_TOURIST_ATTRACTION) {
+      navigate(`/partner-profile/${authenticatedUser.user.id}`);
+    } else {
+      console.error('given user type is undefined');
+    }
   };
 
   const navigateToMainPage = () => {

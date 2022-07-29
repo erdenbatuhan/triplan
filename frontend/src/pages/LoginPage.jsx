@@ -46,9 +46,9 @@ function LoginPage() {
         userType
       };
       const message = await loginUser(userData);
-      const { token } = message;
+      const { success, token } = message;
       authContext.loginUser(token);
-      if (token) {
+      if ((success, token)) {
         navigate('/', {
           state: {
             isLoggedIn: true
