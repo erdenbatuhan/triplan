@@ -7,11 +7,24 @@ import SearchBar from '../components/SearchBar';
 import { getCities } from '../queries/partner-location-queries';
 import FilterBox from '../components/common/FilterBox';
 import * as constants from '../shared/constants';
+import AlertModal from '../components/common/AlertModal';
 
 const CustomGrid = styled(Grid)(() => ({
   justifyContent: 'center',
   alignItems: 'center'
 }));
+
+/* const alertBoxStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 6,
+  borderRadius: '15px'
+}; */
 
 export default function MainPage() {
   const [cities, setCities] = useState([]);
@@ -22,12 +35,18 @@ export default function MainPage() {
   const [touristAttractionTypes, setTouristAttractionTypes] = useState();
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(true);
 
+  const [alertCall, setAlertCall] = useState(false);
+
   useEffect(() => {
     getCities().then((data) => setCities(data));
   }, []);
 
   const navigate = useNavigate();
   const handleButtonClick = () => {
+    if (!selectedCity) {
+      setAlertCall(true);
+      return;
+    }
     const filterData = {
       filterData: {
         restaurantFilter: isRestaurantEnabled
@@ -36,11 +55,6 @@ export default function MainPage() {
         touristAttractionFilter: { types: touristAttractionTypes }
       }
     };
-
-    if (!selectedCity) {
-      alert('city selection is mandatory');
-      return;
-    }
 
     navigate('/trip-plan', {
       state: { selectedCity, isRestaurantEnabled, filterData }
@@ -179,6 +193,35 @@ export default function MainPage() {
           <Grid item xs={5} />
         </Grid>
       </CustomGrid>
+
+      <AlertModal
+        open={alertCall}
+        onCloseFunction={setAlertCall}
+        message="Please select a destination to continue."
+        type="info"
+      />
+
+      {/* <Modal
+        open={alertCall}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        style={{
+          display: 'flex',
+          justifyConent: 'center',
+          alignItems: 'center'
+        }}>
+        <Box sx={alertBoxStyle}>
+          <div className="center">
+            <Alert
+              severity="info"
+              onClose={() => {
+                setAlertCall(false);
+              }}>
+              Please select a destination to continue.
+            </Alert>
+          </div>
+        </Box>
+            </Modal> */}
     </Box>
   );
 }

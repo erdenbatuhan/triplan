@@ -44,6 +44,7 @@ import {
   PRIMARY_COLOR,
   BG_COLOR
 } from '../shared/constants';
+import AlertModal from '../components/common/AlertModal';
 
 const walletImg = require('../assets/wallet-logo.png');
 // const emailjsCredentials = require('../credentials/emailjs_credentials.json');
@@ -100,6 +101,12 @@ export default function CheckoutPage() {
   // const [itemList, setItemList] = useState([]);
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
 
+  const [transactionErrorAlertCall, setTransactionErrorAlertCall] = useState(false);
+  const [successfullTriplanAlertCall, setSuccessfullTriplanAlertCall] = useState(false);
+  const [paypalTransactionErrorAlertCall, setPaypalTransactionErrorAlertCall] = useState(false);
+  const [alreadyPurchasedAlertCall, setAlreadyPurchasedAlertCall] = useState(false);
+  const [faultyTripAlertCall, setFaultyTripAlertCall] = useState(false);
+
   // const handleEmail = () => {
   //   emailjs.init(emailjsCredentials.publicKey);
   //   // e.preventDefault(); // Prevents default refresh by the browser
@@ -122,7 +129,8 @@ export default function CheckoutPage() {
 
   const handleCheckoutSuccess = () => {
     setPaymentCompleted(true);
-    alert('Your trip plan is saved successfully! <strong>Enjoy your vacation!</strong>');
+    setSuccessfullTriplanAlertCall(true);
+    // alert('Your trip plan is saved successfully! <strong>Enjoy your vacation!</strong>');
 
     navigate(`/user/${authenticatedUser.user.id}`);
   };
@@ -135,14 +143,16 @@ export default function CheckoutPage() {
       })
       .catch(() => {
         setPaymentCompleted(false);
-        alert('An error occurred while creating the transaction! Please contact an administrator.');
+        setTransactionErrorAlertCall(true);
+        // alert('An error occurred while creating the transaction! Please contact an administrator.');
       })
       .finally(() => setLoading(false));
   };
 
   const onPaypalTransactionComplete = (transactionStatus) => {
     if (!transactionStatus) {
-      alert('An error occurred during PayPal transaction! Please try again.');
+      setPaypalTransactionErrorAlertCall(true);
+      // alert('An error occurred during PayPal transaction! Please try again.');
       return;
     }
 
@@ -162,9 +172,10 @@ export default function CheckoutPage() {
       getTripPlan(tripPlanId).then((data) => {
         if (data.paid) {
           setLoading(false);
-          alert(
-            'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
-          );
+          setAlreadyPurchasedAlertCall(true);
+          // alert(
+          // 'Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment.'
+          // );
 
           navigate(-1); // Go back
           return;
@@ -182,7 +193,8 @@ export default function CheckoutPage() {
         .then((data) => {
           if (!data || data.length === 0) {
             setLoading(false);
-            alert('Faulty trip plan! Please contact an administrator.');
+            setFaultyTripAlertCall(true);
+            // alert('Faulty trip plan! Please contact an administrator.');
 
             navigate(-1); // Go back
             return;
@@ -730,6 +742,41 @@ export default function CheckoutPage() {
           </Box>
         }
       /> */}
+
+      <AlertModal
+        open={successfullTriplanAlertCall}
+        onCloseFunction={setSuccessfullTriplanAlertCall}
+        message="Your trip plan is saved successfully! Enjoy your vacation!"
+        type="success"
+      />
+
+      <AlertModal
+        open={transactionErrorAlertCall}
+        onCloseFunction={setTransactionErrorAlertCall}
+        message="An error occurred while creating the transaction! Please contact an administrator."
+        type="error"
+      />
+
+      <AlertModal
+        open={paypalTransactionErrorAlertCall}
+        onCloseFunction={setPaypalTransactionErrorAlertCall}
+        message="An error occurred during PayPal transaction! Please try again."
+        type="error"
+      />
+
+      <AlertModal
+        open={alreadyPurchasedAlertCall}
+        onCloseFunction={setAlreadyPurchasedAlertCall}
+        message="Sorry, you have already made a purchase for this plan. Adding new services is not possible at the moment."
+        type="warning"
+      />
+
+      <AlertModal
+        open={faultyTripAlertCall}
+        onCloseFunction={setFaultyTripAlertCall}
+        message="Faulty trip plan! Please contact an administrator."
+        type="info"
+      />
     </div>
   );
 }

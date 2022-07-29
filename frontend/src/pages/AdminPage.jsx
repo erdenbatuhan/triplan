@@ -33,6 +33,7 @@ import {
   BG_COLOR
 } from '../shared/constants';
 import { getAuthData } from '../queries/authentication-queries';
+import AlertModal from '../components/common/AlertModal';
 
 // function getWithdrawRequestRows(allWithdrawRequests) {
 //   const rows = [];
@@ -117,6 +118,8 @@ function AdminPage() {
   const [curPartner, setCurPartner] = useState(null);
   const [signupRows, setSignupRows] = useState([]);
   const [withdrawRows, setWithdrawRows] = useState([]);
+
+  const [alertCall, setAlertCall] = useState(false);
 
   useEffect(() => {
     getAllWithdrawRequests().then((data) => setAllWithdrawRequests(data));
@@ -345,7 +348,8 @@ function AdminPage() {
           setIsSuccessfull(false);
           setIsOpen(true);
           setIsApproved(true);
-          alert('Opps, something went wrong!');
+          setAlertCall(true);
+          // alert('Opps, something went wrong!');
         }
       });
     });
@@ -499,6 +503,13 @@ function AdminPage() {
           </div>
         </Box>
       </Modal>
+
+      <AlertModal
+        open={alertCall}
+        onCloseFunction={setAlertCall}
+        message="Transaction is rejected!"
+        type="error"
+      />
     </Box>
   );
 }
