@@ -204,7 +204,7 @@ export default function TripPlanningPage() {
   return (
     <div style={{ backgroundColor: constants.BG_COLOR }}>
       <Grid container spacing={2} alignItems="stretch">
-        <Grid item xs={1} />
+        <Grid item xs={isRestaurantEnabled ? 1 : 2} />
 
         <Grid item xs={2}>
           <Header title="Filters" />
@@ -296,7 +296,7 @@ export default function TripPlanningPage() {
           []
         )}
 
-        <Grid item xs={3}>
+        <Grid item xs={isRestaurantEnabled ? 3 : 4}>
           <Header title="Tourist Attractions" />
 
           <Paper
@@ -356,7 +356,7 @@ export default function TripPlanningPage() {
           </Button>
         </Grid>
 
-        <Grid item xs={1} />
+        <Grid item xs={isRestaurantEnabled ? 1 : 2} />
       </Grid>
 
       <ContentModal
