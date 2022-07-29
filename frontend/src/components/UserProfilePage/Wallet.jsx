@@ -29,6 +29,7 @@ import {
 } from '../../queries/email-queries';
 import TransactionHistoryModal from './TransactionHistoryModal';
 import { findPartnerWallet } from '../../queries/partner-location-queries';
+import AlertModal from '../common/AlertModal';
 
 export default function Wallet({ isUser }) {
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -43,6 +44,9 @@ export default function Wallet({ isUser }) {
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const [transitionModalShown, setTransitionModalShown] = useState(false);
   const [authData, setAuthData] = useState();
+
+  const [transactionRejectedAlertCall, setTransactionRejectedAlertCall] = useState(false);
+  const [transactionSuccessAlertCall, setTransactionSuccessAlertCall] = useState(false);
 
   // Listening to the changes in authenticatedUser
   useEffect(() => {
@@ -77,14 +81,17 @@ export default function Wallet({ isUser }) {
         type: transactionType,
         incomingWalletId: wallet._id,
         outgoingWalletId: null
-      }).then(({ transaction, incomingWalletObject }) => {
-        if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
-          console.log('successfull');
-          setWallet(incomingWalletObject);
-        } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
-          alert('Opps, something went wrong!');
-        }
-      });
+      })
+        .then(({ transaction, incomingWalletObject }) => {
+          if (transaction.status === TRANSACTION_STATUS_SUCCESSFUL) {
+            setTransactionSuccessAlertCall(true);
+            // console.log('successfull');
+            setWallet(incomingWalletObject);
+          } else if (transaction.status === TRANSACTION_STATUS_REJECTED) {
+            // alert('Opps, something went wrong!');
+          }
+        })
+        .catch(() => setTransactionRejectedAlertCall(true));
     } else if (transactionType === TRANSACTION_TYPE_WITHDRAW) {
       const { _id } = authenticatedUserData;
       const { username } = authenticatedUserData;
@@ -340,6 +347,20 @@ export default function Wallet({ isUser }) {
           }
         />
       </Card>
+
+      <AlertModal
+        open={transactionSuccessAlertCall}
+        onCloseFunction={setTransactionSuccessAlertCall}
+        message="Your transaction is successfull"
+        type="success"
+      />
+
+      <AlertModal
+        open={transactionRejectedAlertCall}
+        onCloseFunction={setTransactionRejectedAlertCall}
+        message="Transaction is rejected."
+        type="error"
+      />
     </div>
   );
 }
