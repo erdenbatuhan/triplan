@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button, Alert, AlertTitle, Typography, Modal } from '@mui/material';
 import HelpIcon from '@mui/icons-material/Help';
 import { BG_COLOR, PRIMARY_COLOR } from '../shared/constants';
@@ -7,6 +7,7 @@ import { signupNewUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
 import { handleEmail } from '../queries/email-queries';
 import ContentModal from '../components/common/ContentModal';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 
 const modalBoxStyles = {
   position: 'absolute',
@@ -33,6 +34,7 @@ function SignUpPartnerDataPage() {
   const authContext = useContext(AuthUserContext);
   const location = useLocation();
   const authData = location.state ? location.state.authData : null;
+  const navigate = useNavigate();
 
   const fromLogin = location.state.response ? location.state.response : null;
 
@@ -164,7 +166,12 @@ function SignUpPartnerDataPage() {
         }}>
         <Box sx={modalBoxStyles}>
           <div className="center">
-            <Alert severity="info">
+            <Alert
+              severity="info"
+              onClose={() => {
+                UserAuthHelper.logoutUser();
+                navigate('/');
+              }}>
               <AlertTitle>Your request is processing!</AlertTitle>
               Your request is still under investigation. We will get in touch with you as soon as
               possible.

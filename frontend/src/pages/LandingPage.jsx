@@ -22,7 +22,7 @@ function LandingPage() {
     const anchor = document.querySelector('#main');
     anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
-  console.log(!authenticatedUser);
+  console.log(authenticatedUser);
 
   const handleExploreWorldButton = () => {
     if (!authenticatedUser) {
