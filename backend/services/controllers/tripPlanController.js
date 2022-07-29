@@ -117,9 +117,9 @@ const createTripPlan = (userId, { name, partnerLocations }) => {
         // Return the created trip locations as is
         tripLocationsCreated,
         // Sort the partner locations in "ascending" order based on the order returned from the optimization service
-        partnerLocationsSorted: partnerLocations.sort((a, b) => optimizedOrder[a["_id"]] - optimizedOrder[b["_id"]])
+        partnerLocationsSorted: partnerLocations.sort((a, b) => optimizedOrder[a["_id"]] - optimizedOrder[b["_id"]]),
       }));
-
+      
       newTripPlan = await Promise.all([
         // Add the created trip locations to the partner locations
         Promise.all(partnerLocationsSorted.map(({ _id, partnerType }, idx) => (
