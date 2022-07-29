@@ -340,8 +340,7 @@ export default function CheckoutPage() {
     if (isPaymentCompleted) {
       handleEmail(
         {
-          // to_email: authData.email,
-          to_email: 'anil.kults@gmail.com',
+          to_email: user.email,
           to_name: `${user.firstName} ${user.lastName}`,
           route: generateEmailRoute(partnerLocations),
           paid_services: generateEmailPaidServices(servicesToBeBought),
