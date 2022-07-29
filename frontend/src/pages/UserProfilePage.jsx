@@ -220,7 +220,7 @@ function UserProfilePage() {
               component="div"
               align="center"
               m={1}
-              sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
+              sx={{ fontWeight: 'bold', fontSize: 24, ml: 6 }}>
               {user.firstName} {user.lastName}
             </Typography>
 
