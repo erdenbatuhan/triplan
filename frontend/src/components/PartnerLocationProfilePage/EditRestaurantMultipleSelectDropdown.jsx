@@ -10,6 +10,8 @@ import {
   OutlinedInput
 } from '@mui/material';
 
+const MIN_SELECTED_LENGTH_BEFORE_UNWIND = 4;
+
 export default function EditRestaurantMultipleSelectDropdown({
   label,
   itemList,
@@ -25,15 +27,20 @@ export default function EditRestaurantMultipleSelectDropdown({
   return (
     <Grid>
       <FormControl sx={{ width: '100%' }}>
-        <InputLabel> {label} </InputLabel>
+        <InputLabel>{label}</InputLabel>
+
         <Select
           fullWidth
           multiple
           selected="selected"
           value={selectedItems}
           onChange={handleChange}
-          input={<OutlinedInput label="Cuisines(s)" />}
-          renderValue={(selected) => selected.join(', ')}>
+          input={<OutlinedInput label={label} />}
+          renderValue={(selected) =>
+            selected.length <= MIN_SELECTED_LENGTH_BEFORE_UNWIND
+              ? selected.join(', ')
+              : `${selected.length} ${label.toLocaleLowerCase()}`
+          }>
           {itemList.map((item) => (
             <MenuItem key={item} value={item}>
               <Checkbox checked={selectedItems.indexOf(item) > -1} />

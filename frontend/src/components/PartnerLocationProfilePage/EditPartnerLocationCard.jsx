@@ -148,7 +148,7 @@ export default function EditPartnerLocationCard({
                   {partner.partnerType === PARTNER_TYPE_RESTAURANT ? (
                     <Grid item xs={8}>
                       <EditRestaurantMultipleSelectDropdown
-                        label="Cuisine(s)"
+                        label="Cuisines"
                         itemList={constants.CUISINES}
                         selectedItems={restaurantCuisines}
                         handleDropdownSelection={handleCuisineChange}

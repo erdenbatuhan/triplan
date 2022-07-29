@@ -16,11 +16,18 @@ import ImageUpload from '../common/ImageUpload';
 import * as constants from '../../shared/constants';
 
 function EditItemModal(props) {
-  const { item, locationType, handleItemChangeCompletionClick, itemInAdd, lazyLoading } = props;
+  const {
+    item,
+    locationType,
+    handleItemChangeCompletionClick,
+    itemInAdd,
+    newObjectId,
+    lazyLoading
+  } = props;
   const { partnerId } = useParams();
 
   // const { name, description, price, type, image } = item; // reservationDate
-  const [_id, setItemId] = useState('');
+  const [_id, setItemId] = useState(null);
 
   const [name, setItemName] = useState('');
   const [description, setItemDescription] = useState('');
@@ -47,15 +54,26 @@ function EditItemModal(props) {
   // const pictureLabel = locationType === PARTNER_TYPE_RESTAURANT ? 'Menu Picture' : 'Ticket Picture';
 
   useEffect(() => {
-    setItemId(!itemInAdd ? item._id : '');
+    if (!itemInAdd) {
+      setItemId(item._id);
+    }
+
     setItemName(!itemInAdd ? item.name : '');
     setItemDescription(!itemInAdd ? item.description : '');
     setItemPrice(!itemInAdd ? item.price : '');
     setItemImage(!itemInAdd ? item.image : '');
+
     if (locationType === PARTNER_TYPE_RESTAURANT) {
       setItemFoodType(!itemInAdd ? item.foodType : '');
     }
   }, [item]);
+
+  // For the item creation, listen to the new object ID created outside and set it as the new ID
+  useEffect(() => {
+    if (itemInAdd) {
+      setItemId(newObjectId);
+    }
+  }, [newObjectId]);
 
   const onItemNameChange = (e) => {
     setItemName(e.target.value);
@@ -100,7 +118,8 @@ function EditItemModal(props) {
             touristAttraction: partnerId,
             image
           };
-    itemObject = !itemInAdd ? { ...itemObject, _id } : itemObject;
+
+    itemObject = { ...itemObject, _id };
     return itemObject;
   };
 
@@ -110,7 +129,11 @@ function EditItemModal(props) {
         <Spinner marginTop="1em" />
       ) : (
         <Stack spacing={2}>
-          <ImageUpload objectId={item._id} image={image} onSaveSuccess={onItemImageChange} />
+          {_id ? (
+            <ImageUpload objectId={_id} image={image} onSaveSuccess={onItemImageChange} />
+          ) : (
+            []
+          )}
 
           <TextField
             required

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -22,7 +23,8 @@ import PhoneIcon from '@mui/icons-material/Phone';
 // import TourIcon from '@mui/icons-material/Tour';
 // import ItemListDisplay from '../components/PartnerLocationProfilePage/ItemListDisplay';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
+import ContentModal from '../components/common/ContentModal';
+import Spinner from '../components/common/Spinner';
 import RestaurantCuisineDisplay from '../components/PartnerLocationProfilePage/RestaurantCuisineDisplay';
 import BuyableItemCard from '../components/PartnerLocationProfilePage/BuyableItemCard';
 import {
@@ -44,9 +46,8 @@ import {
 } from '../queries/buyable-item-queries';
 // import InfoCard from '../components/InfoCard';
 import { createNewPartnerSignupRequest } from '../queries/partner-signup-request-queries';
+import { createObjectId } from '../queries/util-queries';
 import { handleEmail } from '../queries/email-queries';
-import ContentModal from '../components/common/ContentModal';
-import Spinner from '../components/common/Spinner';
 
 // import { modalStyle } from '../shared/styles';
 // import TicketItemDisplay from '../components/RestaurantProfilePage/TicketItemsDisplay';
@@ -68,7 +69,7 @@ const avatarStyle = {
 };
 
 export default function PartnerLocationProfilePage() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [lazyLoading, setLazyLoading] = useState(false);
 
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
@@ -94,13 +95,15 @@ export default function PartnerLocationProfilePage() {
 
   const [isPartnerLocationEditMode, setIsPartnerLocationEditMode] = useState(false);
 
-  const [menuItemInEdit, setMenuItemInEdit] = useState([]);
+  const [menuItemInEdit, setMenuItemInEdit] = useState(null);
   // const [menuItemInDelete, setMenuItemInDelete] = useState([]);
-  const [ticketInEdit, setTicketInEdit] = useState([]);
+  const [ticketInEdit, setTicketInEdit] = useState(null);
   // const [ticketInDelete, setTicketInDelete] = useState([]);
 
   const [itemEditAddMode, setItemEditAddMode] = useState(false);
   const [itemInAdd, setItemInAdd] = useState(false);
+
+  const [newObjectId, setNewObjectId] = useState(null);
 
   const handleProfileEditClick = () => {
     // navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
@@ -161,6 +164,14 @@ export default function PartnerLocationProfilePage() {
       .finally(() => setLoading(false));
   }, [partnerId]);
 
+  useEffect(() => {
+    // When "item edit and add" mode is set to false, reset the items in edit
+    if (!itemEditAddMode) {
+      setMenuItemInEdit(null);
+      setTicketInEdit(null);
+    }
+  }, [itemEditAddMode]);
+
   const handlePartnerFieldsChange = (params) => {
     const updatedLocation = {
       _id: partnerId,
@@ -210,13 +221,13 @@ export default function PartnerLocationProfilePage() {
   };
 
   const handleBuyableItemEditClick = (event) => {
-    const editItemId = event.target.value;
+    const itemIdxString = event.target.value;
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
-      const editItem = menuList.filter((_, idx) => idx.toString() === editItemId)[0];
+      const editItem = menuList.find((_, idx) => idx.toString() === itemIdxString);
       setMenuItemInEdit(editItem);
     } else if (partner.partnerType === PARTNER_TYPE_TOURIST_ATTRACTION) {
-      const editItem = ticketList.filter((_, idx) => idx.toString() === editItemId)[0];
+      const editItem = ticketList.find((_, idx) => idx.toString() === itemIdxString);
       setTicketInEdit(editItem);
     }
 
@@ -251,13 +262,14 @@ export default function PartnerLocationProfilePage() {
     }
   };
 
-  const handleAddCompletionClick = async (_, newItem) => {
+  const handleAddCompletionClick = (_, newItem) => {
     setLazyLoading(true);
 
     if (partner.partnerType === PARTNER_TYPE_RESTAURANT) {
       addMenuItem(newItem)
         .then((menuItemCreated) => {
           setMenuList([menuItemCreated, ...menuList]);
+          setNewObjectId(null);
         })
         .finally(() => {
           setLazyLoading(false);
@@ -268,6 +280,7 @@ export default function PartnerLocationProfilePage() {
       addTicket(newItem)
         .then((ticketCreated) => {
           setTicketList([ticketCreated, ...ticketList]);
+          setNewObjectId(null);
         })
         .finally(() => {
           setLazyLoading(false);
@@ -277,7 +290,7 @@ export default function PartnerLocationProfilePage() {
     }
   };
 
-  const handleItemChangeCompletionClick = async (event, params) => {
+  const handleItemChangeCompletionClick = (event, params) => {
     if (!itemInAdd) {
       handleEditCompletionClick(event, params);
     } else {
@@ -285,7 +298,14 @@ export default function PartnerLocationProfilePage() {
     }
   };
 
-  const handleAddMenuItem = async () => {
+  const handleBuyableItemAddClick = () => {
+    setLazyLoading(true);
+    createObjectId()
+      .then((data) => {
+        setNewObjectId(data);
+      })
+      .finally(() => setLazyLoading(false));
+
     setItemEditAddMode(true);
     setItemInAdd(true);
   };
@@ -401,7 +421,7 @@ export default function PartnerLocationProfilePage() {
 
           <Grid item xs={3} display="flex">
             <Typography component="div" align="center" m={1} sx={{ fontSize: 'h6' }}>
-              {priceLevels.join(' | ')}
+              {priceLevels.sort().join(' | ')}
             </Typography>
           </Grid>
         </Grid>
@@ -409,7 +429,7 @@ export default function PartnerLocationProfilePage() {
         {isShownPartnerAuthenticated ? (
           <Grid>
             <Grid item justifyContent="center" display="flex" sx={{ mb: 2 }}>
-              <Button variant="contained" onClick={handleProfileEditClick}>
+              <Button sx={{ mt: 1, mb: 1 }} variant="contained" onClick={handleProfileEditClick}>
                 Edit Profile
               </Button>
             </Grid>
@@ -458,7 +478,7 @@ export default function PartnerLocationProfilePage() {
                       ? 'Add new menu'
                       : 'Add new ticket'
                   }>
-                  <IconButton sx={{ m: 2 }} onClick={handleAddMenuItem}>
+                  <IconButton sx={{ m: 2 }} onClick={handleBuyableItemAddClick}>
                     <AddCircleOutlineIcon fontSize="large" />
                   </IconButton>
                 </Tooltip>
@@ -493,12 +513,8 @@ export default function PartnerLocationProfilePage() {
                   return (
                     <BuyableItemCard
                       key={item._id}
-                      menuId={item._id}
                       itemIdx={idx}
-                      name={item.name}
-                      content={item.description}
-                      price={item.price.toString()}
-                      image={item.image}
+                      buyableItem={item}
                       handleBuyableItemEditClick={handleBuyableItemEditClick}
                       handleBuyableItemDeleteClick={handleBuyableItemDeleteClick}
                       partnerType={partner.partnerType}
@@ -520,9 +536,11 @@ export default function PartnerLocationProfilePage() {
               contentRendered={
                 <EditItemModal
                   key={
-                    partner.partnerType === PARTNER_TYPE_RESTAURANT
-                      ? menuItemInEdit._id
-                      : ticketInEdit._id
+                    menuItemInEdit
+                      ? partner.partnerType === PARTNER_TYPE_RESTAURANT
+                        ? menuItemInEdit._id
+                        : ticketInEdit._id
+                      : newObjectId
                   }
                   item={
                     partner.partnerType === PARTNER_TYPE_RESTAURANT ? menuItemInEdit : ticketInEdit
@@ -530,6 +548,7 @@ export default function PartnerLocationProfilePage() {
                   locationType={partner.partnerType}
                   handleItemChangeCompletionClick={handleItemChangeCompletionClick}
                   itemInAdd={itemInAdd}
+                  newObjectId={newObjectId}
                   lazyLoading={lazyLoading}
                 />
               }
