@@ -32,7 +32,7 @@ import {
   TRANSACTION_STATUS_REJECTED,
   BG_COLOR
 } from '../shared/constants';
-import { getAuthData } from '../queries/authentication-queries';
+import { getAuthData, removeAuthentication } from '../queries/authentication-queries';
 
 // function getWithdrawRequestRows(allWithdrawRequests) {
 //   const rows = [];
@@ -195,24 +195,26 @@ function AdminPage() {
 
   const handleRejectPartnerSignupRequest = () => {
     partnerSignupSelectedRows.forEach((partner) => {
+      console.log(partner);
       const { id } = partner;
       removePartnerSignupRequest(id).then(() =>
-        handleEmail(
-          {
-            subject: 'Your Partnership is Rejected!',
-            to_name: partner.username,
-            // to_email: partner.email,
-            to_email: 'anil.kults@gmail.com',
-            intro_message: `Your partnership is rejected.`,
-            final_message: 'You can contact us about the problem.'
-          },
-          'general'
-        ).then(() => {
-          syncPartnerSignupRequests();
-          setIsApproved(false);
-          setIsSuccessfull(true);
-          setIsOpen(true);
-        })
+        removeAuthentication(partner.authentication).then(() =>
+          handleEmail(
+            {
+              subject: 'Your Partnership is Rejected!',
+              to_name: partner.username,
+              to_email: partner.email,
+              intro_message: `Your partnership is rejected.`,
+              final_message: 'You can contact us about the problem.'
+            },
+            'general'
+          ).then(() => {
+            syncPartnerSignupRequests();
+            setIsApproved(false);
+            setIsSuccessfull(true);
+            setIsOpen(true);
+          })
+        )
       );
     });
   };
@@ -233,7 +235,7 @@ function AdminPage() {
                 {
                   subject: 'Congratulations! Your Partnership is Approved!',
                   to_name: partner.username,
-                  to_email: 'anil.kults@gmail.com', // partner.email
+                  to_email: partner.email, // partner.email
                   intro_message: `Your partnership is approved. Welcome to Triplan family.`,
                   final_message:
                     'You can complete your profile by logging in the system and start to meet with your customers.'
@@ -258,7 +260,7 @@ function AdminPage() {
                 {
                   subject: 'Congratulations! Your Partnership is Approved!',
                   to_name: partner.username,
-                  to_email: 'anil.kults@gmail.com', // partner.email
+                  to_email: partner.email, // partner.email
                   intro_message: `Your partnership is approved. Welcome to Triplan family.`,
                   final_message:
                     'You can complete your profile by logging in the system and start to meet with your customers.'

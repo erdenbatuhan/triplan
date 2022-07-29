@@ -20,10 +20,20 @@ const removePartnerSignupRequest = (id) => {
   return PartnerSignupRequest.deleteOne({ _id: id });
 };
 
+const findByAuthId = (id) => {
+  return PartnerSignupRequest.findOne({ authentication: { $eq: id } });
+};
+
+const exists = (id) => {
+  return PartnerSignupRequest.exists({ _id: id });
+};
+
 module.exports = {
   find,
   sendPartnerSignupRequest,
   createPartnerSignupRequest,
   removePartnerSignupRequest,
   findById,
+  findByAuthId,
+  exists,
 };

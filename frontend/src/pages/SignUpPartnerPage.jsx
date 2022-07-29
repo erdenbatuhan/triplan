@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Grid, TextField, Button, Alert, AlertTitle, Typography, Modal } from '@mui/material';
 import HelpIcon from '@mui/icons-material/Help';
 import { BG_COLOR, PRIMARY_COLOR } from '../shared/constants';
@@ -7,6 +7,7 @@ import { signupNewUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
 import { handleEmail } from '../queries/email-queries';
 import ContentModal from '../components/common/ContentModal';
+import { UserAuthHelper } from '../authentication/user-auth-helper';
 
 const modalBoxStyles = {
   position: 'absolute',
@@ -33,6 +34,9 @@ function SignUpPartnerDataPage() {
   const authContext = useContext(AuthUserContext);
   const location = useLocation();
   const authData = location.state ? location.state.authData : null;
+  const navigate = useNavigate();
+
+  const fromLogin = location.state.response ? location.state.response : null;
 
   const handleInfo = () => {
     setIsInfoOpened(true);
@@ -50,18 +54,21 @@ function SignUpPartnerDataPage() {
         console.error(`authentication data is missing ${authData}`);
       }
       const signupData = { authData, userData };
-      console.log('signupData: ', signupData);
+
       const message = await signupNewUser(signupData);
       const { success, token } = message;
       authContext.loginUser(token);
       if (success && token) {
         setIsConfirmed('Requested');
-        handleEmail({
-          to_name: authData.username, // auth.username
-          to_email: 'anil.kults@gmail.com', // auth.email ?
-          intro_message: `Your sign up request is processing. We will get in touch with you as soon as possible.`,
-          request_id: 'New partner location sign up request'
-        });
+        handleEmail(
+          {
+            subject: 'Your Confirmation Request is Under Investigation!',
+            to_name: authData.username, // auth.username
+            to_email: authData.email, // auth.email ?
+            intro_message: `Your sign up request is processing. We will get in touch with you as soon as possible.`
+          },
+          'general'
+        );
       }
     } catch (e) {
       console.error(`failed to create user ${e}`);
@@ -78,7 +85,7 @@ function SignUpPartnerDataPage() {
         backgroundColor: BG_COLOR
       }}>
       <ContentModal
-        open={isConfirmed === 'No Request'}
+        open={isConfirmed === 'No Request' && !fromLogin}
         contentStyle={{
           display: 'flex',
           justifyConent: 'center',
@@ -141,7 +148,7 @@ function SignUpPartnerDataPage() {
                   height: '40px'
                 }}
                 onClick={handleSendPartnerRequest}>
-                Send Withdraw Request
+                Send Confirmation Request
               </Button>
             </Grid>
           </Box>
@@ -149,7 +156,7 @@ function SignUpPartnerDataPage() {
       />
 
       <Modal
-        open={isConfirmed === 'Requested'}
+        open={isConfirmed === 'Requested' || !!fromLogin}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         style={{
@@ -159,7 +166,12 @@ function SignUpPartnerDataPage() {
         }}>
         <Box sx={modalBoxStyles}>
           <div className="center">
-            <Alert severity="info">
+            <Alert
+              severity="info"
+              onClose={() => {
+                UserAuthHelper.logoutUser();
+                navigate('/');
+              }}>
               <AlertTitle>Your request is processing!</AlertTitle>
               Your request is still under investigation. We will get in touch with you as soon as
               possible.
