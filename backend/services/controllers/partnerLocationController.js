@@ -42,10 +42,10 @@ const findFiltered = ({ filterData }) => {
     TouristAttraction.find({
       [filterData["city"] ? "city" : ""]: filterData["city"],
       touristAttractionTypes: {
-        $in: filterData["touristAttractionFilter"]["types"][1], // TODO: Do we need 1 here?
+        $in: filterData["touristAttractionFilter"]["types"],
       },
     }),
-  ]).then(([restaurants, touristAttractions]) => ({ restaurants, touristAttractions }));
+  ]).then(([ restaurants, touristAttractions ]) => ({ restaurants, touristAttractions }));
 };
 
 const findByTripLocations = (tripLocationIds) => {

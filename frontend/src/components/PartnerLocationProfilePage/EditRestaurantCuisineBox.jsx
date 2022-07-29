@@ -34,7 +34,7 @@ function EditRestaurantCuisineBox({ handleCuisineChange } /* props */) {
           onChange={handleChange}
           input={<OutlinedInput label="Cuisines(s)" />}
           renderValue={(selected) => selected.join(', ')}>
-          {constants.cuisines.map((cuisine) => (
+          {constants.CUISINES.map((cuisine) => (
             <MenuItem key={cuisine} value={cuisine}>
               <Checkbox checked={selectedCuisines.indexOf(cuisine) > -1} />
               <ListItemText primary={cuisine} />
@@ -50,7 +50,7 @@ function EditRestaurantCuisineBox({ handleCuisineChange } /* props */) {
       <Typography align="left">Select Type of Cuisines(s)</Typography>
       <FormGroup>
         <Grid container spacing={2}>
-          {constants.cuisines.map((cuisine, idx) => {
+          {constants.CUISINES.map((cuisine, idx) => {
             const checked = selectedItems.includes(cuisine);
             return (
               // eslint-disable-next-line react/no-array-index-key

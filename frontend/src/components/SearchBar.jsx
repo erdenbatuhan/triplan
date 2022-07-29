@@ -12,6 +12,7 @@ function SearchBar({ label, entries, previousSelection, onSelectionChange }) {
 
   return (
     <Autocomplete
+      sx={{ background: 'white' }}
       freeSolo
       disableClearable
       options={entries.map((item) => item)}

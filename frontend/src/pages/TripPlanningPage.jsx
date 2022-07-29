@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import { green } from '@mui/material/colors';
-import { Button } from '@mui/material';
+import { Button, FormControlLabel, Switch } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -13,30 +13,29 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Spinner from '../components/common/Spinner';
 import Header from '../components/common/Header';
+import FilterDropdown from '../components/common/FilterDropdown';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
-import PlaceFilter from '../components/TripPlanningPage/PlaceFilter';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import { createTripPlan } from '../queries/trip-plan-queries';
 import GoogleMap from '../components/GoogleMap';
-import {
-  PARTNER_TYPE_RESTAURANT,
-  PARTNER_TYPE_TOURIST_ATTRACTION,
-  BG_COLOR
-} from '../shared/constants';
+import * as constants from '../shared/constants';
 
 export default function TripPlanningPage() {
   const { state } = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  if (!state) {
+    navigate(-1);
+    return <div />;
+  }
+
   const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
-  const [selectedCity] = useState(state.selectedCity);
+  const [selectedCity] = useState(state.filterData.selectedCity);
   const [filterState, setFilterState] = useState(state.filterData);
-  const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(
-    state ? state.isRestaurantEnabled : true
-  );
+  const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(state.isRestaurantEnabled);
 
   const [loading, setLoading] = useState(false);
   const [tripPlanCreationInProgress, setTripPlanCreationInProgress] = useState(false);
@@ -78,6 +77,7 @@ export default function TripPlanningPage() {
     setLoading(true);
     getFilteredPartnerLocations(authenticatedUser.user.id, filterState)
       .then((data) => setPartnerLocations(data))
+      .catch(() => alert('An error occurred!'))
       .finally(() => setLoading(false));
   }, [authenticatedUser, filterState]);
 
@@ -130,25 +130,18 @@ export default function TripPlanningPage() {
     // Also update the number of places selected
     setNumRestaurantsSelected(
       Object.values(selectedPartnerLocationsChanged).filter(
-        ({ partnerType }) => partnerType === PARTNER_TYPE_RESTAURANT
+        ({ partnerType }) => partnerType === constants.PARTNER_TYPE_RESTAURANT
       ).length
     );
     setNumTouristAttractionsSelected(
       Object.values(selectedPartnerLocationsChanged).filter(
-        ({ partnerType }) => partnerType === PARTNER_TYPE_TOURIST_ATTRACTION
+        ({ partnerType }) => partnerType === constants.PARTNER_TYPE_TOURIST_ATTRACTION
       ).length
     );
   };
 
-  const handleRestaurantEnable = (event) => {
-    setIsRestaurantEnabled(event.target.checked);
-  };
-
-  const handleFilterChange = (newFilterState) => {
-    setFilterState({ ...newFilterState, city: selectedCity });
-  };
-
   const proceedWithTripPlanCreation = () => {
+    console.log(filterState);
     setLoading(true);
 
     createTripPlan(
@@ -165,24 +158,124 @@ export default function TripPlanningPage() {
       });
   };
 
+  const applyFilter = () => {
+    const filterStateApplied = { ...filterState };
+
+    if (!isRestaurantEnabled) {
+      filterStateApplied.filterData.restaurantFilter =
+        constants.EMPTY_FILTER.filterData.restaurantFilter;
+    }
+
+    // Check for unchanged filter
+    if (JSON.stringify(constants.EMPTY_FILTER) === JSON.stringify(filterStateApplied)) {
+      alert('Please select at least one option from the filter');
+      return;
+    }
+
+    setLoading(true);
+    getFilteredPartnerLocations(authenticatedUser.user.id, filterStateApplied)
+      .then((data) => setPartnerLocations(data))
+      .finally(() => setLoading(false));
+  };
+
+  const handleCuisinesChange = (updatedCuisines) => {
+    filterState.filterData.restaurantFilter.cuisines = updatedCuisines;
+    setFilterState(filterState);
+  };
+
+  const handleFoodTypesChange = (updatedFoodTypes) => {
+    filterState.filterData.restaurantFilter.foodTypes = updatedFoodTypes;
+    setFilterState(filterState);
+  };
+
+  const handlePriceLevelsChange = (updatedPriceLevels) => {
+    filterState.filterData.restaurantFilter.priceLevels = updatedPriceLevels;
+    setFilterState(filterState);
+  };
+
+  const handleTouristAttractionTypesChange = (updatedTouristAttractionTypes) => {
+    filterState.filterData.touristAttractionFilter.types = updatedTouristAttractionTypes;
+    setFilterState(filterState);
+  };
+
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
 
   return (
-    <div style={{ backgroundColor: BG_COLOR }}>
-      <Grid container spacing={1}>
-        <Grid item xs={3}>
+    <div style={{ backgroundColor: constants.BG_COLOR }}>
+      <Grid container spacing={2} alignItems="stretch">
+        <Grid item xs={1} />
+
+        <Grid item xs={2}>
           <Header title="Filters" />
 
-          <PlaceFilter
-            filterState={filterState}
-            handleFilterChange={handleFilterChange}
-            isRestaurantEnabled={isRestaurantEnabled}
-            handleRestaurantEnable={handleRestaurantEnable}
-            calledFrom="TripPlanningPage"
-          />
+          <Box textAlign="center">
+            <FormControlLabel
+              control={
+                <Switch
+                  onChange={() => setIsRestaurantEnabled(!isRestaurantEnabled)}
+                  checked={isRestaurantEnabled}
+                  color="primary"
+                />
+              }
+              label="Looking for restaurants as well?"
+              labelPlacement="top"
+            />
+          </Box>
+
+          <Box>
+            <FilterDropdown
+              label="Types of Places"
+              options={constants.TOURIST_ATTRACTION_TYPE_MAP}
+              nameKey="name"
+              valueKey="value"
+              selections={filterState.filterData.touristAttractionFilter.types}
+              onSelectionChange={handleTouristAttractionTypesChange}
+            />
+          </Box>
+
+          <Box>
+            <FilterDropdown
+              label="Cuisines"
+              options={constants.CUISINES}
+              selections={filterState.filterData.restaurantFilter.cuisines}
+              onSelectionChange={handleCuisinesChange}
+              disabled={!isRestaurantEnabled}
+            />
+          </Box>
+
+          <Box>
+            <FilterDropdown
+              label="Price Levels"
+              options={constants.PRICE_LEVELS}
+              selections={filterState.filterData.restaurantFilter.priceLevels}
+              onSelectionChange={handlePriceLevelsChange}
+              disabled={!isRestaurantEnabled}
+            />
+          </Box>
+
+          <Box>
+            <FilterDropdown
+              label="Diet Options"
+              options={constants.FOOD_TYPES}
+              selections={filterState.filterData.restaurantFilter.foodTypes}
+              onSelectionChange={handleFoodTypesChange}
+              disabled={!isRestaurantEnabled}
+            />
+          </Box>
+
+          <Box>
+            <Button
+              sx={{ mt: 2, mb: 2, width: '100%', background: 'white' }}
+              fontSize="large"
+              variant="outlined"
+              onClick={applyFilter}>
+              Apply Filter
+            </Button>
+          </Box>
         </Grid>
+
         {isRestaurantEnabled ? (
           <Grid item xs={3}>
             <Header title="Restaurants" />
@@ -196,8 +289,7 @@ export default function TripPlanningPage() {
             </Paper>
           </Grid>
         ) : (
-          // eslint-disable-next-line react/jsx-no-useless-fragment
-          <></>
+          []
         )}
 
         <Grid item xs={3}>
@@ -212,7 +304,7 @@ export default function TripPlanningPage() {
           </Paper>
         </Grid>
 
-        <Grid item xs={3}>
+        <Grid item xs={2}>
           <Header title="Selected Places" />
 
           <GoogleMap
@@ -248,6 +340,8 @@ export default function TripPlanningPage() {
             Create My Triplan!
           </Button>
         </Grid>
+
+        <Grid item xs={1} />
       </Grid>
 
       <Modal

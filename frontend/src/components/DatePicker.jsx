@@ -13,7 +13,9 @@ function DatePicker() {
         inputFormat="dd/MM/yyyy"
         value={value}
         onChange={setValue}
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => (
+          <TextField sx={{ background: 'white', width: '100%' }} {...params} />
+        )}
       />
     </LocalizationProvider>
   );
