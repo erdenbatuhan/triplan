@@ -21,7 +21,9 @@ const findByUsername = (username) => {
  * Gets user data without the password.
  */
 const getAuthDataWithoutPassword = (id) => {
-  return Authentication.findOne({ _id: { $eq: id } }).select("username email userType");
+  return Authentication.findOne({ _id: { $eq: id } }).select(
+    "username email userType"
+  );
 };
 
 /**
@@ -152,18 +154,28 @@ const login = async (req, res) => {
         newUser = await partnerLocationController.findRestaurantByAuthId(
           authUser._id
         );
+        if (!newUser) {
+          newUser = await partnerSignupRequestController.findByAuthId(
+            authUser._id
+          );
+        }
         break;
       case USER_TYPES[3]:
         newUser = await partnerLocationController.findTouristAttractionByAuthId(
           authUser._id
         );
+        if (!newUser) {
+          newUser = await partnerSignupRequestController.findByAuthId(
+            authUser._id
+          );
+        }
         break;
       default:
         res
           .status(400)
           .json({ msg: `Given user type is not known: ${userType}` });
     }
-    
+
     if (!!!newUser) {
       return res.status(400).json({ msg: "Error in getting user." });
     }
@@ -201,8 +213,13 @@ const login = async (req, res) => {
   }
 };
 
+const removeAuthentication = (id) => {
+  return Authentication.deleteOne({ _id: id });
+};
+
 module.exports = {
   getAuthDataWithoutPassword,
   signUp,
   login,
+  removeAuthentication
 };

@@ -42,4 +42,24 @@ router.get("/user", async (req, res) => {
   }
 });
 
+/**
+ * Remove a user related user id.
+ */
+
+router.get("/remove/:id", async (req, res) => {
+  console.log(req);
+  try {
+    const authId = req.params.id;
+    const auth = await authenticationController.removeAuthentication(authId);
+
+    if (!auth) {
+      return res.status(404).send(`No withdrawRequest found with ID=${authId}!`);
+    }
+
+    return res.status(200).send(auth);
+  } catch ({ message }) {
+    res.status(500).send(message);
+  }
+});
+
 module.exports = router;

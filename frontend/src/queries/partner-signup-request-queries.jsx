@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { HOST_PARTNER_SIGNUP_REQUEST, HEADERS } from './constants';
 
 export async function getAllPartnerSignupRequests() {
@@ -31,4 +32,10 @@ export async function removePartnerSignupRequest(id) {
     mode: `cors`,
     headers: HEADERS
   }).then((response) => response.json());
+}
+
+export async function checkRequest(id) {
+  return axios
+    .get(`${HOST_PARTNER_SIGNUP_REQUEST}/check/${id}`, { HEADERS })
+    .then(({ data }) => data);
 }

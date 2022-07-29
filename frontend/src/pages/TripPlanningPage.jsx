@@ -8,17 +8,20 @@ import { Button, FormControlLabel, Switch } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Spinner from '../components/common/Spinner';
 import Header from '../components/common/Header';
 import ContentModal from '../components/common/ContentModal';
 import FilterDropdown from '../components/common/FilterDropdown';
 import PlacesList from '../components/PlacesList';
 import SelectedPlacesList from '../components/SelectedPlacesList';
-import { UserAuthHelper } from '../authentication/user-auth-helper';
+// import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { getFilteredPartnerLocations } from '../queries/partner-location-queries';
 import { createTripPlan } from '../queries/trip-plan-queries';
 import GoogleMap from '../components/GoogleMap';
 import * as constants from '../shared/constants';
+import { sum } from '../shared/object-utils';
 
 export default function TripPlanningPage() {
   const { state } = useLocation();
@@ -31,7 +34,7 @@ export default function TripPlanningPage() {
     return <div />;
   }
 
-  const [authenticatedUser] = useState(UserAuthHelper.getStoredUser());
+  const [authenticatedUser] = useState({ user: { id: '62e166e0c21cf3c59e89a27d' } });
   const [selectedCity] = useState(state.selectedCity);
   const [isRestaurantEnabled, setIsRestaurantEnabled] = useState(state.isRestaurantEnabled);
   const [filterState, setFilterState] = useState(state.filterData);
@@ -51,6 +54,9 @@ export default function TripPlanningPage() {
     winWidth: window.innerWidth,
     winHeight: window.innerHeight
   });
+
+  const [distanceSortDirectionAsc, setDistanceSortDirectionAsc] = useState(true);
+  const [priceSortDirectionAsc, setPriceSortDirectionAsc] = useState(true);
 
   const detectSize = () => {
     detectHW({
@@ -185,6 +191,56 @@ export default function TripPlanningPage() {
     setFilterState(filterState);
   };
 
+  const sortByPrice = () => {
+    const partnerLocationsSorted = {
+      restaurants: [...partnerLocations.restaurants],
+      touristAttractions: [...partnerLocations.touristAttractions]
+    };
+
+    partnerLocationsSorted.restaurants.sort((a, b) => {
+      const pricesA = sum(a.priceLevels.map((i) => constants.PRICE_LEVELS_TO_INT[i]));
+      const pricesB = sum(b.priceLevels.map((i) => constants.PRICE_LEVELS_TO_INT[i]));
+
+      return (priceSortDirectionAsc ? 1 : -1) * pricesA - pricesB;
+    });
+
+    setLoading(true);
+    setTimeout(() => {
+      setPartnerLocations(partnerLocationsSorted);
+
+      setPriceSortDirectionAsc(!priceSortDirectionAsc);
+      setLoading(false);
+    }, 1000);
+  };
+
+  const sortByDistanceToCenter = () => {
+    const partnerLocationsSorted = {
+      restaurants: [...partnerLocations.restaurants],
+      touristAttractions: [...partnerLocations.touristAttractions]
+    };
+
+    const compareByDistToCenter = (a, b) => {
+      if (!a.googleLocationInfo) return b;
+      if (!b.googleLocationInfo) return a;
+
+      return (
+        (distanceSortDirectionAsc ? 1 : -1) * a.googleLocationInfo.distanceToCityCenter -
+        b.googleLocationInfo.distanceToCityCenter
+      );
+    };
+
+    partnerLocationsSorted.restaurants.sort(compareByDistToCenter);
+    partnerLocationsSorted.touristAttractions.sort(compareByDistToCenter);
+
+    setLoading(true);
+    setTimeout(() => {
+      setPartnerLocations(partnerLocationsSorted);
+
+      setDistanceSortDirectionAsc(!distanceSortDirectionAsc);
+      setLoading(false);
+    }, 1000);
+  };
+
   if (loading) {
     return <Spinner marginTop="5em" />;
   }
@@ -250,6 +306,30 @@ export default function TripPlanningPage() {
               onSelectionChange={handleFoodTypesChange}
               disabled={!isRestaurantEnabled}
             />
+          </Box>
+
+          <Box>
+            <Grid container textAlign="center">
+              <Grid item xs={12}>
+                <Button
+                  fontSize="small"
+                  variant="text"
+                  endIcon={distanceSortDirectionAsc ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+                  onClick={sortByDistanceToCenter}>
+                  Sort by Distance
+                </Button>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button
+                  fontSize="small"
+                  variant="text"
+                  endIcon={priceSortDirectionAsc ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+                  onClick={sortByPrice}>
+                  Sort by Price
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
 
           <Box>

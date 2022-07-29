@@ -2,7 +2,7 @@ import { Grid, Card, Typography } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useState } from 'react';
-import WhyTriplanCard from './WhyTriplanCard';
+import WhyTriplanCard from './whyTriplanCard';
 
 const personalizedImg = require('../../assets/personalized.png');
 const timeSaverImg = require('../../assets/timeSaver.png');

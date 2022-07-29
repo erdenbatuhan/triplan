@@ -66,7 +66,7 @@ export default function FilterBox({
 
   return (
     <div>
-      <FormControl sx={{ mt: 2, mb: 2, width: '100%', background: 'white' }}>
+      <FormControl sx={{ mt: 1, mb: 1, width: '100%', background: 'white' }}>
         <InputLabel>{label}</InputLabel>
 
         <Select

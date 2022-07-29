@@ -25,3 +25,11 @@ export async function getAuthData(userData) {
     headers: HEADERS
   }).then((response) => response.json());
 }
+
+export async function removeAuthentication(id) {
+  return await fetch(`${HOST_AUTH}/remove/${id}`, {
+    method: `GET`,
+    mode: `cors`,
+    headers: HEADERS
+  }).then((response) => response.json());
+}
