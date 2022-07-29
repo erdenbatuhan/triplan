@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Grid,
   Stack,
@@ -21,7 +21,7 @@ import Wallet from '../components/UserProfilePage/Wallet';
 import FollowingsCard from '../components/UserProfilePage/FollowingsCard';
 import EditUserProfileCard from '../components/UserProfilePage/EditUserProfileCard';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
-import { getUser, updateUserFields } from '../queries/user-queries';
+import { checkUser, getUser, updateUserFields } from '../queries/user-queries';
 import {
   getFollowingRelationship,
   createFollowingRelationship,
@@ -56,7 +56,7 @@ function UserProfilePage() {
 
   const [isShownUserAuthenticated, setIsShownUserAuthenticated] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-
+  const navigate = useNavigate();
   const getCountText = (count, onClick) => {
     return (
       <Box
@@ -140,6 +140,9 @@ function UserProfilePage() {
 
   // Listening to the changes in userId
   useEffect(() => {
+    checkUser(userId)
+      .then((data) => console.log('user data: ', data))
+      .catch(({ response }) => navigate('/', { state: { response } }));
     // Reset the remaining state that is not reset below!
     setFollowersModalShown(false);
     setFollowedModalShown(false);
@@ -217,7 +220,7 @@ function UserProfilePage() {
               component="div"
               align="center"
               m={1}
-              sx={{ fontWeight: 'bold', fontSize: 'subtitle1' }}>
+              sx={{ fontWeight: 'bold', fontSize: 24, ml: 6 }}>
               {user.firstName} {user.lastName}
             </Typography>
 

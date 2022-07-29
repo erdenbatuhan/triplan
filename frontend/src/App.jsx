@@ -22,7 +22,6 @@ import NavBar from './components/common/NavigationBar';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(UserAuthHelper.isLoggedIn());
-  // const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [authenticatedUser, setAuthenticatedUser] = useState(UserAuthHelper.getStoredUser());
   console.log('App, ', isLoggedIn);
 

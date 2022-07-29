@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Grid,
@@ -32,7 +32,8 @@ import {
   getTouristAttraction,
   saveRestaurant,
   saveTouristAttraction,
-  getPartnerLocationById
+  getPartnerLocationById,
+  checkPartner
 } from '../queries/partner-location-queries';
 import {
   getMenuItems,
@@ -105,6 +106,8 @@ export default function PartnerLocationProfilePage() {
 
   const [newObjectId, setNewObjectId] = useState(null);
 
+  const navigate = useNavigate();
+
   const handleProfileEditClick = () => {
     // navigate(`/edit-partner-profile/${partnerId}`, { state: { partnerType: partnerLocationType } });
     setIsPartnerLocationEditMode(true);
@@ -135,6 +138,10 @@ export default function PartnerLocationProfilePage() {
   console.log(isConfirmed);
 
   useEffect(() => {
+    checkPartner(partnerId)
+      .then((data) => console.log('partner data: ', data))
+      .catch(({ response }) => navigate('/', { state: { response } }));
+
     setIsPartnerLocationEditMode(false);
     setLazyLoading(false);
     setLoading(true);

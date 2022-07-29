@@ -45,7 +45,10 @@ const findFiltered = ({ filterData }) => {
         $in: filterData["touristAttractionFilter"]["types"],
       },
     }),
-  ]).then(([ restaurants, touristAttractions ]) => ({ restaurants, touristAttractions }));
+  ]).then(([restaurants, touristAttractions]) => ({
+    restaurants,
+    touristAttractions,
+  }));
 };
 
 const findByTripLocations = (tripLocationIds) => {
@@ -196,19 +199,34 @@ const findByGoogleId = async ({ googlePlaceId, partnerType }) => {
   }
 };
 
-const deleteAssociatedTripLocationsFromPartnerLocations = (tripLocationsIds, session) => {
-  return Promise.all(tripLocationsIds.map(tripLocationId => {
-    const queryParams = [
-      { associatedTripLocations: { $in: tripLocationId } },
-      { $pull: { associatedTripLocations: tripLocationId } },
-      { new: true, runValidators: true, session }
-    ];
+const deleteAssociatedTripLocationsFromPartnerLocations = (
+  tripLocationsIds,
+  session
+) => {
+  return Promise.all(
+    tripLocationsIds.map((tripLocationId) => {
+      const queryParams = [
+        { associatedTripLocations: { $in: tripLocationId } },
+        { $pull: { associatedTripLocations: tripLocationId } },
+        { new: true, runValidators: true, session },
+      ];
 
-    return Promise.all([
-      Restaurant.findOneAndUpdate(...queryParams),
-      TouristAttraction.findOneAndUpdate(...queryParams)
-    ]).then(([ restaurant, touristAttraction ]) => restaurant || touristAttraction);
-  }));
+      return Promise.all([
+        Restaurant.findOneAndUpdate(...queryParams),
+        TouristAttraction.findOneAndUpdate(...queryParams),
+      ]).then(
+        ([restaurant, touristAttraction]) => restaurant || touristAttraction
+      );
+    })
+  );
+};
+
+const restaurantExists = (id) => {
+  return Restaurant.exists({ _id: id });
+};
+
+const touristAttractionExists = (id) => {
+  return TouristAttraction.exists({ _id: id });
 };
 
 module.exports = {
@@ -230,4 +248,6 @@ module.exports = {
   findTouristAttractionWalletsByWalletIds,
   findByGoogleId,
   deleteAssociatedTripLocationsFromPartnerLocations,
+  restaurantExists,
+  touristAttractionExists,
 };
