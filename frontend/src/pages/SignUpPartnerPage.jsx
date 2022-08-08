@@ -65,7 +65,7 @@ function SignUpPartnerDataPage() {
             subject: 'Your Confirmation Request is Under Investigation!',
             to_name: authData.username, // auth.username
             to_email: authData.email, // auth.email ?
-            intro_message: `Your sign up request is processing. We will get in touch with you as soon as possible.`
+            intro_message: `Your signup request is being proessed. We will get in touch with you as soon as possible.`
           },
           'general'
         );

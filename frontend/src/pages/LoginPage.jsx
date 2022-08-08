@@ -6,7 +6,14 @@ import { Box, Grid, TextField, Button } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { loginUser } from '../queries/authentication-queries';
 import { AuthUserContext } from '../authentication/AuthUserContext';
-import { USER_TYPE_USER, BG_COLOR, WHITE, PRIMARY_COLOR } from '../shared/constants';
+import {
+  USER_TYPE_USER,
+  BG_COLOR,
+  WHITE,
+  PRIMARY_COLOR,
+  PARTNER_TYPE_RESTAURANT,
+  PARTNER_TYPE_TOURIST_ATTRACTION
+} from '../shared/constants';
 import { UserAuthHelper } from '../authentication/user-auth-helper';
 import { checkRequest } from '../queries/partner-signup-request-queries';
 
@@ -47,16 +54,25 @@ function LoginPage() {
         password,
         userType
       };
+
       const message = await loginUser(userData);
       const { success, token } = message;
+
       if ((success, token)) {
         const data = UserAuthHelper.getDataFromToken(token);
         authContext.loginUser(token);
-        checkRequest(data.user.id)
+
+        await checkRequest(data.user.id)
           .then((response) => navigate('/signup-partner-profile', { state: { response } }))
           .catch(() => console.log('request is handled by admin'));
+
         if (data.user.userType === USER_TYPE_USER) {
           navigate('/main-page');
+        } else if (
+          data.user.userType === PARTNER_TYPE_RESTAURANT ||
+          data.user.userType === PARTNER_TYPE_TOURIST_ATTRACTION
+        ) {
+          navigate(`/partner-profile/${data.user.id}`);
         }
       }
     } catch (e) {

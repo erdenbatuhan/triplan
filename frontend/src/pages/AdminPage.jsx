@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Button, Modal, Grid } from '@mui/material';
@@ -11,9 +10,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { getAllWithdrawRequests, removeWithdrawRequest } from '../queries/withdraw-request-queries';
 import {
-  getRestaurant,
   saveRestaurant,
-  getTouristAttraction,
   saveTouristAttraction,
   getPartnerLocationByGoogleId
 } from '../queries/partner-location-queries';
@@ -22,7 +19,6 @@ import {
   removePartnerSignupRequest
 } from '../queries/partner-signup-request-queries';
 import { createTransaction } from '../queries/transaction-queries';
-import { getUser } from '../queries/user-queries';
 import { handleEmail } from '../queries/email-queries';
 import {
   PARTNER_TYPE_RESTAURANT,
@@ -115,7 +111,6 @@ function AdminPage() {
   const [isSuccessfull, setIsSuccessfull] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
   const [openPartnerLocWarning, setOpenPartnerLocWarning] = useState(false);
-  const [curPartner, setCurPartner] = useState(null);
   const [signupRows, setSignupRows] = useState([]);
   const [withdrawRows, setWithdrawRows] = useState([]);
 
@@ -297,7 +292,7 @@ function AdminPage() {
             to_name: withdrawReq.username,
             to_email: withdrawReq.email,
             intro_message: `Your withdraw request is rejected.`,
-            final_message: 'Please do not hesitate to contact about the problem.',
+            final_message: 'Please do not hesitate to contact us about the problem.',
             details_message: 'Request Details',
             details_1: `Paypal Account: ${withdrawReq.paypalEmail}`,
             details_2: `Amount: ${withdrawReq.amount} €`,
