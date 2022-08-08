@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { Grid } from '@mui/material';
 import PlaceCard from './PlaceCard';
 
-export default function SelectedPlacesList({ selectedPartnerLocationObject }) {
-  const { state } = useLocation();
+export default function SelectedPlacesList({
+  selectedPartnerLocationObject,
+  onSelectedPartnerLocationsChange
+}) {
   const [selectedPartnerLocations, setSelectedPartnerLocations] = useState([]);
 
   // Listening to the changes in selectedPartnerLocationObject
@@ -12,14 +13,11 @@ export default function SelectedPlacesList({ selectedPartnerLocationObject }) {
     setSelectedPartnerLocations(Object.values(Object.values(selectedPartnerLocationObject)));
   }, [selectedPartnerLocationObject]);
 
-  const navigate = useNavigate();
-  const goToPlaceProfile = (partnerLocationId) => {
-    navigate(`/partner-profile/${partnerLocationId}`, {
-      state: {
-        ...state,
-        currentlySelectedPartnerLocations: selectedPartnerLocations
-      }
-    });
+  const deselectPartnerLocation = (deselectedPartnerLocationId) => {
+    const selectedPartnerLocationsUpdated = { ...selectedPartnerLocationObject }; // Copy the object
+    delete selectedPartnerLocationsUpdated[deselectedPartnerLocationId]; // Delete the deselected one
+
+    onSelectedPartnerLocationsChange(selectedPartnerLocationsUpdated);
   };
 
   return (
@@ -29,7 +27,7 @@ export default function SelectedPlacesList({ selectedPartnerLocationObject }) {
             <PlaceCard
               key={`selected-${partnerLocation._id}`}
               partnerLocation={partnerLocation}
-              onPlaceCardSelect={goToPlaceProfile}
+              onPlaceCardSelect={deselectPartnerLocation}
               smaller
             />
           ))
