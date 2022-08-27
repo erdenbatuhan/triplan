@@ -6,5 +6,5 @@ In order to fully have a running backend, the **Backend Services (NodeJS Express
 
 - [Backend Services](./services): The actual backend project, running on the port **8008**.
 - [Optimization Service](./optimization): The service optimizing the route plan, running on the port **6006**.
-- [Content Management System](./cms): The content management system for storing BLOB data, running remotely as an **AWS Lambda** function.
+- [Content Management System](https://github.com/erdenbatuhan/basic-cms): The content management system for storing BLOB data, running remotely as an **AWS Lambda** function.
 
