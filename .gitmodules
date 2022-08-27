@@ -1,0 +1,4 @@
+[submodule "cms"]
+	path = ./backend/cms
+	url = git@github.com:erdenbatuhan/basic-cms.git
+	ignore = dirty
